@@ -7,106 +7,114 @@
     <div class="col-md-8 p-4 card">
         <Stepper v-model:activeStep="active">
           <StepperPanel>
-              <template #header="{ index, clickCallback }">
-                <button class="bg-transparent border-none inline-flex flex-column gap-2" @click="clickCallback">
+            <template #header="{ index, clickCallback }">
+              <button class="bg-transparent border-none inline-flex flex-column gap-2" @click="clickCallback" :disabled="cadastroFinalizado">
+                  <span :class="['border-round border-2 w-3rem h-3rem inline-flex align-items-center justify-content-center', { 'bg-primary border-primary': index <= active, 'surface-border': index > active }]">
+                      <i class="pi pi-lock" />
+                  </span>
+              </button>
+            </template>
+            <template #content="{ nextCallback }">
+              <div class="flex flex-column gap-2 mx-auto" style="min-height: 16rem; max-width: 20rem">
+                <div class="text-center mt-3 mb-3 text-xl font-semibold">Dados de Login</div>
+                <div class="field p-fluid">
+                  <IconField>
+                      <InputIcon>
+                          <i class="pi pi-envelope" />
+                      </InputIcon>
+                      <InputText id="email" v-model="usuario.email" type="email" placeholder="Email" :readonly="cadastroFinalizado" />
+                  </IconField>
+                </div>
+                <div class="field p-fluid">
+                  <IconField>
+                      <InputIcon>
+                          <i class="pi pi-phone" />
+                      </InputIcon>
+                      <InputText id="telefone" v-model="usuario.telefone" type="text" v-mask="'(##) #####-####'" placeholder="Telefone" :readonly="cadastroFinalizado" />
+                  </IconField>
+                </div>
+                <div class="field p-fluid">
+                    <Password v-model="usuario.password" toggleMask placeholder="Senha" :readonly="cadastroFinalizado" />
+                </div>
+              </div>
+              <div class="flex pt-4 justify-content-between">
+                  <Button label="Voltar para página" class="rounded" icon="pi pi-arrow-left" iconPos="left" severity="secondary" @click="$router.push('/')" />
+                  <Button label="Próximo" class="rounded" icon="pi pi-arrow-right" iconPos="right" @click="nextCallback" />
+              </div>
+            </template>
+          </StepperPanel>
+
+          <StepperPanel>
+            <template #header="{ index, clickCallback }">
+                <button class="bg-transparent border-none inline-flex flex-column gap-2" @click="clickCallback" :disabled="cadastroFinalizado">
                     <span :class="['border-round border-2 w-3rem h-3rem inline-flex align-items-center justify-content-center', { 'bg-primary border-primary': index <= active, 'surface-border': index > active }]">
-                        <i class="pi pi-lock" />
+                        <i class="pi pi-user" />
                     </span>
                 </button>
-              </template>
-              <template #content="{ nextCallback }">
+            </template>
+            <template #content="{ prevCallback, nextCallback }">
                 <div class="flex flex-column gap-2 mx-auto" style="min-height: 16rem; max-width: 20rem">
-                  <div class="text-center mt-3 mb-3 text-xl font-semibold">Dados de Login</div>
+                  <div class="text-center mt-3 mb-3 text-xl font-semibold">Dados de Pessoais</div>
                   <div class="field p-fluid">
-                      <IconField>
-                          <InputIcon>
-                              <i class="pi pi-envelope" />
-                          </InputIcon>
-                          <InputText id="email" v-model="usuario.email" type="email" placeholder="Email" />
-                      </IconField>
+                      <InputText id="nome" class="w-full" v-model="usuario.nome" type="text" placeholder="Nome" :readonly="cadastroFinalizado" />
                   </div>
                   <div class="field p-fluid">
-                      <IconField>
-                          <InputIcon>
-                              <i class="pi pi-phone" />
-                          </InputIcon>
-                          <InputText id="telefone" v-model="usuario.telefone" type="text" v-mask="'(##) #####-####'" placeholder="Telefone" />
-                      </IconField>
+                      <InputText id="cpf" class="w-full" v-model="usuario.cpf" type="text" placeholder="CPF" v-mask="'###.###.###-##'" :readonly="cadastroFinalizado" />
                   </div>
                   <div class="field p-fluid">
-                      <Password v-model="usuario.password" toggleMask placeholder="Senha" />
+                      <InputText id="crp" class="w-full" v-model="usuario.crp" type="text" placeholder="CRP" v-mask="'##/########'" :readonly="cadastroFinalizado" />
                   </div>
                 </div>
                 <div class="flex pt-4 justify-content-between">
-                    <Button label="Voltar para página" class="rounded" icon="pi pi-arrow-left" iconPos="left" severity="secondary" @click="$router.push('/')" />
+                    <Button label="Voltar" severity="secondary" icon="pi pi-arrow-left" @click="prevCallback" />
                     <Button label="Próximo" class="rounded" icon="pi pi-arrow-right" iconPos="right" @click="nextCallback" />
                 </div>
-              </template>
-            </StepperPanel>
+            </template>
+          </StepperPanel>
 
-            <StepperPanel>
+          <StepperPanel>
               <template #header="{ index, clickCallback }">
-                  <button class="bg-transparent border-none inline-flex flex-column gap-2" @click="clickCallback">
+                  <button class="bg-transparent border-none inline-flex flex-column gap-2" @click="clickCallback" :disabled="cadastroFinalizado">
                       <span :class="['border-round border-2 w-3rem h-3rem inline-flex align-items-center justify-content-center', { 'bg-primary border-primary': index <= active, 'surface-border': index > active }]">
-                          <i class="pi pi-user" />
+                          <i class="pi pi-id-card" />
                       </span>
                   </button>
               </template>
-              <template #content="{ prevCallback, nextCallback }">
-                  <div class="flex flex-column gap-2 mx-auto" style="min-height: 16rem; max-width: 20rem">
-                    <div class="text-center mt-3 mb-3 text-xl font-semibold">Dados de Pessoais</div>
-                    <div class="field p-fluid">
-                        <InputText id="nome" class="w-full" v-model="usuario.nome" type="text" placeholder="Nome" />
-                    </div>
-                    <div class="field p-fluid">
-                        <InputText id="cpf" class="w-full" v-model="usuario.cpf" type="text" placeholder="CPF" v-mask="'###.###.###-##'" />
-                    </div>
-                    <div class="field p-fluid">
-                        <InputText id="crp" class="w-full" v-model="usuario.crp" type="text" placeholder="CRP" v-mask="'##/########'" />
-                    </div>
+              <template #content="{ prevCallback }">
+                <div class="flex flex-column gap-2 mx-auto" style="min-height: 16rem; max-width: 20rem">
+                  <div class="text-center mt-3 text-xl font-semibold" v-if="mensagemRedirecionamento != ''">
+                    <Message severity="success">{{ mensagemRedirecionamento }}</Message>
                   </div>
-                  <div class="flex pt-4 justify-content-between">
-                      <Button label="Voltar" severity="secondary" icon="pi pi-arrow-left" @click="prevCallback" />
-                      <Button label="Próximo" class="rounded" icon="pi pi-arrow-right" iconPos="right" @click="nextCallback" />
+                  <div class="text-center mt-1 mb-3 text-xl font-semibold">Dados de Endereço</div>
+                  <div class="field p-fluid">
+                    <InputText id="cep" class="w-full" v-model="usuario.cep" type="text" placeholder="CEP" v-mask="'#####-###'" :readonly="cadastroFinalizado" />
                   </div>
+                  <div class="field p-fluid">
+                    <InputText id="estado" class="w-full" v-model="usuario.estado" type="text" placeholder="Estado" :readonly="cadastroFinalizado" />
+                  </div>
+                  <div class="field p-fluid">
+                    <InputText id="cidade" class="w-full" v-model="usuario.cidade" type="text" placeholder="Cidade" :readonly="cadastroFinalizado" />
+                  </div>
+                  <div class="field p-fluid">
+                    <InputText id="bairro" class="w-full" v-model="usuario.bairro" type="text" placeholder="Bairro" :readonly="cadastroFinalizado" />
+                  </div>
+                  <div class="field p-fluid">
+                    <InputText id="rua" class="w-full" v-model="usuario.rua" type="text" placeholder="Rua" :readonly="cadastroFinalizado" />
+                  </div>
+                </div>
+                <div class="flex pt-4 justify-content-between">
+                    <Button label="Voltar" severity="secondary" icon="pi pi-arrow-left" @click="prevCallback" />
+                    <Button class="rounded" severity="success" @click="cadastrar" :disabled="isLoading || cadastroFinalizado" >
+                      <ProgressSpinner style="width: 20px; height: 20px" v-if="isLoading" />
+                      <span v-else>Finalizar</span>
+                    </Button>
+                </div>
               </template>
-            </StepperPanel>
-
-            <StepperPanel>
-                <template #header="{ index, clickCallback }">
-                    <button class="bg-transparent border-none inline-flex flex-column gap-2" @click="clickCallback">
-                        <span :class="['border-round border-2 w-3rem h-3rem inline-flex align-items-center justify-content-center', { 'bg-primary border-primary': index <= active, 'surface-border': index > active }]">
-                            <i class="pi pi-id-card" />
-                        </span>
-                    </button>
-                </template>
-                <template #content="{ prevCallback }">
-                  <div class="flex flex-column gap-2 mx-auto" style="min-height: 16rem; max-width: 20rem">
-                    <div class="text-center mt-3 mb-3 text-xl font-semibold">Dados de Endereço</div>
-                    <div class="field p-fluid">
-                        <InputText id="cep" class="w-full" v-model="usuario.cep" type="text" placeholder="CEP" v-mask="'#####-###'" />
-                    </div>
-                    <div class="field p-fluid">
-                      <InputText id="estado" class="w-full" v-model="usuario.estado" type="text" placeholder="Estado" />
-                    </div>
-                    <div class="field p-fluid">
-                      <InputText id="cidade" class="w-full" v-model="usuario.cidade" type="text" placeholder="Cidade" />
-                    </div>
-                    <div class="field p-fluid">
-                      <InputText id="bairro" class="w-full" v-model="usuario.bairro" type="text" placeholder="Bairro" />
-                    </div>
-                    <div class="field p-fluid">
-                      <InputText id="rua" class="w-full" v-model="usuario.rua" type="text" placeholder="Rua" />
-                    </div>
-                  </div>
-                  <div class="flex pt-4 justify-content-between">
-                      <Button label="Voltar" severity="secondary" icon="pi pi-arrow-left" @click="prevCallback" />
-                      <Button label="Finalizar" class="rounded" icon="pi pi-check" iconPos="right" severity="success" @click="cadastrar" />
-                  </div>
-                </template>
-            </StepperPanel>
+          </StepperPanel>
         </Stepper>
     </div>
+
+    <Toast/>
   </div>
 </template>
 
@@ -119,6 +127,9 @@ import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
 import Password from 'primevue/password';
+import Toast from 'primevue/toast';
+import ProgressSpinner from 'primevue/progressspinner';
+import Message from 'primevue/message';
 
 export default {
   components: {
@@ -130,6 +141,9 @@ export default {
     InputIcon,
     InputText,
     Password,
+    Toast,
+    ProgressSpinner,
+    Message,
   },
   data() {
     return {
@@ -146,12 +160,30 @@ export default {
         cidade: '',
         bairro: '',
         rua: '',
-      }
+      },
+      isLoading: false,
+      cadastroFinalizado: false,
+      mensagemRedirecionamento: '',
     }
   },
   methods: {
     cadastrar() {
-      console.log(this.usuario)
+      this.isLoading = true;
+
+      this.axios.post('/usuario', this.usuario).then(res => {
+        if (res.status == 200) {
+          this.cadastroFinalizado = true;
+          this.mensagemRedirecionamento = 'Aguarde, logo você será redirecionado';
+          this.$toast.add({ severity: 'success', summary: 'Sucesso ao se cadastrar', detail: 'Seu cadastro foi realizado com sucesso, você será redirecionado para a tela de pagamento!', life: 5000 });
+          setTimeout(() => {
+            window.location.href = 'https://google.com.br';
+          }, 6000);
+        }
+      }).catch(err => {
+        this.$toast.add({ severity: 'error', summary: 'Erro ao se cadastrar', detail: err.response.data.error, life: 5000 });
+      }).finally(() => {
+        this.isLoading = false;
+      });
     }
   },
   watch: {
