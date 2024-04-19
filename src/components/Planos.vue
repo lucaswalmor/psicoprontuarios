@@ -13,7 +13,7 @@
                   <div class="text-center text-600">30 Dias</div>
                   <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
                   <div class="flex align-items-center justify-content-center">
-                     <span class="font-bold text-2xl text-roxo">R$ 49,90</span>
+                     <span class="font-bold text-2xl text-roxo">R$ 29,90</span>
                      <span class="ml-2 font-medium text-600">por mês</span>
                   </div>
                   <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
