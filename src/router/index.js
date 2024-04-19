@@ -11,7 +11,12 @@ const routes = [
     path: '/cadastro',
     name: 'cadastro',
     component: () => import('../views/Cadastro.vue')
-  }
+  },
+  {
+    path: '/pix',
+    name: 'pix',
+    component: () => import('@/components/Pix.vue')
+  },
 ]
 
 const router = createRouter({

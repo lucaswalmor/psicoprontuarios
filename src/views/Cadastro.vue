@@ -4,7 +4,7 @@
       <div class="text-roxo font-bold text-5xl mb-4 text-center">Cadastro</div>
     </div>
 
-    <div class="col-md-8 p-4 card">
+    <div class="col-md-8 p-4 card" v-if="!pixGerado">
         <Stepper v-model:activeStep="active">
           <StepperPanel>
             <template #header="{ index, clickCallback }">
@@ -36,6 +36,18 @@
                 <div class="field p-fluid">
                     <Password v-model="usuario.password" toggleMask placeholder="Senha" :readonly="cadastroFinalizado" />
                 </div>
+
+                <div class="col-md-12">
+                  <div class="flex align-items-center">
+                      <Checkbox v-model="usuario.politica_privacidade" inputId="politica_privacidade" name="pizza" :value="false" />
+                      <label for="politica_privacidade" class="ml-2">Políticas de privacidade</label>
+                      <span class="text-primary ms-2" @click="lerPoliticas = true">Leia aqui</span>
+                  </div>
+                </div>
+
+                <Sidebar v-model:visible="lerPoliticas" header="Política de Privacidade e Proteção de Dados Pessoais" position="bottom" style="height: auto">
+                    <PoliticasDePrivacidade />
+                </Sidebar>
               </div>
               <div class="flex pt-4 justify-content-between">
                   <Button label="Voltar para página" class="rounded" icon="pi pi-arrow-left" iconPos="left" severity="secondary" @click="$router.push('/')" />
@@ -82,9 +94,6 @@
               </template>
               <template #content="{ prevCallback }">
                 <div class="flex flex-column gap-2 mx-auto" style="min-height: 16rem; max-width: 20rem">
-                  <div class="text-center mt-3 text-xl font-semibold" v-if="mensagemRedirecionamento != ''">
-                    <Message severity="success">{{ mensagemRedirecionamento }}</Message>
-                  </div>
                   <div class="text-center mt-1 mb-3 text-xl font-semibold">Dados de Endereço</div>
                   <div class="field p-fluid">
                     <InputText id="cep" class="w-full" v-model="usuario.cep" type="text" placeholder="CEP" v-mask="'#####-###'" :readonly="cadastroFinalizado" />
@@ -115,6 +124,8 @@
     </div>
 
     <Toast/>
+
+    <Pix :pix="pix" v-if="pixGerado"/>
   </div>
 </template>
 
@@ -130,6 +141,10 @@ import Password from 'primevue/password';
 import Toast from 'primevue/toast';
 import ProgressSpinner from 'primevue/progressspinner';
 import Message from 'primevue/message';
+import Pix from '@/components/Pix.vue';
+import Checkbox from 'primevue/checkbox';
+import Sidebar from 'primevue/sidebar';
+import PoliticasDePrivacidade from './PoliticasDePrivacidade.vue';
 
 export default {
   components: {
@@ -144,6 +159,10 @@ export default {
     Toast,
     ProgressSpinner,
     Message,
+    Pix,
+    Checkbox,
+    Sidebar,
+    PoliticasDePrivacidade,
   },
   data() {
     return {
@@ -161,9 +180,12 @@ export default {
         bairro: '',
         rua: '',
       },
+      lerPoliticas: false,
       isLoading: false,
       cadastroFinalizado: false,
       mensagemRedirecionamento: '',
+      pix: [],
+      pixGerado: false,
     }
   },
   methods: {
@@ -172,17 +194,22 @@ export default {
 
       this.axios.post('/usuario', this.usuario).then(res => {
         if (res.status == 200) {
-          this.cadastroFinalizado = true;
-          this.mensagemRedirecionamento = 'Aguarde, logo você será redirecionado';
-          this.$toast.add({ severity: 'success', summary: 'Sucesso ao se cadastrar', detail: 'Seu cadastro foi realizado com sucesso, você será redirecionado para a tela de pagamento!', life: 5000 });
-          setTimeout(() => {
-            window.location.href = 'https://google.com.br';
-          }, 6000);
+          this.gerarPix();
         }
       }).catch(err => {
-        this.$toast.add({ severity: 'error', summary: 'Erro ao se cadastrar', detail: err.response.data.error, life: 5000 });
+        console.log(err);
+        // this.$toast.add({ severity: 'error', summary: 'Erro ao se cadastrar', detail: err.response.data.error, life: 5000 });
       }).finally(() => {
         this.isLoading = false;
+      });
+    },
+    gerarPix() {
+      this.axios.get(`https://projetopix.lksoftware.com.br/public/api/novo-pix?valor=1.00`).then(res => {
+          // res.data.email = 'lucaswsb52@gmail.com';
+          res.data.email = this.usuario.email;
+          this.$router.push({path: '/pix', query: {pix: JSON.stringify(res.data)}})
+      }).catch(err => {
+          console.log(err)
       });
     }
   },
