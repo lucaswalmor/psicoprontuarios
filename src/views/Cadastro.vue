@@ -38,8 +38,9 @@
                 </div>
 
                 <div class="col-md-12">
+
                   <div class="flex align-items-center">
-                      <Checkbox v-model="usuario.politica_privacidade" inputId="politica_privacidade" name="pizza" :value="false" />
+                      <Checkbox v-model="usuario.politica_privacidade" inputId="politica_privacidade" name="pizza" :binary="true" />
                       <label for="politica_privacidade" class="ml-2">Políticas de privacidade</label>
                       <span class="text-primary ms-2" @click="lerPoliticas = true">Leia aqui</span>
                   </div>
@@ -51,7 +52,7 @@
               </div>
               <div class="flex pt-4 justify-content-between">
                   <Button label="Voltar para página" class="rounded" icon="pi pi-arrow-left" iconPos="left" severity="secondary" @click="$router.push('/')" />
-                  <Button label="Próximo" class="rounded" icon="pi pi-arrow-right" iconPos="right" @click="nextCallback" />
+                  <Button label="Próximo" class="rounded" icon="pi pi-arrow-right" iconPos="right" @click="nextCallback" :disabled="!usuario.politica_privacidade" />
               </div>
             </template>
           </StepperPanel>
@@ -179,6 +180,7 @@ export default {
         cidade: '',
         bairro: '',
         rua: '',
+        politica_privacidade: false,
       },
       lerPoliticas: false,
       isLoading: false,
