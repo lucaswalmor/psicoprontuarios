@@ -197,8 +197,7 @@ export default {
           this.gerarPix();
         }
       }).catch(err => {
-        console.log(err);
-        // this.$toast.add({ severity: 'error', summary: 'Erro ao se cadastrar', detail: err.response.data.error, life: 5000 });
+        this.$toast.add({ severity: 'error', summary: 'Erro ao se cadastrar', detail: err.response.data.error, life: 5000 });
       }).finally(() => {
         this.isLoading = false;
       });
