@@ -1,7 +1,7 @@
 <template>
     <div class="container" id="modalidades">
         <div class="row">
-            <div class="col-md-4 mt-3" data-aos="fade-right" data-aos-duration="2000" >
+            <div class="col-md-4 mt-3" data-aos="zoom-in" data-aos-duration="2000" >
                 <div class="card shadow">
                     <div class="card-header d-flex flex-column">
                         <i class="fa-solid fa-calendar fa-2x text-roxo"></i>
@@ -16,7 +16,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mt-3" data-aos="fade-right" data-aos-duration="2000" >
+            <div class="col-md-4 mt-3" data-aos="zoom-in" data-aos-duration="2000" >
                 <div class="card shadow">
                     <div class="card-header d-flex flex-column">
                         <i class="fa-solid fa-money-bill-trend-up fa-2x text-roxo"></i>
@@ -32,7 +32,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mt-3" data-aos="fade-right" data-aos-duration="2000" >
+            <div class="col-md-4 mt-3" data-aos="zoom-in" data-aos-duration="2000" >
                 <div class="card shadow">
                     <div class="card-header d-flex flex-column">
                         <i class="fa-regular fa-folder-open fa-2x text-roxo"></i>
@@ -47,7 +47,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mt-3" data-aos="fade-left" data-aos-duration="2000" >
+            <div class="col-md-4 mt-3" data-aos="zoom-in" data-aos-duration="2000" >
                 <div class="card shadow">
                     <div class="card-header d-flex flex-column">
                         <i class="fa-solid fa-file-pdf fa-2x text-roxo"></i>
@@ -61,7 +61,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mt-3" data-aos="fade-left" data-aos-duration="2000" >
+            <div class="col-md-4 mt-3" data-aos="zoom-in" data-aos-duration="2000" >
                 <div class="card shadow">
                     <div class="card-header d-flex flex-column">
                         <i class="fa-solid fa-bullhorn fa-2x text-roxo"></i>
@@ -75,7 +75,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mt-3" data-aos="fade-left" data-aos-duration="2000" >
+            <div class="col-md-4 mt-3" data-aos="zoom-in" data-aos-duration="2000" >
                 <div class="card shadow">
                     <div class="card-header d-flex flex-column">
                         <i class="fa-solid fa-mobile-screen fa-2x text-roxo"></i>

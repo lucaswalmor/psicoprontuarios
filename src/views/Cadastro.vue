@@ -45,9 +45,9 @@
                   </div>
                 </div>
 
-                <Sidebar v-model:visible="lerPoliticas" header="Política de Privacidade e Proteção de Dados Pessoais" position="bottom" style="height: auto">
-                    <PoliticasDePrivacidade />
-                </Sidebar>
+                <Dialog v-model:visible="lerPoliticas" modal header="" :style="{ width: '25rem' }">
+                    <PoliticasDePrivacidade @fecharPoliticaPrivacidade="fecharPoliticaPrivacidade" />
+                </Dialog>
               </div>
               <div class="flex pt-4 justify-content-between">
                   <Button label="Voltar para página" class="rounded" icon="pi pi-arrow-left" iconPos="left" severity="secondary" @click="$router.push('/')" />
@@ -143,7 +143,7 @@ import ProgressSpinner from 'primevue/progressspinner';
 import Message from 'primevue/message';
 import Pix from '@/components/Pix.vue';
 import Checkbox from 'primevue/checkbox';
-import Sidebar from 'primevue/sidebar';
+import Dialog from 'primevue/dialog';
 import PoliticasDePrivacidade from './PoliticasDePrivacidade.vue';
 
 export default {
@@ -161,7 +161,7 @@ export default {
     Message,
     Pix,
     Checkbox,
-    Sidebar,
+    Dialog,
     PoliticasDePrivacidade,
   },
   data() {
@@ -186,9 +186,15 @@ export default {
       mensagemRedirecionamento: '',
       pix: [],
       pixGerado: false,
+      
     }
   },
   methods: {
+    fecharPoliticaPrivacidade(value) {
+      if (!value) {
+        this.lerPoliticas = value;
+      }
+    },
     cadastrar() {
       this.isLoading = true;
 
