@@ -1,8 +1,8 @@
 <template>
-    <div id="sobre" class="mt-3">
-        <div class="col-md-12 d-flex shadow flex-wrap">
-            <div class="col-md-6 d-flex flex-column align-items-center justify-content-center p-3">
-                <div class="col-md-10">
+    <div id="sobre" class="mt-3 container">
+        <div class="col-md-12 d-flex flex-wrap">
+            <div class="col-md-6 d-flex flex-column justify-content-center">
+                <div class="col-md-12">
                     <h1 class="text-roxo">SOBRE A PSICO PRONTUÁRIOS</h1>
 
                     <span class="">
@@ -11,7 +11,7 @@
                 </div>
             </div>
             <div class="col-md-6">
-                <img :src="require('@/assets/img/img4.jpg')" alt="img" class="w-full">
+                <img :src="require('@/assets/img/img4.jpg')" data-aos="fade-right" data-aos-duration="2000" alt="img" class="w-full">
             </div>
         </div>
     </div>

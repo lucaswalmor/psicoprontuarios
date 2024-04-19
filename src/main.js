@@ -2,6 +2,9 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import axios from 'axios'
+import AOS from 'aos';
+
+import 'aos/dist/aos.css';
 
 // custom css
 import '../src/assets/css/style.css';
@@ -28,6 +31,7 @@ const app = createApp(App)
 app.config.globalProperties.axios = axios;
 app.use(router);
 app.use(VueTheMask);
+app.use(AOS.init())
 app.use(PrimeVue, {
     locale: {
         dayNames: ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'],

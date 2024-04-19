@@ -1,8 +1,8 @@
 <template>
-   <div class="px-4 py-8 md:px-6 lg:px-8 background-roxo-gradiente">
+   <div class="px-4 py-6 md:px-6 lg:px-8 background-roxo-gradiente" id="planos">
       <div class="text-roxo font-bold text-5xl mb-4 text-center">Nossos Planos</div>
 
-      <div class="grid justify-content-center">
+      <div class="grid justify-content-center" data-aos="flip-left" data-aos-duration="2000" >
          <div class="col-12 lg:col-6 card shadow-7">
             <div class="h-full">
                <div
@@ -24,6 +24,10 @@
                      </li>
                      <li class="flex align-items-center mb-3">
                         <i class="pi pi-check-circle text-roxo mr-2"></i>
+                        <span>Controle financeiro</span>
+                     </li>
+                     <li class="flex align-items-center mb-3">
+                        <i class="pi pi-check-circle text-roxo mr-2"></i>
                         <span>Exportação de prontuários</span>
                      </li>
                      <li class="flex align-items-center mb-3">
@@ -32,7 +36,7 @@
                      </li>
                      <li class="flex align-items-center mb-3">
                         <i class="pi pi-check-circle text-roxo mr-2"></i>
-                        <span>Lembrete de consultas agendadas para pacientes e psicólogos via email e whatsapp</span>
+                        <span>Notificações automáticas de consultas agendadas para pacientes e psicólogos via email e whatsapp</span>
                      </li>
                   </ul>
                   <hr class="mb-3 mx-0 border-top-1 border-none surface-border mt-auto" />
