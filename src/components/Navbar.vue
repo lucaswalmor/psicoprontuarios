@@ -2,17 +2,23 @@
    <nav class="navbar navbar-expand-lg background-roxo shadow-8 p-3">
       <div class="container">
         <span class="navbar-brand text-light">Psico Prontuários</span>
-      
-         <router-link class="nav-link botao-login shadow p-2" href="#planos" to="/cadastro">
+
+         <button class="nav-link botao-login shadow p-2" @click="redirecionarPainel">
             Acessar Painel
-         </router-link>
+         </button>
+
+
       </div>
    </nav>
 </template>
 
 <script>
 export default {
-   components: {},
+   methods: {
+      redirecionarPainel() {
+         window.open('https://psico-prontuario.vercel.app/', '_blank');
+      }
+   },
 };
 </script>
 
