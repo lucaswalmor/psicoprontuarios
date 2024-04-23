@@ -211,7 +211,7 @@ export default {
       });
     },
     gerarPix() {
-      this.axios.get(`https://projetopix.lksoftware.com.br/public/api/novo-pix?valor=29.90`).then(res => {
+      this.axios.get(`https://projetopix.lksoftware.com.br/public/api/novo-pix?valor=1.00`).then(res => {
           res.data.email = this.usuario.email;
           this.$router.push({path: '/pix', query: {pix: JSON.stringify(res.data)}})
       }).catch(err => {
