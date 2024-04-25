@@ -38,7 +38,22 @@
                 </div>
 
                 <div class="col-md-12">
+                  <div class="flex align-items-center">
+                      <Checkbox v-model="usuario.possui_cupom" inputId="possui_cupom" name="pizza" :binary="true" />
+                      <label for="possui_cupom" class="ml-2">Possuí cupom de desconto?</label>
+                  </div>
+                </div>
 
+                <div class="field p-fluid" v-if="usuario.possui_cupom">
+                  <IconField>
+                      <InputIcon>
+                          <i class="pi pi-crown" />
+                      </InputIcon>
+                      <InputText id="codigo_cupom" v-model="usuario.codigo_cupom" type="text" :readonly="cadastroFinalizado" />
+                  </IconField>
+                </div>
+
+                <div class="col-md-12">
                   <div class="flex align-items-center">
                       <Checkbox v-model="usuario.politica_privacidade" inputId="politica_privacidade" name="pizza" :binary="true" />
                       <label for="politica_privacidade" class="ml-2">Políticas de privacidade</label>
@@ -181,6 +196,7 @@ export default {
         bairro: '',
         rua: '',
         politica_privacidade: false,
+        codigo_cupom: '',
       },
       lerPoliticas: false,
       isLoading: false,
@@ -211,7 +227,15 @@ export default {
       });
     },
     gerarPix() {
-      this.axios.get(`https://projetopix.lksoftware.com.br/public/api/novo-pix?valor=29.90`).then(res => {
+      let valor = '';
+
+      if (this.usuario.possui_cupom) {
+        valor = 19.90
+      } else {
+        valor = 29.90
+      }
+
+      this.axios.get(`https://projetopix.lksoftware.com.br/public/api/novo-pix?valor=${valor}`).then(res => {
           res.data.email = this.usuario.email;
           this.$router.push({path: '/pix', query: {pix: JSON.stringify(res.data)}})
       }).catch(err => {
