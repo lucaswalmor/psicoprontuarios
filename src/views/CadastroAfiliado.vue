@@ -1,7 +1,7 @@
 <template>
   <div id="cadastro" class="mt-8 ms-3 me-3 d-flex flex-column justify-content-center align-items-center">
     <div class="col-md-12">
-      <div class="text-roxo font-bold text-5xl mb-4 text-center">Cadastro</div>
+      <div class="text-roxo font-bold text-5xl mb-4 text-center">Torne-se um afiliado</div>
     </div>
 
     <div class="col-md-8 p-4 card" v-if="!pixGerado">
@@ -36,29 +36,17 @@
                 <div class="field p-fluid">
                     <Password v-model="usuario.password" toggleMask placeholder="Senha" :readonly="cadastroFinalizado" />
                 </div>
-                
-                <div class="col-md-12">
-                  <div class="flex align-items-center">
-                      <Checkbox v-model="usuario.politica_privacidade" inputId="politica_privacidade" name="pizza" :binary="true" />
-                      <label for="politica_privacidade" class="ml-2">Políticas de privacidade</label>
-                      <span class="text-primary ms-2" @click="lerPoliticas = true">Leia aqui</span>
-                  </div>
-                </div>
-
-                <Dialog v-model:visible="lerPoliticas" modal header="" :style="{ width: '25rem' }">
-                    <PoliticasDePrivacidade @fecharPoliticaPrivacidade="fecharPoliticaPrivacidade" />
-                </Dialog>
               </div>
               <div class="flex pt-4 justify-content-between">
                   <Button label="Voltar para página" class="rounded" icon="pi pi-arrow-left" iconPos="left" severity="secondary" @click="$router.push('/')" />
-                  <Button label="Próximo" class="rounded" icon="pi pi-arrow-right" iconPos="right" @click="nextCallback" :disabled="!usuario.politica_privacidade" />
+                  <Button label="Próximo" class="rounded" icon="pi pi-arrow-right" iconPos="right" @click="nextCallback" />
               </div>
             </template>
           </StepperPanel>
 
           <StepperPanel>
             <template #header="{ index, clickCallback }">
-                <button class="bg-transparent border-none inline-flex flex-column gap-2" @click="clickCallback" :disabled="cadastroFinalizado || !usuario.politica_privacidade">
+                <button class="bg-transparent border-none inline-flex flex-column gap-2" @click="clickCallback" :disabled="cadastroFinalizado">
                     <span :class="['border-round border-2 w-3rem h-3rem inline-flex align-items-center justify-content-center', { 'bg-primary border-primary': index <= active, 'surface-border': index > active }]">
                         <i class="pi pi-user" />
                     </span>
@@ -73,9 +61,6 @@
                   <div class="field p-fluid">
                       <InputText id="cpf" class="w-full" v-model="usuario.cpf" type="text" placeholder="CPF" v-mask="'###.###.###-##'" :readonly="cadastroFinalizado" />
                   </div>
-                  <div class="field p-fluid">
-                      <InputText id="crp" class="w-full" v-model="usuario.crp" type="text" placeholder="CRP" v-mask="'##/########'" :readonly="cadastroFinalizado" />
-                  </div>
                 </div>
                 <div class="flex pt-4 justify-content-between">
                     <Button label="Voltar" severity="secondary" icon="pi pi-arrow-left" @click="prevCallback" />
@@ -86,7 +71,7 @@
 
           <StepperPanel>
             <template #header="{ index, clickCallback }">
-                <button class="bg-transparent border-none inline-flex flex-column gap-2" @click="clickCallback" :disabled="cadastroFinalizado || !usuario.politica_privacidade">
+                <button class="bg-transparent border-none inline-flex flex-column gap-2" @click="clickCallback" :disabled="cadastroFinalizado">
                     <span :class="['border-round border-2 w-3rem h-3rem inline-flex align-items-center justify-content-center', { 'bg-primary border-primary': index <= active, 'surface-border': index > active }]">
                         <i class="pi pi-id-card" />
                     </span>
@@ -180,7 +165,8 @@ export default {
         bairro: '',
         rua: '',
         politica_privacidade: false,
-        tipo_usuario: 'psicologo',
+        codigo_cupom: '',
+        tipo_usuario: 'afiliado',
       },
       lerPoliticas: false,
       isLoading: false,
@@ -188,6 +174,7 @@ export default {
       mensagemRedirecionamento: '',
       pix: [],
       pixGerado: false,
+      
     }
   },
   methods: {
@@ -197,36 +184,16 @@ export default {
       }
     },
     cadastrar() {
-      // this.isLoading = true;
-
-      if (this.$route.query.ref.length > 0) {
-        this.usuario.codigo_cupom = this.$route.query.ref;
-      }
+      this.isLoading = true;
 
       this.axios.post('/usuario', this.usuario).then(res => {
         if (res.status == 200) {
-          this.gerarPix();
+          window.open('https://psico-prontuario.vercel.app/', '_blannk')
         }
       }).catch(err => {
         this.$toast.add({ severity: 'error', summary: 'Erro ao se cadastrar', detail: err.response.data.error, life: 5000 });
       }).finally(() => {
         this.isLoading = false;
-      });
-    },
-    gerarPix() {
-      let valor = '';
-
-      if (this.usuario.possui_cupom) {
-        valor = 19.90
-      } else {
-        valor = 29.90
-      }
-
-      this.axios.get(`https://projetopix.lksoftware.com.br/public/api/novo-pix?valor=${valor}`).then(res => {
-          res.data.email = this.usuario.email;
-          this.$router.push({path: '/pix', query: {pix: JSON.stringify(res.data)}})
-      }).catch(err => {
-          console.log(err)
       });
     },
   },
