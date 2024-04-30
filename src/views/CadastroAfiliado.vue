@@ -59,6 +59,9 @@
                       <InputText id="nome" class="w-full" v-model="usuario.nome" type="text" placeholder="Nome" :readonly="cadastroFinalizado" />
                   </div>
                   <div class="field p-fluid">
+                      <InputText id="sobrenome" class="w-full" v-model="usuario.sobrenome" type="text" placeholder="Sobrenome" :readonly="cadastroFinalizado" />
+                  </div>
+                  <div class="field p-fluid">
                       <InputText id="cpf" class="w-full" v-model="usuario.cpf" type="text" placeholder="CPF" v-mask="'###.###.###-##'" :readonly="cadastroFinalizado" />
                   </div>
                 </div>
@@ -157,6 +160,7 @@ export default {
         telefone: '',
         password: '',
         nome: '',
+        sobrenome: '',
         cpf: '',
         crp: '',
         cep: '',
