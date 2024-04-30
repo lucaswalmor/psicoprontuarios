@@ -13,6 +13,11 @@ const routes = [
     component: () => import('../views/Cadastro.vue')
   },
   {
+    path: '/afiliado',
+    name: 'afiliado',
+    component: () => import('../views/Afiliados.vue'),
+  },
+  {
     path: '/cadastro-afiliado',
     name: 'cadastro-afiliado',
     component: () => import('../views/CadastroAfiliado.vue')

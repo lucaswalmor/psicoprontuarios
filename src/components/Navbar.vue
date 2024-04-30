@@ -1,10 +1,10 @@
 <template>
    <nav class="navbar navbar-expand-lg background-roxo shadow-8 p-3">
       <div class="container">
-         <span class="navbar-brand text-light">Psico Prontuários</span>
+         <span class="navbar-brand text-light cursor-pointer" @click="$router.push('/')">Psico Prontuários</span>
          
          <div class="d-flex justify-content-between align-items-center gap-3">
-            <span class="text-light cursor-pointer" @click="$router.push('/cadastro-afiliado')">Quer ser um afiliado ?</span>
+            <span class="text-light cursor-pointer" @click="$router.push('/afiliado')">Quer ser um afiliado ?</span>
 
             <button class="nav-link botao-login shadow p-2" @click="redirecionarPainel">
                Acessar Painel
