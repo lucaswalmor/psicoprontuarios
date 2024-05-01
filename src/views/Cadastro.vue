@@ -201,9 +201,9 @@ export default {
       }
     },
     cadastrar() {
-      // this.isLoading = true;
-
-      if (this.$route.query.ref.length > 0) {
+      this.isLoading = true;
+      
+      if (this.$route.query.ref != undefined && this.$route.query.ref.length > 0) {
         this.usuario.codigo_cupom = this.$route.query.ref;
       }
 
