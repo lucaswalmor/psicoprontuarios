@@ -71,7 +71,7 @@
                     </div>
 
                     <div class="card-body">
-                        Reduza em até 30% as faltas dos pacientes. Enviamos notificações de sessões ou compromissos via e-mail e WhatsApp de forma automática.
+                        Reduza em até 30% as faltas dos pacientes. Enviamos notificações de sessões ou compromissos via e-mail de forma automática.
                     </div>
                 </div>
             </div>
@@ -80,12 +80,12 @@
                     <div class="card-header d-flex flex-column">
                         <i class="fa-solid fa-mobile-screen fa-2x text-roxo"></i>
                         <span class="text-roxo fs-2 fw-bold">
-                            Sistema em suas mãos
+                            Indicações
                         </span>
                     </div>
 
                     <div class="card-body">
-                        Tenha nosso sistema instalado em seu dispositivo móvel, tendo a praticidade de acesso mais rápido aos seus atendimentos.
+                        Indiquem colegas da área a usarem nosso sistema com um link de indicação e receba por isso.
                     </div>
                 </div>
             </div>
