@@ -106,7 +106,7 @@ export default {
                     this.pixPago = true;
 
                     setTimeout(() => {
-                        window.location.href = 'https://psico-prontuario.vercel.app/';
+                        window.location.href = 'https://painel-psicoprontuarios.com.br/';
                     }, 4500);
                 }
             })

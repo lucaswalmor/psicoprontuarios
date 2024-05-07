@@ -192,7 +192,7 @@ export default {
 
       this.axios.post('/usuario', this.usuario).then(res => {
         if (res.status == 200) {
-          window.open('https://psico-prontuario.vercel.app/', '_blannk')
+          window.open('https://painel-psicoprontuarios.com.br/', '_blannk')
         }
       }).catch(err => {
         this.$toast.add({ severity: 'error', summary: 'Erro ao se cadastrar', detail: err.response.data.error, life: 5000 });

@@ -18,7 +18,7 @@
 export default {
    methods: {
       redirecionarPainel() {
-         window.open('https://psico-prontuario.vercel.app/', '_blank');
+         window.open('https://painel-psicoprontuarios.com.br/', '_blank');
       }
    },
 };
