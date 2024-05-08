@@ -220,11 +220,13 @@ export default {
     gerarPix() {
       let valor = '';
 
-      if (this.usuario.possui_cupom) {
-        valor = 19.90
-      } else {
-        valor = 29.90
-      }
+      // if (this.usuario.possui_cupom) {
+      //   valor = 19.90
+      // } else {
+      //   valor = 29.90
+      // }
+
+      valor = 1;
 
       this.axios.get(`https://projetopix.lksoftware.com.br/public/api/novo-pix?valor=${valor}`).then(res => {
           res.data.email = this.usuario.email;
