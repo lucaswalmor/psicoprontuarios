@@ -218,7 +218,8 @@ export default {
       });
     },
     gerarPix() {
-      let valor = 29.90;
+      let valor = 1;
+      // let valor = 29.90;
 
       this.axios.get(`https://projetopix.lksoftware.com.br/public/api/novo-pix?valor=${valor}`).then(res => {
           res.data.email = this.usuario.email;
