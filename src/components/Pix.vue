@@ -25,6 +25,10 @@
             </div>
 
             <Toast />
+
+            <div class="col-md-12 mt-3">
+                <Button label="Pagar depois" class="rounded w-full" outlined @click="pagarDepois" />
+            </div>
         </div>
 
         <div class="row" v-if="pixPago">
@@ -42,6 +46,7 @@ import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import Button from 'primevue/button';
 import Toast from 'primevue/toast';
+import { DeprecationTypes } from 'vue';
 
 export default {
     components: {
@@ -62,6 +67,9 @@ export default {
         }
     },
     methods: {
+        pagarDepois() {
+            window.location.href = 'https://painel-psicoprontuarios.com.br/';
+        },
         recarregarPagina() {
             window.location.reload();
         },
