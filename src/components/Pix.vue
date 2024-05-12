@@ -27,7 +27,7 @@
             <Toast />
 
             <div class="col-md-12 mt-3">
-                <Button label="Pagar depois" class="rounded w-full" outlined @click="pagarDepois" />
+                <Button label="Pagar depois" severity="warning" class="rounded w-full" outlined @click="pagarDepois" />
             </div>
         </div>
 
