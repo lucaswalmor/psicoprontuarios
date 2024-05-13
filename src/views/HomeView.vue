@@ -58,8 +58,4 @@ export default {
   height: 60px;
 }
 
-.p-button {
-  background-color: #00a884 !important;
-  border: 1px solid #00a884;
-}
 </style>
