@@ -6,7 +6,7 @@
         </div>
         <div class="row">
             <div class="col-md-6 cursor-pointer" @click="abrirLgpd">
-                <img :src="require('@/assets/img/LGPD.png')" alt="lgpd">
+                <img :src="require('@/assets/img/LGPD.webp')" alt="lgpd">
             </div>
         </div>
     </div>

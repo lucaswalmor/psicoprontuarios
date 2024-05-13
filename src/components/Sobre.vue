@@ -10,8 +10,8 @@
                     </span>
                 </div>
             </div>
-            <div class="col-md-6">
-                <img :src="require('@/assets/img/img4.jpg')" data-aos="fade-right" data-aos-duration="2000" alt="img" class="w-full">
+            <div class="col-md-6 d-flex align-item-scenter">
+                <img :src="require('@/assets/img/img4.webp')" data-aos="fade-right" data-aos-duration="2000" alt="img" class="img-sobre">
             </div>
         </div>
     </div>
@@ -26,5 +26,15 @@ export default {
 <style scoped>
 .sobre {
     width: 100%;
+}
+
+.img-sobre {
+    width: 500px;
+}
+
+@media screen and (max-width: 768px) {
+    .img-sobre {
+        width: 350px;
+    }
 }
 </style>

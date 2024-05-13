@@ -14,8 +14,13 @@
                <h6>Contato</h6>
                <ul class="social-icons mt-3">
                   <li>
-                    <a class="facebook" href="https://api.whatsapp.com/send?phone=5534992021394&text=Ol%C3%A1,%20gostaria%20de%20conversar%20sobre%20a%20Psico%20Prontu%C3%A1rios" target="_blank">
+                    <a class="facebook" href="https://wa.me/5534991212391?text=Ol%C3%A1%2C+gostaria+de+agendar+uma+demonstra%C3%A7%C3%A3o+do+sistema+Psico+Prontu%C3%A1rios%21" target="_blank">
                         <i class="fa-brands fa-whatsapp"></i>
+                    </a>
+                  </li>
+                  <li>
+                    <a class="facebook" href="https://www.instagram.com/psicoprontuarios/" target="_blank">
+                        <i class="fa-brands fa-instagram"></i>
                     </a>
                   </li>
                </ul>

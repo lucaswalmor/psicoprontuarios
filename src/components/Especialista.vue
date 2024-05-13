@@ -2,7 +2,7 @@
     <div id="especialista" class="mt-3 container">
         <div class="col-md-12 d-flex flex-wrap">
             <div class="col-md-6 text-center">
-                <img :src="require('@/assets/img/especialista.png')" data-aos="fade-left" data-aos-duration="2000" alt="img" style="width: 350px">
+                <img :src="require('@/assets/img/especialista.webp')" data-aos="fade-left" data-aos-duration="2000" alt="img" style="width: 350px">
             </div>
             <div class="col-md-6 d-flex flex-column justify-content-center">
                 <div class="col-md-12">
@@ -16,7 +16,7 @@
                 </div>
 
                 <div class="col-md-12 mt-3">
-                    <Button class="w-full rounded" label="Falar com um especialista" outlined @click="falarEspecialista" />
+                    <Button class="w-full rounded text-light" label="Falar com um especialista" outlined @click="falarEspecialista" />
                 </div>
             </div>
         </div>

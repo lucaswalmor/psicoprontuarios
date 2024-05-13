@@ -57,4 +57,9 @@ export default {
   border-radius: 50%;
   height: 60px;
 }
+
+.p-button {
+  background-color: #00a884 !important;
+  border: 1px solid #00a884;
+}
 </style>
