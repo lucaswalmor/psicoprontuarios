@@ -40,7 +40,7 @@
                      </li>
                   </ul>
                   <hr class="mb-3 mx-0 border-top-1 border-none surface-border mt-auto" />
-                  <Button label="Cadastre-se agora" class="p-2 rounded w-full mt-auto fw-bold fs-5" @click="$router.push('/cadastro')"></Button>
+                  <Button label="Cadastre-se agora" class="p-2 rounded w-full mt-auto fw-bold fs-5" @click="cadastrar"></Button>
                </div>
             </div>
          </div>
@@ -56,6 +56,15 @@ export default {
    components: {
       Button,
    },
+   methods: {
+      cadastrar() {
+         if (this.$route.query.ref != undefined) {
+            this.$router.push(`/cadastro?ref=${this.$route.query.ref}`)
+         } else {
+            this.$router.push(`/cadastro`)
+         }
+      }
+   }
 };
 </script>
 

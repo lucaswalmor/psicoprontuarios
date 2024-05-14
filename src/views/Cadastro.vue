@@ -50,7 +50,7 @@
                 </Dialog>
               </div>
               <div class="flex pt-4 justify-content-between">
-                  <Button label="Voltar para página" class="rounded" icon="pi pi-arrow-left" iconPos="left" severity="secondary" @click="$router.push('/')" />
+                  <Button label="Voltar para página" class="rounded" icon="pi pi-arrow-left" iconPos="left" severity="secondary" @click="voltarPaginaInicial" />
                   <Button label="Próximo" class="rounded" icon="pi pi-arrow-right" iconPos="right" @click="nextCallback" :disabled="!usuario.politica_privacidade" />
               </div>
             </template>
@@ -228,6 +228,13 @@ export default {
           console.log(err)
       });
     },
+    voltarPaginaInicial() {
+      if (this.$route.query.ref != undefined) {
+        this.$router.push(`/?ref=${this.$route.query.ref}`)
+      } else {
+        this.$router.push(`/`)
+      }
+    }
   },
   watch: {
     'usuario.cep'(newValue) {
