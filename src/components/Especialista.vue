@@ -16,7 +16,7 @@
                 </div>
 
                 <div class="col-md-12 mt-3">
-                    <Button class="w-full rounded text-light" label="Falar com um especialista" outlined @click="falarEspecialista" />
+                    <Button class="w-full rounded" label="Falar com um especialista" outlined @click="falarEspecialista" />
                 </div>
             </div>
         </div>
