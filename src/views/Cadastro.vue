@@ -221,7 +221,7 @@ export default {
       // let valor = 1;
       let valor = 29.90;
 
-      this.axios.get(`https://projetopix.lksoftware.com.br/public/api/novo-pix?valor=${valor}&system=psicoprontuarios`).then(res => {
+      this.axios.get(`https://projetopix.lksoftware.com.br/public/api/novo-pix?valor=${valor}&system=psicoprontuarios&cpfCnpj=${this.usuario.cpf}&email=${this.usuario.email}&telefone=${this.usuario.telefone}`).then(res => {
           res.data.email = this.usuario.email;
           this.$router.push({path: '/pix', query: {pix: JSON.stringify(res.data)}})
       }).catch(err => {
