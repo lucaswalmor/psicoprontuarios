@@ -8,8 +8,8 @@
             <label for="" class="form-label">Nome</label>
             <InputText class="w-full" type="text" v-model="dados.nome" :disabled="isLoading" />
 
-            <label for="" class="form-label mt-4">Email</label>
-            <InputText class="w-full" type="email" v-model="dados.email" :disabled="isLoading" />
+            <label for="" class="form-label mt-4">Whatsapp</label>
+            <InputText class="w-full" type="tel" v-model="dados.telefone" :disabled="isLoading" v-mask="'(##) #####-####'" />
 
             <Button class="rounded mt-4" :disabled="isLoading" @click="cadastrar">
                 <ProgressSpinner v-if="isLoading" style="width: 20px; height: 20px" strokeWidth="8" fill="transparent"
