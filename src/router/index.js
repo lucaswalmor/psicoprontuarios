@@ -27,6 +27,11 @@ const routes = [
     name: 'pix',
     component: () => import('@/components/Pix.vue')
   },
+  {
+    path: '/leads',
+    name: 'leads',
+    component: () => import('@/components/Leads.vue')
+  },
 ]
 
 const router = createRouter({
