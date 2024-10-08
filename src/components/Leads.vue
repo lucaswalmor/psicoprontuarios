@@ -6,7 +6,7 @@
 
         <div class="col-md-12">
             <label for="" class="form-label">Nome</label>
-            <InputText class="w-full" type="text" v-model="dados.nome" :disabled="isLoading" />
+            <InputText class="w-full" type="text" v-model="dados.nome" :disabled="isLoading" @input="capitalizeWords" />
 
             <label for="" class="form-label mt-4">Whatsapp</label>
             <InputText class="w-full" type="tel" v-model="dados.telefone" :disabled="isLoading" v-mask="'(##) #####-####'" />
@@ -55,6 +55,13 @@ export default {
                 this.isLoading = false;
                 this.$toast.add({ severity: 'error', summary: 'Erro', detail: err.response.data.message, life: 3000 });
             })
+        },
+        capitalizeWords() {
+            this.dados.nome =this.dados.nome
+                .toLowerCase()
+                .replace(/\b\w/g, function (char) {
+                    return char.toUpperCase();
+                });
         }
     }
 }
