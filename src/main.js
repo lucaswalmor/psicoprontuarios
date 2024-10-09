@@ -24,7 +24,7 @@ import '/node_modules/primeflex/primeflex.css'
 import VueTheMask from 'vue-the-mask'
 
 // AXIOS BASE URL
-axios.defaults.baseURL = 'https://psicoprontuarios.lksoftware.com.br/public/api/';
+axios.defaults.baseURL = 'https://psicoprontuarios.lksoftware.com.br/api/';
 // axios.defaults.baseURL = 'http://127.0.0.1:8000/api/';
 
 const app = createApp(App)
