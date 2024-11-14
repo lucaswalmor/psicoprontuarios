@@ -209,13 +209,31 @@ export default {
 
       this.axios.post('/usuario', this.usuario).then(res => {
         if (res.status == 200) {
-          this.gerarPix();
+          const swalWithBootstrapButtons = this.$swal.mixin({
+            customClass: {
+              confirmButton: "btn btn-success ms-2",
+              cancelButton: "btn btn-danger"
+            },
+            buttonsStyling: false
+          });
+          swalWithBootstrapButtons.fire({
+            title: "Sucesso!",
+            text: "Seu cadastro foi realizado!",
+            icon: "success",
+            showCancelButton: false,
+            confirmButtonText: "Acessar o painel!",
+            reverseButtons: true,
+            allowOutsideClick: false
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.open('https://painel-psicoprontuarios.com.br/')
+            }
+          });
         }
       }).catch(err => {
-        this.$toast.add({ severity: 'error', summary: 'Erro ao se cadastrar', detail: err.response.data.error, life: 5000 });
-      }).finally(() => {
         this.isLoading = false;
-      });
+        this.$toast.add({ severity: 'error', summary: 'Erro ao se cadastrar', detail: err.response.data.error, life: 5000 });
+      })
     },
     gerarPix() {
       // let valor = 1;

@@ -20,12 +20,16 @@ import 'primevue/resources/themes/aura-light-purple/theme.css'
 import 'primeicons/primeicons.css'
 import '/node_modules/primeflex/primeflex.css'
 
+// SWEETALERT2
+import VueSweetalert2 from 'vue-sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
+
 // VUE THE MASK
 import VueTheMask from 'vue-the-mask'
 
 // AXIOS BASE URL
-axios.defaults.baseURL = 'https://psicoprontuarios.lksoftware.com.br/api/';
-// axios.defaults.baseURL = 'http://127.0.0.1:8000/api/';
+// axios.defaults.baseURL = 'https://psicoprontuarios.lksoftware.com.br/api/';
+axios.defaults.baseURL = 'http://127.0.0.1:8000/api/';
 
 const app = createApp(App)
 app.config.globalProperties.axios = axios;
@@ -44,4 +48,5 @@ app.use(PrimeVue, {
     }
 });
 app.use(ToastService);
+app.use(VueSweetalert2);
 app.mount('#app');

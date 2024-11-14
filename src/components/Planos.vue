@@ -40,7 +40,7 @@
                      </li>
                   </ul>
                   <hr class="mb-3 mx-0 border-top-1 border-none surface-border mt-auto" />
-                  <Button label="Cadastre-se agora" class="p-2 rounded w-full mt-auto fw-bold fs-5" @click="cadastrar"></Button>
+                  <Button label="Experimentar gratís por 30 dias" class="p-2 rounded w-full mt-auto fw-bold fs-5" @click="cadastrar"></Button>
                </div>
             </div>
          </div>
