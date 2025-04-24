@@ -32,7 +32,7 @@ export default {
     },
     methods: {
         falarEspecialista() {
-            window.open('https://wa.me/5534992021394?text=Ol%C3%A1%2C+gostaria+de+agendar+uma+demonstra%C3%A7%C3%A3o+do+sistema+Psico+Prontu%C3%A1rios%21', '_blank');
+            window.open('https://wa.me/5534992021394?text=Ol%C3%A1%2C%20gostaria%20de%20tirar%20algumas%20d%C3%BAvidas%20sobre%20o%20psicoprontu%C3%A1rios', '_blank');
         }
     }
 }
