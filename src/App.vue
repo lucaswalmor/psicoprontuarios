@@ -396,11 +396,11 @@ export default {
           name: 'Premium',
           price: '49',
           features: [
-            'Tudo do plano Básico',
-            'Vídeos exclusivos',
-            'Lives mensais',
-            'Chat direto',
-            'Conteúdo personalizado'
+            'Agenda online',
+            'Controle Financeiro',
+            'Controle de Prontuários',
+            'PDF"s Personalizados',
+            'Notificações Automáticas'
           ],
           buttonText: 'Mais Popular',
           featured: true
