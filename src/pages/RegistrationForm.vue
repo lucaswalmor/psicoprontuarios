@@ -472,16 +472,12 @@ export default {
             this.isSubmitting = true
 
             try {
-                // Simular envio para API
-                await new Promise(resolve => setTimeout(resolve, 2000))
+                const response = await this.axios.post('/usuario', this.usuario);
 
-                // Aqui você faria a chamada real para sua API
-                console.log('Dados do usuário:', this.usuario)
 
-                alert('Conta criada com sucesso! Bem-vindo à comunidade exclusiva da PsicoProntuários!')
+                alert(response.data.success)
 
-                // Redirecionar para login ou dashboard
-                this.goToLogin()
+                window.open('https://painel-psicoprontuarios.com.br/')
 
             } catch (error) {
                 console.error('Erro ao criar conta:', error)
@@ -491,14 +487,8 @@ export default {
             }
         },
 
-        goBack() {
-            // Voltar para a landing page
-            this.$router.go(-1)
-        },
-
         goToLogin() {
-            alert('Redirecionando para página de login...')
-            // Aqui você redirecionaria para a página de login
+            this.$emit('back', false)
         },
 
         showPrivacyPolicy() {

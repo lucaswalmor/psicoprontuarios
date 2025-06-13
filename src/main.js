@@ -5,8 +5,11 @@ import 'primeicons/primeicons.css'
 import './style.css'
 import App from './App.vue'
 
-const app = createApp(App)
+// ROTAS DO AXIOS
+import { api } from './axios';
 
+const app = createApp(App)
+app.config.globalProperties.axios = api;
 app.use(PrimeVue, {
   theme: {
     preset: Aura,
