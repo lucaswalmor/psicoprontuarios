@@ -402,7 +402,7 @@ export default {
             'PDF"s Personalizados',
             'Notificações Automáticas'
           ],
-          buttonText: 'Mais Popular',
+          buttonText: '5 dias gratuíto',
           featured: true
         },
         // {
