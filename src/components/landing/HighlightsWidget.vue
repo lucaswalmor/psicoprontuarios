@@ -17,7 +17,8 @@
                 <div class="d-flex justify-content-center justify-content-lg-start">
                     <div class="position-relative">
                         <div class="highlight-image-bg"></div>
-                        <img src="/demo/images/landing/mockup.svg" class="w-15" alt="Aplicativo Mobile" />
+                        <img :src="celular" class="w-7" alt="Aplicativo Mobile" />
+                        <!-- <img src="/demo/images/landing/mockup.svg" class="w-15" alt="Aplicativo Mobile" /> -->
                     </div>
                 </div>
                 <div class="highlight-content text-center flex flex-column align-items-center justify-content-center">
@@ -60,7 +61,7 @@
             <!-- <div class="row align-items-center"> -->
             <div class="d-flex gap-5">
                 <!-- Content -->
-                <div class="d-flex justify-content-center justify-content-lg-start">
+                <div class="col-md-5 d-flex justify-content-center justify-content-lg-start">
                     <div
                         class="highlight-content text-center flex flex-column align-items-center justify-content-center">
                         <div class="d-flex justify-content-center justify-content-lg-start mb-4">
@@ -94,16 +95,19 @@
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-center justify-content-lg-end">
-                    <div class="position-relative">
-                        <div class="highlight-image-bg desktop"></div>
-                        <img src="/demo/images/landing/mockup-desktop.svg" class="w-15" alt="Interface Desktop" />
-                    </div>
+                <div class="col-md-7 d-flex justify-content-center align-items-center">
+                    <div class="highlight-image-bg desktop"></div>
+                    <img :src="macbook" class="w-15" alt="Interface Desktop" />
                 </div>
             </div>
         </div>
     </div>
 </template>
+
+<script setup>
+import celular from '@/assets/img/celular.png';
+import macbook from '@/assets/img/macbook.png';
+</script>
 
 <style scoped>
 .highlights-section {
