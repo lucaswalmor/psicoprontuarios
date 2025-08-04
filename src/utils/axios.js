@@ -5,8 +5,7 @@ var urlDev = 'http://localhost:8000/api';
 
 // Configuração base do axios
 const api = axios.create({
-    // baseURL: urlProd,
-    baseURL: urlDev,
+    baseURL: urlProd,
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
