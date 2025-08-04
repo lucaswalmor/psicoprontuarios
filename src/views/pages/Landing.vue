@@ -1,0 +1,102 @@
+<script setup lang="ts">
+import FeaturesWidget from '@/components/landing/FeaturesWidget.vue';
+import FooterWidget from '@/components/landing/FooterWidget.vue';
+import HeroWidget from '@/components/landing/HeroWidget.vue';
+import HighlightsWidget from '@/components/landing/HighlightsWidget.vue';
+import PricingWidget from '@/components/landing/PricingWidget.vue';
+import TopbarWidget from '@/components/landing/TopbarWidget.vue';
+import LeadsWidget from '@/components/landing/LeadsWidget.vue';
+</script>
+
+<template>
+    <div class="landing-page bg-surface-0 dark:bg-surface-900 min-h-screen">
+        <!-- Header/Navigation -->
+        <header class="sticky top-0 z-50 bg-surface-0/95 dark:bg-surface-900/95 backdrop-blur-sm border-b border-surface-200 dark:border-surface-700">
+            <div class="container mx-auto px-4 py-4">
+                <TopbarWidget />
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="container-fluid">
+            <!-- Hero Section -->
+            <section id="hero" class="relative overflow-hidden">
+                <HeroWidget />
+            </section>
+
+            <!-- Features Section -->
+            <section id="features" class="py-16 lg:py-24 bg-surface-50 dark:bg-surface-800">
+                <div class="container mx-auto px-4">
+                    <FeaturesWidget />
+                </div>
+            </section>
+
+            <!-- Highlights Section -->
+            <section id="highlights" class="py-16 lg:py-24">
+                <div class="container-fluid mx-auto px-4">
+                    <HighlightsWidget />
+                </div>
+            </section>
+
+            <!-- Pricing Section -->
+            <section id="pricing" class="py-16 lg:py-24 bg-surface-50 dark:bg-surface-800">
+                <div class="container mx-auto px-4">
+                    <PricingWidget />
+                </div>
+            </section>
+
+            <!-- Leads Section -->
+            <section id="leads" class="py-16 lg:py-24">
+                <LeadsWidget />
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-surface-100 dark:bg-surface-900 border-t border-surface-200 dark:border-surface-700">
+            <div class="container mx-auto px-4">
+                <FooterWidget />
+            </div>
+        </footer>
+    </div>
+</template>
+
+<style scoped>
+.landing-page {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.landing-wrapper {
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1200px;
+}
+
+/* Smooth scrolling for anchor links */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Responsive container adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .container {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+}
+
+@media (min-width: 1025px) {
+    .container {
+        padding-left: 3rem;
+        padding-right: 3rem;
+    }
+}
+</style>
