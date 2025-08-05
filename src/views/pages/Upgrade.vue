@@ -187,6 +187,7 @@ export default {
                         features: [
                             'Até 15 pacientes',
                             'Agendamentos',
+                            'Até 30 anexos',
                             'Prontuários PDF',
                             'Dashboard',
                             'Backup Automático',
@@ -202,6 +203,7 @@ export default {
                         features: [
                             'Até 50 pacientes',
                             'Agendamentos',
+                            'Anexos ilimitados',
                             'Prontuários PDF',
                             'Dashboard',
                             'Gestão Financeira',
@@ -221,6 +223,7 @@ export default {
                         features: [
                             'Até 50 pacientes',
                             'Agendamentos',
+                            'Anexos ilimitados',
                             'Prontuários PDF',
                             'Dashboard',
                             'Gestão Financeira',

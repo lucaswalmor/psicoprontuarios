@@ -10,9 +10,20 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h2 class="mb-2">Lista de Anexos</h2>
-                <p class="text-gray-600 mb-0">{{ anexos.length }} arquivo(s) anexado(s)</p>
+                <p class="text-gray-600 mb-0">
+                    {{ anexos.length }} arquivo(s) anexado(s)
+                    <span v-if="planStore.anexosLimite !== -1" class="text-sm text-gray-500">
+                        ({{ planStore.anexosRestantes }} restantes)
+                    </span>
+                </p>
             </div>
-            <Button label="Upload de Anexo" icon="pi pi-upload" @click="dialogUploadAnexo = true" />
+            <Button 
+                label="Upload de Anexo" 
+                icon="pi pi-upload" 
+                @click="dialogUploadAnexo = true"
+                :disabled="!planStore.canUploadAnexos"
+                :class="{ 'opacity-50': !planStore.canUploadAnexos }"
+            />
         </div>
 
         <DataTable :value="anexos" :loading="loading" tableStyle="min-width: 50rem" 
@@ -88,11 +99,17 @@
 
 <script>
 import DialogUploadAnexo from '@/components/dialogs/anexos/DialogUploadAnexo.vue';
+import { usePlanStore } from '@/store/plan';
 
 export default {
     name: 'ListaAnexos',
     components: {
         DialogUploadAnexo
+    },
+    computed: {
+        planStore() {
+            return usePlanStore();
+        }
     },
     data() {
         return {

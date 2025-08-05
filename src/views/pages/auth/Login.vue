@@ -67,8 +67,8 @@ export default {
     data() {
         return {
             isLoading: false,
-            email: 'rebeca.gratuito@teste.com',
-            password: '123456',
+            email: '',
+            password: '',
             telefone: '',
             checked: false,
             userName: ''

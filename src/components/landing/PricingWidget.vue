@@ -48,6 +48,10 @@
                         </li>
                         <li class="feature-item">
                             <i class="pi pi-times text-red-500"></i>
+                            <span class="text-surface-500">Anexos de arquivos</span>
+                        </li>
+                        <li class="feature-item">
+                            <i class="pi pi-times text-red-500"></i>
                             <span class="text-surface-500">Prontuários PDF</span>
                         </li>
                         <li class="feature-item">
@@ -104,6 +108,10 @@
                         <li class="feature-item">
                             <i class="pi pi-check text-green-500"></i>
                             <span>Agendamentos</span>
+                        </li>
+                        <li class="feature-item">
+                            <i class="pi pi-check text-green-500"></i>
+                            <span>Até 30 anexos</span>
                         </li>
                         <li class="feature-item">
                             <i class="pi pi-check text-green-500"></i>
@@ -166,6 +174,10 @@
                         <li class="feature-item">
                             <i class="pi pi-check text-green-500"></i>
                             <span>Agendamentos</span>
+                        </li>
+                        <li class="feature-item">
+                            <i class="pi pi-check text-green-500"></i>
+                            <span>Anexos ilimitados</span>
                         </li>
                         <li class="feature-item">
                             <i class="pi pi-check text-green-500"></i>

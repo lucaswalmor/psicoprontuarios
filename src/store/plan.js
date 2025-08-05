@@ -24,7 +24,49 @@ export const usePlanStore = defineStore('plan', {
         limitePacientes: (state) => state.stats?.limite_pacientes || 0,
         
         // Getter para verificar se tem dados carregados
-        hasPlanData: (state) => state.planInfo !== null && state.stats !== null
+        hasPlanData: (state) => state.planInfo !== null && state.stats !== null,
+        
+        // Getters para status de pausa
+        isPlanPaused: (state) => {
+            if (!state.planInfo) return false;
+            return state.planInfo.status === 'INACTIVE' || state.planInfo.paused === true;
+        },
+        
+        // Getters para funcionalidades com restrições de pausa
+        canAccessGestaoFinanceiraWithPause: (state) => {
+            const canAccess = state.planInfo?.features?.gestao_financeira || false;
+            const isPaused = state.planInfo?.status === 'INACTIVE' || state.planInfo?.paused === true;
+            return canAccess && !isPaused;
+        },
+        
+        canAccessAgendamentosWithPause: (state) => {
+            const canAccess = state.planInfo?.features?.agendamentos || false;
+            const isPaused = state.planInfo?.status === 'INACTIVE' || state.planInfo?.paused === true;
+            return canAccess && !isPaused;
+        },
+        
+        canAddPacienteWithPause: (state) => {
+            const canAdd = state.stats?.can_add_paciente || false;
+            const isPaused = state.planInfo?.status === 'INACTIVE' || state.planInfo?.paused === true;
+            return canAdd && !isPaused;
+        },
+        
+        canUploadAnexos: (state) => {
+            const isPaused = state.planInfo?.status === 'INACTIVE' || state.planInfo?.paused === true;
+            if (isPaused) return false;
+            
+            // Verificar se pode adicionar anexos baseado no plano
+            return state.stats?.can_add_anexo || false;
+        },
+        
+        anexosCount: (state) => state.stats?.anexos_count || 0,
+        anexosLimite: (state) => state.stats?.anexos_limite || 0,
+        anexosRestantes: (state) => {
+            const limite = state.stats?.anexos_limite || 0;
+            const count = state.stats?.anexos_count || 0;
+            if (limite === -1) return 'Ilimitado';
+            return Math.max(0, limite - count);
+        }
     },
 
     actions: {

@@ -77,6 +77,12 @@ const router = createRouter({
                     component: () => import('@/views/pages/pacientes/ListaAnexos.vue')
                 },
                 {
+                    path: '/configuracoes',
+                    name: 'Configuracoes',
+                    component: () => import('@/views/pages/Configuracoes.vue'),
+                    meta: { requiresPlanCheck: false }
+                },
+                {
                     path: '/uikit/formlayout',
                     name: 'formlayout',
                     component: () => import('@/views/uikit/FormLayout.vue')

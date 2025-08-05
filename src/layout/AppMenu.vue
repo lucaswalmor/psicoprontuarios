@@ -57,6 +57,17 @@ const model = computed(() => {
                     requiredFeature: 'agendamentos'
                 },
             ]
+        },
+        {
+            label: 'Configurações',
+            items: [
+                {
+                    label: 'Gerenciar Plano', 
+                    icon: 'pi pi-fw pi-cog', 
+                    to: '/configuracoes',
+                    requiredFeature: null // Sempre disponível
+                }
+            ]
         }
     ];
 
