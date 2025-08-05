@@ -74,6 +74,12 @@ api.interceptors.response.use(
     (response) => {
         // Esconder loading em caso de sucesso
         hideLoading();
+        
+        // Não processar respostas de blob (downloads)
+        if (response.config.responseType === 'blob') {
+            return response;
+        }
+        
         return response;
     },
     (error) => {

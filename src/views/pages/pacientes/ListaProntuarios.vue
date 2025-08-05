@@ -96,17 +96,31 @@ export default {
     },
     methods: {
 
-        getProntuarios(pacienteId, page = 1, perPage = 10) {
-            this.$prontuariosService.getPaginatedByPaciente(pacienteId, page, perPage).then((res) => {
-                this.prontuarios = res.data;
-                this.totalRecords = res.pagination.total;
-            }).catch((err) => {
-                console.log(err);
-            });
+        async getProntuarios(pacienteId, page = 1, perPage = 10) {
+            try {
+                this.loading = true;
+                const response = await this.$prontuariosService.listar(pacienteId, page, {
+                    per_page: perPage
+                });
+                
+                this.prontuarios = response.prontuarios || [];
+                this.totalRecords = response.pagination?.total || 0;
+            } catch (err) {
+                console.error('Erro ao carregar prontuários:', err);
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: 'Erro ao carregar prontuários',
+                    life: 3000
+                });
+            } finally {
+                this.loading = false;
+            }
         },
 
         onPageChange(event) {
-            this.getProntuarios(this.pacienteId, event.first, event.rows);
+            const page = Math.floor(event.first / event.rows) + 1;
+            this.getProntuarios(this.pacienteId, page, event.rows);
         },
 
         onUpdateDialogEditarProntuario(visible) {
@@ -137,137 +151,56 @@ export default {
             });
         },
 
-        excluirProntuario(prontuario) {
-            this.$prontuariosService.delete(prontuario.id).then(response => {
+        async excluirProntuario(prontuario) {
+            try {
+                await this.$prontuariosService.deletar(prontuario.id);
                 this.getProntuarios(this.pacienteId);
-                this.$toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Prontuário excluído com sucesso', life: 3000 });
-            });
+                this.$toast.add({ 
+                    severity: 'success', 
+                    summary: 'Sucesso', 
+                    detail: 'Prontuário excluído com sucesso', 
+                    life: 3000 
+                });
+            } catch (error) {
+                console.error('Erro ao excluir prontuário:', error);
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: 'Erro ao excluir prontuário',
+                    life: 3000
+                });
+            }
         },
 
-        exportarParaPdf() {
-            const logoUrl = this.logoUrl;
-
-            const getBase64Image = url => {
-                return new Promise((resolve, reject) => {
-                    const img = new Image();
-                    img.setAttribute('crossOrigin', 'anonymous');
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = img.width;
-                        canvas.height = img.height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0);
-                        const dataURL = canvas.toDataURL('image/png');
-                        resolve(dataURL);
-                    };
-                    img.onerror = error => reject(error);
-                    img.src = url;
-                });
-            };
-
-            getBase64Image(logoUrl).then(base64 => {
-                this.$prontuariosService.exportarParaPdf(this.prontuarioSelecionado.id).then(response => {
-                    const prontuarios = response.prontuarios;
-
-                    // Iniciar a criação do PDF
-                    const doc = new jsPDF('p', 'mm', 'a4');
-                    let y = 50;
-
-                    // Define a cor de fundo desejada
-                    const backgroundColor = "#ede7ff";
-
-                    // Desenha um retângulo que cobre toda a página
-                    doc.setFillColor(backgroundColor); // Define a cor de preenchimento
-                    doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, 'F'); // Desenha o retângulo preenchido
-
-
-                    // Adiciona a logo centralizada com 30px de margem
-                    const logoWidth = 40; // Ajuste o tamanho da logo conforme necessário
-                    const logoHeight = 30;
-                    const logoMargin = (doc.internal.pageSize.width - logoWidth) / 2;
-                    doc.addImage(base64, 'PNG', logoMargin, 10, logoWidth, logoHeight);
-
-                    // Adiciona o título abaixo da imagem
-                    const titleText = "Título do Documento"; // Texto do título
-                    const titleColor = "#65529d"; // Cor do título
-                    const titleFontSize = 18; // Tamanho da fonte do título
-                    const titleX = doc.internal.pageSize.width / 2; // Posição X centralizada
-                    const titleY = 50; // Posição Y ajustada conforme necessário
-                    const titleMargin = 15; // Margem abaixo do título
-                    doc.setTextColor(titleColor); // Define a cor do texto
-                    doc.setFontSize(titleFontSize); // Define o tamanho da fonte
-                    doc.setFont("helvetica", "bold"); // Define o estilo da fonte (negrito)
-                    doc.text(titleText, titleX, titleY, null, null, 'center'); // Adiciona o texto centralizado
-                    y += titleMargin; // aqui definie o espacamento entre o titulo e o conteudo abaixo
-
-                    // Altura da linha
-                    const lineHeight = 10; // Ajuste conforme necessário
-                    const hrMargin = 20; // Margem abaixo de cada linha horizontal
-
-                    const currentColor = "#525659"; // busca a cor original do documento
-
-                    // Voltar a cor original do texto
-                    doc.setTextColor(currentColor); // Restaura a cor do texto
-
-                    // Adicionar os dados ao PDF
-                    prontuarios.forEach(prontuario => {
-                        // Divide a descrição em linhas
-                        const descricaoSemHtml = this.removeHtmlTags(prontuario.descricao);
-                        const descricaoLines = doc.splitTextToSize(descricaoSemHtml, doc.internal.pageSize.width - 20);
-                        // const descricaoLines = doc.splitTextToSize(prontuario.descricao, doc.internal.pageSize.width - 20);
-
-                        // Calcula a altura necessária para o texto
-                        const textHeight = descricaoLines.length * lineHeight;
-
-                        // Verifica se é necessário adicionar uma nova página
-                        if (y + textHeight > doc.internal.pageSize.height - 10) { // Ajuste o valor -10 para deixar uma margem inferior
-                            doc.addPage();
-                            y = 10;
-                        }
-
-                        // Adiciona os dados
-                        doc.text(`Data do Prontuário: ${prontuario.data_prontuario}`, 10, y);
-
-                        // Adiciona o título "Descrição:"
-                        doc.setFontSize(18); // Define o tamanho da fonte do título
-                        doc.text("Descrição:", 10, y + lineHeight);
-
-                        // Define o tamanho da fonte da descrição
-                        doc.setFontSize(12);
-
-                        descricaoLines.forEach((line, index) => {
-                            doc.text(line, 10, y + lineHeight * (index + 2));
-                        });
-
-                        // y += textHeight;
-
-                        // // Adiciona a margem abaixo da descrição e acima da linha horizontal
-                        // y += hrMargin;
-
-                        // Mover o conteúdo para baixo
-                        y += textHeight + hrMargin;
-
-                        // Adiciona uma linha horizontal ao final de cada item
-                        if (y + lineHeight < doc.internal.pageSize.height - 10) { // Ajuste o valor -10 para deixar uma margem inferior
-                            doc.line(10, y, doc.internal.pageSize.width - 10, y);
-                            y += lineHeight;
-                        }
-                    });
-
-                    // Salvar ou exibir o PDF
-                    doc.save('prontuario.pdf');
-                    // Ou exibir o PDF em uma nova guia
-                    // doc.output('dataurlnewwindow');
-                }).catch(error => {
-                    console.log(error)
+        async exportarParaPdf() {
+            try {
+                if (!this.prontuarioSelecionado) {
                     this.$toast.add({
-                        severity: "error",
-                        summary: "Erro ao econtrar prontuário!",
-                        detail: error.response.data.error,
-                        life: 3000,
+                        severity: 'warn',
+                        summary: 'Atenção',
+                        detail: 'Selecione um prontuário para exportar',
+                        life: 3000
                     });
+                    return;
+                }
+
+                await this.$prontuariosService.exportarProntuario(this.prontuarioSelecionado.id);
+                
+                this.$toast.add({
+                    severity: 'success',
+                    summary: 'Sucesso',
+                    detail: 'PDF exportado com sucesso',
+                    life: 3000
                 });
-            })
+            } catch (error) {
+                console.error('Erro ao exportar PDF:', error);
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: 'Erro ao exportar PDF',
+                    life: 3000
+                });
+            }
         },
         removeHtmlTags(text) {
             const div = document.createElement('div');
