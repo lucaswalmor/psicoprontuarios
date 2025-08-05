@@ -4,106 +4,252 @@
             <div class="card">
                 <h5 class="mb-4">Configurações</h5>
 
-                <!-- Seção do Plano Atual -->
-                <div class="surface-card p-4 border-round mb-4">
-                    <div class="flex align-items-center justify-content-between mb-3">
-                        <h6 class="m-0">Plano Atual</h6>
-                        <Tag :value="planStore.planInfo?.nome || 'Carregando...'" :severity="getPlanSeverity()" />
-                    </div>
+                <Tabs v-model:value="activeTab">
+                    <TabList>
+                        <Tab value="0">
+                            <i class="pi pi-star mr-2"></i>
+                            Plano
+                        </Tab>
+                        <Tab value="1">
+                            <i class="pi pi-lock mr-2"></i>
+                            Segurança
+                        </Tab>
+                        <Tab value="2">
+                            <i class="pi pi-cog mr-2"></i>
+                            Preferências
+                        </Tab>
+                    </TabList>
+                    <TabPanels>
+                        <!-- Aba do Plano -->
+                        <TabPanel value="0">
+                            <div class="p-4">
+                                <!-- Seção do Plano Atual -->
+                                <div class="surface-card p-4 border-round mb-4">
+                                    <div class="flex align-items-center justify-content-between mb-3">
+                                        <h6 class="m-0">Plano Atual</h6>
+                                        <Tag :value="planStore.planInfo?.nome || 'Carregando...'" :severity="getPlanSeverity()" />
+                                    </div>
 
-                    <div class="grid">
-                        <div class="col-12 md:col-6">
-                            <div class="flex flex-column gap-2">
-                                <div class="flex align-items-center gap-2">
-                                    <i class="pi pi-calendar text-primary"></i>
-                                    <span class="text-800 font-bold">Próximo Vencimento:</span>
-                                    <span class="text-500">{{ formatDate(planStore.planInfo?.data_fim_plano) }}</span>
+                                    <div class="grid">
+                                        <div class="col-12 md:col-6">
+                                            <div class="flex flex-column gap-2">
+                                                <div class="flex align-items-center gap-2">
+                                                    <i class="pi pi-calendar text-primary"></i>
+                                                    <span class="text-800 font-bold">Próximo Vencimento:</span>
+                                                    <span class="text-500">{{ formatDate(planStore.planInfo?.data_fim_plano) }}</span>
+                                                </div>
+                                                <div class="flex align-items-center gap-2">
+                                                    <i class="pi pi-users text-primary"></i>
+                                                    <span class="text-800 font-bold">Pacientes:</span>
+                                                    <span class="text-500">{{ planStore.pacientesCount }} / {{ planStore.limitePacientes
+                                                        }}</span>
+                                                </div>
+                                                <div class="flex align-items-center gap-2">
+                                                    <i class="pi pi-paperclip text-primary"></i>
+                                                    <span class="text-800 font-bold">Anexos:</span>
+                                                    <span class="text-500">
+                                                        {{ planStore.anexosCount }} /
+                                                        {{ planStore.anexosLimite === -1 ? 'Ilimitado' : planStore.anexosLimite }}
+                                                    </span>
+                                                </div>
+                                                <div class="flex align-items-center gap-2">
+                                                    <i class="pi pi-dollar text-primary"></i>
+                                                    <span class="text-800 font-bold">Valor Mensal:</span>
+                                                    <span class="text-500">{{ formatCurrency(planStore.planInfo?.preco) }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12 md:col-6">
+                                            <div class="flex flex-column gap-2">
+                                                <div class="flex align-items-center gap-2">
+                                                    <i class="pi pi-check-circle text-green-500"></i>
+                                                    <span class="text-800 font-bold">Status:</span>
+                                                    <Tag :value="getStatusText()" :severity="getStatusSeverity()" />
+                                                </div>
+                                                <div class="flex align-items-center gap-2">
+                                                    <i class="pi pi-credit-card text-primary"></i>
+                                                    <span class="text-800 font-bold">Forma de Pagamento:</span>
+                                                    <span class="text-500">{{ getPaymentMethod() }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="flex align-items-center gap-2">
-                                    <i class="pi pi-users text-primary"></i>
-                                    <span class="text-800 font-bold">Pacientes:</span>
-                                    <span class="text-500">{{ planStore.pacientesCount }} / {{ planStore.limitePacientes
-                                        }}</span>
-                                </div>
-                                <div class="flex align-items-center gap-2">
-                                    <i class="pi pi-paperclip text-primary"></i>
-                                    <span class="text-800 font-bold">Anexos:</span>
-                                    <span class="text-500">
-                                        {{ planStore.anexosCount }} /
-                                        {{ planStore.anexosLimite === -1 ? 'Ilimitado' : planStore.anexosLimite }}
-                                    </span>
-                                </div>
-                                <div class="flex align-items-center gap-2">
-                                    <i class="pi pi-dollar text-primary"></i>
-                                    <span class="text-800 font-bold">Valor Mensal:</span>
-                                    <span class="text-500">{{ formatCurrency(planStore.planInfo?.preco) }}</span>
+
+                                <!-- Ações do Plano -->
+                                <div class="grid">
+                                    <div class="col-12 md:col-6">
+                                        <div class="surface-card p-4 border-round">
+                                            <h6 class="mb-3">Gerenciar Plano</h6>
+
+                                            <!-- Botão de Upgrade -->
+                                            <Button v-if="shouldShowUpgradeButton" label="Fazer Upgrade do Plano" icon="pi pi-star"
+                                                class="w-full mb-3" @click="goToUpgrade" />
+
+                                            <!-- Botão de Pausar/Reativar -->
+                                            <Button v-if="planStore.planInfo?.asaas_subscription_id"
+                                                :label="isPlanPaused ? 'Reativar Plano' : 'Pausar Plano'"
+                                                :icon="isPlanPaused ? 'pi pi-play' : 'pi pi-pause'"
+                                                :severity="isPlanPaused ? 'success' : 'warning'" class="w-full"
+                                                @click="togglePlanStatus" />
+
+                                            <small class="text-gray-600 block mt-2">
+                                                {{ isPlanPaused ?
+                                                    'Reative seu plano para voltar a ter acesso completo ao sistema.' :
+                                                    'Pause seu plano temporariamente. Você manterá acesso limitado.' }}
+                                            </small>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 md:col-6">
+                                        <div class="surface-card p-4 border-round">
+                                            <h6 class="mb-3 text-800 font-bold">Recursos Disponíveis</h6>
+                                            <div class="flex flex-column gap-2">
+                                                <div v-for="feature in availableFeatures" :key="feature.key"
+                                                    class="flex align-items-center gap-2">
+                                                    <i
+                                                        :class="['pi', feature.icon, feature.available ? 'text-green-500' : 'text-gray-400']"></i>
+                                                    <span :class="{ 'text-gray-400': !feature.available }" class="text-800 font-bold">{{
+                                                        feature.label }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </TabPanel>
 
-                        <div class="col-12 md:col-6">
-                            <div class="flex flex-column gap-2">
-                                <div class="flex align-items-center gap-2">
-                                    <i class="pi pi-check-circle text-green-500"></i>
-                                    <span class="text-800 font-bold">Status:</span>
-                                    <Tag :value="getStatusText()" :severity="getStatusSeverity()" />
-                                </div>
-                                <div class="flex align-items-center gap-2">
-                                    <i class="pi pi-credit-card text-primary"></i>
-                                    <span class="text-800 font-bold">Forma de Pagamento:</span>
-                                    <span class="text-500">{{ getPaymentMethod() }}</span>
+                        <!-- Aba de Segurança -->
+                        <TabPanel value="1">
+                            <div class="p-4">
+                                <div class="surface-card p-4 border-round">
+                                    <h6 class="mb-3 text-800 font-bold">Segurança da Conta</h6>
+                                    <div class="flex flex-column gap-3">
+                                        <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
+                                            <div class="flex align-items-center gap-3">
+                                                <i class="pi pi-lock text-primary text-xl"></i>
+                                                <div>
+                                                    <h6 class="m-0 text-800">Senha da Conta</h6>
+                                                    <small class="text-600">Altere sua senha para manter a conta segura</small>
+                                                </div>
+                                            </div>
+                                            <Button 
+                                                label="Alterar Senha" 
+                                                icon="pi pi-key" 
+                                                severity="secondary" 
+                                                outlined 
+                                                @click="showChangePasswordModal = true"
+                                            />
+                                        </div>
+                                        
+                                        <!-- Futuras opções de segurança -->
+                                        <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
+                                            <div class="flex align-items-center gap-3">
+                                                <i class="pi pi-shield text-primary text-xl"></i>
+                                                <div>
+                                                    <h6 class="m-0 text-800">Autenticação de Dois Fatores</h6>
+                                                    <small class="text-600">Adicione uma camada extra de segurança</small>
+                                                </div>
+                                            </div>
+                                            <Button 
+                                                label="Configurar" 
+                                                icon="pi pi-cog" 
+                                                severity="secondary" 
+                                                outlined 
+                                                disabled
+                                            />
+                                        </div>
+                                        
+                                        <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
+                                            <div class="flex align-items-center gap-3">
+                                                <i class="pi pi-history text-primary text-xl"></i>
+                                                <div>
+                                                    <h6 class="m-0 text-800">Histórico de Login</h6>
+                                                    <small class="text-600">Veja os últimos acessos à sua conta</small>
+                                                </div>
+                                            </div>
+                                            <Button 
+                                                label="Visualizar" 
+                                                icon="pi pi-eye" 
+                                                severity="secondary" 
+                                                outlined 
+                                                disabled
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
+                        </TabPanel>
 
-                <!-- Ações do Plano -->
-                <div class="grid">
-                    <div class="col-12 md:col-6">
-                        <div class="surface-card p-4 border-round">
-                            <h6 class="mb-3">Gerenciar Plano</h6>
-
-                            <!-- Botão de Upgrade -->
-                            <Button v-if="shouldShowUpgradeButton" label="Fazer Upgrade do Plano" icon="pi pi-star"
-                                class="w-full mb-3" @click="goToUpgrade" />
-
-                            <!-- Botão de Pausar/Reativar -->
-                            <Button v-if="planStore.planInfo?.asaas_subscription_id"
-                                :label="isPlanPaused ? 'Reativar Plano' : 'Pausar Plano'"
-                                :icon="isPlanPaused ? 'pi pi-play' : 'pi pi-pause'"
-                                :severity="isPlanPaused ? 'success' : 'warning'" class="w-full"
-                                @click="togglePlanStatus" />
-
-                            <small class="text-gray-600 block mt-2">
-                                {{ isPlanPaused ?
-                                    'Reative seu plano para voltar a ter acesso completo ao sistema.' :
-                                    'Pause seu plano temporariamente. Você manterá acesso limitado.' }}
-                            </small>
-                        </div>
-                    </div>
-
-                    <div class="col-12 md:col-6">
-                        <div class="surface-card p-4 border-round">
-                            <h6 class="mb-3 text-800 font-bold">Recursos Disponíveis</h6>
-                            <div class="flex flex-column gap-2">
-                                <div v-for="feature in availableFeatures" :key="feature.key"
-                                    class="flex align-items-center gap-2">
-                                    <i
-                                        :class="['pi', feature.icon, feature.available ? 'text-green-500' : 'text-gray-400']"></i>
-                                    <span :class="{ 'text-gray-400': !feature.available }" class="text-800 font-bold">{{
-                                        feature.label }}</span>
+                        <!-- Aba de Preferências -->
+                        <TabPanel value="2">
+                            <div class="p-4">
+                                <div class="surface-card p-4 border-round">
+                                    <h6 class="mb-3 text-800 font-bold">Preferências do Sistema</h6>
+                                    <div class="flex flex-column gap-3">
+                                        <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
+                                            <div class="flex align-items-center gap-3">
+                                                <i class="pi pi-bell text-primary text-xl"></i>
+                                                <div>
+                                                    <h6 class="m-0 text-800">Notificações</h6>
+                                                    <small class="text-600">Configure suas preferências de notificação</small>
+                                                </div>
+                                            </div>
+                                            <Button 
+                                                label="Configurar" 
+                                                icon="pi pi-cog" 
+                                                severity="secondary" 
+                                                outlined 
+                                                disabled
+                                            />
+                                        </div>
+                                        
+                                        <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
+                                            <div class="flex align-items-center gap-3">
+                                                <i class="pi pi-palette text-primary text-xl"></i>
+                                                <div>
+                                                    <h6 class="m-0 text-800">Tema</h6>
+                                                    <small class="text-600">Escolha entre tema claro ou escuro</small>
+                                                </div>
+                                            </div>
+                                            <Button 
+                                                label="Configurar" 
+                                                icon="pi pi-cog" 
+                                                severity="secondary" 
+                                                outlined 
+                                                disabled
+                                            />
+                                        </div>
+                                        
+                                        <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
+                                            <div class="flex align-items-center gap-3">
+                                                <i class="pi pi-globe text-primary text-xl"></i>
+                                                <div>
+                                                    <h6 class="m-0 text-800">Idioma</h6>
+                                                    <small class="text-600">Defina o idioma do sistema</small>
+                                                </div>
+                                            </div>
+                                            <Button 
+                                                label="Configurar" 
+                                                icon="pi pi-cog" 
+                                                severity="secondary" 
+                                                outlined 
+                                                disabled
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
+                        </TabPanel>
+                    </TabPanels>
+                </Tabs>
             </div>
         </div>
     </div>
 
     <!-- Dialog de Confirmação para Pausar Plano -->
-    <Dialog v-model:visible="showPauseDialog" modal header="Confirmar Pausa do Plano" :style="{ width: '500px' }">
+    <Dialog :visible="showPauseDialog" @update:visible="showPauseDialog = $event" modal header="Confirmar Pausa do Plano" :style="{ width: '500px' }">
         <div class="flex flex-column gap-3">
             <div class="flex align-items-center gap-2">
                 <i class="pi pi-exclamation-triangle text-orange-500 text-xl"></i>
@@ -138,7 +284,7 @@
     </Dialog>
 
     <!-- Dialog de Confirmação para Reativar Plano -->
-    <Dialog v-model:visible="showReactivateDialog" modal header="Confirmar Reativação do Plano"
+    <Dialog :visible="showReactivateDialog" @update:visible="showReactivateDialog = $event" modal header="Confirmar Reativação do Plano"
         :style="{ width: '500px' }">
         <div class="flex flex-column gap-3">
             <div class="flex align-items-center gap-2">
@@ -166,6 +312,12 @@
             </div>
         </template>
     </Dialog>
+
+    <!-- Modal de Alteração de Senha -->
+    <DialogChangePassword 
+        v-model:visible="showChangePasswordModal"
+        @success="handlePasswordChangeSuccess"
+    />
 </template>
 
 <script setup>
@@ -173,6 +325,12 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { usePlanStore } from '@/store/plan';
 import { useToast } from 'primevue/usetoast';
+import DialogChangePassword from '@/components/dialogs/configuracoes/DialogChangePassword.vue';
+import Tabs from 'primevue/tabs';
+import TabList from 'primevue/tablist';
+import Tab from 'primevue/tab';
+import TabPanels from 'primevue/tabpanels';
+import TabPanel from 'primevue/tabpanel';
 
 const router = useRouter();
 const planStore = usePlanStore();
@@ -181,7 +339,9 @@ const toast = useToast();
 // Estados reativos
 const showPauseDialog = ref(false);
 const showReactivateDialog = ref(false);
+const showChangePasswordModal = ref(false);
 const loading = ref(false);
+const activeTab = ref('0');
 
 // Computed properties
 const shouldShowUpgradeButton = computed(() => {
@@ -321,6 +481,15 @@ const confirmPausePlan = async () => {
     } finally {
         loading.value = false;
     }
+};
+
+const handlePasswordChangeSuccess = () => {
+    toast.add({
+        severity: 'success',
+        summary: 'Sucesso',
+        detail: 'Senha alterada com sucesso!',
+        life: 3000
+    });
 };
 
 const confirmReactivatePlan = async () => {

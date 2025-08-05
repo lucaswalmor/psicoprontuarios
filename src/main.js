@@ -55,6 +55,7 @@ app.config.globalProperties.$agendamentosService = services.agendamentosService;
 app.config.globalProperties.$authService = services.authService;
 app.config.globalProperties.$dashboardService = services.dashboardService;
 app.config.globalProperties.$financeirosService = services.financeirosService;
+app.config.globalProperties.$userService = services.userService;
 app.config.globalProperties.$leadsService = services.leadsService;
 app.config.globalProperties.$anexosService = services.anexosService;
 

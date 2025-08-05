@@ -88,6 +88,12 @@ const router = createRouter({
                     meta: { requiresPlanCheck: false }
                 },
                 {
+                    path: '/perfil',
+                    name: 'Perfil',
+                    component: () => import('@/views/pages/Perfil.vue'),
+                    meta: { requiresPlanCheck: false }
+                },
+                {
                     path: '/uikit/formlayout',
                     name: 'formlayout',
                     component: () => import('@/views/uikit/FormLayout.vue')

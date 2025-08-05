@@ -79,6 +79,10 @@ const goToUpgrade = () => {
 
             <div class="layout-topbar-menu hidden lg:block">
                 <div class="layout-topbar-menu-content">
+                    <button type="button" class="layout-topbar-action" @click="goToProfile">
+                        <i class="pi pi-user"></i>
+                        <span>Meu Perfil</span>
+                    </button>
                     <button type="button" class="layout-topbar-action" @click="logout">
                         <i class="pi pi-sign-out"></i>
                         <span>Sair</span>
@@ -98,6 +102,9 @@ export default {
         }
     },
     methods: {
+        goToProfile() {
+            this.$router.push('/perfil');
+        },
         logout() {
             this.$authService.logout();
             this.$router.push('/login');
