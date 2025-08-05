@@ -40,14 +40,12 @@
                         <Password id="password1" v-model="password" placeholder="Password" :toggleMask="true"
                             class="mb-4" fluid :feedback="false" @keyup.enter="login"></Password>
 
-                        <!-- <div class="flex items-center justify-between mt-2 mb-8 gap-8">
-                            <div class="flex items-center">
-                                <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
-                                <label for="rememberme1">Remember me</label>
-                            </div>
-                            <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Forgot
-                                password?</span>
-                        </div> -->
+                        <div class="flex justify-end mb-4">
+                            <span class="font-medium no-underline cursor-pointer text-primary hover:text-primary-600 transition-colors"
+                                @click="goToChangePassword">
+                                Esqueci minha senha
+                            </span>
+                        </div>
                         <Button label="Entrar" class="w-full" @click="login" :disabled="isLoading">
                             <ProgressSpinner style="width: 20px; height: 20px" strokeWidth="8" fill="transparent"
                                 animationDuration=".5s" aria-label="Custom ProgressSpinner" v-if="isLoading" />
@@ -171,6 +169,10 @@ export default {
                 // Em caso de erro, vai para pacientes
                 this.$router.push('/pacientes');
             }
+        },
+
+        goToChangePassword() {
+            this.$router.push('/change-password');
         }
     }
 }

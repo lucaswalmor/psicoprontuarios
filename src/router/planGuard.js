@@ -59,6 +59,7 @@ const routeFeatureMap = {
 const alwaysAllowedRoutes = [
     '/',
     '/login',
+    '/change-password',
     '/cadastro',
     '/politica-privacidade',
     '/termos-uso',

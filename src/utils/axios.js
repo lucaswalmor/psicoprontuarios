@@ -30,7 +30,23 @@ const hideLoading = () => {
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
-        if (token) {
+        
+        // Lista de rotas públicas que não precisam de token
+        const publicRoutes = [
+            '/login',
+            '/logout',
+            '/user/send-reset-code',
+            '/user/verify-reset-code',
+            '/user/reset-password',
+            '/cadastro',
+            '/usuario'
+        ];
+        
+        // Verificar se a rota atual é pública
+        const isPublicRoute = publicRoutes.some(route => config.url.includes(route));
+        
+        // Só adicionar token se não for rota pública
+        if (token && !isPublicRoute) {
             config.headers.Authorization = `Bearer ${token}`;
         }
         
@@ -64,8 +80,22 @@ api.interceptors.response.use(
         // Esconder loading em caso de erro
         hideLoading();
         
-        // Se o token expirou ou é inválido
-        if (error.response?.status === 401) {
+        // Lista de rotas públicas que não devem redirecionar para login em caso de 401
+        const publicRoutes = [
+            '/login',
+            '/logout',
+            '/user/send-reset-code',
+            '/user/verify-reset-code',
+            '/user/reset-password',
+            '/cadastro',
+            '/usuario'
+        ];
+        
+        // Verificar se a rota atual é pública
+        const isPublicRoute = publicRoutes.some(route => error.config?.url?.includes(route));
+        
+        // Se o token expirou ou é inválido e não é rota pública
+        if (error.response?.status === 401 && !isPublicRoute) {
             localStorage.removeItem('token');
             // Redirecionar para login se necessário
             if (window.location.pathname !== '/login') {

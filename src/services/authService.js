@@ -78,6 +78,46 @@ class AuthService {
     getToken() {
         return localStorage.getItem('token');
     }
+
+    // Enviar código de reset de senha
+    async sendResetCode(data) {
+        try {
+            const response = await api.post('/user/send-reset-code', data);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Verificar código de reset
+    async verifyResetCode(data) {
+        try {
+            const response = await api.post('/user/verify-reset-code', data);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Resetar senha com código
+    async resetPassword(data) {
+        try {
+            const response = await api.post('/user/reset-password', data);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Alterar senha do usuário (método antigo mantido para compatibilidade)
+    async changePassword(passwordData) {
+        try {
+            const response = await api.post('/user/change-password', passwordData);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 export default new AuthService(); 
