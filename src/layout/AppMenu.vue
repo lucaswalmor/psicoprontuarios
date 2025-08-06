@@ -66,6 +66,12 @@ const model = computed(() => {
                     icon: 'pi pi-fw pi-cog', 
                     to: '/configuracoes',
                     requiredFeature: null // Sempre disponível
+                },
+                {
+                    label: 'FAQ - Dúvidas', 
+                    icon: 'pi pi-fw pi-question-circle', 
+                    to: '/faq',
+                    requiredFeature: null // Sempre disponível
                 }
             ]
         }

@@ -88,6 +88,12 @@ const router = createRouter({
                     meta: { requiresPlanCheck: false }
                 },
                 {
+                    path: '/faq',
+                    name: 'Faq',
+                    component: () => import('@/views/pages/Faq.vue'),
+                    meta: { requiresPlanCheck: false }
+                },
+                {
                     path: '/perfil',
                     name: 'Perfil',
                     component: () => import('@/views/pages/Perfil.vue'),
