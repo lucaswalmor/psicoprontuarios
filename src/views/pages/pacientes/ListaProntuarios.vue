@@ -36,7 +36,7 @@
 
         <Popover ref="acoes" id="overlay_panel" style="width: 350px">
             <ul class="rounded-md overflow-hidden">
-                <li class="border-bottom-2 border-primary-500 cursor-pointer py-3 px-2"
+                <li v-if="!planStore.isPlanPaused" class="border-bottom-2 border-primary-500 cursor-pointer py-3 px-2"
                     @click="dialogEditarProntuario = true">
                     <i class="fa-solid fa-pen-to-square me-2"></i>
                     Prontuário
@@ -45,7 +45,7 @@
                     <i class="fa-solid fa-file-export me-2"></i>
                     Exportar Prontuário
                 </li>
-                <li class="border-bottom-2 border-primary-500 cursor-pointer py-3 px-2" @click="requireConfirmation($event)">
+                <li v-if="!planStore.isPlanPaused" class="border-bottom-2 border-primary-500 cursor-pointer py-3 px-2" @click="requireConfirmation($event)">
                     <i class="fa-solid fa-trash me-2"></i>
                     Excluir Prontuário
                 </li>
@@ -73,11 +73,17 @@
 import DialogEditarProntuario from '@/components/dialogs/prontuarios/DialogEditarProntuario.vue';
 import logoUrl from '@/assets/img/logo3_semfundo.png';
 import jsPDF from 'jspdf';
+import { usePlanStore } from '@/store/plan';
 
 export default {
     name: 'ListaProntuarios',
     components: {
         DialogEditarProntuario
+    },
+    computed: {
+        planStore() {
+            return usePlanStore();
+        }
     },
     data() {
         return {

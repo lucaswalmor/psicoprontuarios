@@ -95,6 +95,13 @@ const model = computed(() => {
                 return true;
             }
             
+            // Se o plano está pausado, verificar se a feature é permitida
+            if (planStore.isPlanPaused) {
+                // Quando pausado, apenas algumas features são permitidas
+                const allowedWhenPaused = ['dashboard', null]; // null = sempre disponível
+                return allowedWhenPaused.includes(item.requiredFeature);
+            }
+            
             // Verificar se a feature está disponível no plano
             return planInfo?.features?.[item.requiredFeature] || false;
         })

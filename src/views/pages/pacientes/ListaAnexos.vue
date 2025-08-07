@@ -18,6 +18,7 @@
                 </p>
             </div>
             <Button 
+                v-if="!planStore.isPlanPaused"
                 label="Upload de Anexo" 
                 icon="pi pi-upload" 
                 @click="dialogUploadAnexo = true"
@@ -48,7 +49,7 @@
                     <div class="flex gap-2">
                         <Button icon="pi pi-download" class="p-button-text p-button-sm"
                             @click="downloadAnexo(slotProps.data)" v-tooltip.top="'Download'" />
-                        <Button icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger"
+                        <Button v-if="!planStore.isPlanPaused" icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger"
                             @click="deletarAnexo(slotProps.data)" v-tooltip.top="'Excluir'" />
                     </div>
                 </template>
@@ -65,6 +66,7 @@
                             Este paciente ainda não possui arquivos anexados. Clique no botão "Upload de Anexo" para adicionar o primeiro arquivo.
                         </p>
                         <Button 
+                            v-if="!planStore.isPlanPaused"
                             label="Upload de Anexo" 
                             icon="pi pi-upload" 
                             @click="dialogUploadAnexo = true"

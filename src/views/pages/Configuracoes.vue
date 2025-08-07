@@ -331,6 +331,7 @@ import TabList from 'primevue/tablist';
 import Tab from 'primevue/tab';
 import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
+import api from '@/utils/axios';
 
 const router = useRouter();
 const planStore = usePlanStore();
@@ -447,35 +448,25 @@ const confirmPausePlan = async () => {
     try {
         loading.value = true;
 
-        const response = await fetch('/api/assinatura/pausar', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
+        const response = await api.post('/assinatura/pausar');
+
+        toast.add({
+            severity: 'success',
+            summary: 'Sucesso',
+            detail: 'Plano pausado com sucesso',
+            life: 3000
         });
 
-        if (response.ok) {
-            toast.add({
-                severity: 'success',
-                summary: 'Sucesso',
-                detail: 'Plano pausado com sucesso',
-                life: 3000
-            });
-
-            // Recarregar informações do plano
-            await planStore.fetchPlanInfo();
-            showPauseDialog.value = false;
-        } else {
-            const error = await response.json();
-            throw new Error(error.message || 'Erro ao pausar plano');
-        }
+        // Recarregar informações do plano
+        await planStore.fetchPlanInfo();
+        showPauseDialog.value = false;
     } catch (error) {
         console.error('Erro ao pausar plano:', error);
+        const errorMessage = error.response?.data?.error || error.response?.data?.message || error.message || 'Erro ao pausar plano';
         toast.add({
             severity: 'error',
             summary: 'Erro',
-            detail: error.message || 'Erro ao pausar plano',
+            detail: errorMessage,
             life: 3000
         });
     } finally {
@@ -496,35 +487,25 @@ const confirmReactivatePlan = async () => {
     try {
         loading.value = true;
 
-        const response = await fetch('/api/assinatura/reativar', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
+        const response = await api.post('/assinatura/reativar');
+
+        toast.add({
+            severity: 'success',
+            summary: 'Sucesso',
+            detail: 'Plano reativado com sucesso',
+            life: 3000
         });
 
-        if (response.ok) {
-            toast.add({
-                severity: 'success',
-                summary: 'Sucesso',
-                detail: 'Plano reativado com sucesso',
-                life: 3000
-            });
-
-            // Recarregar informações do plano
-            await planStore.fetchPlanInfo();
-            showReactivateDialog.value = false;
-        } else {
-            const error = await response.json();
-            throw new Error(error.message || 'Erro ao reativar plano');
-        }
+        // Recarregar informações do plano
+        await planStore.fetchPlanInfo();
+        showReactivateDialog.value = false;
     } catch (error) {
         console.error('Erro ao reativar plano:', error);
+        const errorMessage = error.response?.data?.error || error.response?.data?.message || error.message || 'Erro ao reativar plano';
         toast.add({
             severity: 'error',
             summary: 'Erro',
-            detail: error.message || 'Erro ao reativar plano',
+            detail: errorMessage,
             life: 3000
         });
     } finally {

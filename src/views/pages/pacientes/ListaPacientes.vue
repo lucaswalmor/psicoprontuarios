@@ -6,7 +6,12 @@
             <Button label="Filtros" severity="secondary" icon="pi pi-filter" v-if="!hasFiltros"
                 @click="drawerFilterPaciente = true" />
             <Button label="Limpar Filtros" severity="danger" @click="limparFiltros" v-else />
-            <Button label="Novo Paciente" icon="pi pi-user-plus" @click="$router.push('/pacientes/cadastro')" />
+            <Button 
+                v-if="!planStore.isPlanPaused" 
+                label="Novo Paciente" 
+                icon="pi pi-user-plus" 
+                @click="$router.push('/pacientes/cadastro')" 
+            />
         </div>
 
         <DataTable :value="pacientes" :loading="loading" tableStyle="min-width: 50rem" paginator :rows="perPage"
@@ -64,7 +69,7 @@
                     <i class="fa-solid fa-folder-tree me-2"></i>
                     Prontuários
                 </li>
-                <li class="border-bottom-2 border-primary-500 cursor-pointer py-3 px-2"
+                <li v-if="!planStore.isPlanPaused" class="border-bottom-2 border-primary-500 cursor-pointer py-3 px-2"
                     @click="dialogNovoProntuario = true">
                     <i class="fa-solid fa-folder-plus me-2"></i>
                     Novo Prontuário
@@ -74,17 +79,17 @@
                     <i class="fa-solid fa-paperclip me-2"></i>
                     Anexar Arquivo
                 </li>
-                <li class="border-bottom-2 border-primary-500 cursor-pointer py-3 px-2"
+                <li v-if="!planStore.isPlanPaused" class="border-bottom-2 border-primary-500 cursor-pointer py-3 px-2"
                     @click="dialogAlterarStatus = true">
                     <i class="fa-solid fa-edit me-2"></i>
                     Alterar Status
                 </li>
-                <li class="border-bottom-2 border-primary-500 cursor-pointer py-3 px-2"
+                <li v-if="!planStore.isPlanPaused" class="border-bottom-2 border-primary-500 cursor-pointer py-3 px-2"
                     @click="editarPaciente(pacienteSelecionado.id)">
                     <i class="fa-solid fa-user-pen me-2"></i>
                     Editar Paciente
                 </li>
-                <li class="border-bottom-2 border-primary-500 cursor-pointer py-3 px-2"
+                <li v-if="!planStore.isPlanPaused" class="border-bottom-2 border-primary-500 cursor-pointer py-3 px-2"
                     @click="requireConfirmation($event)">
                     <i class="fa-solid fa-user-xmark me-2"></i>
                     Excluir Paciente
@@ -124,6 +129,7 @@
 import DrawerFilterPacientes from '@/components/drawers/DrawerFilterPacientes.vue';
 import DialogNovoProntuario from '@/components/dialogs/prontuarios/DialogNovoProntuario.vue';
 import DialogAlterarStatus from '@/components/dialogs/pacientes/DialogAlterarStatus.vue';
+import { usePlanStore } from '@/store/plan';
 
 export default {
     name: 'ListaPacientes',
@@ -131,6 +137,11 @@ export default {
         DrawerFilterPacientes,
         DialogNovoProntuario,
         DialogAlterarStatus
+    },
+    computed: {
+        planStore() {
+            return usePlanStore();
+        }
     },
     data() {
         return {
