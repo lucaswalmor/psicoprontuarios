@@ -40,6 +40,11 @@
                         <Password id="password1" v-model="password" placeholder="Password" :toggleMask="true"
                             class="mb-4" fluid :feedback="false" @keyup.enter="login"></Password>
 
+                        <!-- Mensagem de erro -->
+                        <div v-if="errorMessage" class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                            {{ errorMessage }}
+                        </div>
+
                         <div class="flex justify-end mb-4">
                             <span class="font-medium no-underline cursor-pointer text-primary hover:text-primary-600 transition-colors"
                                 @click="goToChangePassword">
@@ -69,7 +74,8 @@ export default {
             password: '',
             telefone: '',
             checked: false,
-            userName: ''
+            userName: '',
+            errorMessage: ''
         }
     },
     computed: {
@@ -115,6 +121,8 @@ export default {
 
         async login() {
             this.isLoading = true;
+            this.errorMessage = ''; // Limpar mensagens de erro anteriores
+            
             try {
                 const response = await this.$authService.login({ 
                     email: this.email, 
@@ -133,6 +141,34 @@ export default {
                 
             } catch (err) {
                 console.log(err);
+                
+                // Exibir mensagem de erro apropriada
+                if (err.response) {
+                    // Erro da API
+                    if (err.response.status === 401) {
+                        this.errorMessage = 'Email ou senha incorretos. Verifique suas credenciais.';
+                    } else if (err.response.status === 422) {
+                        // Erro de validação
+                        const errors = err.response.data.errors;
+                        if (errors && errors.email) {
+                            this.errorMessage = errors.email[0];
+                        } else if (errors && errors.password) {
+                            this.errorMessage = errors.password[0];
+                        } else {
+                            this.errorMessage = 'Dados inválidos. Verifique as informações fornecidas.';
+                        }
+                    } else if (err.response.status === 429) {
+                        this.errorMessage = 'Muitas tentativas de login. Tente novamente em alguns minutos.';
+                    } else {
+                        this.errorMessage = 'Erro ao fazer login. Tente novamente.';
+                    }
+                } else if (err.request) {
+                    // Erro de rede
+                    this.errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.';
+                } else {
+                    // Outros erros
+                    this.errorMessage = 'Erro inesperado. Tente novamente.';
+                }
             } finally {
                 this.isLoading = false;
             }

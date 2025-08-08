@@ -1,4 +1,8 @@
 <script setup>
+import { ref } from 'vue';
+
+const isMobileMenuOpen = ref(false);
+
 function smoothScroll(id) {
     document.body.click();
     const element = document.getElementById(id);
@@ -8,6 +12,12 @@ function smoothScroll(id) {
             block: 'start'
         });
     }
+    // Fechar menu mobile após clicar em um link
+    isMobileMenuOpen.value = false;
+}
+
+function toggleMobileMenu() {
+    isMobileMenuOpen.value = !isMobileMenuOpen.value;
 }
 </script>
 
@@ -42,20 +52,13 @@ function smoothScroll(id) {
             text 
             severity="secondary" 
             rounded
-            v-styleclass="{ 
-                selector: '@next', 
-                enterFromClass: 'hidden', 
-                enterActiveClass: 'animate-scalein', 
-                leaveToClass: 'hidden', 
-                leaveActiveClass: 'animate-fadeout', 
-                hideOnOutsideClick: true 
-            }"
+            @click="toggleMobileMenu"
         >
-            <i class="pi pi-bars text-xl"></i>
+            <i :class="isMobileMenuOpen ? 'pi pi-times' : 'pi pi-bars'" class="text-xl"></i>
         </Button>
 
         <!-- Navigation Menu -->
-        <div class="nav-menu">
+        <div class="nav-menu" :class="{ 'mobile-open': isMobileMenuOpen }">
             <ul class="nav-list">
                 <li class="nav-item">
                     <a @click="smoothScroll('hero')" class="nav-link">
@@ -93,12 +96,14 @@ function smoothScroll(id) {
                     to="/login" 
                     rounded 
                     class="login-btn"
+                    @click="isMobileMenuOpen = false"
                 />
                 <Button 
                     label="Cadastrar" 
                     as="router-link" 
                     to="/cadastro"
                     rounded 
+                    @click="isMobileMenuOpen = false"
                 />
             </div>
         </div>
@@ -127,7 +132,7 @@ img {
 }
 
 .nav-menu {
-    @apply hidden lg:flex items-center justify-between flex-1 ml-8;
+    @apply lg:flex items-center justify-between flex-1 ml-8;
 }
 
 .nav-list {
@@ -157,7 +162,18 @@ img {
 /* Mobile Menu Styles */
 @media (max-width: 1023px) {
     .nav-menu {
-        @apply fixed top-full left-0 w-full bg-surface-0 dark:bg-surface-900 border-t border-surface-200 dark:border-surface-700 shadow-lg;
+        @apply fixed top-full left-0 w-full bg-surface-0 dark:bg-surface-900 border-t border-surface-200 dark:border-surface-700 shadow-lg transform transition-transform duration-300 ease-in-out;
+        transform: translateY(-100%);
+        opacity: 0;
+        visibility: hidden;
+        display: block !important;
+    }
+    
+    .nav-menu.mobile-open {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+        display: block !important;
     }
     
     .nav-list {
