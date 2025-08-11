@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-12">
                 <IftaLabel>
-                    <DatePicker v-model="prontuario.data_prontuario" class="w-full" />
+                    <InputMask id="basic" v-model="prontuario.data_prontuario" mask="99/99/9999" placeholder="00/00/0000" class="w-full" />
                     <label for="data_prontuario">Data do Prontuário</label>
                 </IftaLabel>
             </div>

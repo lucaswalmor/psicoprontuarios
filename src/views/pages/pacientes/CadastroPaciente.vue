@@ -66,12 +66,12 @@
                     </div>
                     <div class="col-12 md:col-4">
                         <label for="data_nascimento" class="text-600 mb-2 block">Data de Nascimento</label>
-                        <Calendar 
+                        <InputMask 
                             id="data_nascimento" 
                             v-model="paciente.data_nascimento" 
-                            dateFormat="dd/mm/yy"
-                            placeholder="dd/mm/aaaa"
+                            placeholder="00/00/0000"
                             class="w-full"
+                            mask="99/99/9999"
                         />
                     </div>
                     <div class="col-12 md:col-4">
@@ -173,12 +173,12 @@
                     </div>
                     <div class="col-12 md:col-6">
                         <label for="data_inicio_tratamento" class="text-600 mb-2 block">Início do Tratamento</label>
-                        <Calendar 
+                        <InputMask 
                             id="data_inicio_tratamento" 
                             v-model="paciente.data_inicio_tratamento" 
-                            dateFormat="dd/mm/yy"
-                            placeholder="dd/mm/aaaa"
+                            placeholder="00/00/0000"
                             class="w-full"
+                            mask="99/99/9999"
                         />
                     </div>
                     <div class="col-12 md:col-6">

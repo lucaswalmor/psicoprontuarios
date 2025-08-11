@@ -47,12 +47,16 @@
                             <span>Suporte por email</span>
                         </li>
                         <li class="feature-item">
-                            <i class="pi pi-times text-red-500"></i>
-                            <span class="text-surface-500">Anexos de arquivos</span>
+                            <i class="pi pi-check text-green-500"></i>
+                            <span>Prontuários PDF</span>
+                        </li>
+                        <li class="feature-item">
+                            <i class="pi pi-check text-green-500"></i>
+                            <span>Prontuários ilimitados</span>
                         </li>
                         <li class="feature-item">
                             <i class="pi pi-times text-red-500"></i>
-                            <span class="text-surface-500">Prontuários PDF</span>
+                            <span class="text-surface-500">Anexos de arquivos</span>
                         </li>
                         <li class="feature-item">
                             <i class="pi pi-times text-red-500"></i>
@@ -61,10 +65,6 @@
                         <li class="feature-item">
                             <i class="pi pi-times text-red-500"></i>
                             <span class="text-surface-500">Gestão Financeira</span>
-                        </li>
-                        <li class="feature-item">
-                            <i class="pi pi-times text-red-500"></i>
-                            <span class="text-surface-500">Backup Automático</span>
                         </li>
                     </ul>
 
@@ -119,11 +119,11 @@
                         </li>
                         <li class="feature-item">
                             <i class="pi pi-check text-green-500"></i>
-                            <span>Dashboard</span>
+                            <span>Prontuários ilimitados</span>
                         </li>
                         <li class="feature-item">
                             <i class="pi pi-check text-green-500"></i>
-                            <span>Backup Automático</span>
+                            <span>Dashboard</span>
                         </li>
                         <li class="feature-item">
                             <i class="pi pi-check text-green-500"></i>
@@ -169,7 +169,7 @@
                     <ul class="features-list">
                         <li class="feature-item">
                             <i class="pi pi-check text-green-500"></i>
-                            <span>Até 50 pacientes</span>
+                            <span>Até 30 pacientes</span>
                         </li>
                         <li class="feature-item">
                             <i class="pi pi-check text-green-500"></i>
@@ -177,7 +177,7 @@
                         </li>
                         <li class="feature-item">
                             <i class="pi pi-check text-green-500"></i>
-                            <span>Anexos ilimitados</span>
+                            <span>Até 100 anexos</span>
                         </li>
                         <li class="feature-item">
                             <i class="pi pi-check text-green-500"></i>
@@ -185,19 +185,19 @@
                         </li>
                         <li class="feature-item">
                             <i class="pi pi-check text-green-500"></i>
+                            <span>Prontuários ilimitados</span>
+                        </li>
+                        <li class="feature-item">
+                            <i class="pi pi-check text-green-500"></i>
                             <span>Dashboard</span>
                         </li>
                         <li class="feature-item">
                             <i class="pi pi-check text-green-500"></i>
-                            <span>Gestão Financeira</span>
-                        </li>
-                        <li class="feature-item">
-                            <i class="pi pi-check text-green-500"></i>
-                            <span>Backup Automático</span>
-                        </li>
-                        <li class="feature-item">
-                            <i class="pi pi-check text-green-500"></i>
                             <span>Suporte completo</span>
+                        </li>
+                        <li class="feature-item">
+                            <i class="pi pi-check text-green-500"></i>
+                            <span>Gestão Financeira</span>
                         </li>
                     </ul>
 

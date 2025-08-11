@@ -191,7 +191,8 @@ export default {
                             'Prontuários PDF',
                             'Dashboard',
                             'Backup Automático',
-                            'Suporte por email'
+                            'Suporte por email',
+                            'Prontuários ilimitados'
                         ],
                         popular: true
                     },
@@ -201,14 +202,15 @@ export default {
                         preco: 'R$ 59,90/mês',
                         descricao: 'Solução completa para profissionais estabelecidos',
                         features: [
-                            'Até 50 pacientes',
+                            'Até 30 pacientes',
                             'Agendamentos',
-                            'Anexos ilimitados',
+                            'Até 100 anexos',
                             'Prontuários PDF',
                             'Dashboard',
                             'Gestão Financeira',
                             'Backup Automático',
-                            'Suporte completo'
+                            'Suporte completo',
+                            'Prontuários ilimitados'
                         ],
                         popular: false
                     }
@@ -221,14 +223,15 @@ export default {
                         preco: 'R$ 59,90/mês',
                         descricao: 'Solução completa para profissionais estabelecidos',
                         features: [
-                            'Até 50 pacientes',
+                            'Até 30 pacientes',
                             'Agendamentos',
-                            'Anexos ilimitados',
+                            'Até 100 anexos',
                             'Prontuários PDF',
                             'Dashboard',
                             'Gestão Financeira',
                             'Backup Automático',
-                            'Suporte completo'
+                            'Suporte completo',
+                            'Prontuários ilimitados'
                         ],
                         popular: false
                     }

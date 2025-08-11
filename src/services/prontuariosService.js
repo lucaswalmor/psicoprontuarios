@@ -15,7 +15,7 @@ class ProntuariosService {
         }
     }
 
-    async cadastrar(prontuarioData) {
+    async create(prontuarioData) {
         try {
             const response = await axios.post(`/prontuario/paciente/${prontuarioData.paciente.id}`, prontuarioData);
             return response.data;
@@ -24,7 +24,7 @@ class ProntuariosService {
         }
     }
 
-    async editar(idProntuario, prontuarioData) {
+    async update(idProntuario, prontuarioData) {
         try {
             const response = await axios.put(`/prontuario/${idProntuario}`, prontuarioData);
             return response.data;

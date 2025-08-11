@@ -65,8 +65,8 @@
                         <p>Sim, os limites variam por plano:</p>
                         <ul>
                             <li><strong>Gratuito:</strong> Até 10 pacientes</li>
-                            <li><strong>Essencial:</strong> Até 50 pacientes</li>
-                            <li><strong>Profissional:</strong> Pacientes ilimitados</li>
+                            <li><strong>Essencial:</strong> Até 15 pacientes</li>
+                            <li><strong>Profissional:</strong> Até 30 pacientes</li>
                         </ul>
                     </AccordionTab>
 
