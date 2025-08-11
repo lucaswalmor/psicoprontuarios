@@ -17,7 +17,7 @@
 
                 <div class="col-12">
                     <label class="block text-900 font-medium mb-2">Data da Consulta</label>
-                    <Calendar v-model="agendamento.data_consulta" dateFormat="dd/mm/yy" class="w-full" />
+                    <InputMask id="basic" v-model="agendamento.data_consulta" mask="99/99/9999" placeholder="00/00/0000" class="w-full" />
                 </div>
 
                 <div class="col-12">
@@ -37,7 +37,7 @@
                 <Button severity="danger" outlined @click="excluirTodasConsultas" :loading="isLoadingExcluirTodos"
                     class="flex-1">
                     <i class="pi pi-trash mr-2"></i>
-                    Excluir todas as consultas
+                    Excluir todas as consultas relacionadas a este agendamento
                 </Button>
             </div>
         </div>
@@ -130,7 +130,8 @@ export default {
                 // Converte a data do formato dd/mm/yyyy para Date object se necessário
                 if (this.agendamento.data_consulta && typeof this.agendamento.data_consulta === 'string') {
                     const [dia, mes, ano] = this.agendamento.data_consulta.split('/');
-                    this.agendamento.data_consulta = new Date(ano, mes - 1, dia);
+                    // Garante que estamos usando o formato brasileiro (DD/MM/YYYY)
+                    this.agendamento.data_consulta = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
                 }
 
                 // Esconde loading após carregar os dados
@@ -281,7 +282,16 @@ export default {
 
         formatarDataParaAPI(data) {
             if (!data) return '';
-            const date = new Date(data);
+            
+            let date;
+            if (typeof data === 'string' && data.includes('/')) {
+                // Se for uma string no formato DD/MM/YYYY, converte corretamente
+                const [dia, mes, ano] = data.split('/');
+                date = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
+            } else {
+                date = new Date(data);
+            }
+            
             return date.toISOString().split('T')[0];
         },
 

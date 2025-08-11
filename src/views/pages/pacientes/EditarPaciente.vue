@@ -238,7 +238,7 @@
                                         v-model="paciente.toma_medicacao" 
                                         inputId="nao_toma_medicacao" 
                                         name="toma_medicacao" 
-                                        value="0" 
+                                        :value="0" 
                                     />
                                     <label for="nao_toma_medicacao" class="ml-2 text-600">Não</label>
                                 </div>
@@ -247,14 +247,14 @@
                                         v-model="paciente.toma_medicacao" 
                                         inputId="toma_medicacao" 
                                         name="toma_medicacao" 
-                                        value="1" 
+                                        :value="1" 
                                     />
                                     <label for="toma_medicacao" class="ml-2 text-600">Sim</label>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="col-12" v-if="paciente.toma_medicacao == 1">
+                        <div class="col-12" v-if="paciente.toma_medicacao === 1">
                             <label for="especificacao_medicacao" class="text-600 mb-2 block">Especificação da Medicação</label>
                             <Textarea 
                                 id="especificacao_medicacao" 
@@ -273,7 +273,7 @@
                                         v-model="paciente.tem_contato_emergencia" 
                                         inputId="nao_tem_contato_emergencia" 
                                         name="tem_contato_emergencia" 
-                                        value="0" 
+                                        :value="0" 
                                     />
                                     <label for="nao_tem_contato_emergencia" class="text-600 ml-2">Não</label>
                                 </div>
@@ -282,14 +282,14 @@
                                         v-model="paciente.tem_contato_emergencia" 
                                         inputId="tem_contato_emergencia" 
                                         name="tem_contato_emergencia" 
-                                        value="1" 
+                                        :value="1" 
                                     />
                                     <label for="tem_contato_emergencia" class="text-600 ml-2">Sim</label>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="col-12 md:col-6" v-if="paciente.tem_contato_emergencia == 1">
+                        <div class="col-12 md:col-6" v-if="paciente.tem_contato_emergencia === 1">
                             <label for="contato_emergencia" class="text-600 mb-2 block">Contato de Emergência</label>
                             <InputMask 
                                 id="contato_emergencia" 
@@ -308,7 +308,7 @@
                                         v-model="paciente.faz_outro_acompanhamento_medico" 
                                         inputId="nao_faz_outro_acompanhamento_medico" 
                                         name="faz_outro_acompanhamento_medico" 
-                                        value="0" 
+                                        :value="0" 
                                     />
                                     <label for="nao_faz_outro_acompanhamento_medico" class="ml-2 text-600">Não</label>
                                 </div>
@@ -317,14 +317,14 @@
                                         v-model="paciente.faz_outro_acompanhamento_medico" 
                                         inputId="faz_outro_acompanhamento_medico" 
                                         name="faz_outro_acompanhamento_medico" 
-                                        value="1" 
+                                        :value="1" 
                                     />
                                     <label for="faz_outro_acompanhamento_medico" class="ml-2 text-600">Sim</label>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="col-12" v-if="paciente.faz_outro_acompanhamento_medico == 1">
+                        <div class="col-12" v-if="paciente.faz_outro_acompanhamento_medico === 1">
                             <label for="descricao_outro_acompanhamento" class="text-600 mb-2 block">Descrição do Outro Tratamento</label>
                             <Textarea 
                                 id="descricao_outro_acompanhamento" 
@@ -343,7 +343,7 @@
                                         v-model="paciente.is_menor_idade" 
                                         inputId="nao_is_menor_idade" 
                                         name="is_menor_idade" 
-                                        value="0" 
+                                        :value="0" 
                                     />
                                     <label for="nao_is_menor_idade" class="ml-2 text-600">Não</label>
                                 </div>
@@ -352,14 +352,14 @@
                                         v-model="paciente.is_menor_idade" 
                                         inputId="is_menor_idade" 
                                         name="is_menor_idade" 
-                                        value="1" 
+                                        :value="1" 
                                     />
                                     <label for="is_menor_idade" class="ml-2 text-600">Sim</label>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="col-12 md:col-6" v-if="paciente.is_menor_idade == 1">
+                        <div class="col-12 md:col-6" v-if="paciente.is_menor_idade === 1">
                             <label for="contato_responsavel" class="text-600 mb-2 block">Contato do Responsável</label>
                             <InputMask 
                                 id="contato_responsavel" 
@@ -378,7 +378,7 @@
                                         v-model="paciente.tem_diagnostico_previo" 
                                         inputId="nao_tem_diagnostico_previo" 
                                         name="tem_diagnostico_previo" 
-                                        value="0" 
+                                        :value="0" 
                                     />
                                     <label for="nao_tem_diagnostico_previo" class="ml-2 text-600">Não</label>
                                 </div>
@@ -387,14 +387,14 @@
                                         v-model="paciente.tem_diagnostico_previo" 
                                         inputId="tem_diagnostico_previo" 
                                         name="tem_diagnostico_previo" 
-                                        value="1" 
+                                        :value="1" 
                                     />
                                     <label for="tem_diagnostico_previo" class="ml-2 text-600">Sim</label>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="col-12" v-if="paciente.tem_diagnostico_previo == 1">
+                        <div class="col-12" v-if="paciente.tem_diagnostico_previo === 1">
                             <label for="descricao_diagnostico_previo" class="text-600 mb-2 block">Descrição do Diagnóstico</label>
                             <Textarea 
                                 id="descricao_diagnostico_previo" 
@@ -579,6 +579,13 @@ export default {
                     pacienteData.data_inicio_tratamento = new Date(year, month - 1, day);
                 }
                 
+                // Converter campos booleanos para números para garantir que os RadioButtons funcionem
+                pacienteData.toma_medicacao = Number(pacienteData.toma_medicacao);
+                pacienteData.tem_contato_emergencia = Number(pacienteData.tem_contato_emergencia);
+                pacienteData.faz_outro_acompanhamento_medico = Number(pacienteData.faz_outro_acompanhamento_medico);
+                pacienteData.is_menor_idade = Number(pacienteData.is_menor_idade);
+                pacienteData.tem_diagnostico_previo = Number(pacienteData.tem_diagnostico_previo);
+                
                 this.paciente = { ...pacienteData };
             } catch (error) {
                 console.error('Erro ao carregar paciente:', error);
@@ -626,13 +633,14 @@ export default {
             try {
                 this.isSaving = true;
                 
-                // Validar se pelo menos o nome foi preenchido
-                if (!this.paciente.nome || this.paciente.nome.trim() === '') {
+                // Validações do frontend
+                const validacoes = this.validarDadosPaciente();
+                if (validacoes.length > 0) {
                     this.$toast.add({
                         severity: 'error',
-                        summary: 'Erro!',
-                        detail: 'O nome do paciente é obrigatório',
-                        life: 3000
+                        summary: 'Erro de Validação!',
+                        detail: validacoes.join(', '),
+                        life: 5000
                     });
                     return;
                 }
@@ -666,6 +674,118 @@ export default {
                 });
             } finally {
                 this.isSaving = false;
+            }
+        },
+
+        validarDadosPaciente() {
+            const erros = [];
+
+            // Validar nome obrigatório
+            if (!this.paciente.nome || this.paciente.nome.trim() === '') {
+                erros.push('O nome do paciente é obrigatório');
+            }
+
+            // Validar CPF
+            if (this.paciente.cpf && !this.validarCPF(this.paciente.cpf)) {
+                erros.push('CPF inválido');
+            }
+
+            // Validar data de nascimento
+            if (this.paciente.data_nascimento && !this.validarData(this.paciente.data_nascimento, 'nascimento')) {
+                erros.push('Data de nascimento inválida');
+            }
+
+            // Validar data de início de tratamento
+            if (this.paciente.data_inicio_tratamento && !this.validarData(this.paciente.data_inicio_tratamento, 'inicio_tratamento')) {
+                erros.push('Data de início de tratamento inválida');
+            }
+
+            return erros;
+        },
+
+        validarCPF(cpf) {
+            // Remove caracteres não numéricos
+            cpf = cpf.replace(/\D/g, '');
+            
+            // Verifica se o CPF possui 11 dígitos
+            if (cpf.length !== 11) {
+                return false;
+            }
+            
+            // Verifica se todos os dígitos são iguais
+            if (/^(\d)\1{10}$/.test(cpf)) {
+                return false;
+            }
+            
+            // Calcula o primeiro dígito verificador
+            let soma = 0;
+            for (let i = 0; i < 9; i++) {
+                soma += parseInt(cpf.charAt(i)) * (10 - i);
+            }
+            let resto = 11 - (soma % 11);
+            let digito1 = resto >= 10 ? 0 : resto;
+            
+            // Calcula o segundo dígito verificador
+            soma = 0;
+            for (let i = 0; i < 10; i++) {
+                soma += parseInt(cpf.charAt(i)) * (11 - i);
+            }
+            resto = 11 - (soma % 11);
+            let digito2 = resto >= 10 ? 0 : resto;
+            
+            // Verifica se os dígitos verificadores estão corretos
+            return cpf.charAt(9) == digito1 && cpf.charAt(10) == digito2;
+        },
+
+        validarData(data, tipo) {
+            if (!data) return true; // Data vazia é válida (opcional)
+            
+            try {
+                let dataObj;
+                
+                // Se for um objeto Date (do Calendar), usar diretamente
+                if (data instanceof Date) {
+                    dataObj = data;
+                } else {
+                    // Converter data do formato DD/MM/YYYY para Date
+                    const [dia, mes, ano] = data.split('/');
+                    dataObj = new Date(ano, mes - 1, dia);
+                }
+                
+                // Verificar se a data é válida
+                if (isNaN(dataObj.getTime())) {
+                    return false;
+                }
+                
+                const hoje = new Date();
+                hoje.setHours(0, 0, 0, 0);
+                
+                if (tipo === 'nascimento') {
+                    // Data de nascimento não pode ser futura
+                    if (dataObj > hoje) {
+                        return false;
+                    }
+                    
+                    // Data de nascimento deve ser razoável (não muito antiga)
+                    const dataMinima = new Date();
+                    dataMinima.setFullYear(hoje.getFullYear() - 150);
+                    
+                    if (dataObj < dataMinima) {
+                        return false;
+                    }
+                } else if (tipo === 'inicio_tratamento') {
+                    // Data de início de tratamento pode ser até 30 dias no futuro
+                    const dataMaxima = new Date();
+                    dataMaxima.setDate(hoje.getDate() + 30);
+                    
+                    if (dataObj > dataMaxima) {
+                        return false;
+                    }
+                }
+                
+                return true;
+            } catch (error) {
+                return false;
             }
         },
         formatDate(date) {

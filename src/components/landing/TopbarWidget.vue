@@ -77,7 +77,7 @@ function toggleMobileMenu() {
                 </li>
                 <li class="nav-item">
                     <a @click="smoothScroll('pricing')" class="nav-link">
-                        <span>Preços</span>
+                        <span>Planos</span>
                     </a>
                 </li>
                 <li class="nav-item">
