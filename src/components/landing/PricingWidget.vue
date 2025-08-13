@@ -111,7 +111,7 @@
                         </li>
                         <li class="feature-item">
                             <i class="pi pi-check text-green-500"></i>
-                            <span>Até 30 anexos</span>
+                            <span>Até 200 anexos</span>
                         </li>
                         <li class="feature-item">
                             <i class="pi pi-check text-green-500"></i>
@@ -177,7 +177,7 @@
                         </li>
                         <li class="feature-item">
                             <i class="pi pi-check text-green-500"></i>
-                            <span>Até 100 anexos</span>
+                            <span>Anexos ilimitados</span>
                         </li>
                         <li class="feature-item">
                             <i class="pi pi-check text-green-500"></i>

@@ -77,6 +77,11 @@ const router = createRouter({
                     component: () => import('@/views/pages/pacientes/ListaProntuarios.vue')
                 },
                 {
+                    path: '/pacientes/anexos',
+                    name: 'Anexos',
+                    redirect: '/pacientes'
+                },
+                {
                     path: '/pacientes/anexos/:id',
                     name: 'Anexos do Paciente',
                     component: () => import('@/views/pages/pacientes/ListaAnexos.vue')

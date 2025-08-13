@@ -7,7 +7,7 @@
                 <!-- Cards de Estatísticas -->
                 <div class="grid">
                     <!-- Total de Pacientes -->
-                    <div class="col-12 md:col-3">
+                    <div class="col-12" :class="isPlanoProfissional ? 'md:col-3' : 'md:col-4'">
                         <div class="card bg-blue-900 border-blue-600">
                             <div class="flex align-items-center justify-content-between">
                                 <div>
@@ -20,7 +20,7 @@
                     </div>
                     
                     <!-- Total de Prontuários -->
-                    <div class="col-12 md:col-3">
+                    <div class="col-12" :class="isPlanoProfissional ? 'md:col-3' : 'md:col-4'">
                         <div class="card bg-purple-900 border-purple-600">
                             <div class="flex align-items-center justify-content-between">
                                 <div>
@@ -33,7 +33,7 @@
                     </div>
                     
                     <!-- Prontuários 30 dias -->
-                    <div class="col-12 md:col-3">
+                    <div class="col-12" :class="isPlanoProfissional ? 'md:col-3' : 'md:col-4'">
                         <div class="card bg-orange-900 border-orange-600">
                             <div class="flex align-items-center justify-content-between">
                                 <div>
@@ -46,7 +46,7 @@
                     </div>
                     
                     <!-- Saldo do Mês -->
-                    <div class="col-12 md:col-3">
+                    <div class="col-12 md:col-3" v-if="isPlanoProfissional">
                         <div class="card" :class="saldoClass">
                             <div class="flex align-items-center justify-content-between">
                                 <div>
@@ -62,7 +62,7 @@
                 </div>
 
                 <!-- Cards Financeiros -->
-                <div class="grid mt-4">
+                <div class="grid mt-4" v-if="isPlanoProfissional">
                     <div class="col-12 md:col-6">
                         <div class="card bg-green-900 border-green-600">
                             <div class="flex align-items-center justify-content-between">
@@ -121,7 +121,7 @@
                 </div>
 
                 <!-- Alertas -->
-                <div class="grid mt-4" v-if="mostrarAlertas">
+                <div class="grid mt-4" v-if="mostrarAlertas && isPlanoProfissional">
                     <div class="col-12">
                         <div class="card bg-red-900 border-red-600" v-if="dados.financeiro?.alerta_financeiro">
                             <div class="flex align-items-center">
@@ -135,7 +135,7 @@
                 <!-- Gráficos -->
                 <div class="grid mt-4">
                     <!-- Gráfico Pizza - Receitas vs Despesas -->
-                    <div class="col-12 md:col-4">
+                    <div class="col-12 md:col-4" v-if="isPlanoProfissional">
                         <div class="card">
                             <h6 class="text-600 mb-3">Receitas vs Despesas (Mês)</h6>
                             <Chart 
@@ -148,7 +148,7 @@
                     </div>
                     
                     <!-- Gráfico Linha - Evolução Financeira -->
-                    <div class="col-12 md:col-4">
+                    <div class="col-12 md:col-4" v-if="isPlanoProfissional">
                         <div class="card">
                             <h6 class="text-600 mb-3">Evolução Financeira (6 meses)</h6>
                             <Chart 
@@ -161,7 +161,7 @@
                     </div>
                     
                     <!-- Gráfico Barra - Crescimento de Pacientes -->
-                    <div class="col-12 md:col-4">
+                    <div class="col-12" :class="isPlanoProfissional ? 'md:col-4' : 'md:col-12'">
                         <div class="card">
                             <h6 class="text-600 mb-3">Crescimento de Pacientes (6 meses)</h6>
                             <Chart 
@@ -306,9 +306,25 @@ export default {
             return this.dados.plano?.plano_proximo_de_vencer ? 'text-orange-400' : 'text-gray-400';
         },
         mostrarAlertas() {
-            return this.dados.financeiro?.alerta_financeiro || this.dados.plano?.plano_proximo_de_vencer;
+            if (this.isPlanoProfissional) {
+                return this.dados.financeiro?.alerta_financeiro || this.dados.plano?.plano_proximo_de_vencer;
+            } else {
+                return this.dados.plano?.plano_proximo_de_vencer;
+            }
         },
         pieChartData() {
+            if (!this.isPlanoProfissional) {
+                return {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [],
+                        borderWidth: 2,
+                        borderColor: '#374151'
+                    }]
+                };
+            }
+            
             return {
                 labels: ['Receitas', 'Despesas'],
                 datasets: [{
@@ -337,6 +353,13 @@ export default {
             };
         },
         lineChartData() {
+            if (!this.isPlanoProfissional) {
+                return {
+                    labels: [],
+                    datasets: []
+                };
+            }
+            
             const labels = [];
             const receitasData = [];
             const despesasData = [];
@@ -404,8 +427,40 @@ export default {
             const labels = [];
             const data = [];
             
+            // Mapeamento de meses em inglês para português
+            const mesesTraduzidos = {
+                'January': 'Janeiro',
+                'February': 'Fevereiro',
+                'March': 'Março',
+                'April': 'Abril',
+                'May': 'Maio',
+                'June': 'Junho',
+                'July': 'Julho',
+                'August': 'Agosto',
+                'September': 'Setembro',
+                'October': 'Outubro',
+                'November': 'Novembro',
+                'December': 'Dezembro',
+                'Jan': 'Jan',
+                'Feb': 'Fev',
+                'Mar': 'Mar',
+                'Apr': 'Abr',
+                'May': 'Mai',
+                'Jun': 'Jun',
+                'Jul': 'Jul',
+                'Aug': 'Ago',
+                'Sep': 'Set',
+                'Oct': 'Out',
+                'Nov': 'Nov',
+                'Dec': 'Dez'
+            };
+            
             Object.values(this.dados.pacientes?.crescimento_pacientes || {}).forEach(item => {
-                labels.push(item.mes);
+                // Traduz o nome do mês se estiver em inglês
+                const mesOriginal = item.mes;
+                const mesTraduzido = mesesTraduzidos[mesOriginal] || mesOriginal;
+                
+                labels.push(mesTraduzido);
                 data.push(item.total);
             });
 
@@ -449,6 +504,9 @@ export default {
                     }
                 }
             };
+        },
+        isPlanoProfissional() {
+            return this.dados.plano?.plano_tipo === 'Profissional';
         }
     },
     async mounted() {

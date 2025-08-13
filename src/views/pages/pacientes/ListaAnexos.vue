@@ -13,7 +13,7 @@
                 <p class="text-gray-600 mb-0">
                     {{ anexos.length }} arquivo(s) anexado(s)
                     <span v-if="planStore.anexosLimite !== -1" class="text-sm text-gray-500">
-                        ({{ planStore.anexosRestantes }} restantes)
+                        ({{ planStore.anexosRestantes }} no plano atual)
                     </span>
                 </p>
             </div>
