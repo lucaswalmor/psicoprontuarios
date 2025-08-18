@@ -17,7 +17,7 @@
                 <div class="d-flex justify-content-center justify-content-lg-start">
                     <div class="position-relative">
                         <div class="highlight-image-bg"></div>
-                        <img :src="celular" class="w-7" alt="Aplicativo Mobile" />
+                        <img :src="celular" class="w-7 hidden-image" alt="Aplicativo Mobile" />
                         <!-- <img src="/demo/images/landing/mockup.svg" class="w-15" alt="Aplicativo Mobile" /> -->
                     </div>
                 </div>
@@ -97,7 +97,7 @@
 
                 <div class="col-md-7 d-flex justify-content-center align-items-center">
                     <div class="highlight-image-bg desktop"></div>
-                    <img :src="macbook" class="w-15" alt="Interface Desktop" />
+                    <img :src="macbook" class="w-15 hidden-image" alt="Interface Desktop" />
                 </div>
             </div>
         </div>
@@ -161,7 +161,15 @@ import macbook from '@/assets/img/macbook.png';
     @apply relative w-full max-w-md rounded-2xl shadow-2xl;
 }
 
-@media (max-width: 1024px) {
+.hidden-image {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .hidden-image {
+        display: none;
+    }
+    
     .highlights-section {
         padding: 1rem 0;
     }

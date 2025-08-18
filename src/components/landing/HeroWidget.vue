@@ -6,8 +6,20 @@
         <!-- Content Container -->
         <div class="container mx-auto px-4 py-16 lg:py-24 relative z-10 d-flex justify-content-center">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-                <!-- Text Content -->
-                <div class="text-center lg:text-left space-y-8">
+                <!-- Hero Image - Primeiro em mobile, segundo em desktop -->
+                <div class="flex justify-center lg:justify-end order-1 lg:order-2">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-3xl blur-3xl"></div>
+                        <img 
+                            :src="banner" 
+                            alt="Sistema de Prontuários Psicológicos" 
+                            class="relative w-full max-w-lg lg:max-w-xl rounded-2xl shadow-2xl border border-surface-200 dark:border-surface-700"
+                        />
+                    </div>
+                </div>
+                
+                <!-- Text Content - Segundo em mobile, primeiro em desktop -->
+                <div class="text-center lg:text-left space-y-8 order-2 lg:order-1">
                     <div class="space-y-4">
                         <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-surface-900 dark:text-surface-0 leading-tight">
                             <span class="block font-light text-surface-600 dark:text-surface-300">Sistema de</span>
@@ -52,18 +64,6 @@
                             <i class="pi pi-clock text-orange-500 text-xl"></i>
                             <span class="text-sm text-surface-600 dark:text-surface-300">Setup em 5 min</span>
                         </div>
-                    </div>
-                </div>
-                
-                <!-- Hero Image -->
-                <div class="flex justify-center lg:justify-end">
-                    <div class="relative">
-                        <div class="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-3xl blur-3xl"></div>
-                        <img 
-                            :src="banner" 
-                            alt="Sistema de Prontuários Psicológicos" 
-                            class="relative w-full max-w-lg lg:max-w-xl rounded-2xl shadow-2xl border border-surface-200 dark:border-surface-700"
-                        />
                     </div>
                 </div>
             </div>

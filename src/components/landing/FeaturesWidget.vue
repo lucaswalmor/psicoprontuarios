@@ -132,17 +132,17 @@
 
         <!-- Testimonial Section -->
         <div class="testimonial-section mt-20">
-            <div class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-surface-800 dark:to-surface-700 rounded-3xl p-8 md:p-12">
+            <div class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-surface-800 dark:to-surface-700 rounded-3xl p-6 md:p-8 lg:p-12">
                 <div class="text-center max-w-4xl mx-auto">
-                    <div class="flex justify-center mb-6">
-                        <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                            <i class="pi pi-user text-white text-2xl"></i>
+                    <div class="flex justify-center mb-4 md:mb-6">
+                        <div class="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                            <i class="pi pi-user text-white text-lg md:text-2xl"></i>
                         </div>
                     </div>
-                    <blockquote class="text-xl md:text-2xl text-surface-900 dark:text-surface-0 font-medium mb-6 leading-relaxed">
+                    <blockquote class="text-lg md:text-xl lg:text-2xl text-surface-900 dark:text-surface-0 font-medium mb-4 md:mb-6 leading-relaxed px-2 md:px-0 max-w-3xl mx-auto">
                         "O sistema de prontuários psicológicos revolucionou minha prática. Agora posso focar no que realmente importa: meus pacientes. A interface é intuitiva e os dados ficam sempre seguros."
                     </blockquote>
-                    <div class="text-lg text-surface-700 dark:text-surface-200">
+                    <div class="text-base md:text-lg text-surface-700 dark:text-surface-200">
                         <strong class="text-surface-900 dark:text-surface-0">Dr. Maria Silva</strong>
                         <span class="block text-sm mt-1">Psicóloga Clínica</span>
                     </div>
@@ -189,7 +189,17 @@
 
 .testimonial-section::before {
     content: '';
-    @apply absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-3xl;
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05));
+    border-radius: 1.5rem;
+}
+
+.testimonial-section blockquote {
+    word-wrap: break-word;
+    hyphens: auto;
+    line-height: 1.6;
+    min-width: 280px;
 }
 
 @media (max-width: 768px) {
@@ -203,6 +213,52 @@
     
     .feature-icon {
         @apply w-14 h-14;
+    }
+    
+    .testimonial-section {
+        margin-top: 3rem;
+    }
+    
+    .testimonial-section blockquote {
+        font-size: 1.125rem;
+        line-height: 1.7;
+        padding: 0 1rem;
+        word-break: normal;
+        overflow-wrap: break-word;
+        min-width: 250px;
+        max-width: 100%;
+    }
+    
+    .testimonial-section .bg-gradient-to-r {
+        padding: 1.5rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .testimonial-section blockquote {
+        font-size: 1rem;
+        line-height: 1.6;
+        padding: 0 0.75rem;
+        min-width: 220px;
+    }
+    
+    .testimonial-section .bg-gradient-to-r {
+        padding: 1rem !important;
+    }
+}
+
+@media (max-width: 360px) {
+    .testimonial-section blockquote {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        padding: 0 0.5rem;
+        min-width: 200px;
+        word-break: keep-all;
+        overflow-wrap: normal;
+    }
+    
+    .testimonial-section .bg-gradient-to-r {
+        padding: 0.75rem !important;
     }
 }
 </style>

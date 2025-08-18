@@ -33,15 +33,7 @@
                             <span>Cartão de Crédito</span>
                             <small>Débito automático mensal</small>
                         </div>
-                        <!-- <div 
-                            class="payment-method"
-                            :class="{ 'selected': paymentMethod === 'pix' }"
-                            @click="paymentMethod = 'pix'"
-                        >
-                            <i class="pi pi-qrcode"></i>
-                            <span>PIX</span>
-                            <small>Pagamento único</small>
-                        </div> -->
+
                     </div>
                 </div>
 
@@ -124,59 +116,7 @@
                     </div>
                 </div>
 
-                <!-- PIX Payment Section -->
-                <div v-if="paymentMethod === 'pix'" class="form-section">
-                    <div class="pix-section">
-                        <div class="pix-info">
-                            <h4>Pagamento via PIX</h4>
-                            <p>Escaneie o QR Code ou copie o código PIX para pagar</p>
-                        </div>
-                        
-                        <div v-if="pixData" class="pix-content">
-                            <div v-if="pixData.waitingForPix" class="pix-waiting">
-                                <ProgressSpinner />
-                                <h5>Aguarde um momento...</h5>
-                                <p>Estamos preparando os dados PIX para você.</p>
-                            </div>
-                            
-                            <div v-else-if="pixData.qrCode" class="pix-ready">
-                                <div class="qr-code-container">
-                                    <img :src="pixData.qrCode" alt="QR Code PIX" class="qr-code" />
-                                </div>
-                                
-                                <div class="pix-copy-code">
-                                    <h5>PIX Copia e Cola</h5>
-                                    <div class="copy-input">
-                                        <InputText 
-                                            :value="pixData.copyCode" 
-                                            readonly 
-                                            class="copy-text"
-                                        />
-                                        <Button 
-                                            icon="pi pi-copy" 
-                                            @click="copyPixCode"
-                                            class="p-button-secondary"
-                                            size="small"
-                                        />
-                                    </div>
-                                </div>
-                                
-                                <div class="pix-status">
-                                    <ProgressSpinner v-if="checkingPixStatus" />
-                                    <div v-else class="status-message">
-                                        <i class="pi pi-clock"></i>
-                                        <span>Aguardando pagamento...</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div v-else class="pix-loading">
-                            <ProgressSpinner />
-                            <p>Gerando PIX...</p>
-                        </div>
-                    </div>
-                </div>
+
 
                 <!-- Termos e Condições -->
                 <div class="form-section">
@@ -299,14 +239,7 @@ export default {
         const showPrivacyModal = ref(false);
         const showSuccessModal = ref(false);
         const paymentMethod = ref('credit');
-        const pixData = ref({
-            waitingForPix: false,
-            qrCode: null,
-            copyCode: null,
-            paymentId: null
-        });
-        const checkingPixStatus = ref(false);
-        let pixStatusInterval = null;
+
 
         const formData = reactive({
             name: '',
@@ -375,95 +308,13 @@ export default {
             return isValid;
         };
 
-        const generatePixPayment = async () => {
-            try {
-                const response = await planService.generatePixPayment({
-                    planId: props.plan.id.toString()
-                });
-                
-                if (response.success) {
-                    if (response.pix_available && response.pix_data) {
-                        console.log('Dados PIX disponíveis imediatamente');
-                        // Dados PIX disponíveis imediatamente
-                        pixData.value = {
-                            qrCode: `data:image/png;base64,${response.pix_data.qrCode}`,
-                            copyCode: response.pix_data.copyCode,
-                            paymentId: response.pix_data.paymentId,
-                            waitingForPix: false
-                        };
-                        console.log('pixData atualizado:', pixData.value);
-                        startPixStatusCheck();
-                    } else {
-                        console.log('Dados PIX não disponíveis imediatamente, aguardando...');
-                        // Dados PIX não disponíveis imediatamente, aguardar e tentar buscar
-                        pixData.value = {
-                            paymentId: response.payment_id,
-                            waitingForPix: true,
-                            qrCode: null,
-                            copyCode: null
-                        };
-                        console.log('pixData atualizado (aguardando):', pixData.value);
-                        // Tentar buscar dados PIX após alguns segundos
-                        setTimeout(async () => {
-                            await tryGetPixData(response.payment_id);
-                        }, 3000);
-                    }
-                } else {
-                    emit('payment-error', response.message || 'Erro ao gerar PIX');
-                }
-            } catch (error) {
-                console.error('Erro ao gerar PIX:', error);
-                emit('payment-error', 'Erro ao gerar PIX');
-            }
-        };
 
-        const tryGetPixData = async (paymentId) => {
-            try {
-                const response = await planService.checkPixStatus(paymentId);
-                if (response.pix_data) {
-                    pixData.value = {
-                        qrCode: `data:image/png;base64,${response.pix_data.qrCode}`,
-                        copyCode: response.pix_data.copyCode,
-                        paymentId: paymentId,
-                        waitingForPix: false
-                    };
-                    startPixStatusCheck();
-                } else {
-                    // Se ainda não tiver dados PIX, tentar novamente em 5 segundos
-                    setTimeout(() => tryGetPixData(paymentId), 5000);
-                }
-            } catch (error) {
-                console.error('Erro ao buscar dados PIX:', error);
-                // Tentar novamente em 5 segundos
-                setTimeout(() => tryGetPixData(paymentId), 5000);
-            }
-        };
 
-        const startPixStatusCheck = () => {
-            checkingPixStatus.value = true;
-            pixStatusInterval = setInterval(async () => {
-                try {
-                    const response = await planService.checkPixStatus(pixData.value.paymentId);
-                    if (response.status === 'CONFIRMED') {
-                        clearInterval(pixStatusInterval);
-                        checkingPixStatus.value = false;
-                        showSuccessModal.value = true;
-                        emit('payment-success', response);
-                    }
-                } catch (error) {
-                    console.error('Erro ao verificar status PIX:', error);
-                }
-            }, 5000); // Verificar a cada 5 segundos
-        };
 
-        const copyPixCode = async () => {
-            try {
-                await navigator.clipboard.writeText(pixData.value.copyCode);
-                // Mostrar feedback de sucesso
-            } catch (error) {
-                console.error('Erro ao copiar código PIX:', error);
-            }
-        };
+
+
+
+
 
         const processPayment = async () => {
             if (!validateForm()) {
@@ -473,32 +324,30 @@ export default {
             isProcessing.value = true;
 
             try {
-                if (paymentMethod.value === 'credit') {
-                    // Processar pagamento com cartão
-                    const paymentData = {
-                        planId: props.plan.id.toString(),
-                        paymentMethod: 'credit',
-                        customerData: {
-                            name: formData.name,
-                            cpf: formData.cpf.replace(/\D/g, ''),
-                            email: JSON.parse(sessionStorage.getItem('usuario'))?.email || ''
-                        },
-                        paymentData: {
-                            cardNumber: formData.cardNumber.replace(/\D/g, ''),
-                            cardName: formData.cardName,
-                            expiry: formData.expiry,
-                            cvv: formData.cvv
-                        }
-                    };
-
-                    const response = await planService.processUpgrade(paymentData);
-
-                    if (response.success) {
-                        showSuccessModal.value = true;
-                        emit('payment-success', response);
-                    } else {
-                        emit('payment-error', response.message || 'Erro no processamento do pagamento');
+                // Processar pagamento com cartão
+                const paymentData = {
+                    planId: props.plan.id.toString(),
+                    paymentMethod: 'credit',
+                    customerData: {
+                        name: formData.name,
+                        cpf: formData.cpf.replace(/\D/g, ''),
+                        email: JSON.parse(sessionStorage.getItem('usuario'))?.email || ''
+                    },
+                    paymentData: {
+                        cardNumber: formData.cardNumber.replace(/\D/g, ''),
+                        cardName: formData.cardName,
+                        expiry: formData.expiry,
+                        cvv: formData.cvv
                     }
+                };
+
+                const response = await planService.processUpgrade(paymentData);
+
+                if (response.success) {
+                    showSuccessModal.value = true;
+                    emit('payment-success', response);
+                } else {
+                    emit('payment-error', response.message || 'Erro no processamento do pagamento');
                 }
             } catch (error) {
                 console.error('Erro no pagamento:', error);
@@ -522,23 +371,14 @@ export default {
 
         // Lifecycle
         onMounted(() => {
-            // Não gerar PIX automaticamente no mount, apenas quando o método for selecionado
+            // Componente montado
         });
 
         onUnmounted(() => {
-            if (pixStatusInterval) {
-                clearInterval(pixStatusInterval);
-            }
+            // Componente desmontado
         });
 
-        // Watch payment method changes
-        watch(paymentMethod, (newMethod) => {
-            console.log('Método de pagamento alterado para:', newMethod);
-            if (newMethod === 'pix') {
-                console.log('Iniciando geração de PIX...');
-                generatePixPayment();
-            }
-        });
+
 
         return {
             formData,
@@ -548,13 +388,10 @@ export default {
             showPrivacyModal,
             showSuccessModal,
             paymentMethod,
-            pixData,
-            checkingPixStatus,
             processPayment,
             showTerms,
             showPrivacy,
-            goToDashboard,
-            copyPixCode
+            goToDashboard
         };
     }
 };
@@ -663,92 +500,7 @@ export default {
     font-size: 0.75rem;
 }
 
-.pix-section {
-    text-align: center;
-}
 
-.pix-info h4 {
-    margin-bottom: 0.5rem;
-    color: var(--text-color);
-}
-
-.pix-info p {
-    color: var(--text-color-secondary);
-    margin-bottom: 2rem;
-}
-
-.qr-code-container {
-    margin-bottom: 2rem;
-}
-
-.qr-code {
-    max-width: 200px;
-    border: 1px solid var(--surface-border);
-    border-radius: 8px;
-    padding: 1rem;
-}
-
-.pix-copy-code {
-    margin-bottom: 2rem;
-}
-
-.pix-copy-code h5 {
-    margin-bottom: 1rem;
-    color: var(--text-color);
-}
-
-.copy-input {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-}
-
-.copy-text {
-    flex: 1;
-}
-
-.pix-status {
-    margin-top: 2rem;
-}
-
-.status-message {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    color: var(--text-color-secondary);
-}
-
-.pix-loading {
-    text-align: center;
-    padding: 2rem;
-}
-
-.pix-loading p {
-    margin-top: 1rem;
-    color: var(--text-color-secondary);
-}
-
-.pix-waiting {
-    text-align: center;
-    padding: 2rem;
-}
-
-.pix-waiting h5 {
-    margin: 1rem 0 0.5rem 0;
-    color: var(--text-color);
-}
-
-.pix-waiting p {
-    color: var(--text-color-secondary);
-    font-size: 0.875rem;
-}
-
-.pix-ready {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
 
 .success-content {
     text-align: center;

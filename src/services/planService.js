@@ -115,25 +115,7 @@ class PlanService {
         }
     }
 
-    async generatePixPayment(paymentData) {
-        try {
-            const response = await api.post('/user/generate-pix-payment', paymentData);
-            return response.data;
-        } catch (error) {
-            console.error('Erro ao gerar PIX:', error);
-            throw error;
-        }
-    }
 
-    async checkPixStatus(paymentId) {
-        try {
-            const response = await api.get(`/user/pix-payment-status/${paymentId}`);
-            return response.data;
-        } catch (error) {
-            console.error('Erro ao verificar status PIX:', error);
-            throw error;
-        }
-    }
 }
 
 export default new PlanService(); 
