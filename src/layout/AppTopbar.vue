@@ -52,13 +52,13 @@ const goToUpgrade = () => {
 
         <div class="layout-topbar-actions">
             <!-- Botão de Upgrade de Plano -->
-            <button v-if="shouldShowUpgradeButton" type="button" class="upgrade-button d-flex align-items-center"
+            <button v-if="shouldShowUpgradeButton" type="button" class="upgrade-button d-flex align-items-center hidden-mobile"
                 @click="goToUpgrade" title="Faça o upgrade do seu plano">
                 <i class="pi pi-star-fill"></i>
                 <span class="upgrade-text">Faça o upgrade do seu plano</span>
             </button>
 
-            <div class="layout-config-menu">
+            <div class="layout-config-menu hidden-mobile">
                 <button type="button" class="layout-topbar-action" @click="toggleDarkMode">
                     <i :class="['pi', { 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"></i>
                 </button>
@@ -72,7 +72,7 @@ const goToUpgrade = () => {
                 </div>
             </div>
 
-            <button class="layout-topbar-menu-button layout-topbar-action"
+            <button class="layout-topbar-menu-button layout-topbar-action hidden-mobile"
                 v-styleclass="{ selector: '@next', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }">
                 <i class="pi pi-ellipsis-v"></i>
             </button>
@@ -146,6 +146,11 @@ export default {
     .upgrade-button {
         padding: 8px;
         margin-right: 8px;
+    }
+    
+    /* Ocultar botões em mobile */
+    .hidden-mobile {
+        display: none !important;
     }
 }
 </style>
