@@ -37,7 +37,7 @@
                         <Button 
                             label="Começar Agora" 
                             as="router-link" 
-                            to="/login" 
+                            to="/cadastro" 
                             rounded 
                             class="!text-lg !px-8 !py-3 bg-gradient-to-r from-blue-600 to-purple-600 border-0 hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
                         />

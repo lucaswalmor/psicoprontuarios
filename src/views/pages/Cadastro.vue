@@ -25,11 +25,6 @@
                         <span
                             class="text-surface-900 dark:text-surface-0 font-bold text-xl ml-3">PsicoProntuários</span>
                     </div>
-
-                    <!-- Login Link -->
-                    <router-link to="/login" class="text-600 hover:text-500 font-medium transition-colors">
-                        Já tem uma conta? Faça login
-                    </router-link>
                 </div>
             </div>
         </header>
@@ -50,7 +45,7 @@
 
                 <!-- Formulário de Cadastro -->
                 <div
-                    class="bg-surface-0 dark:bg-surface-800 rounded-xl shadow-lg border border-surface-200 dark:border-surface-700 p-8">
+                    class="bg-surface-0 dark:bg-surface-800 rounded-xl shadow-lg border border-surface-200 dark:border-surface-700 p-8 mobile-form">
                     <form @submit.prevent="handleSubmit" class="space-y-6">
                         <!-- Informações Pessoais -->
                         <div class="row">
@@ -546,6 +541,64 @@ img {
 @media (max-width: 768px) {
     .cadastro-page {
         padding: 0 1rem;
+    }
+    
+    /* Ajustar container principal em mobile */
+    .container.mx-auto {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+    
+    .max-w-4xl {
+        max-width: 100% !important;
+    }
+    
+    /* Garantir que inputs usem 100% da largura em mobile */
+    .row .col-md-6,
+    .row .col-md-12 {
+        width: 100% !important;
+        margin-bottom: 1rem;
+    }
+    
+    /* Remover margens laterais dos inputs em mobile */
+    .p-inputtext,
+    .p-inputmask,
+    .p-dropdown {
+        width: 100% !important;
+        max-width: none !important;
+    }
+    
+    /* Ajustar espaçamento entre campos */
+    .row {
+        margin: 0;
+    }
+    
+    .row > div {
+        padding: 0;
+        margin-bottom: 1rem;
+    }
+    
+    /* Ajustar formulário em mobile */
+    .mobile-form {
+        padding: 1.5rem !important;
+        margin: 0 0.5rem;
+    }
+    
+    /* Garantir que todos os inputs ocupem 100% da largura */
+    .p-component {
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Ajustes para telas muito pequenas */
+    .cadastro-page {
+        padding: 0 0.5rem;
+    }
+    
+    .bg-surface-0.dark\\:bg-surface-800 {
+        padding: 1rem !important;
     }
 }
 
