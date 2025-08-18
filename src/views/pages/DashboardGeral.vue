@@ -3,7 +3,6 @@
         <div class="col-12">
             <div class="card">
                 <h5 class="text-600 mb-4">Dashboard Geral</h5>
-                
                 <!-- Cards de Estatísticas -->
                 <div class="grid">
                     <!-- Total de Pacientes -->
@@ -100,17 +99,17 @@
                                 <div>
                                     <span class="block font-medium mb-2" :class="planoLabelClass">Plano Atual</span>
                                     <div class="font-medium text-xl" :class="planoTextClass">
-                                        {{ dados.plano?.plano_tipo || 'Básico' }}
+                                        {{ planStore.planInfo?.nome || 'Básico' }}
                                     </div>
                                     <div class="text-sm mt-2" :class="planoDiasClass">
-                                        {{ dados.plano?.plano_restante_dias || 0 }} dias restantes
+                                        {{ planStore.stats?.limite_pacientes || 0 }} pacientes permitidos
                                     </div>
                                 </div>
                                 <div class="flex align-items-center">
                                     <i class="pi pi-star text-2xl mr-3" :class="planoIconClass"></i>
                                     <Tag 
-                                        v-if="dados.plano?.plano_proximo_de_vencer" 
-                                        value="Vence em breve!" 
+                                        v-if="planStore.isPlanPaused" 
+                                        value="Plano Pausado!" 
                                         severity="danger" 
                                         class="ml-2"
                                     />
@@ -244,6 +243,8 @@
 </template>
 
 <script>
+import { usePlanStore } from '@/store/plan';
+
 export default {
     name: 'DashboardGeral',
     data() {
@@ -266,18 +267,18 @@ export default {
                     saldo_total: 0,
                     evolucao_financeira: {},
                     alerta_financeiro: false
-                },
-                plano: {
-                    plano_tipo: 'Básico',
-                    plano_termina_em: null,
-                    plano_restante_dias: 0,
-                    plano_proximo_de_vencer: false
                 }
+                // Removido o campo 'plano' daqui pois será acessado via store
             },
             loading: false
         };
     },
     computed: {
+        // Store do plano como propriedade computada
+        planStore() {
+            return usePlanStore();
+        },
+        
         saldoClass() {
             return this.dados.financeiro?.saldo_mes >= 0 ? 'bg-green-900 border-green-600' : 'bg-red-900 border-red-600';
         },
@@ -291,25 +292,25 @@ export default {
             return this.dados.financeiro?.saldo_mes >= 0 ? 'text-green-400' : 'text-red-400';
         },
         planoCardClass() {
-            return this.dados.plano?.plano_proximo_de_vencer ? 'bg-orange-900 border-orange-600' : 'bg-gray-900 border-gray-600';
+            return this.planStore.isPlanPaused ? 'bg-orange-900 border-orange-600' : 'bg-gray-900 border-gray-600';
         },
         planoLabelClass() {
-            return this.dados.plano?.plano_proximo_de_vencer ? 'text-orange-200' : 'text-gray-200';
+            return this.planStore.isPlanPaused ? 'text-orange-200' : 'text-gray-200';
         },
         planoTextClass() {
-            return this.dados.plano?.plano_proximo_de_vencer ? 'text-orange-200' : 'text-gray-200';
+            return this.planStore.isPlanPaused ? 'text-orange-200' : 'text-gray-200';
         },
         planoDiasClass() {
-            return this.dados.plano?.plano_proximo_de_vencer ? 'text-orange-300' : 'text-gray-300';
+            return this.planStore.isPlanPaused ? 'text-orange-300' : 'text-gray-300';
         },
         planoIconClass() {
-            return this.dados.plano?.plano_proximo_de_vencer ? 'text-orange-400' : 'text-gray-400';
+            return this.planStore.isPlanPaused ? 'text-orange-400' : 'text-gray-400';
         },
         mostrarAlertas() {
             if (this.isPlanoProfissional) {
-                return this.dados.financeiro?.alerta_financeiro || this.dados.plano?.plano_proximo_de_vencer;
+                return this.dados.financeiro?.alerta_financeiro || this.planStore.isPlanPaused;
             } else {
-                return this.dados.plano?.plano_proximo_de_vencer;
+                return this.planStore.isPlanPaused;
             }
         },
         pieChartData() {
@@ -506,10 +507,20 @@ export default {
             };
         },
         isPlanoProfissional() {
-            return this.dados.plano?.plano_tipo === 'Profissional';
+            // Usar o store do plano em vez dos dados do dashboard
+            console.log('Dados do plano do store:', this.planStore.planInfo);
+            
+            // Verificar se é usuário vitalício OU se tem plano Profissional
+            return this.planStore.isVitalicio || this.planStore.planInfo?.nome === 'Profissional';
         }
     },
     async mounted() {
+        // Carregar dados do plano primeiro
+        if (!this.planStore.hasPlanData) {
+            await this.planStore.fetchPlanInfo();
+        }
+        
+        // Depois carregar dados do dashboard
         await this.carregarDados();
     },
     methods: {

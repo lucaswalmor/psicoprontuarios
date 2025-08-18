@@ -63,6 +63,13 @@ export default {
                     detail: `Prontuario do paciente ${this.paciente.nome} criado com sucesso!`,
                     life: 3000,
                 });
+
+                this.prontuario = {
+                    paciente: {},
+                    data_prontuario: '',
+                    descricao: '',
+                }
+                
                 this.$emit('salvarProntuario');
             }).catch((err) => {
                 console.log(err);

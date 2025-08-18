@@ -141,6 +141,7 @@
                                 <div class="surface-card p-4 border-round">
                                     <h6 class="mb-3 text-800 font-bold">Configurações da Conta</h6>
                                     <div class="flex flex-column gap-3">
+                                        <!-- Configuração de Senha -->
                                         <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
                                             <div class="flex align-items-center gap-3">
                                                 <i class="pi pi-lock text-primary text-xl"></i>
@@ -157,6 +158,49 @@
                                                 @click="showChangePasswordModal = true"
                                             />
                                         </div>
+
+                                        <!-- Integração com Google Calendar -->
+                                        <!-- <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
+                                            <div class="flex align-items-center gap-3">
+                                                <i class="pi pi-calendar text-primary text-xl"></i>
+                                                <div>
+                                                    <h6 class="m-0 text-800">Google Calendar</h6>
+                                                    <small class="text-600">
+                                                        {{ googleCalendarStatus.connected 
+                                                            ? `Conectado com ${googleCalendarStatus.email || 'Google Calendar'} ✔` 
+                                                            : 'Conecte sua conta do Google Calendar para sincronizar eventos' 
+                                                        }}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            
+                                            <div v-if="googleCalendarStatus.hasProfessionalPlan">
+                                                <Button 
+                                                    v-if="!googleCalendarStatus.connected"
+                                                    label="Conectar ao Google Calendar" 
+                                                    icon="pi pi-calendar-plus" 
+                                                    severity="success" 
+                                                    outlined 
+                                                    @click="connectGoogleCalendar"
+                                                    :loading="connectingGoogleCalendar"
+                                                />
+                                                <Button 
+                                                    v-else
+                                                    label="Desconectar" 
+                                                    icon="pi pi-calendar-minus" 
+                                                    severity="danger" 
+                                                    outlined 
+                                                    @click="disconnectGoogleCalendar"
+                                                    :loading="disconnectingGoogleCalendar"
+                                                />
+                                            </div>
+                                            
+                                             <div v-else class="text-center">
+                                                 <small class="text-500">
+                                                     Disponível apenas no plano Profissional ou para usuários Vitalícios
+                                                 </small>
+                                             </div>
+                                        </div> -->
                                     </div>
                                 </div>
                             </div>
@@ -188,10 +232,11 @@
     />
 </template>
 
-<script setup>
-import { ref, computed, onMounted } from 'vue';
+<script>
 import { useToast } from 'primevue/usetoast';
+import { usePlanStore } from '@/store/plan';
 import userService from '@/services/userService';
+import api from '@/utils/axios';
 import DialogChangePassword from '@/components/dialogs/configuracoes/DialogChangePassword.vue';
 import DialogEditEmail from '@/components/dialogs/configuracoes/DialogEditEmail.vue';
 import DialogEditPhone from '@/components/dialogs/configuracoes/DialogEditPhone.vue';
@@ -201,70 +246,255 @@ import Tab from 'primevue/tab';
 import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
 
-const toast = useToast();
+export default {
+    name: 'Perfil',
+    components: {
+        DialogChangePassword,
+        DialogEditEmail,
+        DialogEditPhone,
+        Tabs,
+        TabList,
+        Tab,
+        TabPanels,
+        TabPanel
+    },
+    data() {
+        return {
+            loading: false,
+            userProfile: null,
+            activeTab: '0',
+            showEditEmailModal: false,
+            showEditPhoneModal: false,
+            showChangePasswordModal: false,
+            googleCalendarStatus: {
+                connected: false,
+                email: null,
+                connected_at: null,
+                hasProfessionalPlan: false
+            },
+            connectingGoogleCalendar: false,
+            disconnectingGoogleCalendar: false
+        };
+    },
+    computed: {
+        hasProfessionalPlan() {
+            return this.planStore.isVitalicio || this.planStore.planInfo?.nome === 'Profissional';
+        }
+    },
+    async mounted() {
+        // Carregar dados do plano primeiro
+        if (!this.planStore.hasPlanData) {
+            await this.planStore.fetchPlanInfo();
+        }
+        
+        await this.loadUserProfile();
+        await this.loadGoogleCalendarStatus();
+        
+        // Verificar parâmetros da URL após carregar os dados
+        this.checkUrlParams();
+    },
+    methods: {
+        async loadUserProfile() {
+            try {
+                this.loading = true;
+                const response = await userService.getProfile();
+                this.userProfile = response;
+            } catch (error) {
+                console.error('Erro ao carregar perfil:', error);
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: 'Erro ao carregar dados do perfil',
+                    life: 3000
+                });
+            } finally {
+                this.loading = false;
+            }
+        },
 
-// Estados reativos
-const loading = ref(false);
-const userProfile = ref(null);
-const activeTab = ref('0');
-const showEditEmailModal = ref(false);
-const showEditPhoneModal = ref(false);
-const showChangePasswordModal = ref(false);
+        handleEmailUpdateSuccess() {
+            this.$toast.add({
+                severity: 'success',
+                summary: 'Sucesso',
+                detail: 'Email atualizado com sucesso!',
+                life: 3000
+            });
+            this.loadUserProfile(); // Recarregar dados
+        },
 
-// Métodos
-const loadUserProfile = async () => {
-    try {
-        loading.value = true;
-        const response = await userService.getProfile();
-        userProfile.value = response;
-    } catch (error) {
-        console.error('Erro ao carregar perfil:', error);
-        toast.add({
-            severity: 'error',
-            summary: 'Erro',
-            detail: 'Erro ao carregar dados do perfil',
-            life: 3000
-        });
-    } finally {
-        loading.value = false;
+        handlePhoneUpdateSuccess() {
+            this.$toast.add({
+                severity: 'success',
+                summary: 'Sucesso',
+                detail: 'Telefone atualizado com sucesso!',
+                life: 3000
+            });
+            this.loadUserProfile(); // Recarregar dados
+        },
+
+        handlePasswordChangeSuccess() {
+            this.$toast.add({
+                severity: 'success',
+                summary: 'Sucesso',
+                detail: 'Senha alterada com sucesso!',
+                life: 3000
+            });
+        },
+
+        // Métodos para Google Calendar
+        async loadGoogleCalendarStatus() {
+            try {
+                console.log('Carregando status do Google Calendar...');
+                
+                const response = await api.get('/google-calendar/status');
+                
+                // Usar o computed hasProfessionalPlan em vez do valor da API
+                this.googleCalendarStatus = {
+                    ...response.data,
+                    hasProfessionalPlan: this.hasProfessionalPlan
+                };
+            } catch (error) {
+                console.error('Erro ao carregar status do Google Calendar:', error);
+                // Mesmo com erro, definir hasProfessionalPlan baseado no store
+                this.googleCalendarStatus.hasProfessionalPlan = this.hasProfessionalPlan;
+            }
+        },
+
+        async connectGoogleCalendar() {
+            try {
+                this.connectingGoogleCalendar = true;
+                
+                console.log('Conectando ao Google Calendar...');
+                
+                // Obter URL de autorização do backend
+                const response = await api.get('/google-calendar/redirect');
+                
+                console.log('Dados da resposta:', response.data);
+                
+                // Redirecionar para a página de autorização do Google
+                window.location.href = response.data.auth_url;
+                
+            } catch (error) {
+                console.error('Erro ao conectar ao Google Calendar:', error);
+                
+                let errorMessage = 'Erro ao conectar ao Google Calendar';
+                
+                if (error.response?.data?.error) {
+                    errorMessage = error.response.data.error;
+                } else if (error.message) {
+                    errorMessage = `Erro de conexão: ${error.message}`;
+                }
+                
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: errorMessage,
+                    life: 5000
+                });
+            } finally {
+                this.connectingGoogleCalendar = false;
+            }
+        },
+
+        async disconnectGoogleCalendar() {
+            try {
+                this.disconnectingGoogleCalendar = true;
+                
+                const response = await api.post('/google-calendar/disconnect');
+                
+                this.$toast.add({
+                    severity: 'success',
+                    summary: 'Sucesso',
+                    detail: 'Google Calendar desconectado com sucesso!',
+                    life: 3000
+                });
+                
+                // Atualizar status local
+                await this.loadGoogleCalendarStatus();
+                
+            } catch (error) {
+                console.error('Erro ao desconectar do Google Calendar:', error);
+                
+                let errorMessage = 'Erro ao desconectar do Google Calendar';
+                
+                if (error.response?.data?.error) {
+                    errorMessage = error.response.data.error;
+                }
+                
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: errorMessage,
+                    life: 3000
+                });
+            } finally {
+                this.disconnectingGoogleCalendar = false;
+            }
+        },
+
+        // Função para verificar parâmetros da URL e mostrar mensagens
+        checkUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Verificar sucesso
+            if (urlParams.get('success') === 'Google_Calendar_conectado') {
+                this.$toast.add({
+                    severity: 'success',
+                    summary: 'Sucesso',
+                    detail: 'Google Calendar conectado com sucesso!',
+                    life: 5000
+                });
+                
+                // Limpar parâmetros da URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+                
+                // Recarregar status do Google Calendar
+                this.loadGoogleCalendarStatus();
+            }
+            
+            // Verificar erros
+            const error = urlParams.get('error');
+            if (error) {
+                let errorMessage = 'Erro desconhecido';
+                
+                switch (error) {
+                    case 'Usuario_nao_autenticado':
+                        errorMessage = 'Usuário não autenticado';
+                        break;
+                    case 'Plano_nao_autorizado':
+                        errorMessage = 'Apenas usuários com plano Profissional ou usuários Vitalícios podem conectar ao Google Calendar';
+                        break;
+                    case 'Erro_autorizacao':
+                        errorMessage = 'Erro na autorização do Google Calendar';
+                        break;
+                    case 'Erro_conexao':
+                        const message = urlParams.get('message');
+                        errorMessage = message ? `Erro ao conectar: ${decodeURIComponent(message)}` : 'Erro ao conectar ao Google Calendar';
+                        break;
+                }
+                
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: errorMessage,
+                    life: 5000
+                });
+                
+                // Limpar parâmetros da URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+    },
+    setup() {
+        const toast = useToast();
+        const planStore = usePlanStore();
+        
+        return {
+            toast,
+            planStore
+        };
     }
 };
-
-
-
-const handleEmailUpdateSuccess = () => {
-    toast.add({
-        severity: 'success',
-        summary: 'Sucesso',
-        detail: 'Email atualizado com sucesso!',
-        life: 3000
-    });
-    loadUserProfile(); // Recarregar dados
-};
-
-const handlePhoneUpdateSuccess = () => {
-    toast.add({
-        severity: 'success',
-        summary: 'Sucesso',
-        detail: 'Telefone atualizado com sucesso!',
-        life: 3000
-    });
-    loadUserProfile(); // Recarregar dados
-};
-
-const handlePasswordChangeSuccess = () => {
-    toast.add({
-        severity: 'success',
-        summary: 'Sucesso',
-        detail: 'Senha alterada com sucesso!',
-        life: 3000
-    });
-};
-
-// Carregar dados na montagem
-onMounted(async () => {
-    await loadUserProfile();
-});
 </script>
 
 <style scoped>

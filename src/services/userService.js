@@ -54,7 +54,7 @@ class UserService {
     // Alterar senha
     async changePassword(passwordData) {
         try {
-            const response = await api.put('/user/change-password', passwordData);
+            const response = await api.post('/user/change-password', passwordData);
             return response.data;
         } catch (error) {
             throw error;
