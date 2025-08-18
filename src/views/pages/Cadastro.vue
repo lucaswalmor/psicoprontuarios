@@ -171,6 +171,28 @@
                             <small v-if="errors.rua" class="p-error">{{ errors.rua }}</small>
                         </div>
 
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="numero"
+                                    class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                                    Número
+                                </label>
+                                <InputText id="numero" v-model="form.numero" class="w-full" placeholder="123"
+                                    :class="{ 'p-invalid': errors.numero }" />
+                                <small v-if="errors.numero" class="p-error">{{ errors.numero }}</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="complemento"
+                                    class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                                    Complemento
+                                </label>
+                                <InputText id="complemento" v-model="form.complemento" class="w-full" 
+                                    placeholder="Apto 45, Bloco B, etc."
+                                    :class="{ 'p-invalid': errors.complemento }" />
+                                <small v-if="errors.complemento" class="p-error">{{ errors.complemento }}</small>
+                            </div>
+                        </div>
+
                         <!-- Senha -->
                         <div class="row">
                             <div class="col-md-6">
@@ -320,6 +342,8 @@ export default {
                 estado: '',
                 rua: '',
                 bairro: '',
+                numero: '',
+                complemento: '',
                 password: '',
                 password_confirmation: '',
                 codigo_cupom: '',
@@ -378,6 +402,10 @@ export default {
 
             if (!this.form.rua.trim()) {
                 this.errors.rua = 'Rua é obrigatória';
+            }
+
+            if (!this.form.numero.trim()) {
+                this.errors.numero = 'Número é obrigatório';
             }
 
             if (!this.form.password) {
@@ -504,6 +532,14 @@ export default {
                     this.form.cidade = data.localidade;
                     this.form.bairro = data.bairro;
                     this.form.rua = data.logradouro;
+                    
+                    // Tentar extrair número do logradouro se disponível
+                    if (data.logradouro) {
+                        const numeroMatch = data.logradouro.match(/\d+/);
+                        if (numeroMatch) {
+                            this.form.numero = numeroMatch[0];
+                        }
+                    }
                     
                     // Mostrar mensagem de sucesso
                     this.$toast.add({
