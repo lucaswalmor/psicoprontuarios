@@ -105,7 +105,7 @@
                             <div class="col-md-6">
                                 <label for="crp"
                                     class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                                    <span class="crp-label">CRP</span> <span class="text-danger"> *</span>
+                                    <span class="crp-text">CRP</span> <span class="text-danger"> *</span>
                                 </label>
                                 <InputMask id="crp" v-model="form.crp" mask="99/99999" class="w-full"
                                     placeholder="00/00000" :class="{ 'p-invalid': errors.crp }" />
@@ -120,8 +120,12 @@
                                     class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                                     CEP <span class="text-danger"> *</span>
                                 </label>
-                                <InputMask id="cep" v-model="form.cep" mask="99999-999" class="w-full"
-                                    placeholder="00000-000" :class="{ 'p-invalid': errors.cep }" />
+                                <IconField>
+                                    <InputMask id="cep" v-model="form.cep" mask="99999-999" class="w-full"
+                                        placeholder="00000-000" :class="{ 'p-invalid': errors.cep }" 
+                                        @change="buscarCep" />
+                                    <InputIcon class="pi pi-sparkles" />
+                                </IconField>
                                 <small v-if="errors.cep" class="p-error">{{ errors.cep }}</small>
                             </div>
                             <div class="col-md-6">
@@ -129,8 +133,8 @@
                                     class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                                     Estado <span class="text-danger"> *</span>
                                 </label>
-                                <Select id="estado" v-model="form.estado" :options="estados" optionLabel="label"
-                                    optionValue="value" placeholder="Selecione o estado" class="w-full"
+                                <InputText id="estado" v-model="form.estado" class="w-full" 
+                                    placeholder="SP" maxlength="2" 
                                     :class="{ 'p-invalid': errors.estado }" />
                                 <small v-if="errors.estado" class="p-error">{{ errors.estado }}</small>
                             </div>
@@ -277,27 +281,30 @@ import logo from '@/assets/img/logo-branca.jpg';
 import userService from '@/services/userService';
 import InputText from 'primevue/inputtext';
 import InputMask from 'primevue/inputmask';
-import Select from 'primevue/select';
 import Checkbox from 'primevue/checkbox';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import ProgressSpinner from 'primevue/progressspinner';
+import IconField from 'primevue/iconfield';
+import InputIcon from 'primevue/inputicon';
 
 export default {
     name: 'Cadastro',
     components: {
         InputText,
         InputMask,
-        Select,
         Checkbox,
         Button,
         Dialog,
-        ProgressSpinner
+        ProgressSpinner,
+        IconField,
+        InputIcon
     },
     data() {
         return {
             logo,
             loading: false,
+            loadingCep: false,
             error: '',
             showSuccessDialog: false,
             countdown: 3,
@@ -319,36 +326,7 @@ export default {
                 politica_privacidade: false,
                 tipo_usuario: 'psicologo'
             },
-            errors: {},
-            estados: [
-                { label: 'Acre', value: 'AC' },
-                { label: 'Alagoas', value: 'AL' },
-                { label: 'Amapá', value: 'AP' },
-                { label: 'Amazonas', value: 'AM' },
-                { label: 'Bahia', value: 'BA' },
-                { label: 'Ceará', value: 'CE' },
-                { label: 'Distrito Federal', value: 'DF' },
-                { label: 'Espírito Santo', value: 'ES' },
-                { label: 'Goiás', value: 'GO' },
-                { label: 'Maranhão', value: 'MA' },
-                { label: 'Mato Grosso', value: 'MT' },
-                { label: 'Mato Grosso do Sul', value: 'MS' },
-                { label: 'Minas Gerais', value: 'MG' },
-                { label: 'Pará', value: 'PA' },
-                { label: 'Paraíba', value: 'PB' },
-                { label: 'Paraná', value: 'PR' },
-                { label: 'Pernambuco', value: 'PE' },
-                { label: 'Piauí', value: 'PI' },
-                { label: 'Rio de Janeiro', value: 'RJ' },
-                { label: 'Rio Grande do Norte', value: 'RN' },
-                { label: 'Rio Grande do Sul', value: 'RS' },
-                { label: 'Rondônia', value: 'RO' },
-                { label: 'Roraima', value: 'RR' },
-                { label: 'Santa Catarina', value: 'SC' },
-                { label: 'São Paulo', value: 'SP' },
-                { label: 'Sergipe', value: 'SE' },
-                { label: 'Tocantins', value: 'TO' }
-            ]
+            errors: {}
         };
     },
     methods: {
@@ -505,6 +483,54 @@ export default {
             formData.politica_privacidade = Boolean(formData.politica_privacidade);
 
             return formData;
+        },
+
+        // Buscar CEP na API ViaCEP
+        async buscarCep() {
+            const cep = this.form.cep.replace(/\D/g, ''); // Remove caracteres não numéricos
+            
+            if (cep.length !== 8) {
+                return; // CEP incompleto
+            }
+
+            try {
+                this.loadingCep = true;
+                const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                const data = await response.json();
+
+                if (!data.erro) {
+                    // Preencher campos automaticamente
+                    this.form.estado = data.uf;
+                    this.form.cidade = data.localidade;
+                    this.form.bairro = data.bairro;
+                    this.form.rua = data.logradouro;
+                    
+                    // Mostrar mensagem de sucesso
+                    this.$toast.add({
+                        severity: 'success',
+                        summary: 'CEP encontrado!',
+                        detail: 'Endereço preenchido automaticamente',
+                        life: 3000
+                    });
+                } else {
+                    this.$toast.add({
+                        severity: 'warn',
+                        summary: 'CEP não encontrado',
+                        detail: 'Verifique se o CEP está correto',
+                        life: 3000
+                    });
+                }
+            } catch (error) {
+                console.error('Erro ao buscar CEP:', error);
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Erro ao buscar CEP',
+                    detail: 'Tente novamente mais tarde',
+                    life: 3000
+                });
+            } finally {
+                this.loadingCep = false;
+            }
         }
     }
 };
@@ -621,42 +647,21 @@ img {
     display: none;
 }
 
-/* Forçar renderização correta do texto CRP */
+/* Solução simples para o problema do CRP */
+.crp-text {
+    font-family: inherit !important;
+    font-weight: inherit !important;
+    letter-spacing: inherit !important;
+    display: inline-block !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+}
+
+/* Garantir que o label seja visível */
 label[for="crp"] {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-    font-weight: 500 !important;
-    letter-spacing: 0.025em !important;
-}
-
-/* Garantir que o texto CRP seja renderizado corretamente em todos os dispositivos */
-label[for="crp"]::before {
-    content: "CRP";
-    display: inline;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-    font-weight: 500 !important;
-    letter-spacing: 0.025em !important;
-}
-
-/* Ocultar o texto original para evitar duplicação */
-label[for="crp"] {
-    font-size: 0 !important;
-    line-height: 0 !important;
-}
-
-/* Ajustar o espaçamento do asterisco */
-label[for="crp"] .text-danger {
-    font-size: 0.875rem !important;
-    line-height: 1.25rem !important;
-    margin-left: 0.25rem !important;
-}
-
-/* Estilo específico para o label CRP */
-.crp-label {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-    font-weight: 500 !important;
-    letter-spacing: 0.025em !important;
-    text-rendering: optimizeLegibility !important;
-    -webkit-font-smoothing: antialiased !important;
-    -moz-osx-font-smoothing: grayscale !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.25rem !important;
 }
 </style>
