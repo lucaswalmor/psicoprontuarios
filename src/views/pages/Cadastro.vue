@@ -175,7 +175,7 @@
                             <div class="col-md-6">
                                 <label for="numero"
                                     class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                                    Número
+                                    Número <span class="text-danger"> *</span>
                                 </label>
                                 <InputText id="numero" v-model="form.numero" class="w-full" placeholder="123"
                                     :class="{ 'p-invalid': errors.numero }" />
