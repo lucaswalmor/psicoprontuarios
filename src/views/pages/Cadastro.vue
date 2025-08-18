@@ -218,7 +218,7 @@
                         </div>
 
                         <!-- Termos e Condições -->
-                        <div class="flex items-start space-x-3">
+                        <div class="flex items-start space-x-3 termos-container">
                             <Checkbox id="politica_privacidade" v-model="form.politica_privacidade" :binary="true"
                                 :class="{ 'p-invalid': errors.politica_privacidade }" />
                             <label for="politica_privacidade" class="text-sm text-surface-600 dark:text-surface-400">
@@ -648,7 +648,6 @@ img {
     
     /* Garantir que todos os inputs ocupem 100% da largura */
     .p-component {
-        width: 100% !important;
         box-sizing: border-box;
     }
 }
@@ -699,5 +698,42 @@ label[for="crp"] {
     display: flex !important;
     align-items: center !important;
     gap: 0.25rem !important;
+}
+
+/* Garantir que o texto dos termos seja sempre visível */
+.termos-container label {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: inherit !important;
+}
+
+.termos-container label a {
+    color: var(--primary-color) !important;
+    text-decoration: underline !important;
+}
+
+/* Ajustar layout dos termos em mobile */
+@media (max-width: 768px) {
+    .termos-container {
+        justify-content: flex-start !important;
+        align-items: flex-start !important;
+        gap: 0.75rem !important;
+        flex-wrap: wrap !important;
+    }
+    
+    .termos-container .p-checkbox {
+        flex-shrink: 0 !important;
+        margin-top: 0.125rem !important;
+    }
+    
+    .termos-container label {
+        flex: 1 !important;
+        min-width: 0 !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        line-height: 1.5 !important;
+        font-size: 0.875rem !important;
+    }
 }
 </style>
