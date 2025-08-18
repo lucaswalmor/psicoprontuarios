@@ -26,6 +26,26 @@ class AnexosService {
         }
     }
 
+    async uploadMultiple(idPaciente, arquivos) {
+        try {
+            const formData = new FormData();
+            
+            // Adicionar cada arquivo ao FormData
+            arquivos.forEach((arquivo, index) => {
+                formData.append(`arquivos[${index}]`, arquivo);
+            });
+
+            const response = await axios.post(`/anexos/paciente/${idPaciente}/multiple`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async download(idAnexo) {
         try {
             const response = await axios.get(`/anexos/${idAnexo}/download`, {
