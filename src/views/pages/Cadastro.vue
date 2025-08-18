@@ -105,7 +105,7 @@
                             <div class="col-md-6">
                                 <label for="crp"
                                     class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                                    CRP <span class="text-danger"> *</span>
+                                    <span class="crp-label">CRP</span> <span class="text-danger"> *</span>
                                 </label>
                                 <InputMask id="crp" v-model="form.crp" mask="99/99999" class="w-full"
                                     placeholder="00/00000" :class="{ 'p-invalid': errors.crp }" />
@@ -619,5 +619,44 @@ img {
 
 .success-dialog .p-dialog-header-icon {
     display: none;
+}
+
+/* Forçar renderização correta do texto CRP */
+label[for="crp"] {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.025em !important;
+}
+
+/* Garantir que o texto CRP seja renderizado corretamente em todos os dispositivos */
+label[for="crp"]::before {
+    content: "CRP";
+    display: inline;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.025em !important;
+}
+
+/* Ocultar o texto original para evitar duplicação */
+label[for="crp"] {
+    font-size: 0 !important;
+    line-height: 0 !important;
+}
+
+/* Ajustar o espaçamento do asterisco */
+label[for="crp"] .text-danger {
+    font-size: 0.875rem !important;
+    line-height: 1.25rem !important;
+    margin-left: 0.25rem !important;
+}
+
+/* Estilo específico para o label CRP */
+.crp-label {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.025em !important;
+    text-rendering: optimizeLegibility !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
 }
 </style>

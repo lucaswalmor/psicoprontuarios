@@ -103,6 +103,7 @@ function toggleMobileMenu() {
                     as="router-link" 
                     to="/cadastro"
                     rounded 
+                    class="signup-btn"
                     @click="isMobileMenuOpen = false"
                 />
             </div>
@@ -167,6 +168,11 @@ img {
         opacity: 0;
         visibility: hidden;
         display: block !important;
+        width: 100vw !important;
+        left: 0 !important;
+        right: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
     
     .nav-menu.mobile-open {
@@ -178,22 +184,75 @@ img {
     
     .nav-list {
         @apply flex-col space-y-0 border-b border-surface-200 dark:border-surface-700;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
     }
     
     .nav-item {
         @apply w-full;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
     }
     
     .nav-link {
         @apply block w-full px-6 py-4 text-left border-b border-surface-100 dark:border-surface-800;
+        margin: 0 !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
     
     .nav-actions {
         @apply flex-col space-y-0 p-4;
+        margin: 0 !important;
+        padding: 1rem !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
     
     .login-btn, .signup-btn {
         @apply w-full justify-center;
+        width: 100% !important;
+        margin-bottom: 0.75rem !important;
+        box-sizing: border-box !important;
+    }
+    
+    .login-btn:last-child, .signup-btn:last-child {
+        margin-bottom: 0 !important;
+    }
+    
+    /* Garantir que o menu ocupe toda a largura da tela */
+    .nav-menu {
+        min-width: 100vw !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+    }
+    
+    /* Ajustar padding dos botões para melhor espaçamento */
+    .nav-actions {
+        gap: 0.75rem !important;
+    }
+    
+    /* Garantir que os botões tenham altura consistente */
+    .login-btn, .signup-btn {
+        height: 3rem !important;
+        min-height: 3rem !important;
+    }
+    
+    /* Melhorar a transição do menu */
+    .nav-menu {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    
+    /* Garantir que não haja scroll horizontal */
+    body {
+        overflow-x: hidden !important;
+    }
+    
+    /* Ajustar z-index para garantir que o menu fique acima de outros elementos */
+    .nav-menu {
+        z-index: 1000 !important;
     }
 }
 </style>
