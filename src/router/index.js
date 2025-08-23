@@ -99,6 +99,24 @@ const router = createRouter({
                     meta: { requiresPlanCheck: false }
                 },
                 {
+                    path: '/carne-leao',
+                    name: 'CarneLeao',
+                    component: () => import('@/views/pages/carne-leao/ListaCarneLeao.vue'),
+                    meta: { requiresPlanCheck: true, requiredFeature: 'essencial' }
+                },
+                {
+                    path: '/carne-leao/gerar',
+                    name: 'GerarCarneLeao',
+                    component: () => import('@/views/pages/carne-leao/CadastroCarneLeao.vue'),
+                    meta: { requiresPlanCheck: true, requiredFeature: 'essencial' }
+                },
+                {
+                    path: '/carne-leao/detalhes/:id',
+                    name: 'DetalhesCarneLeao',
+                    component: () => import('@/views/pages/carne-leao/DetalhesCarneLeao.vue'),
+                    meta: { requiresPlanCheck: true, requiredFeature: 'essencial' }
+                },
+                {
                     path: '/perfil',
                     name: 'Perfil',
                     component: () => import('@/views/pages/Perfil.vue'),

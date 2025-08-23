@@ -14,6 +14,10 @@
                             <i class="pi pi-cog mr-2"></i>
                             Configurações
                         </Tab>
+                        <Tab value="2">
+                            <i class="pi pi-calculator mr-2"></i>
+                            Carne Leão
+                        </Tab>
                     </TabList>
                     <TabPanels>
                         <!-- Aba de Dados Pessoais -->
@@ -205,6 +209,123 @@
                                 </div>
                             </div>
                         </TabPanel>
+
+                        <!-- Aba de Configurações do Carne Leão -->
+                        <TabPanel value="2">
+                            <div class="p-4">
+                                <div class="surface-card p-4 border-round">
+                                    <h6 class="mb-3 text-800 font-bold">Configurações Tributárias</h6>
+                                    <p class="text-600 mb-4">Configure suas informações tributárias para o cálculo do Carne Leão</p>
+                                    
+                                    <div v-if="loadingTributario" class="flex justify-content-center p-4">
+                                        <ProgressSpinner />
+                                    </div>
+
+                                    <div v-else class="grid">
+                                        <div class="col-12 md:col-6">
+                                            <div class="flex flex-column gap-3">
+                                                <div class="flex flex-column gap-2">
+                                                    <label class="font-medium">Regime Tributário *</label>
+                                                    <Dropdown 
+                                                        v-model="configTributario.regime_tributario" 
+                                                        :options="regimesTributarios" 
+                                                        optionLabel="label" 
+                                                        optionValue="value"
+                                                        placeholder="Selecione o regime"
+                                                        class="w-full"
+                                                    />
+                                                </div>
+
+                                                <div class="flex flex-column gap-2">
+                                                    <label class="font-medium">Alíquota INSS (%)</label>
+                                                    <InputNumber 
+                                                        v-model="configTributario.aliquota_inss" 
+                                                        :minFractionDigits="2" 
+                                                        :maxFractionDigits="2"
+                                                        suffix="%"
+                                                        class="w-full"
+                                                        :disabled="configTributario.regime_tributario === 'mei'"
+                                                    />
+                                                </div>
+
+                                                <div v-if="configTributario.regime_tributario === 'mei'" class="flex flex-column gap-2">
+                                                    <label class="font-medium">Valor INSS Fixo (R$)</label>
+                                                    <InputNumber 
+                                                        v-model="configTributario.valor_inss_fixo" 
+                                                        :minFractionDigits="2" 
+                                                        :maxFractionDigits="2"
+                                                        prefix="R$ "
+                                                        class="w-full"
+                                                    />
+                                                </div>
+
+                                                <div class="flex flex-column gap-2">
+                                                    <label class="font-medium">Número de Dependentes</label>
+                                                    <InputNumber 
+                                                        v-model="configTributario.dependentes" 
+                                                        :min="0" 
+                                                        :max="10"
+                                                        class="w-full"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12 md:col-6">
+                                            <div class="flex flex-column gap-3">
+                                                <div class="flex flex-column gap-2">
+                                                    <label class="font-medium">CPF do Cônjuge</label>
+                                                    <InputMask 
+                                                        v-model="configTributario.cpf_conjuge" 
+                                                        mask="999.999.999-99"
+                                                        placeholder="000.000.000-00"
+                                                        class="w-full"
+                                                    />
+                                                </div>
+
+                                                <div class="flex flex-column gap-2">
+                                                    <label class="font-medium">Rendimentos do Cônjuge (R$)</label>
+                                                    <InputNumber 
+                                                        v-model="configTributario.rendimentos_conjuge" 
+                                                        :minFractionDigits="2" 
+                                                        :maxFractionDigits="2"
+                                                        prefix="R$ "
+                                                        class="w-full"
+                                                    />
+                                                </div>
+
+                                                <div class="flex align-items-center gap-2">
+                                                    <Checkbox 
+                                                        v-model="configTributario.plano_saude_familia" 
+                                                        :binary="true" 
+                                                        inputId="plano_saude"
+                                                    />
+                                                    <label for="plano_saude" class="text-sm">Plano de Saúde Familiar</label>
+                                                </div>
+
+                                                <div class="flex align-items-center gap-2">
+                                                    <Checkbox 
+                                                        v-model="configTributario.educacao_dependentes" 
+                                                        :binary="true" 
+                                                        inputId="educacao"
+                                                    />
+                                                    <label for="educacao" class="text-sm">Educação de Dependentes</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex justify-content-end mt-4">
+                                        <Button 
+                                            label="Salvar Configurações" 
+                                            icon="pi pi-save" 
+                                            @click="salvarConfiguracoesTributarias"
+                                            :loading="salvandoTributario"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </TabPanel>
                     </TabPanels>
                 </Tabs>
             </div>
@@ -245,6 +366,10 @@ import TabList from 'primevue/tablist';
 import Tab from 'primevue/tab';
 import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
+import Dropdown from 'primevue/dropdown';
+import InputNumber from 'primevue/inputnumber';
+import InputMask from 'primevue/inputmask';
+import Checkbox from 'primevue/checkbox';
 
 export default {
     name: 'Perfil',
@@ -256,7 +381,11 @@ export default {
         TabList,
         Tab,
         TabPanels,
-        TabPanel
+        TabPanel,
+        Dropdown,
+        InputNumber,
+        InputMask,
+        Checkbox
     },
     data() {
         return {
@@ -273,7 +402,26 @@ export default {
                 hasProfessionalPlan: false
             },
             connectingGoogleCalendar: false,
-            disconnectingGoogleCalendar: false
+            disconnectingGoogleCalendar: false,
+            // Configurações tributárias
+            loadingTributario: false,
+            salvandoTributario: false,
+            configTributario: {
+                regime_tributario: 'autonomo',
+                aliquota_inss: 20.00,
+                valor_inss_fixo: 66.00,
+                dependentes: 0,
+                cpf_conjuge: '',
+                rendimentos_conjuge: 0.00,
+                plano_saude_familia: false,
+                educacao_dependentes: false
+            },
+            regimesTributarios: [
+                { label: 'MEI', value: 'mei' },
+                { label: 'Autônomo', value: 'autonomo' },
+                { label: 'PJ', value: 'pj' },
+                { label: 'CLT', value: 'clt' }
+            ]
         };
     },
     computed: {
@@ -289,6 +437,7 @@ export default {
         
         await this.loadUserProfile();
         await this.loadGoogleCalendarStatus();
+        await this.loadConfiguracoesTributarias();
         
         // Verificar parâmetros da URL após carregar os dados
         this.checkUrlParams();
@@ -482,6 +631,82 @@ export default {
                 
                 // Limpar parâmetros da URL
                 window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
+            // Verificar se deve abrir a aba de Carne Leão
+            const tab = urlParams.get('tab');
+            if (tab === '2') {
+                this.activeTab = '2';
+                // Limpar parâmetro da URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        },
+
+        // Métodos para configurações tributárias
+        async loadConfiguracoesTributarias() {
+            try {
+                this.loadingTributario = true;
+                
+                // Carregar configurações do perfil do usuário
+                if (this.userProfile) {
+                    this.configTributario = {
+                        regime_tributario: this.userProfile.regime_tributario || 'autonomo',
+                        aliquota_inss: this.userProfile.aliquota_inss ? this.userProfile.aliquota_inss * 100 : 20.00,
+                        valor_inss_fixo: this.userProfile.valor_inss_fixo || 66.00,
+                        dependentes: this.userProfile.dependentes || 0,
+                        cpf_conjuge: this.userProfile.cpf_conjuge || '',
+                        rendimentos_conjuge: this.userProfile.rendimentos_conjuge || 0.00,
+                        plano_saude_familia: this.userProfile.plano_saude_familia || false,
+                        educacao_dependentes: this.userProfile.educacao_dependentes || false
+                    };
+                }
+                
+            } catch (error) {
+                console.error('Erro ao carregar configurações tributárias:', error);
+            } finally {
+                this.loadingTributario = false;
+            }
+        },
+
+        async salvarConfiguracoesTributarias() {
+            try {
+                this.salvandoTributario = true;
+                
+                // Preparar dados para envio
+                const dados = {
+                    regime_tributario: this.configTributario.regime_tributario,
+                    aliquota_inss: this.configTributario.aliquota_inss / 100, // Converter para decimal
+                    valor_inss_fixo: this.configTributario.valor_inss_fixo,
+                    dependentes: this.configTributario.dependentes,
+                    cpf_conjuge: this.configTributario.cpf_conjuge,
+                    rendimentos_conjuge: this.configTributario.rendimentos_conjuge,
+                    plano_saude_familia: this.configTributario.plano_saude_familia,
+                    educacao_dependentes: this.configTributario.educacao_dependentes
+                };
+
+                // Atualizar perfil do usuário
+                await this.$userService.updateProfile(dados);
+                
+                this.$toast.add({
+                    severity: 'success',
+                    summary: 'Sucesso',
+                    detail: 'Configurações tributárias salvas com sucesso!',
+                    life: 3000
+                });
+
+                // Recarregar perfil
+                await this.loadUserProfile();
+                
+            } catch (error) {
+                console.error('Erro ao salvar configurações tributárias:', error);
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: 'Erro ao salvar configurações tributárias',
+                    life: 3000
+                });
+            } finally {
+                this.salvandoTributario = false;
             }
         }
     },

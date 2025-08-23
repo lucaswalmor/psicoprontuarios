@@ -77,6 +77,12 @@ const model = computed(() => {
                     requiredFeature: 'gestao_financeira'
                 },
                 {
+                    label: 'Carne Leão', 
+                    icon: 'pi pi-fw pi-calculator', 
+                    to: '/carne-leao',
+                    requiredFeature: 'essencial'
+                },
+                {
                     label: 'Pacientes', 
                     icon: 'pi pi-fw pi-user', 
                     to: '/pacientes',
