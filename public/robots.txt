@@ -1,0 +1,30 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://psicoprontuarios.com.br/sitemap.xml
+
+# Sistema: PsicoProntuários
+# Plataforma de Psicologia Online com Prontuário Digital
+
+# Crawl-delay para evitar sobrecarga do servidor
+Crawl-delay: 1
+
+# Bloquear arquivos desnecessários
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /src/
+Disallow: /package.json
+Disallow: /package-lock.json
+Disallow: /vite.config.mjs
+Disallow: /tailwind.config.js
+Disallow: /postcss.config.js
+Disallow: /jsconfig.json
+Disallow: /vercel.json
+Disallow: /LICENSE.md
+Disallow: /README.md
+Disallow: /CHANGELOG.md
+Disallow: /CADASTRO_PACIENTE_V2.md
+Disallow: /README_AXIOS.md
+Disallow: /UPGRADE_MODULE.md
+Disallow: /env.example
