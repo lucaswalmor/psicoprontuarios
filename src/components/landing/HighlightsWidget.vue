@@ -105,8 +105,8 @@
 </template>
 
 <script setup>
-import celular from '@/assets/img/celular.png';
-import macbook from '@/assets/img/macbook.png';
+import celular from '@/assets/img/celular.webp';
+import macbook from '@/assets/img/macbook.webp';
 </script>
 
 <style scoped>

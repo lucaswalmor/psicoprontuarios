@@ -76,7 +76,7 @@
 </template>
 
 <script setup>
-import banner from '@/assets/img/banner.jpg';
+import banner from '@/assets/img/banner.webp';
 
 const scrollToLeads = () => {
     const leadsSection = document.getElementById('leads');

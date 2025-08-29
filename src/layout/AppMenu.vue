@@ -1,150 +1,179 @@
-<script setup>
-import { computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+<script>
 import { usePlanStore } from '@/store/plan';
 import { useLayout } from '@/layout/composables/layout';
 import AppMenuItem from './AppMenuItem.vue';
 
-const router = useRouter();
-const planStore = usePlanStore();
-const { toggleDarkMode, isDarkTheme } = useLayout();
+export default {
+    name: 'AppMenu',
+    components: {
+        AppMenuItem
+    },
+    data() {
+        return {
+            planStore: null,
+            layoutComposable: null
+        };
+    },
+    computed: {
+        // Computed para verificar se deve mostrar o botão de upgrade
+        shouldShowUpgradeButton() {
+            if (!this.planStore?.planInfo) return false;
 
-// Carregar informações do plano
-const loadPlanInfo = async () => {
-    try {
-        // Se não tem dados no store, carregar do localStorage ou servidor
-        if (!planStore.hasPlanData) {
-            planStore.loadPlanFromStorage();
-            
-            // Se ainda não tem dados, buscar do servidor
-            if (!planStore.hasPlanData) {
-                await planStore.fetchPlanInfo();
-            }
-        }
-    } catch (error) {
-        console.error('Erro ao carregar informações do plano:', error);
-    }
-};
-
-// Computed para verificar se deve mostrar o botão de upgrade
-const shouldShowUpgradeButton = computed(() => {
-    if (!planStore.planInfo) return false;
-
-    const currentPlan = planStore.planInfo.nome;
-    return currentPlan === 'Gratuito' || currentPlan === 'Essencial';
-});
-
-const goToUpgrade = () => {
-    router.push('/upgrade');
-};
-
-const goToProfile = () => {
-    router.push('/perfil');
-};
-
-const logout = () => {
-    // Usar o mesmo padrão do AppTopbar
-    if (window.$authService) {
-        window.$authService.logout();
-        router.push('/login');
-    } else {
-        // Fallback: limpar sessionStorage e redirecionar
-        sessionStorage.clear();
-        router.push('/login');
-    }
-};
-
-onMounted(() => {
-    loadPlanInfo();
-});
-
-// Modelo do menu filtrado baseado no plano
-const model = computed(() => {
-    const baseMenu = [
-        {
-            label: 'Home',
-            items: [
-                {
-                    label: 'Dashboard', 
-                    icon: 'pi pi-fw pi-home', 
-                    to: '/dashboard',
-                    requiredFeature: 'dashboard'
-                },
-                {
-                    label: 'Gestão Financeira', 
-                    icon: 'pi pi-fw pi-wallet', 
-                    to: '/financeiro',
-                    requiredFeature: 'gestao_financeira'
-                },
-                {
-                    label: 'Carne Leão', 
-                    icon: 'pi pi-fw pi-calculator', 
-                    to: '/carne-leao',
-                    requiredFeature: 'essencial'
-                },
-                {
-                    label: 'Pacientes', 
-                    icon: 'pi pi-fw pi-user', 
-                    to: '/pacientes',
-                    requiredFeature: null // Sempre disponível
-                },
-                {
-                    label: 'Agendamentos', 
-                    icon: 'pi pi-fw pi-calendar', 
-                    to: '/agendamentos',
-                    requiredFeature: 'agendamentos'
-                },
-            ]
+            const currentPlan = this.planStore.planInfo.nome;
+            return currentPlan === 'Gratuito' || currentPlan === 'Essencial';
         },
-        {
-            label: 'Configurações',
-            items: [
+        
+        // Computed para detectar se é layout mobile
+        isMobileLayout() {
+            return this.layoutComposable?.layoutState.staticMenuMobileActive || window.innerWidth <= 991;
+        },
+        
+        // Computed para tema escuro
+        isDarkTheme() {
+            return this.layoutComposable?.isDarkTheme;
+        },
+        
+        // Modelo do menu filtrado baseado no plano
+        model() {
+            const baseMenu = [
                 {
-                    label: 'Gerenciar Plano', 
-                    icon: 'pi pi-fw pi-cog', 
-                    to: '/configuracoes',
-                    requiredFeature: null // Sempre disponível
+                    label: 'Home',
+                    items: [
+                        {
+                            label: 'Dashboard', 
+                            icon: 'pi pi-fw pi-home', 
+                            to: '/dashboard',
+                            requiredFeature: 'dashboard'
+                        },
+                        {
+                            label: 'Gestão Financeira', 
+                            icon: 'pi pi-fw pi-wallet', 
+                            to: '/financeiro',
+                            requiredFeature: 'gestao_financeira'
+                        },
+                        {
+                            label: 'Carne Leão', 
+                            icon: 'pi pi-fw pi-calculator', 
+                            to: '/carne-leao',
+                            requiredFeature: 'essencial'
+                        },
+                        {
+                            label: 'Pacientes', 
+                            icon: 'pi pi-fw pi-user', 
+                            to: '/pacientes',
+                            requiredFeature: null // Sempre disponível
+                        },
+                        {
+                            label: 'Agendamentos', 
+                            icon: 'pi pi-fw pi-calendar', 
+                            to: '/agendamentos',
+                            requiredFeature: 'agendamentos'
+                        },
+                    ]
                 },
                 {
-                    label: 'FAQ - Dúvidas', 
-                    icon: 'pi pi-fw pi-question-circle', 
-                    to: '/faq',
-                    requiredFeature: null // Sempre disponível
+                    label: 'Configurações',
+                    items: [
+                        {
+                            label: 'Gerenciar Plano', 
+                            icon: 'pi pi-fw pi-cog', 
+                            to: '/configuracoes',
+                            requiredFeature: null // Sempre disponível
+                        },
+                        {
+                            label: 'FAQ - Dúvidas', 
+                            icon: 'pi pi-fw pi-question-circle', 
+                            to: '/faq',
+                            requiredFeature: null // Sempre disponível
+                        }
+                    ]
                 }
-            ]
+            ];
+
+            // Obter dados do store
+            const planInfo = this.planStore?.planInfo;
+            const isVitalicio = this.planStore?.isVitalicio;
+
+            // Filtrar itens baseado no plano
+            return baseMenu.map(section => ({
+                ...section,
+                items: section.items.filter(item => {
+                    // Usuários vitalícios têm acesso total
+                    if (isVitalicio) {
+                        return true;
+                    }
+                    
+                    // Se não tem feature requerida, sempre disponível
+                    if (!item.requiredFeature) {
+                        return true;
+                    }
+                    
+                    // Se o plano está pausado, verificar se a feature é permitida
+                    if (this.planStore?.isPlanPaused) {
+                        // Quando pausado, apenas algumas features são permitidas
+                        const allowedWhenPaused = ['dashboard', null]; // null = sempre disponível
+                        return allowedWhenPaused.includes(item.requiredFeature);
+                    }
+                    
+                    // Verificar se a feature está disponível no plano
+                    return planInfo?.features?.[item.requiredFeature] || false;
+                })
+            }));
         }
-    ];
-
-    // Obter dados do store
-    const planInfo = planStore.planInfo;
-    const isVitalicio = planStore.isVitalicio;
-
-    // Filtrar itens baseado no plano
-    return baseMenu.map(section => ({
-        ...section,
-        items: section.items.filter(item => {
-            // Usuários vitalícios têm acesso total
-            if (isVitalicio) {
-                return true;
+    },
+    methods: {
+        // Carregar informações do plano
+        async loadPlanInfo() {
+            try {
+                // Se não tem dados no store, carregar do localStorage ou servidor
+                if (!this.planStore.hasPlanData) {
+                    this.planStore.loadPlanFromStorage();
+                    
+                    // Se ainda não tem dados, buscar do servidor
+                    if (!this.planStore.hasPlanData) {
+                        await this.planStore.fetchPlanInfo();
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao carregar informações do plano:', error);
             }
-            
-            // Se não tem feature requerida, sempre disponível
-            if (!item.requiredFeature) {
-                return true;
+        },
+        
+        goToUpgrade() {
+            this.$router.push('/upgrade');
+        },
+        
+        goToProfile() {
+            this.$router.push('/perfil');
+        },
+        
+        logout() {
+            // Usar o mesmo padrão do AppTopbar
+            if (window.$authService) {
+                window.$authService.logout();
+                this.$router.push('/login');
+            } else {
+                // Fallback: limpar sessionStorage e redirecionar
+                sessionStorage.clear();
+                this.$router.push('/login');
             }
-            
-            // Se o plano está pausado, verificar se a feature é permitida
-            if (planStore.isPlanPaused) {
-                // Quando pausado, apenas algumas features são permitidas
-                const allowedWhenPaused = ['dashboard', null]; // null = sempre disponível
-                return allowedWhenPaused.includes(item.requiredFeature);
+        },
+        
+        toggleDarkMode() {
+            if (this.layoutComposable) {
+                this.layoutComposable.toggleDarkMode();
             }
-            
-            // Verificar se a feature está disponível no plano
-            return planInfo?.features?.[item.requiredFeature] || false;
-        })
-    }));
-});
+        }
+    },
+    async mounted() {
+        // Inicializar stores e composables
+        this.planStore = usePlanStore();
+        this.layoutComposable = useLayout();
+        
+        // Carregar informações do plano
+        await this.loadPlanInfo();
+    }
+};
 </script>
 
 <template>
@@ -153,10 +182,7 @@ const model = computed(() => {
             <app-menu-item v-if="!item.separator" :item="item" :index="i"></app-menu-item>
             <li v-if="item.separator" class="menu-separator"></li>
         </template>
-        
-        <!-- Separador para os botões do topbar -->
-        <li class="menu-separator"></li>
-        
+                
         <!-- Botões do Topbar no Drawer (Mobile) -->
         <li class="mobile-topbar-actions">
             <!-- Botão de Upgrade -->
