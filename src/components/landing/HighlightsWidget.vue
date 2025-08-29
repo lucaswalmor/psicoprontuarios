@@ -1,3 +1,8 @@
+<script setup>
+import celular from '@/assets/img/celular.webp';
+import macbook from '@/assets/img/macbook.webp';
+</script>
+
 <template>
     <div class="container-fluid">
         <!-- Header -->
@@ -103,11 +108,6 @@
         </div>
     </div>
 </template>
-
-<script setup>
-import celular from '@/assets/img/celular.webp';
-import macbook from '@/assets/img/macbook.webp';
-</script>
 
 <style scoped>
 .highlights-section {

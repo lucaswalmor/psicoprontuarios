@@ -213,6 +213,12 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+@media screen and (min-width: 768px) {
+    .mobile-topbar-actions {
+        display: none;
+    }
+}
+
 /* Botões do Topbar no Drawer (Mobile) */
 .mobile-topbar-actions {
     padding: 1rem;

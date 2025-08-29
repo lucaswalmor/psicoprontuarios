@@ -1,3 +1,17 @@
+<script setup>
+import banner from '@/assets/img/banner.webp';
+
+const scrollToLeads = () => {
+    const leadsSection = document.getElementById('leads');
+    if (leadsSection) {
+        leadsSection.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+};
+</script>
+
 <template>
     <div class="hero-section relative min-h-screen flex items-center">
         <!-- Background Gradient -->
@@ -74,20 +88,6 @@
         <div class="absolute bottom-20 right-10 w-32 h-32 bg-purple-500/10 rounded-full blur-xl"></div>
     </div>
 </template>
-
-<script setup>
-import banner from '@/assets/img/banner.webp';
-
-const scrollToLeads = () => {
-    const leadsSection = document.getElementById('leads');
-    if (leadsSection) {
-        leadsSection.scrollIntoView({ 
-            behavior: 'smooth',
-            block: 'start'
-        });
-    }
-};
-</script>
 
 <style scoped>
 .hero-section {

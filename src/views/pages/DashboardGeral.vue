@@ -18,15 +18,15 @@
                         </div>
                     </div>
                     
-                    <!-- Total de Prontuários -->
+                    <!-- Sessões do dia -->
                     <div class="col-12" :class="isPlanoProfissional ? 'md:col-3' : 'md:col-4'">
                         <div class="card bg-purple-900 border-purple-600">
                             <div class="flex align-items-center justify-content-between">
                                 <div>
-                                    <span class="block text-purple-200 font-medium mb-2">Total de Prontuários</span>
-                                    <div class="text-purple-200 font-medium text-xl">{{ dados.prontuarios?.prontuarios_total || 0 }}</div>
+                                    <span class="block text-purple-200 font-medium mb-2">Sessões do dia</span>
+                                    <div class="text-purple-200 font-medium text-xl">{{ dados.prontuarios?.sessoes_do_dia || 0 }}</div>
                                 </div>
-                                <i class="pi pi-file text-purple-400 text-2xl"></i>
+                                <i class="pi pi-calendar text-purple-400 text-2xl"></i>
                             </div>
                         </div>
                     </div>
@@ -63,61 +63,89 @@
                 <!-- Cards Financeiros -->
                 <div class="grid mt-4" v-if="isPlanoProfissional">
                     <div class="col-12 md:col-6">
-                        <div class="card bg-green-900 border-green-600">
-                            <div class="flex align-items-center justify-content-between">
-                                <div>
-                                    <span class="block text-green-200 font-medium mb-2">Receitas do Mês</span>
-                                    <div class="text-green-200 font-medium text-xl">
-                                        R$ {{ formatarValor(dados.financeiro?.total_receitas_mes || 0) }}
+                        <div class="card bg-gradient-to-r from-green-900 to-blue-900 border-green-600">
+                            <div class="flex flex-column h-full">
+                                <div class="flex align-items-center justify-content-between mb-3">
+                                    <h6 class="text-white font-bold mb-0 text-lg">Resumo Financeiro do Mês</h6>
+                                    <i class="pi pi-chart-line text-white text-xl"></i>
+                                </div>
+                                <div class="grid flex-grow-1">
+                                    <div class="col-6">
+                                        <div class="text-center">
+                                            <div class="flex align-items-center justify-content-center mb-2">
+                                                <i class="pi pi-arrow-up text-green-300 text-lg mr-2"></i>
+                                                <span class="text-white font-semibold text-sm">Receitas</span>
+                                            </div>
+                                            <div class="text-white font-bold text-xl">
+                                                R$ {{ formatarValor(dados.financeiro?.total_receitas_mes || 0) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="text-center">
+                                            <div class="flex align-items-center justify-content-center mb-2">
+                                                <i class="pi pi-arrow-down text-red-300 text-lg mr-2"></i>
+                                                <span class="text-white font-semibold text-sm">Despesas</span>
+                                            </div>
+                                            <div class="text-white font-bold text-xl">
+                                                R$ {{ formatarValor(dados.financeiro?.total_despesas_mes || 0) }}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <i class="pi pi-arrow-up text-green-400 text-2xl"></i>
                             </div>
                         </div>
                     </div>
                     
+                    <!-- Próxima Sessão -->
                     <div class="col-12 md:col-6">
-                        <div class="card bg-red-900 border-red-600">
-                            <div class="flex align-items-center justify-content-between">
-                                <div>
-                                    <span class="block text-red-200 font-medium mb-2">Despesas do Mês</span>
-                                    <div class="text-red-200 font-medium text-xl">
-                                        R$ {{ formatarValor(dados.financeiro?.total_despesas_mes || 0) }}
+                        <div class="card bg-gradient-to-r from-purple-900 to-indigo-900 border-purple-600">
+                            <div class="flex flex-column h-full">
+                                <div class="flex align-items-center justify-content-between mb-3">
+                                    <h6 class="text-white font-bold mb-0 text-lg">Próxima Sessão</h6>
+                                    <div class="text-right">
+                                        <div v-if="proximaSessao" class="text-white font-semibold text-sm">
+                                            {{ formatarData(proximaSessao.data_consulta) }}
+                                        </div>
+                                        <div v-if="proximaSessao" class="text-purple-200 font-medium text-xs">
+                                            {{ formatarHora(proximaSessao.data_consulta) }}
+                                        </div>
                                     </div>
                                 </div>
-                                <i class="pi pi-arrow-down text-red-400 text-2xl"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card do Plano -->
-                <div class="grid mt-4">
-                    <div class="col-12">
-                        <div class="card" :class="planoCardClass">
-                            <div class="flex align-items-center justify-content-between">
-                                <div>
-                                    <span class="block font-medium mb-2" :class="planoLabelClass">Plano Atual</span>
-                                    <div class="font-medium text-xl" :class="planoTextClass">
-                                        {{ planStore.planInfo?.nome || 'Básico' }}
+                                
+                                <div class="flex-grow-1">
+                                    <div v-if="proximaSessao" class="mb-3">
+                                        <div class="flex align-items-center mb-2">
+                                            <i class="pi pi-user text-purple-300 text-lg mr-2"></i>
+                                            <span class="text-white font-semibold">{{ proximaSessao.nome_paciente }}</span>
+                                        </div>
+                                        <div class="flex align-items-center">
+                                            <i class="pi pi-phone text-purple-300 text-lg mr-2"></i>
+                                            <span class="text-white font-medium text-sm">{{ proximaSessao.telefone_paciente || 'Telefone não informado' }}</span>
+                                        </div>
                                     </div>
-                                    <div class="text-sm mt-2" :class="planoDiasClass">
-                                        {{ planStore.stats?.limite_pacientes || 0 }} pacientes permitidos
+                                    
+                                    <div v-else class="text-center py-3">
+                                        <i class="pi pi-calendar-times text-purple-300 text-2xl mb-2"></i>
+                                        <div class="text-white font-medium text-sm">Não há nenhuma sessão agendada para próxima hora</div>
                                     </div>
                                 </div>
-                                <div class="flex align-items-center">
-                                    <i class="pi pi-star text-2xl mr-3" :class="planoIconClass"></i>
-                                    <Tag 
-                                        v-if="planStore.isPlanPaused" 
-                                        value="Plano Pausado!" 
-                                        severity="danger" 
-                                        class="ml-2"
+                                
+                                <div class="mt-auto">
+                                    <Button 
+                                        label="Ver Agenda" 
+                                        icon="pi pi-calendar" 
+                                        size="small"
+                                        class="w-full"
+                                        @click="$router.push('/agendamentos')"
                                     />
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+
 
                 <!-- Alertas -->
                 <div class="grid mt-4" v-if="mostrarAlertas && isPlanoProfissional">
@@ -256,7 +284,7 @@ export default {
                     crescimento_pacientes: {}
                 },
                 prontuarios: {
-                    prontuarios_total: 0,
+                    sessoes_do_dia: 0,
                     prontuarios_30_dias: 0,
                     ultimos_prontuarios: []
                 },
@@ -270,6 +298,7 @@ export default {
                 }
                 // Removido o campo 'plano' daqui pois será acessado via store
             },
+            proximaSessao: null,
             loading: false
         };
     },
@@ -291,21 +320,7 @@ export default {
         saldoIconClass() {
             return this.dados.financeiro?.saldo_mes >= 0 ? 'text-green-400' : 'text-red-400';
         },
-        planoCardClass() {
-            return this.planStore.isPlanPaused ? 'bg-orange-900 border-orange-600' : 'bg-gray-900 border-gray-600';
-        },
-        planoLabelClass() {
-            return this.planStore.isPlanPaused ? 'text-orange-200' : 'text-gray-200';
-        },
-        planoTextClass() {
-            return this.planStore.isPlanPaused ? 'text-orange-200' : 'text-gray-200';
-        },
-        planoDiasClass() {
-            return this.planStore.isPlanPaused ? 'text-orange-300' : 'text-gray-300';
-        },
-        planoIconClass() {
-            return this.planStore.isPlanPaused ? 'text-orange-400' : 'text-gray-400';
-        },
+
         mostrarAlertas() {
             if (this.isPlanoProfissional) {
                 return this.dados.financeiro?.alerta_financeiro || this.planStore.isPlanPaused;
@@ -534,12 +549,19 @@ export default {
             if (!data) return '-';
             return new Date(data).toLocaleDateString('pt-BR');
         },
+        formatarHora(data) {
+            if (!data) return '-';
+            return new Date(data).toLocaleTimeString('pt-BR', { hour: 'numeric', minute: 'numeric' });
+        },
         async carregarDados() {
             this.loading = true;
             
             try {
                 const response = await this.$dashboardService.buscarDados();
                 this.dados = response.data;
+                
+                // Buscar próxima sessão dos dados do dashboard
+                this.proximaSessao = response.data.prontuarios?.proxima_sessao || null;
             } catch (error) {
                 console.error('Erro ao carregar dados do dashboard:', error);
                 this.$toast.add({
@@ -560,5 +582,61 @@ export default {
 .card {
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Garantir que todos os cards tenham a mesma altura */
+.grid {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.grid > .col-12 {
+    display: flex;
+    flex-direction: column;
+}
+
+.grid > .col-12 > .card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Para os cards da primeira linha (estatísticas) */
+.grid:first-child > .col-12 > .card {
+    min-height: 120px;
+}
+
+/* Para os cards da segunda linha (financeiro e próxima sessão) */
+.grid:nth-child(2) > .col-12 > .card {
+    min-height: 180px;
+}
+
+/* Responsividade para dispositivos móveis */
+@media (max-width: 768px) {
+    .grid > .col-12 > .card {
+        min-height: auto;
+        margin-bottom: 1rem;
+    }
+    
+    .grid:first-child > .col-12 > .card {
+        min-height: 100px;
+    }
+    
+    .grid:nth-child(2) > .col-12 > .card {
+        min-height: 160px;
+    }
+}
+
+/* Garantir que o conteúdo interno se expanda corretamente */
+.card .flex {
+    flex: 1;
+}
+
+.card .flex-grow-1 {
+    flex-grow: 1;
+}
+
+.card .mt-auto {
+    margin-top: auto;
 }
 </style> 
