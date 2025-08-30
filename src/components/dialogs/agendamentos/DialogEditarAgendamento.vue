@@ -12,17 +12,17 @@
             <div class="col-12" v-else>
                 <div class="col-12">
                     <label class="block text-900 font-medium mb-2">Paciente</label>
-                    <InputText v-model="agendamentoData.nome_paciente" class="w-full" readonly />
+                    <InputText :modelValue="agendamentoData.nome_paciente" @update:modelValue="agendamentoData.nome_paciente = $event" class="w-full" readonly />
                 </div>
 
                 <div class="col-12">
                     <label class="block text-900 font-medium mb-2">Data da Consulta</label>
-                    <InputMask id="basic" v-model="agendamento.data_consulta" mask="99/99/9999" placeholder="00/00/0000" class="w-full" />
+                    <InputMask id="basic" :modelValue="agendamento.data_consulta" @update:modelValue="agendamento.data_consulta = $event" mask="99/99/9999" placeholder="00/00/0000" class="w-full" />
                 </div>
 
                 <div class="col-12">
                     <label class="block text-900 font-medium mb-2">Hora da Consulta</label>
-                    <Dropdown v-model="agendamentoData.hora_consulta" :options="horasMinutos" optionLabel="label"
+                    <Dropdown :modelValue="agendamentoData.hora_consulta" @update:modelValue="agendamentoData.hora_consulta = $event" :options="horasMinutos" optionLabel="label"
                         optionValue="value" placeholder="Selecione o horário" class="w-full" />
                 </div>
             </div>

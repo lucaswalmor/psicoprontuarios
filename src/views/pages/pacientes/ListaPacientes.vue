@@ -27,8 +27,8 @@
             </Column>
             <Column header="Ações">
                 <template #body="slotProps">
-                    <Button icon="pi pi-ellipsis-v" class="p-button-text p-button-sm"
-                        @click="verPaciente($event, slotProps.data)" v-tooltip.top="'Ações'" />
+                    <Button icon="pi pi-eye" class="p-button-text p-button-sm"
+                        @click="$router.push(`/pacientes/ficha/${slotProps.data.id}`)" v-tooltip.top="'Ver Ficha'" />
                 </template>
             </Column>
             
@@ -62,40 +62,7 @@
             </template>
         </DataTable>
 
-        <Popover ref="acoes" id="overlay_panel" style="width: 350px">
-            <ul class="rounded-md overflow-hidden">
-                <li class="border-bottom-2 border-primary-500 cursor-pointer py-3 px-2"
-                    @click="$router.push(`/pacientes/prontuarios/${pacienteSelecionado.id}`)">
-                    <i class="fa-solid fa-folder-tree me-2"></i>
-                    Prontuários
-                </li>
-                <li v-if="!planStore.isPlanPaused" class="border-bottom-2 border-primary-500 cursor-pointer py-3 px-2"
-                    @click="dialogNovoProntuario = true">
-                    <i class="fa-solid fa-folder-plus me-2"></i>
-                    Novo Prontuário
-                </li>
-                <li class="border-bottom-2 border-primary-500 cursor-pointer py-3 px-2"
-                    @click="$router.push(`/pacientes/anexos/${pacienteSelecionado.id}`)">
-                    <i class="fa-solid fa-paperclip me-2"></i>
-                    Anexar Arquivo
-                </li>
-                <li v-if="!planStore.isPlanPaused" class="border-bottom-2 border-primary-500 cursor-pointer py-3 px-2"
-                    @click="dialogAlterarStatus = true">
-                    <i class="fa-solid fa-edit me-2"></i>
-                    Alterar Status
-                </li>
-                <li v-if="!planStore.isPlanPaused" class="border-bottom-2 border-primary-500 cursor-pointer py-3 px-2"
-                    @click="editarPaciente(pacienteSelecionado.id)">
-                    <i class="fa-solid fa-user-pen me-2"></i>
-                    Editar Paciente
-                </li>
-                <li v-if="!planStore.isPlanPaused" class="border-bottom-2 border-primary-500 cursor-pointer py-3 px-2"
-                    @click="requireConfirmation($event)">
-                    <i class="fa-solid fa-user-xmark me-2"></i>
-                    Excluir Paciente
-                </li>
-            </ul>
-        </Popover>
+
 
         <ConfirmPopup group="headless">
             <template #container="{ message, acceptCallback, rejectCallback }">
@@ -114,29 +81,22 @@
             @update:visible="onUpdateDrawerFilterPaciente" @filtrarPacientes="filtrarPacientes" />
 
         <DialogNovoProntuario :visible="dialogNovoProntuario" @update:visible="onUpdateDialogNovoProntuario"
-            :paciente="pacienteSelecionado" @salvarProntuario="salvarProntuario" />
+            @salvarProntuario="salvarProntuario" />
 
-        <DialogAlterarStatus 
-            :visible="dialogAlterarStatus" 
-            :paciente="pacienteSelecionado"
-            @update:visible="onUpdateDialogAlterarStatus"
-            @status-alterado="onStatusAlterado" 
-        />
+
     </div>
 </template>
 
 <script>
 import DrawerFilterPacientes from '@/components/drawers/DrawerFilterPacientes.vue';
 import DialogNovoProntuario from '@/components/dialogs/prontuarios/DialogNovoProntuario.vue';
-import DialogAlterarStatus from '@/components/dialogs/pacientes/DialogAlterarStatus.vue';
 import { usePlanStore } from '@/store/plan';
 
 export default {
     name: 'ListaPacientes',
     components: {
         DrawerFilterPacientes,
-        DialogNovoProntuario,
-        DialogAlterarStatus
+        DialogNovoProntuario
     },
     computed: {
         planStore() {
@@ -153,9 +113,7 @@ export default {
             drawerFilterPaciente: false,
             hasFiltros: false,
             limparCampos: false,
-            dialogNovoProntuario: false,
-            dialogAlterarStatus: false,
-            pacienteSelecionado: null
+            dialogNovoProntuario: false
         };
     },
     async mounted() {
@@ -209,10 +167,7 @@ export default {
             await this.carregarPacientes();
         },
 
-        async verPaciente(event, paciente) {
-            this.pacienteSelecionado = paciente;
-            this.$refs.acoes.show(event);
-        },
+
 
         async editarPaciente(id) {
             // Navegar para página de edição
@@ -233,16 +188,6 @@ export default {
         },
         onUpdateDialogNovoProntuario(event) {
             this.dialogNovoProntuario = event;
-            this.pacienteSelecionado = null;
-        },
-
-        onUpdateDialogAlterarStatus(event) {
-            this.dialogAlterarStatus = event;
-            this.$refs.acoes.hide();
-        },
-
-        onStatusAlterado() {
-            this.carregarPacientes();
         },
 
         salvarProntuario() {

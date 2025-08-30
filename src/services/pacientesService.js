@@ -83,6 +83,55 @@ class PacientesService {
             throw error;
         }
     }
+
+    // Buscar estatísticas do paciente
+    async buscarEstatisticas(pacienteId) {
+        try {
+            const response = await api.get(`/paciente/${pacienteId}/estatisticas`);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+
+
+    // Buscar sessões do paciente
+    async buscarSessoes(pacienteId) {
+        try {
+            const response = await api.get(`/paciente/${pacienteId}/sessoes`);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Criar nova sessão
+    async criarSessao(dadosSessao) {
+        try {
+            const response = await api.post('/sessao', dadosSessao);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Excluir sessão
+    async excluirSessao(sessaoId) {
+        try {
+            const response = await api.delete(`/sessao/${sessaoId}`);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+
+
+    // Excluir paciente (alias para delete)
+    async excluir(id) {
+        return this.delete(id);
+    }
 }
 
 export default new PacientesService(); 

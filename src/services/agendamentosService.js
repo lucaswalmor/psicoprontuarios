@@ -61,6 +61,20 @@ class AgendamentosService {
             throw error;
         }
     }
+
+    // Buscar todos os agendamentos de um paciente específico
+    async buscarTodosAgendamentos(pacienteId, page = 1, perPage = 10, mes = null, ano = null) {
+        try {
+            const params = { page, per_page: perPage };
+            if (mes !== null) params.mes = mes;
+            if (ano !== null) params.ano = ano;
+            
+            const response = await api.get(`/agendamentos/paciente/${pacienteId}`, { params });
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 export default new AgendamentosService(); 

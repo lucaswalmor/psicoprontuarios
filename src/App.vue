@@ -44,7 +44,6 @@ onMounted(async () => {
     const config = loadThemeConfig();
     if (config) {
         applyCompleteTheme(config);
-        console.log('✅ Tema aplicado com sucesso');
     }
 });
 </script>

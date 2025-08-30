@@ -3,11 +3,13 @@ import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useLayout } from '@/layout/composables/layout';
 import { usePlanStore } from '@/store/plan';
+import { useThemeStore } from '@/store/theme';
 import AppConfigurator from './AppConfigurator.vue';
 
 const router = useRouter();
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
 const planStore = usePlanStore();
+const themeStore = useThemeStore();
 
 // Computed para verificar se deve mostrar o botão de upgrade
 const shouldShowUpgradeButton = computed(() => {
@@ -20,6 +22,32 @@ const shouldShowUpgradeButton = computed(() => {
 const goToUpgrade = () => {
     router.push('/upgrade');
 };
+
+// Função para alternar o tema
+const toggleTheme = () => {
+    const newTheme = themeStore.isDarkTheme ? 'light' : 'dark';
+    localStorage.setItem('theme', newTheme);
+    themeStore.updateTheme(newTheme);
+    toggleDarkMode(); // Manter compatibilidade com o sistema existente
+};
+
+// Inicializar o store do tema
+themeStore.init();
+
+// Listener para mudanças no localStorage (sincronizar entre abas)
+window.addEventListener('storage', (event) => {
+    if (event.key === 'theme') {
+        themeStore.updateTheme(event.newValue || 'light');
+    } else if (event.key === 'sakai-theme-config') {
+        try {
+            const config = JSON.parse(event.newValue || '{}');
+            
+            themeStore.updateSakaiTheme(config);
+        } catch (error) {
+            console.warn('Erro ao atualizar sakai-theme-config:', error);
+        }
+    }
+});
 </script>
 
 <template>
@@ -59,8 +87,8 @@ const goToUpgrade = () => {
             </button>
 
             <div class="layout-config-menu hidden-mobile">
-                <button type="button" class="layout-topbar-action" @click="toggleDarkMode">
-                    <i :class="['pi', { 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"></i>
+                <button type="button" class="layout-topbar-action" @click="toggleTheme">
+                    <i :class="['pi', { 'pi-moon': themeStore.isDarkTheme, 'pi-sun': !themeStore.isDarkTheme }]"></i>
                 </button>
                 <div class="relative">
                     <button

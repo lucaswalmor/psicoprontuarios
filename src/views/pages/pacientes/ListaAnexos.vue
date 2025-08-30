@@ -1,102 +1,61 @@
 <template>
-    <div class="card">
-        <div class="d-flex align-items-center gap-3 mb-4">
-            <div>
-                <h1 class="mb-0">Anexos do Paciente</h1>
-                <p class="text-gray-600 mb-0">{{ paciente?.nome }}</p>
-            </div>
-        </div>
-
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h2 class="mb-2">Lista de Anexos</h2>
-                <p class="text-gray-600 mb-0">
-                    {{ anexos.length }} arquivo(s) anexado(s)
-                    <span v-if="planStore.anexosLimite !== -1" class="text-sm text-gray-500">
-                        ({{ planStore.anexosRestantes }} no plano atual)
-                    </span>
-                </p>
-            </div>
-            <Button 
-                v-if="!planStore.isPlanPaused"
-                label="Upload de Anexo" 
-                icon="pi pi-upload" 
-                @click="dialogUploadAnexo = true"
-                :disabled="!planStore.canUploadAnexos"
-                :class="{ 'opacity-50': !planStore.canUploadAnexos }"
-            />
-        </div>
-
-        <DataTable :value="anexos" :loading="loading" tableStyle="min-width: 50rem" 
-            :emptyMessage="'Nenhum anexo encontrado'">
-            <Column field="nome_original" header="Nome do Arquivo" sortable>
-                <template #body="slotProps">
-                    <div class="flex align-items-center gap-2">
-                        <i :class="getFileIcon(slotProps.data.tipo)" class="text-primary"></i>
-                        <span>{{ slotProps.data.nome_original }}</span>
-                    </div>
-                </template>
-            </Column>
-            <Column field="tamanho" header="Tamanho" sortable>
-                <template #body="slotProps">
-                    {{ formatFileSize(slotProps.data.tamanho) }}
-                </template>
-            </Column>
-            <Column field="tipo" header="Tipo" sortable></Column>
-            <Column field="created_at" header="Data de Upload" sortable></Column>
-            <Column header="Ações">
-                <template #body="slotProps">
-                    <div class="flex gap-2">
-                        <Button icon="pi pi-download" class="p-button-text p-button-sm"
-                            @click="downloadAnexo(slotProps.data)" v-tooltip.top="'Download'" />
-                        <Button v-if="!planStore.isPlanPaused" icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger"
-                            @click="deletarAnexo(slotProps.data)" v-tooltip.top="'Excluir'" />
-                    </div>
-                </template>
-            </Column>
-            
-            <template #empty>
-                <div class="empty-state">
-                    <div class="empty-icon">
-                        <i class="pi pi-file text-6xl text-gray-400"></i>
-                    </div>
-                    <div class="empty-content">
-                        <h3 class="empty-title">Nenhum anexo encontrado</h3>
-                        <p class="empty-description">
-                            Este paciente ainda não possui arquivos anexados. Clique no botão "Upload de Anexo" para adicionar o primeiro arquivo.
-                        </p>
-                        <Button 
-                            v-if="!planStore.isPlanPaused"
-                            label="Upload de Anexo" 
-                            icon="pi pi-upload" 
-                            @click="dialogUploadAnexo = true"
-                            class="mt-3"
-                        />
-                    </div>
-                </div>
-            </template>
-        </DataTable>
-
-        <DialogUploadAnexo 
-            :visible="dialogUploadAnexo" 
-            :paciente="paciente"
-            @update:visible="onUpdateDialogUploadAnexo"
-            @anexo-uploaded="onAnexoUploaded" 
-        />
-
-        <ConfirmPopup group="headless">
-            <template #container="{ message, acceptCallback, rejectCallback }">
-                <div class="rounded p-4">
-                    <span>{{ message.message }}</span>
-                    <div class="flex items-center gap-2 mt-4">
-                        <Button label="Não" variant="outlined" @click="rejectCallback" severity="secondary" size="small"
-                            text></Button>
-                        <Button label="Sim" @click="acceptCallback" size="small"></Button>
-                    </div>
-                </div>
-            </template>
-        </ConfirmPopup>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <Button v-if="!planStore.isPlanPaused" label="Upload de Anexo" icon="pi pi-upload"
+            @click="dialogUploadAnexo = true" :disabled="!planStore.canUploadAnexos"
+            :class="{ 'opacity-50': !planStore.canUploadAnexos }" />
     </div>
+
+    <DataTable :value="anexos" :loading="loading" tableStyle="min-width: 50rem"
+        :emptyMessage="'Nenhum anexo encontrado'">
+        <Column field="nome_original" header="Nome do Arquivo" sortable>
+            <template #body="slotProps">
+                <div class="flex align-items-center gap-2">
+                    <i :class="getFileIcon(slotProps.data.tipo)" class="text-primary"></i>
+                    <span>{{ slotProps.data.nome_original }}</span>
+                </div>
+            </template>
+        </Column>
+        <Column field="tamanho" header="Tamanho" sortable>
+            <template #body="slotProps">
+                {{ formatFileSize(slotProps.data.tamanho) }}
+            </template>
+        </Column>
+        <Column field="tipo" header="Tipo" sortable></Column>
+        <Column field="created_at" header="Data de Upload" sortable></Column>
+        <Column header="Ações">
+            <template #body="slotProps">
+                <div class="flex gap-2">
+                    <Button icon="pi pi-download" class="p-button-text p-button-sm"
+                        @click="downloadAnexo(slotProps.data)" v-tooltip.top="'Download'" />
+                    <Button v-if="!planStore.isPlanPaused" icon="pi pi-trash"
+                        class="p-button-text p-button-sm p-button-danger" @click="deletarAnexo(slotProps.data, $event)"
+                        v-tooltip.top="'Excluir'" />
+                </div>
+            </template>
+        </Column>
+
+        <template #empty>
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="pi pi-file text-6xl text-gray-400"></i>
+                </div>
+                <div class="empty-content">
+                    <h3 class="empty-title">Nenhum anexo encontrado</h3>
+                    <p class="empty-description">
+                        Este paciente ainda não possui arquivos anexados. Clique no botão "Upload de Anexo" para
+                        adicionar o primeiro arquivo.
+                    </p>
+                    <Button v-if="!planStore.isPlanPaused" label="Upload de Anexo" icon="pi pi-upload"
+                        @click="dialogUploadAnexo = true" class="mt-3" />
+                </div>
+            </div>
+        </template>
+    </DataTable>
+
+    <DialogUploadAnexo :visible="dialogUploadAnexo" :paciente="paciente" @update:visible="onUpdateDialogUploadAnexo"
+        @anexo-uploaded="onAnexoUploaded" />
+
+
 </template>
 
 <script>
@@ -108,6 +67,24 @@ export default {
     components: {
         DialogUploadAnexo
     },
+    props: {
+        pacienteId: {
+            type: String,
+            required: true
+        },
+        anexos: {
+            type: Array,
+            default: () => []
+        },
+        loading: {
+            type: Boolean,
+            default: false
+        },
+        paciente: {
+            type: Object,
+            default: null
+        }
+    },
     computed: {
         planStore() {
             return usePlanStore();
@@ -115,36 +92,11 @@ export default {
     },
     data() {
         return {
-            anexos: [],
-            loading: false,
-            paciente: null,
             dialogUploadAnexo: false
         };
     },
-    async mounted() {
-        const pacienteId = this.$route.params.id;
-        await this.carregarPaciente(pacienteId);
-    },
-    methods: {
-        async carregarPaciente(id) {
-            try {
-                this.loading = true;
-                const response = await this.$pacientesService.getById(id);
-                this.paciente = response;
-                this.anexos = response.anexos || [];
-            } catch (error) {
-                console.error('Erro ao carregar paciente:', error);
-                this.$toast.add({
-                    severity: 'error',
-                    summary: 'Erro',
-                    detail: 'Erro ao carregar dados do paciente',
-                    life: 3000
-                });
-            } finally {
-                this.loading = false;
-            }
-        },
 
+    methods: {
         getFileIcon(tipo) {
             const icons = {
                 'pdf': 'pi pi-file-pdf',
@@ -182,7 +134,11 @@ export default {
             }
         },
 
-        deletarAnexo(anexo) {
+        deletarAnexo(anexo, event) {
+            if (!event || !event.currentTarget) {
+                return;
+            }
+
             this.$confirm.require({
                 target: event.currentTarget,
                 group: 'headless',
@@ -196,7 +152,8 @@ export default {
                             detail: 'Anexo excluído com sucesso',
                             life: 3000
                         });
-                        await this.carregarPaciente(this.$route.params.id);
+                        // Emitir evento para o componente pai recarregar os dados
+                        this.$emit('anexoDeletado');
                     } catch (error) {
                         console.error('Erro ao excluir anexo:', error);
                         this.$toast.add({
@@ -208,11 +165,11 @@ export default {
                     }
                 },
                 reject: () => {
-                    this.$toast.add({ 
-                        severity: 'info', 
-                        summary: 'Cancelado', 
-                        detail: 'Exclusão cancelada', 
-                        life: 3000 
+                    this.$toast.add({
+                        severity: 'info',
+                        summary: 'Cancelado',
+                        detail: 'Exclusão cancelada',
+                        life: 3000
                     });
                 }
             });
@@ -223,7 +180,8 @@ export default {
         },
 
         async onAnexoUploaded() {
-            await this.carregarPaciente(this.$route.params.id);
+            // Emitir evento para o componente pai recarregar os dados
+            this.$emit('anexoUploaded');
         }
     }
 };
@@ -277,4 +235,4 @@ h2 {
 .mt-3 {
     margin-top: 0.75rem;
 }
-</style> 
+</style>

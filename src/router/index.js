@@ -87,6 +87,11 @@ const router = createRouter({
                     component: () => import('@/views/pages/pacientes/ListaAnexos.vue')
                 },
                 {
+                    path: '/pacientes/ficha/:id',
+                    name: 'Ficha do Paciente',
+                    component: () => import('@/views/pages/pacientes/FichaPaciente.vue')
+                },
+                {
                     path: '/configuracoes',
                     name: 'Configuracoes',
                     component: () => import('@/views/pages/Configuracoes.vue'),

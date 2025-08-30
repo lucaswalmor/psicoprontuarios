@@ -1,5 +1,6 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
+import { useThemeStore } from '@/store/theme';
 import { $t, updatePreset, updateSurfacePalette } from '@primeuix/themes';
 import Aura from '@primeuix/themes/aura';
 import Lara from '@primeuix/themes/lara';
@@ -7,6 +8,7 @@ import Nora from '@primeuix/themes/nora';
 import { ref } from 'vue';
 
 const { layoutConfig, isDarkTheme, saveCurrentConfig } = useLayout();
+const themeStore = useThemeStore();
 
 const presets = {
     Aura,
@@ -170,8 +172,12 @@ function getPresetExt() {
 function updateColors(type, color) {
     if (type === 'primary') {
         layoutConfig.primary = color.name;
+        // Atualizar o store do tema
+        themeStore.updateSakaiThemeProperty('primary', color.name);
     } else if (type === 'surface') {
         layoutConfig.surface = color.name;
+        // Atualizar o store do tema
+        themeStore.updateSakaiThemeProperty('surface', color.name);
     }
 
     applyTheme(type, color);
@@ -188,6 +194,9 @@ function applyTheme(type, color) {
 
 function onPresetChange() {
     layoutConfig.preset = preset.value;
+    // Atualizar o store do tema
+    themeStore.updateSakaiThemeProperty('preset', preset.value);
+    
     const presetValue = presets[preset.value];
     const surfacePalette = surfaces.value.find((s) => s.name === layoutConfig.surface)?.palette;
 
@@ -197,6 +206,8 @@ function onPresetChange() {
 
 function onMenuModeChange() {
     layoutConfig.menuMode = menuMode.value;
+    // Atualizar o store do tema
+    themeStore.updateSakaiThemeProperty('menuMode', menuMode.value);
     saveCurrentConfig(); // Salvar configurações no localStorage
 }
 </script>

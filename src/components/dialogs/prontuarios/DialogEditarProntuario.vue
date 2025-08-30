@@ -2,13 +2,13 @@
     <Dialog :visible="visible" modal header="Novo Prontuário" @update:visible="onUpdateVisible">
         <div class="row">
             <div class="col-12">
-                <IftaLabel>
-                    <InputMask id="basic" v-model="prontuario.data_prontuario" mask="99/99/9999" placeholder="00/00/0000" class="w-full" />
+                <div class="flex flex-column gap-2">
+                    <InputMask id="basic" :modelValue="prontuario.data_prontuario" @update:modelValue="prontuario.data_prontuario = $event" mask="99/99/9999" placeholder="00/00/0000" class="w-full" />
                     <label for="data_prontuario">Data do Prontuário</label>
-                </IftaLabel>
+                </div>
             </div>
             <div class="col-12 mt-2">
-                <Editor v-model="prontuario.descricao" editorStyle="height: 320px" />
+                <Editor :modelValue="prontuario.descricao" @update:modelValue="prontuario.descricao = $event" editorStyle="height: 320px" />
             </div>
             <div class="col-12 mt-2 d-flex gap-2 justify-content-end">
                 <Button label="Cancelar" severity="secondary" @click="onUpdateVisible(false)" />
@@ -25,7 +25,10 @@ import { Toast } from 'primevue';
 export default {
     name: 'DialogEditarProntuario',
     components: {
-        Toast
+        Toast,
+        InputMask: () => import('primevue/inputmask'),
+        Editor: () => import('primevue/editor'),
+        Button: () => import('primevue/button')
     },
     props: {
         prontuario: {

@@ -13,7 +13,7 @@
         left var(--layout-section-transition-duration);
     background-color: var(--surface-overlay);
     border-radius: var(--content-border-radius);
-    padding: 0.5rem 1.5rem;
+    padding: 10px;
 }
 
 .layout-menu {
@@ -65,8 +65,10 @@
             outline: 0 none;
             color: var(--text-color);
             cursor: pointer;
-            padding: 0.75rem 1rem;
+            padding: 20px 10px;
             border-radius: var(--content-border-radius);
+            font-size: 1rem;
+            margin-bottom: 5px;
             transition:
                 background-color var(--element-transition-duration),
                 box-shadow var(--element-transition-duration);
@@ -84,10 +86,17 @@
             &.active-route {
                 font-weight: 700;
                 color: var(--primary-color);
+                background-color: color-mix(in srgb, var(--primary-color) 20%, transparent);
+                border: 1px solid var(--primary-color);
+            }
+
+            &.active-route:hover {
+                color: color-contrast(var(--primary-color) vs white, black);
             }
 
             &:hover {
-                background-color: var(--surface-hover);
+                background-color: color-mix(in srgb, var(--primary-color) 20%, transparent);
+                color: color-contrast(var(--primary-color) vs white, black);
             }
 
             &:focus {

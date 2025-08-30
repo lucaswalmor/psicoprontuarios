@@ -2,59 +2,64 @@
     <div class="grid">
         <div class="col-12">
             <div class="card">
-                <h5 class="text-600 mb-4">Dashboard Geral</h5>
+                <h5 class="text-500 mb-4">
+                    Dashboard Geral 
+                    <!-- <span v-if="themeStore.theme === 'dark'" class="text-blue-300">(Tema Escuro)</span>
+                    <span v-else class="text-gray-500">(Tema Claro)</span> -->
+                </h5>
                 <!-- Cards de Estatísticas -->
                 <div class="grid">
                     <!-- Total de Pacientes -->
                     <div class="col-12" :class="isPlanoProfissional ? 'md:col-3' : 'md:col-4'">
-                        <div class="card bg-blue-900 border-blue-600">
+                        <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
                             <div class="flex align-items-center justify-content-between">
                                 <div>
-                                    <span class="block text-blue-200 font-medium mb-2">Total de Pacientes</span>
-                                    <div class="text-blue-200 font-medium text-xl">{{ dados.pacientes?.pacientes_total || 0 }}</div>
+                                    <span class="block text-2xl text-500 font-medium mb-2">Total de Pacientes</span>
+                                    <!-- <span class="block text-blue-500 text-2xl font-medium mb-2">Total de Pacientes</span> -->
+                                    <div class="font-medium text-xl text-500">{{ dados.pacientes?.pacientes_total || 0 }}</div>
                                 </div>
-                                <i class="pi pi-users text-blue-400 text-2xl"></i>
+                                <i :class="`pi pi-users text-2xl text-500`"></i>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Sessões do dia -->
                     <div class="col-12" :class="isPlanoProfissional ? 'md:col-3' : 'md:col-4'">
-                        <div class="card bg-purple-900 border-purple-600">
+                        <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
                             <div class="flex align-items-center justify-content-between">
                                 <div>
-                                    <span class="block text-purple-200 font-medium mb-2">Sessões do dia</span>
-                                    <div class="text-purple-200 font-medium text-xl">{{ dados.prontuarios?.sessoes_do_dia || 0 }}</div>
+                                    <span class="block text-2xl text-500 font-medium mb-2">Sessões do dia</span>
+                                    <div class="text-500 font-medium text-xl">{{ dados.prontuarios?.sessoes_do_dia || 0 }}</div>
                                 </div>
-                                <i class="pi pi-calendar text-purple-400 text-2xl"></i>
+                                <i :class="`pi pi-calendar text-500 text-2xl`"></i>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Prontuários 30 dias -->
                     <div class="col-12" :class="isPlanoProfissional ? 'md:col-3' : 'md:col-4'">
-                        <div class="card bg-orange-900 border-orange-600">
+                        <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
                             <div class="flex align-items-center justify-content-between">
                                 <div>
-                                    <span class="block text-orange-200 font-medium mb-2">Prontuários (30 dias)</span>
-                                    <div class="text-orange-200 font-medium text-xl">{{ dados.prontuarios?.prontuarios_30_dias || 0 }}</div>
+                                    <span class="text-500 block text-2xl font-medium mb-2">Prontuários (30 dias)</span>
+                                    <div class="text-500 font-medium text-xl">{{ dados.prontuarios?.prontuarios_30_dias || 0 }}</div>
                                 </div>
-                                <i class="pi pi-calendar text-orange-400 text-2xl"></i>
+                                <i :class="`pi pi-calendar text-500 text-2xl`"></i>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Saldo do Mês -->
                     <div class="col-12 md:col-3" v-if="isPlanoProfissional">
-                        <div class="card" :class="saldoClass">
+                        <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
                             <div class="flex align-items-center justify-content-between">
                                 <div>
-                                    <span class="block font-medium mb-2" :class="saldoLabelClass">Saldo do Mês</span>
-                                    <div class="font-medium text-xl" :class="saldoTextClass">
+                                    <span class="block font-medium mb-2 text-2xl text-500">Saldo do Mês</span>
+                                    <div class="font-medium text-xl text-500">
                                         R$ {{ formatarValor(dados.financeiro?.saldo_mes || 0) }}
                                     </div>
                                 </div>
-                                <i class="pi pi-wallet text-2xl" :class="saldoIconClass"></i>
+                                <i class="pi pi-wallet text-2xl text-500"></i>
                             </div>
                         </div>
                     </div>
@@ -63,20 +68,20 @@
                 <!-- Cards Financeiros -->
                 <div class="grid mt-4" v-if="isPlanoProfissional">
                     <div class="col-12 md:col-6">
-                        <div class="card bg-gradient-to-r from-green-900 to-blue-900 border-green-600">
+                        <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
                             <div class="flex flex-column h-full">
                                 <div class="flex align-items-center justify-content-between mb-3">
-                                    <h6 class="text-white font-bold mb-0 text-lg">Resumo Financeiro do Mês</h6>
-                                    <i class="pi pi-chart-line text-white text-xl"></i>
+                                    <h6 class="text-500 font-bold mb-0 text-2xl">Resumo Financeiro do Mês</h6>
+                                    <i class="pi pi-chart-line text-500 text-xl"></i>
                                 </div>
                                 <div class="grid flex-grow-1">
                                     <div class="col-6">
                                         <div class="text-center">
                                             <div class="flex align-items-center justify-content-center mb-2">
                                                 <i class="pi pi-arrow-up text-green-300 text-lg mr-2"></i>
-                                                <span class="text-white font-semibold text-sm">Receitas</span>
+                                                <span class="text-500 font-semibold text-sm">Receitas</span>
                                             </div>
-                                            <div class="text-white font-bold text-xl">
+                                            <div class="text-500 font-bold text-xl">
                                                 R$ {{ formatarValor(dados.financeiro?.total_receitas_mes || 0) }}
                                             </div>
                                         </div>
@@ -85,9 +90,9 @@
                                         <div class="text-center">
                                             <div class="flex align-items-center justify-content-center mb-2">
                                                 <i class="pi pi-arrow-down text-red-300 text-lg mr-2"></i>
-                                                <span class="text-white font-semibold text-sm">Despesas</span>
+                                                <span class="text-500 font-semibold text-sm">Despesas</span>
                                             </div>
-                                            <div class="text-white font-bold text-xl">
+                                            <div class="text-500 font-bold text-xl">
                                                 R$ {{ formatarValor(dados.financeiro?.total_despesas_mes || 0) }}
                                             </div>
                                         </div>
@@ -99,15 +104,15 @@
                     
                     <!-- Próxima Sessão -->
                     <div class="col-12 md:col-6">
-                        <div class="card bg-gradient-to-r from-purple-900 to-indigo-900 border-purple-600">
+                        <div class="card bg-gradient-to-r from-pink-900 to-indigo-900 border-pink-500">
                             <div class="flex flex-column h-full">
                                 <div class="flex align-items-center justify-content-between mb-3">
-                                    <h6 class="text-white font-bold mb-0 text-lg">Próxima Sessão</h6>
+                                    <h6 class="text-pink-500 font-bold mb-0 text-lg">Próxima Sessão</h6>
                                     <div class="text-right">
-                                        <div v-if="proximaSessao" class="text-white font-semibold text-sm">
+                                        <div v-if="proximaSessao" class="text-pink-500 font-semibold text-sm">
                                             {{ formatarData(proximaSessao.data_consulta) }}
                                         </div>
-                                        <div v-if="proximaSessao" class="text-purple-200 font-medium text-xs">
+                                        <div v-if="proximaSessao" class="text-pink-200 font-medium text-xs">
                                             {{ formatarHora(proximaSessao.data_consulta) }}
                                         </div>
                                     </div>
@@ -116,18 +121,18 @@
                                 <div class="flex-grow-1">
                                     <div v-if="proximaSessao" class="mb-3">
                                         <div class="flex align-items-center mb-2">
-                                            <i class="pi pi-user text-purple-300 text-lg mr-2"></i>
-                                            <span class="text-white font-semibold">{{ proximaSessao.nome_paciente }}</span>
+                                            <i class="pi pi-user text-pink-300 text-lg mr-2"></i>
+                                            <span class="text-500 font-semibold">{{ proximaSessao.nome_paciente }}</span>
                                         </div>
                                         <div class="flex align-items-center">
-                                            <i class="pi pi-phone text-purple-300 text-lg mr-2"></i>
-                                            <span class="text-white font-medium text-sm">{{ proximaSessao.telefone_paciente || 'Telefone não informado' }}</span>
+                                            <i class="pi pi-phone text-pink-300 text-lg mr-2"></i>
+                                            <span class="text-500 font-medium text-sm">{{ proximaSessao.telefone_paciente || 'Telefone não informado' }}</span>
                                         </div>
                                     </div>
                                     
                                     <div v-else class="text-center py-3">
-                                        <i class="pi pi-calendar-times text-purple-300 text-2xl mb-2"></i>
-                                        <div class="text-white font-medium text-sm">Não há nenhuma sessão agendada para próxima hora</div>
+                                        <i class="pi pi-calendar-times text-pink-300 text-2xl mb-2"></i>
+                                        <div class="text-500 font-medium text-sm">Não há nenhuma sessão agendada para próxima hora</div>
                                     </div>
                                 </div>
                                 
@@ -150,9 +155,9 @@
                 <!-- Alertas -->
                 <div class="grid mt-4" v-if="mostrarAlertas && isPlanoProfissional">
                     <div class="col-12">
-                        <div class="card bg-red-900 border-red-600" v-if="dados.financeiro?.alerta_financeiro">
+                        <div class="card bg-red-900 border-red-500" v-if="dados.financeiro?.alerta_financeiro">
                             <div class="flex align-items-center">
-                                <i class="pi pi-exclamation-triangle text-red-400 text-xl mr-3"></i>
+                                <i class="pi pi-exclamation-triangle text-red-500 text-xl mr-3"></i>
                                 <span class="text-red-200">Atenção: Saldo do mês está negativo!</span>
                             </div>
                         </div>
@@ -164,7 +169,7 @@
                     <!-- Gráfico Pizza - Receitas vs Despesas -->
                     <div class="col-12 md:col-4" v-if="isPlanoProfissional">
                         <div class="card">
-                            <h6 class="text-600 mb-3">Receitas vs Despesas (Mês)</h6>
+                            <h6 class="text-500 mb-3">Receitas vs Despesas (Mês)</h6>
                             <Chart 
                                 type="pie" 
                                 :data="pieChartData" 
@@ -177,7 +182,7 @@
                     <!-- Gráfico Linha - Evolução Financeira -->
                     <div class="col-12 md:col-4" v-if="isPlanoProfissional">
                         <div class="card">
-                            <h6 class="text-600 mb-3">Evolução Financeira (6 meses)</h6>
+                            <h6 class="text-500 mb-3">Evolução Financeira (6 meses)</h6>
                             <Chart 
                                 type="line" 
                                 :data="lineChartData" 
@@ -190,7 +195,7 @@
                     <!-- Gráfico Barra - Crescimento de Pacientes -->
                     <div class="col-12" :class="isPlanoProfissional ? 'md:col-4' : 'md:col-12'">
                         <div class="card">
-                            <h6 class="text-600 mb-3">Crescimento de Pacientes (6 meses)</h6>
+                            <h6 class="text-500 mb-3">Crescimento de Pacientes (6 meses)</h6>
                             <Chart 
                                 type="bar" 
                                 :data="barChartData" 
@@ -206,12 +211,12 @@
                     <!-- Últimos Pacientes -->
                     <div class="col-12 md:col-6">
                         <div class="card">
-                            <h6 class="text-600 mb-3">Últimos Pacientes Cadastrados</h6>
+                            <h6 class="text-500 mb-3">Últimos Pacientes Cadastrados</h6>
                             <div v-if="dados.pacientes?.ultimos_pacientes?.length > 0">
                                 <div 
                                     v-for="paciente in dados.pacientes.ultimos_pacientes" 
                                     :key="paciente.id"
-                                    class="flex justify-content-between align-items-center p-3 border-bottom-1 border-gray-600"
+                                    class="flex justify-content-between align-items-center p-3 border-bottom-1 border-gray-500"
                                 >
                                     <div>
                                         <span class="font-medium text-900">{{ paciente.nome }}</span>
@@ -237,12 +242,12 @@
                     <!-- Últimos Prontuários -->
                     <div class="col-12 md:col-6">
                         <div class="card">
-                            <h6 class="text-600 mb-3">Últimos Prontuários Criados</h6>
+                            <h6 class="text-500 mb-3">Últimos Prontuários Criados</h6>
                             <div v-if="dados.prontuarios?.ultimos_prontuarios?.length > 0">
                                 <div 
                                     v-for="prontuario in dados.prontuarios.ultimos_prontuarios" 
                                     :key="prontuario.id"
-                                    class="flex justify-content-between align-items-center p-3 border-bottom-1 border-gray-600"
+                                    class="flex justify-content-between align-items-center p-3 border-bottom-1 border-gray-500"
                                 >
                                     <div>
                                         <span class="font-medium text-900">{{ prontuario.paciente_nome }}</span>
@@ -272,6 +277,7 @@
 
 <script>
 import { usePlanStore } from '@/store/plan';
+import { useThemeStore } from '@/store/theme';
 
 export default {
     name: 'DashboardGeral',
@@ -308,19 +314,11 @@ export default {
             return usePlanStore();
         },
         
-        saldoClass() {
-            return this.dados.financeiro?.saldo_mes >= 0 ? 'bg-green-900 border-green-600' : 'bg-red-900 border-red-600';
+        // Store do tema como propriedade computada
+        themeStore() {
+            return useThemeStore();
         },
-        saldoLabelClass() {
-            return this.dados.financeiro?.saldo_mes >= 0 ? 'text-green-200' : 'text-red-200';
-        },
-        saldoTextClass() {
-            return this.dados.financeiro?.saldo_mes >= 0 ? 'text-green-200' : 'text-red-200';
-        },
-        saldoIconClass() {
-            return this.dados.financeiro?.saldo_mes >= 0 ? 'text-green-400' : 'text-red-400';
-        },
-
+        
         mostrarAlertas() {
             if (this.isPlanoProfissional) {
                 return this.dados.financeiro?.alerta_financeiro || this.planStore.isPlanPaused;
@@ -522,14 +520,14 @@ export default {
             };
         },
         isPlanoProfissional() {
-            // Usar o store do plano em vez dos dados do dashboard
-            console.log('Dados do plano do store:', this.planStore.planInfo);
-            
             // Verificar se é usuário vitalício OU se tem plano Profissional
             return this.planStore.isVitalicio || this.planStore.planInfo?.nome === 'Profissional';
         }
     },
     async mounted() {
+        // Inicializar o store do tema
+        this.themeStore.init();
+        
         // Carregar dados do plano primeiro
         if (!this.planStore.hasPlanData) {
             await this.planStore.fetchPlanInfo();

@@ -17,29 +17,29 @@
                 <!-- Cards de Resumo -->
                 <div class="grid">
                     <div class="col-12 md:col-4">
-                        <div class="card bg-green-900 border-green-600">
+                        <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
                             <div class="flex align-items-center justify-content-between">
                                 <div>
-                                    <span class="block text-green-200 font-medium mb-2">Receitas</span>
-                                    <div class="text-green-200 font-medium text-xl">R$ {{ formatarValor(dados.mes_atual?.receitas || 0) }}</div>
+                                    <span class="block text-600 font-medium mb-2">Receitas</span>
+                                    <div class="text-600 font-medium text-xl">R$ {{ formatarValor(dados.mes_atual?.receitas || 0) }}</div>
                                 </div>
-                                <i class="pi pi-arrow-up text-green-400 text-2xl"></i>
+                                <i class="pi pi-arrow-up text-green-500 text-2xl"></i>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 md:col-4">
-                        <div class="card bg-red-900 border-red-600">
+                        <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
                             <div class="flex align-items-center justify-content-between">
                                 <div>
-                                    <span class="block text-red-200 font-medium mb-2">Despesas</span>
-                                    <div class="text-red-200 font-medium text-xl">R$ {{ formatarValor(dados.mes_atual?.despesas || 0) }}</div>
+                                    <span class="block text-600 font-medium mb-2">Despesas</span>
+                                    <div class="text-600 font-medium text-xl">R$ {{ formatarValor(dados.mes_atual?.despesas || 0) }}</div>
                                 </div>
                                 <i class="pi pi-arrow-down text-red-400 text-2xl"></i>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 md:col-4">
-                        <div class="card" :class="saldoClass">
+                        <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
                             <div class="flex align-items-center justify-content-between">
                                 <div>
                                     <span class="block font-medium mb-2" :class="saldoLabelClass">Saldo</span>
@@ -86,7 +86,7 @@
                                 <div class="col-12 md:col-4">
                                     <div class="flex justify-content-between align-items-center p-3 border-bottom-1 border-gray-600">
                                         <span class="font-medium text-900">Receitas Anuais</span>
-                                        <span class="text-green-400 font-bold">R$ {{ formatarValor(dados.total_ano?.receitas || 0) }}</span>
+                                        <span class="text-500 font-bold">R$ {{ formatarValor(dados.total_ano?.receitas || 0) }}</span>
                                     </div>
                                 </div>
                                 <div class="col-12 md:col-4">
@@ -98,7 +98,7 @@
                                 <div class="col-12 md:col-4">
                                     <div class="flex justify-content-between align-items-center p-3">
                                         <span class="font-medium text-900">Saldo Anual</span>
-                                        <span class="font-bold" :class="(dados.total_ano?.saldo || 0) >= 0 ? 'text-green-400' : 'text-red-400'">
+                                        <span class="font-bold" :class="(dados.total_ano?.saldo || 0) >= 0 ? 'text-500' : 'text-red-400'">
                                             R$ {{ formatarValor(dados.total_ano?.saldo || 0) }}
                                         </span>
                                     </div>
@@ -116,7 +116,7 @@
                             <div v-if="Object.keys(dados.mes_atual?.categorias_receitas || {}).length > 0">
                                 <div v-for="(valor, categoria) in dados.mes_atual.categorias_receitas" :key="categoria" class="flex justify-content-between align-items-center p-3 border-bottom-1 border-gray-600">
                                     <span class="font-medium text-900">{{ categoria }}</span>
-                                    <span class="text-green-400 font-bold">R$ {{ formatarValor(valor) }}</span>
+                                    <span class="text-500 font-bold">R$ {{ formatarValor(valor) }}</span>
                                 </div>
                             </div>
                             <div v-else class="text-center p-4 text-gray-500">
@@ -155,6 +155,7 @@
 
 <script>
 import DrawerFilterFinanceiro from '@/components/drawers/DrawerFilterFinanceiro.vue';
+import { useThemeStore } from '@/store/theme';
 
 export default {
     name: 'FinanceiroDashboard',
@@ -192,6 +193,12 @@ export default {
         };
     },
     computed: {
+        
+        // Store do tema como propriedade computada
+        themeStore() {
+            return useThemeStore();
+        },
+
         saldo() {
             return (this.dados.mes_atual?.receitas || 0) - (this.dados.mes_atual?.despesas || 0);
         },
@@ -199,13 +206,13 @@ export default {
             return this.saldo >= 0 ? 'bg-green-900 border-green-600' : 'bg-red-900 border-red-600';
         },
         saldoLabelClass() {
-            return this.saldo >= 0 ? 'text-green-200' : 'text-red-200';
+            return this.saldo >= 0 ? 'text-600' : 'text-600';
         },
         saldoTextClass() {
             return this.saldo >= 0 ? 'text-600' : 'text-600';
         },
         saldoIconClass() {
-            return this.saldo >= 0 ? 'text-green-400' : 'text-red-400';
+            return this.saldo >= 0 ? 'text-500' : 'text-red-400';
         },
         pieChartData() {
             return {
@@ -304,6 +311,9 @@ export default {
         }
     },
     async mounted() {
+        // Inicializar o store do tema
+        this.themeStore.init();
+
         await this.carregarDados();
     },
     methods: {

@@ -1,60 +1,54 @@
 <template>
-    <div class="card">
-        <h1>Lista</h1>
-
-        <DataTable :value="prontuarios" :loading="loading" tableStyle="min-width: 50rem" paginator :rows="perPage"
-            :totalRecords="totalRecords" :lazy="true" @page="onPageChange"
-            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink">
-            <Column field="data_prontuario" header="Data"></Column>
-            <Column header="Ações">
-                <template #body="slotProps">
-                    <Button icon="pi pi-ellipsis-v" class="p-button-text p-button-sm"
-                        @click="verProntuario($event, slotProps.data)" v-tooltip.top="'Ações'" />
-                </template>
-            </Column>
-            
-            <template #empty>
-                <div class="empty-state">
-                    <div class="empty-icon">
-                        <i class="pi pi-file-edit text-6xl text-gray-400"></i>
-                    </div>
-                    <div class="empty-content">
-                        <h3 class="empty-title">Nenhum prontuário encontrado</h3>
-                        <p class="empty-description">
-                            Este paciente ainda não possui prontuários registrados. Crie o primeiro prontuário para começar a documentar os atendimentos.
-                        </p>
-                        <Button 
-                            label="Criar Primeiro Prontuário" 
-                            icon="pi pi-file-plus" 
-                            @click="criarPrimeiroProntuario"
-                            class="mt-3"
-                        />
-                    </div>
-                </div>
+    <DataTable :value="prontuarios" :loading="loading" tableStyle="min-width: 50rem" paginator :rows="perPage"
+        :totalRecords="totalRecords" :lazy="true" @page="onPageChange"
+        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink">
+        <Column field="data_prontuario" header="Data"></Column>
+        <Column header="Ações">
+            <template #body="slotProps">
+                <Button icon="pi pi-ellipsis-v" class="p-button-text p-button-sm"
+                    @click="verProntuario($event, slotProps.data)" v-tooltip.top="'Ações'" />
             </template>
-        </DataTable>
+        </Column>
 
-        <Popover ref="acoes" id="overlay_panel" style="width: 350px">
-            <ul class="rounded-md overflow-hidden">
-                <li v-if="!planStore.isPlanPaused" class="border-bottom-2 border-primary-500 cursor-pointer py-3 px-2"
-                    @click="dialogEditarProntuario = true">
-                    <i class="fa-solid fa-pen-to-square me-2"></i>
-                    Prontuário
-                </li>
-                <li class="border-bottom-2 border-primary-500 cursor-pointer py-3 px-2" @click="exportarParaPdf">
-                    <i class="fa-solid fa-file-export me-2"></i>
-                    Exportar Prontuário
-                </li>
-                <li v-if="!planStore.isPlanPaused" class="border-bottom-2 border-primary-500 cursor-pointer py-3 px-2" @click="requireConfirmation($event)">
-                    <i class="fa-solid fa-trash me-2"></i>
-                    Excluir Prontuário
-                </li>
-            </ul>
-        </Popover>
+        <template #empty>
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="pi pi-file-edit text-6xl text-gray-400"></i>
+                </div>
+                <div class="empty-content">
+                    <h3 class="empty-title">Nenhum prontuário encontrado</h3>
+                    <p class="empty-description">
+                        Este paciente ainda não possui prontuários registrados. Crie o primeiro prontuário para começar
+                        a documentar os atendimentos.
+                    </p>
+                    <Button label="Criar Primeiro Prontuário" icon="pi pi-file-plus" @click="criarPrimeiroProntuario"
+                        class="mt-3" />
+                </div>
+            </div>
+        </template>
+    </DataTable>
 
-        <DialogEditarProntuario :prontuario="prontuarioSelecionado" :visible="dialogEditarProntuario"
-            @update:visible="onUpdateDialogEditarProntuario" @salvarProntuario="salvarProntuario" />
-    </div>
+    <Popover ref="acoes" id="overlay_panel" style="width: 350px">
+        <ul class="rounded-md overflow-hidden">
+            <li v-if="!planStore.isPlanPaused" class="border-bottom-2 border-primary-500 cursor-pointer py-3 px-2"
+                @click="dialogEditarProntuario = true">
+                <i class="fa-solid fa-pen-to-square me-2"></i>
+                Prontuário
+            </li>
+            <li class="border-bottom-2 border-primary-500 cursor-pointer py-3 px-2" @click="exportarParaPdf">
+                <i class="fa-solid fa-file-export me-2"></i>
+                Exportar Prontuário
+            </li>
+            <li v-if="!planStore.isPlanPaused" class="border-bottom-2 border-primary-500 cursor-pointer py-3 px-2"
+                @click="requireConfirmation($event)">
+                <i class="fa-solid fa-trash me-2"></i>
+                Excluir Prontuário
+            </li>
+        </ul>
+    </Popover>
+
+    <DialogEditarProntuario :prontuario="prontuarioSelecionado" :visible="dialogEditarProntuario"
+        @update:visible="onUpdateDialogEditarProntuario" @salvarProntuario="salvarProntuario" />
 
     <ConfirmPopup group="headless">
         <template #container="{ message, acceptCallback, rejectCallback }">
@@ -62,7 +56,7 @@
                 <span>{{ message.message }}</span>
                 <div class="flex items-center gap-2 mt-4">
                     <Button label="Não" variant="outlined" @click="rejectCallback" severity="secondary" size="small"
-                    text></Button>
+                        text></Button>
                     <Button label="Sim" @click="acceptCallback" size="small"></Button>
                 </div>
             </div>
@@ -85,48 +79,41 @@ export default {
             return usePlanStore();
         }
     },
+    props: {
+        pacienteId: {
+            type: String,
+            required: true
+        },
+        prontuarios: {
+            type: Array,
+            default: () => []
+        },
+        loading: {
+            type: Boolean,
+            default: false
+        },
+        totalRecords: {
+            type: Number,
+            default: 0
+        }
+    },
     data() {
         return {
-            pacienteId: this.$route.params.pacienteId,
-            prontuarios: [],
-            loading: false,
             perPage: 10,
-            totalRecords: 0,
             dialogEditarProntuario: false,
             prontuarioSelecionado: null,
             logoUrl: logoUrl
         }
     },
-    mounted() {
-        this.getProntuarios(this.pacienteId);
-    },
+
     methods: {
 
-        async getProntuarios(pacienteId, page = 1, perPage = 10) {
-            try {
-                this.loading = true;
-                const response = await this.$prontuariosService.listar(pacienteId, page, {
-                    per_page: perPage
-                });
-                
-                this.prontuarios = response.prontuarios || [];
-                this.totalRecords = response.pagination?.total || 0;
-            } catch (err) {
-                console.error('Erro ao carregar prontuários:', err);
-                this.$toast.add({
-                    severity: 'error',
-                    summary: 'Erro',
-                    detail: 'Erro ao carregar prontuários',
-                    life: 3000
-                });
-            } finally {
-                this.loading = false;
-            }
-        },
+
 
         onPageChange(event) {
             const page = Math.floor(event.first / event.rows) + 1;
-            this.getProntuarios(this.pacienteId, page, event.rows);
+            // Emitir evento para o componente pai buscar os dados
+            this.$emit('pageChange', { page, perPage: event.rows });
         },
 
         onUpdateDialogEditarProntuario(visible) {
@@ -134,7 +121,8 @@ export default {
         },
 
         salvarProntuario() {
-            this.getProntuarios(this.pacienteId);
+            // Emitir evento para o componente pai recarregar os dados
+            this.$emit('prontuarioSalvo');
         },
 
         async verProntuario(event, prontuario) {
@@ -160,12 +148,12 @@ export default {
         async excluirProntuario(prontuario) {
             try {
                 await this.$prontuariosService.deletar(prontuario.id);
-                this.getProntuarios(this.pacienteId);
-                this.$toast.add({ 
-                    severity: 'success', 
-                    summary: 'Sucesso', 
-                    detail: 'Prontuário excluído com sucesso', 
-                    life: 3000 
+                this.$emit('prontuarioSalvo');
+                this.$toast.add({
+                    severity: 'success',
+                    summary: 'Sucesso',
+                    detail: 'Prontuário excluído com sucesso',
+                    life: 3000
                 });
             } catch (error) {
                 console.error('Erro ao excluir prontuário:', error);
@@ -191,7 +179,7 @@ export default {
                 }
 
                 await this.$prontuariosService.exportarProntuario(this.prontuarioSelecionado.id);
-                
+
                 this.$toast.add({
                     severity: 'success',
                     summary: 'Sucesso',
