@@ -2,7 +2,7 @@ import axios from 'axios';
 
 var urlProd = 'https://psicoprontuarios.lksoftware.com.br/public/api/';
 // var urlDev = 'http://localhost:8000/api';
-var urlDev = 'http://192.168.100.29:8000/api';
+var urlDev = 'http://127.0.0.1:8000/api';
 
 // Configuração base do axios
 const api = axios.create({
