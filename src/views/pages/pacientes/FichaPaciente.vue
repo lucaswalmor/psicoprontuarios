@@ -94,6 +94,7 @@
                 <Tab :value="1">Prontuários</Tab>
                 <Tab :value="2">Sessões</Tab>
                 <Tab :value="3">Anexos</Tab>
+                <Tab :value="4">Anamnese</Tab>
             </TabList>
             <TabPanels>
                 <!-- Tab Dados Pessoais -->
@@ -182,6 +183,13 @@
                         />
                     </div>
                 </TabPanel>
+
+                <!-- Tab Anamnese -->
+                <TabPanel :value="4">
+                    <Anamnese 
+                        :paciente-id="pacienteId"
+                    />
+                </TabPanel>
             </TabPanels>
         </Tabs>
 
@@ -202,6 +210,7 @@ import { usePlanStore } from '@/store/plan';
 import ListaSessoesPacientes from './ListaSessoesPacientes.vue';
 import ListaProntuarios from './ListaProntuarios.vue';
 import ListaAnexos from './ListaAnexos.vue';
+import Anamnese from '@/components/pacientes/Anamnese.vue';
 import DialogNovoProntuario from '@/components/dialogs/prontuarios/DialogNovoProntuario.vue';
 import DialogAlterarStatus from '@/components/dialogs/pacientes/DialogAlterarStatus.vue';
 
@@ -214,6 +223,7 @@ export default {
         ListaSessoesPacientes,
         ListaProntuarios,
         ListaAnexos,
+        Anamnese,
         DialogNovoProntuario,
         DialogAlterarStatus,
     },

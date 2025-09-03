@@ -132,6 +132,37 @@ class PacientesService {
     async excluir(id) {
         return this.delete(id);
     }
+
+    // Métodos para Anamnese
+    // Buscar anamnese de um paciente
+    async buscarAnamnese(pacienteId) {
+        try {
+            const response = await api.get(`/paciente/${pacienteId}/anamnese`);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Cadastrar anamnese
+    async cadastrarAnamnese(pacienteId, dadosAnamnese) {
+        try {
+            const response = await api.post(`/paciente/${pacienteId}/anamnese`, dadosAnamnese);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Editar anamnese
+    async editarAnamnese(anamneseId, dadosAnamnese) {
+        try {
+            const response = await api.put(`/anamnese/${anamneseId}`, dadosAnamnese);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 export default new PacientesService(); 
