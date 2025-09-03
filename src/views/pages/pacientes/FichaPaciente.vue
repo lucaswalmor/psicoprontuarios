@@ -101,12 +101,22 @@
                     <div class="card" v-if="paciente">
                         <h5 class="text-500 mb-4">Informações do Paciente</h5>
 
-                        <!-- Informações Básicas -->
+                        <!-- Informações Essenciais -->
                         <div class="grid mb-4">
-                            <div class="col-12 md:col-6">
+                            <div class="col-12">
                                 <label class="block text-500 font-medium mb-2">Nome Completo</label>
                                 <InputText :model-value="paciente.nome || ''" disabled class="w-full"
                                     placeholder="Nome não informado" />
+                            </div>
+                            <div class="col-12 md:col-6">
+                                <label class="block text-500 font-medium mb-2">Telefone</label>
+                                <InputMask :model-value="paciente.telefone || ''" disabled class="w-full"
+                                    mask="(99) 99999-9999" placeholder="Telefone não informado" />
+                            </div>
+                            <div class="col-12 md:col-6">
+                                <label class="block text-500 font-medium mb-2">E-mail</label>
+                                <InputText :model-value="paciente.email || ''" disabled class="w-full"
+                                    placeholder="E-mail não informado" />
                             </div>
                             <div class="col-12 md:col-6">
                                 <label class="block text-500 font-medium mb-2">Data de Nascimento</label>
@@ -115,108 +125,6 @@
                                     disabled class="w-full" mask="99/99/9999" placeholder="Data não informada" />
                             </div>
                             <div class="col-12 md:col-6">
-                                <label class="block text-500 font-medium mb-2">CPF</label>
-                                <InputMask :model-value="paciente.cpf || ''" disabled class="w-full"
-                                    mask="999.999.999-99" placeholder="CPF não informado" />
-                            </div>
-                            <div class="col-12 md:col-6">
-                                <label class="block text-500 font-medium mb-2">RG</label>
-                                <InputText :model-value="paciente.rg || ''" disabled class="w-full"
-                                    placeholder="RG não informado" />
-                            </div>
-                            <div class="col-12 md:col-6">
-                                <label class="block text-500 font-medium mb-2">Sexo</label>
-                                <InputText :model-value="paciente.sexo || ''" disabled class="w-full"
-                                    placeholder="Sexo não informado" />
-                            </div>
-                            <div class="col-12 md:col-6">
-                                <label class="block text-500 font-medium mb-2">Estado Civil</label>
-                                <InputText :model-value="paciente.estado_civil || ''" disabled class="w-full"
-                                    placeholder="Estado civil não informado" />
-                            </div>
-                        </div>
-
-                        <!-- Contato -->
-                        <div class="grid mb-4">
-                            <div class="col-12 md:col-6">
-                                <label class="block text-500 font-medium mb-2">Telefone Principal</label>
-                                <InputMask :model-value="paciente.telefone || ''" disabled class="w-full"
-                                    mask="(99) 99999-9999" placeholder="Telefone não informado" />
-                            </div>
-                            <div class="col-12 md:col-6">
-                                <label class="block text-500 font-medium mb-2">Telefone Secundário</label>
-                                <InputMask :model-value="paciente.telefone_2 || ''" disabled class="w-full"
-                                    mask="(99) 99999-9999" placeholder="Telefone não informado" />
-                            </div>
-                            <div class="col-12">
-                                <label class="block text-500 font-medium mb-2">E-mail</label>
-                                <InputText :model-value="paciente.email || ''" disabled class="w-full"
-                                    placeholder="E-mail não informado" />
-                            </div>
-                        </div>
-
-                        <!-- Endereço -->
-                        <div class="grid mb-4">
-                            <div class="col-12 md:col-3">
-                                <label class="block text-500 font-medium mb-2">CEP</label>
-                                <InputMask :model-value="paciente.cep || ''" disabled class="w-full" mask="99999-999"
-                                    placeholder="CEP não informado" />
-                            </div>
-                            <div class="col-12 md:col-6">
-                                <label class="block text-500 font-medium mb-2">Endereço</label>
-                                <InputText :model-value="paciente.endereco || ''" disabled class="w-full"
-                                    placeholder="Endereço não informado" />
-                            </div>
-                            <div class="col-12 md:col-3">
-                                <label class="block text-500 font-medium mb-2">Número</label>
-                                <InputText :model-value="paciente.numero || ''" disabled class="w-full"
-                                    placeholder="Número não informado" />
-                            </div>
-                            <div class="col-12 md:col-6">
-                                <label class="block text-500 font-medium mb-2">Complemento</label>
-                                <InputText :model-value="paciente.complemento || ''" disabled class="w-full"
-                                    placeholder="Complemento não informado" />
-                            </div>
-                            <div class="col-12 md:col-6">
-                                <label class="block text-500 font-medium mb-2">Bairro</label>
-                                <InputText :model-value="paciente.bairro || ''" disabled class="w-full"
-                                    placeholder="Bairro não informado" />
-                            </div>
-                            <div class="col-12 md:col-6">
-                                <label class="block text-500 font-medium mb-2">Cidade</label>
-                                <InputText :model-value="paciente.cidade || ''" disabled class="w-full"
-                                    placeholder="Cidade não informada" />
-                            </div>
-                            <div class="col-12 md:col-6">
-                                <label class="block text-500 font-medium mb-2">Estado</label>
-                                <InputText :model-value="paciente.estado || ''" disabled class="w-full"
-                                    placeholder="Estado não informado" />
-                            </div>
-                        </div>
-
-                        <!-- Informações Adicionais -->
-                        <div class="grid mb-4">
-                            <div class="col-12 md:col-6">
-                                <label class="block text-500 font-medium mb-2">Profissão</label>
-                                <InputText :model-value="paciente.profissao || ''" disabled class="w-full"
-                                    placeholder="Profissão não informada" />
-                            </div>
-                            <div class="col-12 md:col-6">
-                                <label class="block text-500 font-medium mb-2">Naturalidade</label>
-                                <InputText :model-value="paciente.naturalidade || ''" disabled class="w-full"
-                                    placeholder="Naturalidade não informada" />
-                            </div>
-                            <div class="col-12 md:col-6">
-                                <label class="block text-500 font-medium mb-2">Nome do Responsável</label>
-                                <InputText :model-value="paciente.nome_responsavel || ''" disabled class="w-full"
-                                    placeholder="Responsável não informado" />
-                            </div>
-                            <div class="col-12 md:col-6">
-                                <label class="block text-500 font-medium mb-2">Telefone do Responsável</label>
-                                <InputMask :model-value="paciente.telefone_responsavel || ''" disabled class="w-full"
-                                    mask="(99) 99999-9999" placeholder="Telefone não informado" />
-                            </div>
-                            <div class="col-12">
                                 <label class="block text-500 font-medium mb-2">Status do Tratamento</label>
                                 <Tag :severity="getStatusSeverity(paciente.status_tratamento)"
                                     :value="paciente.status_tratamento || 'Não informado'"
@@ -408,13 +316,35 @@ export default {
         },
         calcularIdade(dataNascimento) {
             if (!dataNascimento) return null;
+            
+            let dataNascimentoFormatada;
+            
+            // Se a data já está no formato dd/mm/yyyy, converter para Date
+            if (typeof dataNascimento === 'string' && dataNascimento.includes('/')) {
+                const partes = dataNascimento.split('/');
+                if (partes.length === 3) {
+                    // Formato dd/mm/yyyy -> yyyy-mm-dd para Date
+                    dataNascimentoFormatada = new Date(`${partes[2]}-${partes[1]}-${partes[0]}`);
+                } else {
+                    dataNascimentoFormatada = new Date(dataNascimento);
+                }
+            } else {
+                dataNascimentoFormatada = new Date(dataNascimento);
+            }
+            
+            // Verificar se a data é válida
+            if (isNaN(dataNascimentoFormatada.getTime())) {
+                return null;
+            }
+            
             const hoje = new Date();
-            const nascimento = new Date(dataNascimento);
-            let idade = hoje.getFullYear() - nascimento.getFullYear();
-            const mes = hoje.getMonth() - nascimento.getMonth();
-            if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+            let idade = hoje.getFullYear() - dataNascimentoFormatada.getFullYear();
+            const mes = hoje.getMonth() - dataNascimentoFormatada.getMonth();
+            
+            if (mes < 0 || (mes === 0 && hoje.getDate() < dataNascimentoFormatada.getDate())) {
                 idade--;
             }
+            
             return idade;
         },
         formatarData(data) {
