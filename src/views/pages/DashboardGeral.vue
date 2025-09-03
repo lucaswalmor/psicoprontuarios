@@ -67,11 +67,11 @@
 
                 <!-- Cards Financeiros -->
                 <div class="grid mt-4" v-if="isPlanoProfissional">
-                    <div class="col-12 md:col-6">
+                    <div class="col-12 md:col-4">
                         <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
                             <div class="flex flex-column h-full">
                                 <div class="flex align-items-center justify-content-between mb-3">
-                                    <h6 class="text-500 font-bold mb-0 text-2xl">Resumo Financeiro do Mês</h6>
+                                    <h6 class="text-500 font-bold mb-0 text-lg">Resumo Financeiro do Mês</h6>
                                     <i class="pi pi-chart-line text-500 text-xl"></i>
                                 </div>
                                 <div class="grid flex-grow-1">
@@ -103,7 +103,7 @@
                     </div>
                     
                     <!-- Próxima Sessão -->
-                    <div class="col-12 md:col-6">
+                    <div class="col-12 md:col-4">
                         <div class="card bg-gradient-to-r from-pink-900 to-indigo-900 border-pink-500">
                             <div class="flex flex-column h-full">
                                 <div class="flex align-items-center justify-content-between mb-3">
@@ -143,6 +143,63 @@
                                         size="small"
                                         class="w-full"
                                         @click="$router.push('/agendamentos')"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aniversariantes do Mês -->
+                    <div class="col-12 md:col-4">
+                        <div class="card bg-gradient-to-r from-purple-900 to-blue-900 border-purple-500">
+                            <div class="flex flex-column h-full">
+                                <div class="flex align-items-center justify-content-between mb-3">
+                                    <h6 class="text-purple-500 font-bold mb-0 text-lg">Aniversariantes do Mês</h6>
+                                    <div class="text-right">
+                                        <div class="text-purple-500 font-semibold text-sm">
+                                            {{ dados.pacientes?.aniversariantes_mes?.length || 0 }} pacientes
+                                        </div>
+                                        <div class="text-purple-200 font-medium text-xs">
+                                            {{ getNomeMesAtual() }}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex-grow-1">
+                                    <div v-if="dados.pacientes?.aniversariantes_mes?.length > 0" class="mb-3">
+                                        <div 
+                                            v-for="aniversariante in dados.pacientes.aniversariantes_mes.slice(0, 3)" 
+                                            :key="aniversariante.id"
+                                            class="flex align-items-center mb-2"
+                                        >
+                                            <i class="pi pi-gift text-purple-300 text-lg mr-2"></i>
+                                            <div class="flex-grow-1">
+                                                <span class="text-500 font-semibold text-sm">{{ aniversariante.nome }}</span>
+                                                <div class="text-purple-200 font-medium text-xs">
+                                                    Dia {{ aniversariante.dia_aniversario }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div v-if="dados.pacientes.aniversariantes_mes.length > 3" class="text-center">
+                                            <span class="text-purple-200 font-medium text-xs">
+                                                +{{ dados.pacientes.aniversariantes_mes.length - 3 }} mais
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div v-else class="text-center py-3">
+                                        <i class="pi pi-calendar-times text-purple-300 text-2xl mb-2"></i>
+                                        <div class="text-500 font-medium text-sm">Nenhum aniversariante este mês</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-auto">
+                                    <Button 
+                                        label="Ver Pacientes" 
+                                        icon="pi pi-users" 
+                                        size="small"
+                                        class="w-full"
+                                        @click="$router.push('/pacientes')"
                                     />
                                 </div>
                             </div>
@@ -551,6 +608,13 @@ export default {
             if (!data) return '-';
             return new Date(data).toLocaleTimeString('pt-BR', { hour: 'numeric', minute: 'numeric' });
         },
+        getNomeMesAtual() {
+            const meses = [
+                'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+            ];
+            return meses[new Date().getMonth()];
+        },
         async carregarDados() {
             this.loading = true;
             
@@ -604,7 +668,7 @@ export default {
     min-height: 120px;
 }
 
-/* Para os cards da segunda linha (financeiro e próxima sessão) */
+/* Para os cards da segunda linha (financeiro, próxima sessão e aniversariantes) */
 .grid:nth-child(2) > .col-12 > .card {
     min-height: 180px;
 }
@@ -622,6 +686,11 @@ export default {
     
     .grid:nth-child(2) > .col-12 > .card {
         min-height: 160px;
+    }
+    
+    /* Garantir que os 3 cards da segunda linha sejam empilhados em mobile */
+    .grid:nth-child(2) > .col-12 {
+        margin-bottom: 1rem;
     }
 }
 

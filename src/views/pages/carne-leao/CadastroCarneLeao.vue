@@ -16,7 +16,7 @@
                     <div class="flex flex-column gap-3">
                         <!-- Data de Referência -->
                         <div class="flex flex-column gap-2">
-                            <label for="data_referencia" class="font-medium">Mês/Ano de Referência *</label>
+                            <label for="data_referencia" class="text-600">Mês/Ano de Referência *</label>
                             <Calendar 
                                 v-model="form.data_referencia" 
                                 view="month" 
@@ -34,7 +34,7 @@
 
                         <!-- Observações -->
                         <div class="flex flex-column gap-2">
-                            <label for="observacoes" class="font-medium">Observações</label>
+                            <label for="observacoes" class="text-600">Observações</label>
                             <Textarea 
                                 v-model="form.observacoes" 
                                 rows="3" 
