@@ -187,6 +187,7 @@
                 <!-- Tab Anamnese -->
                 <TabPanel :value="4">
                     <Anamnese 
+                        ref="anamnese"
                         :paciente-id="pacienteId"
                     />
                 </TabPanel>
@@ -473,6 +474,12 @@ export default {
             this.$refs.listaSessoes?.carregarAgendamentos();
         },
 
+        // Métodos para Anamnese
+        async carregarAnamnese() {
+            // Emitir evento para o componente filho recarregar os dados
+            this.$refs.anamnese?.carregarAnamnese();
+        },
+
 
         
         // Callback quando anexo é deletado
@@ -496,6 +503,9 @@ export default {
                     break;
                 case 3: // Tab Anexos
                     this.carregarAnexos();
+                    break;
+                case 4: // Tab Anamnese
+                    this.carregarAnamnese();
                     break;
             }
         },

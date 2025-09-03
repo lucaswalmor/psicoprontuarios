@@ -338,8 +338,8 @@ export default {
             return usePlanStore();
         }
     },
-    async mounted() {
-        await this.carregarAnamnese();
+    mounted() {
+        // Não carrega automaticamente - será chamado quando a tab for acessada
     },
     methods: {
         async carregarAnamnese() {
