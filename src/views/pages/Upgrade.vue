@@ -58,6 +58,15 @@
                         Revise os detalhes do seu upgrade
                     </p>
 
+                    <!-- Aviso sobre período gratuito -->
+                    <div class="trial-notice">
+                        <i class="pi pi-gift"></i>
+                        <div class="trial-content">
+                            <h4>🎉 7 dias gratuitos para teste!</h4>
+                            <p>Você terá acesso completo ao plano por 7 dias sem cobrança. Após esse período, a cobrança será automática. Pode cancelar a qualquer momento dentro dos 7 dias.</p>
+                        </div>
+                    </div>
+
                     <div class="confirmation-card">
                         <div class="plan-summary">
                             <h3>Resumo do Upgrade</h3>
@@ -468,6 +477,38 @@ export default {
     color: var(--text-color);
 }
 
+.trial-notice {
+    background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
+    border: 2px solid #4caf50;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.1);
+}
+
+.trial-notice i {
+    color: #4caf50;
+    font-size: 1.5rem;
+    margin-top: 0.25rem;
+}
+
+.trial-content h4 {
+    margin: 0 0 0.5rem 0;
+    color: #2e7d32;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.trial-content p {
+    margin: 0;
+    color: #388e3c;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .plan-info h1 {
@@ -481,6 +522,16 @@ export default {
     .step-actions {
         flex-direction: column;
         align-items: center;
+    }
+    
+    .trial-notice {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+    }
+    
+    .trial-notice i {
+        margin-top: 0;
     }
 }
 </style> 
