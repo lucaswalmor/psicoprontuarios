@@ -5,7 +5,7 @@ export const useThemeStore = defineStore('theme', {
         isDark: false,
         sakaiTheme: {
             preset: 'Aura',
-            primary: 'emerald',
+            primary: 'purple',
             surface: 'zinc',
             darkTheme: false,
             menuMode: 'static'
@@ -48,7 +48,7 @@ export const useThemeStore = defineStore('theme', {
                     const config = JSON.parse(sakaiConfig);
                     this.sakaiTheme = {
                         preset: config.preset || 'Aura',
-                        primary: config.primary || 'emerald',
+                        primary: config.primary || 'purple',
                         surface: config.surface || 'zinc',
                         darkTheme: config.darkTheme || false,
                         menuMode: config.menuMode || 'static'

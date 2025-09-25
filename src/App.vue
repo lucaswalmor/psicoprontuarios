@@ -14,7 +14,7 @@ const setDefaultTheme = () => {
     // Configuração padrão do tema
     const defaultSakai = {
         "preset": "Aura",
-        "primary": "noir",
+        "primary": "purple",
         "surface": "zinc",
         "darkTheme": true,
         "menuMode": "static"

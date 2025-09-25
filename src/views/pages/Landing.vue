@@ -140,7 +140,7 @@ onMounted(() => {
     <div class="landing-page bg-surface-0 dark:bg-surface-900 min-h-screen">
         <!-- Header/Navigation -->
         <header class="sticky top-0 z-50 bg-surface-0/95 dark:bg-surface-900/95 backdrop-blur-sm border-b border-surface-200 dark:border-surface-700" role="banner">
-            <div class="container mx-auto px-4 py-4">
+            <div class="container mx-auto px-4">
                 <TopbarWidget />
             </div>
         </header>

@@ -5,7 +5,7 @@ const STORAGE_KEY = 'sakai-theme-config';
 // Configurações padrão
 const DEFAULT_CONFIG = {
     preset: 'Aura',
-    primary: 'emerald',
+    primary: 'purple',
     surface: null,
     darkTheme: false,
     menuMode: 'static'
