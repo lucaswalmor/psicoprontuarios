@@ -44,35 +44,30 @@ export const loadThemeConfig = () => {
         const stored = localStorage.getItem(STORAGE_KEY);
         const themeKey = localStorage.getItem('theme');
         
-        if (stored) {
-            // Se há configurações salvas, usa elas como prioridade
-            const config = JSON.parse(stored);
-            const finalConfig = {
-                ...DEFAULT_CONFIG,
-                ...config
-            };
-            
-            // Sincroniza a chave 'theme' com as configurações salvas se necessário
-            const expectedThemeKey = finalConfig.darkTheme ? 'dark' : 'light';
-            if (themeKey !== expectedThemeKey) {
-                localStorage.setItem('theme', expectedThemeKey);
-            }
-            
-            return finalConfig;
-        }
-        
-        // Se não há configurações salvas, usa a chave 'theme' ou padrão
-        if (!themeKey) {
+        // Se não há configurações salvas, sempre usa light como padrão
+        if (!stored) {
             localStorage.setItem('theme', 'light');
+            return { 
+                ...DEFAULT_CONFIG,
+                darkTheme: false
+            };
         }
         
-        const isDarkTheme = themeKey === 'dark';
-        return { 
+        // Se há configurações salvas, carrega elas
+        const config = JSON.parse(stored);
+        const finalConfig = {
             ...DEFAULT_CONFIG,
-            darkTheme: isDarkTheme
+            ...config
         };
+        
+        // Sincroniza a chave 'theme' com as configurações salvas
+        const expectedThemeKey = finalConfig.darkTheme ? 'dark' : 'light';
+        localStorage.setItem('theme', expectedThemeKey);
+        
+        return finalConfig;
     } catch (error) {
         console.warn('Erro ao carregar configurações do tema:', error);
+        localStorage.setItem('theme', 'light');
         return { 
             ...DEFAULT_CONFIG,
             darkTheme: false
