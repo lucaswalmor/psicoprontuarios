@@ -22,6 +22,12 @@ export const saveThemeConfig = (config) => {
             ...config
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(configToSave));
+        
+        // Sincroniza a chave 'theme' com o valor darkTheme
+        if (configToSave.darkTheme !== undefined) {
+            localStorage.setItem('theme', configToSave.darkTheme ? 'dark' : 'light');
+        }
+        
         return true;
     } catch (error) {
         console.warn('Erro ao salvar configurações do tema:', error);
@@ -36,25 +42,31 @@ export const saveThemeConfig = (config) => {
 export const loadThemeConfig = () => {
     try {
         const stored = localStorage.getItem(STORAGE_KEY);
-        
-        // Verifica se existe uma chave 'theme' específica para garantir tema light como padrão
         const themeKey = localStorage.getItem('theme');
+        
+        if (stored) {
+            // Se há configurações salvas, usa elas como prioridade
+            const config = JSON.parse(stored);
+            const finalConfig = {
+                ...DEFAULT_CONFIG,
+                ...config
+            };
+            
+            // Sincroniza a chave 'theme' com as configurações salvas se necessário
+            const expectedThemeKey = finalConfig.darkTheme ? 'dark' : 'light';
+            if (themeKey !== expectedThemeKey) {
+                localStorage.setItem('theme', expectedThemeKey);
+            }
+            
+            return finalConfig;
+        }
+        
+        // Se não há configurações salvas, usa a chave 'theme' ou padrão
         if (!themeKey) {
             localStorage.setItem('theme', 'light');
         }
         
-        // Define darkTheme baseado no valor da chave 'theme' no localStorage
         const isDarkTheme = themeKey === 'dark';
-        
-        if (stored) {
-            const config = JSON.parse(stored);
-            return {
-                ...DEFAULT_CONFIG,
-                ...config,
-                darkTheme: isDarkTheme
-            };
-        }
-        
         return { 
             ...DEFAULT_CONFIG,
             darkTheme: isDarkTheme
