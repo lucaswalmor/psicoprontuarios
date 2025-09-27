@@ -43,8 +43,6 @@ export const loadThemeConfig = () => {
     try {
         const stored = localStorage.getItem(STORAGE_KEY);
         const themeKey = localStorage.getItem('theme');
-
-        console.log('themeKey', themeKey);
         
         // Se não há configurações salvas, sempre usa light como padrão
         if (!stored) {
@@ -54,8 +52,6 @@ export const loadThemeConfig = () => {
                 darkTheme: false
             };
         }
-
-        console.log('stored', stored);
         
         // Se há configurações salvas, carrega elas
         const config = JSON.parse(stored);

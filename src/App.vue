@@ -16,14 +16,14 @@ const setDefaultTheme = () => {
         "preset": "Aura",
         "primary": "purple",
         "surface": "zinc",
-        "darkTheme": true,
+        "darkTheme": false,
         "menuMode": "static"
     };
 
     // Se não existe tema definido, definir o padrão
     if (!theme) {
-        localStorage.setItem('theme', 'dark');
-        console.log('🎨 Tema padrão definido: dark');
+        localStorage.setItem('theme', 'light');
+        console.log('🎨 Tema padrão definido: light');
     }
     
     // Se não existe configuração do Sakai, definir o padrão
