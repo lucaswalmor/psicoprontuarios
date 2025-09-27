@@ -36,6 +36,13 @@ export const saveThemeConfig = (config) => {
 export const loadThemeConfig = () => {
     try {
         const stored = localStorage.getItem(STORAGE_KEY);
+        
+        // Verifica se existe uma chave 'theme' específica para garantir tema light como padrão
+        const themeKey = localStorage.getItem('theme');
+        if (!themeKey) {
+            localStorage.setItem('theme', 'light');
+        }
+        
         if (stored) {
             const config = JSON.parse(stored);
             return {

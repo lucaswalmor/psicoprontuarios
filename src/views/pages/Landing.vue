@@ -6,6 +6,7 @@ import HighlightsWidget from '@/components/landing/HighlightsWidget.vue';
 import PricingWidget from '@/components/landing/PricingWidget.vue';
 import TopbarWidget from '@/components/landing/TopbarWidget.vue';
 import LeadsWidget from '@/components/landing/LeadsWidget.vue';
+import TestimonialsWidget from '@/components/landing/TestimonialsWidget.vue';
 import { onMounted } from 'vue';
 
 // SEO Meta tags
@@ -159,23 +160,28 @@ onMounted(() => {
                 </div>
             </section>
 
+            <!-- Leads Section -->
+            <section id="leads" class="py-16 lg:py-24" aria-label="Formulário de contato">
+                <LeadsWidget />
+            </section>
+
             <!-- Highlights Section -->
-            <section id="highlights" class="py-16 lg:py-24" aria-label="Destaques da plataforma">
+            <section id="highlights" class="py-16 lg:py-24 bg-surface-50 dark:bg-surface-800" aria-label="Destaques da plataforma">
                 <div class="container-fluid mx-auto px-4">
                     <HighlightsWidget />
                 </div>
             </section>
 
             <!-- Pricing Section -->
-            <section id="pricing" class="py-16 lg:py-24 bg-surface-50 dark:bg-surface-800" aria-label="Planos e preços">
+            <section id="pricing" class="py-16 lg:py-24" aria-label="Planos e preços">
                 <div class="container mx-auto px-4">
                     <PricingWidget />
                 </div>
             </section>
 
-            <!-- Leads Section -->
-            <section id="leads" class="py-16 lg:py-24" aria-label="Formulário de contato">
-                <LeadsWidget />
+            <!-- Testimonials Section -->
+            <section id="testimonials" class="py-16 lg:py-24 bg-surface-50 dark:bg-surface-800" aria-label="Depoimentos de clientes">
+                <TestimonialsWidget />
             </section>
         </main>
 

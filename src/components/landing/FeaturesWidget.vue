@@ -90,28 +90,28 @@
                 </div>
             </div>
 
-            <!-- Card 7: Pronto para Usar -->
+            <!-- Card 7: Automação WhatsApp -->
             <div class="col-md-4">
                 <div class="feature-card h-100">
-                    <div class="feature-icon bg-gradient-to-br from-teal-400 to-green-500">
-                        <i class="pi pi-check-circle text-white text-2xl"></i>
+                    <div class="feature-icon bg-gradient-to-br from-green-400 to-emerald-500">
+                        <i class="pi pi-whatsapp text-white text-2xl"></i>
                     </div>
-                    <h3 class="feature-title">Pronto para Usar</h3>
+                    <h3 class="feature-title">Automação 100% WhatsApp</h3>
                     <p class="feature-description">
-                        Configure rapidamente e comece a usar em minutos. Sem complicações.
+                        Seus pacientes podem cadastrar dados, acessar prontuários, listar informações e muito mais direto pelo WhatsApp.
                     </p>
                 </div>
             </div>
 
-            <!-- Card 8: Tecnologia Moderna -->
+            <!-- Card 8: Captação de Pacientes -->
             <div class="col-md-4">
                 <div class="feature-card h-100">
-                    <div class="feature-icon bg-gradient-to-br from-blue-500 to-indigo-500">
-                        <i class="pi pi-globe text-white text-2xl"></i>
+                    <div class="feature-icon bg-gradient-to-br from-violet-500 to-purple-600">
+                        <i class="pi pi-users text-white text-2xl"></i>
                     </div>
-                    <h3 class="feature-title">Tecnologia Moderna</h3>
+                    <h3 class="feature-title">Captação de Pacientes</h3>
                     <p class="feature-description">
-                        Desenvolvido com as melhores práticas e tecnologias mais recentes.
+                        Trabalhamos ativamente para conseguir novos pacientes e ajudar a expandir sua prática clínica.
                     </p>
                 </div>
             </div>
@@ -126,26 +126,6 @@
                     <p class="feature-description">
                         Seus dados sempre protegidos e seguros. Conformidade total com LGPD.
                     </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Testimonial Section -->
-        <div class="testimonial-section mt-20">
-            <div class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-surface-800 dark:to-surface-700 rounded-3xl p-6 md:p-8 lg:p-12">
-                <div class="text-center max-w-4xl mx-auto">
-                    <div class="flex justify-center mb-4 md:mb-6">
-                        <div class="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                            <i class="pi pi-user text-white text-lg md:text-2xl"></i>
-                        </div>
-                    </div>
-                    <blockquote class="text-lg md:text-xl lg:text-2xl text-surface-900 dark:text-surface-0 font-medium mb-4 md:mb-6 leading-relaxed px-2 md:px-0 max-w-3xl mx-auto">
-                        "O sistema de prontuários psicológicos revolucionou minha prática. Agora posso focar no que realmente importa: meus pacientes. A interface é intuitiva e os dados ficam sempre seguros."
-                    </blockquote>
-                    <div class="text-base md:text-lg text-surface-700 dark:text-surface-200">
-                        <strong class="text-surface-900 dark:text-surface-0">Dr. Maria Silva</strong>
-                        <span class="block text-sm mt-1">Psicóloga Clínica</span>
-                    </div>
                 </div>
             </div>
         </div>

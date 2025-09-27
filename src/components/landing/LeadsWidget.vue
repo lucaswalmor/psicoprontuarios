@@ -1,17 +1,21 @@
 <template>
     <div class="leads-section py-10 lg:py-12">
         <div class="container mx-auto px-4">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl lg:text-4xl font-bold text-surface-900 dark:text-surface-0 mb-4">
-                    Interessado em nossa plataforma?
-                </h2>
-                <p class="text-lg text-surface-600 dark:text-surface-400 max-w-2xl mx-auto">
-                    Deixe seus dados e entraremos em contato para demonstrar como podemos ajudar você a gerenciar seus pacientes de forma mais eficiente.
-                </p>
-            </div>
-
-            <div class="max-w-md mx-auto">
-                <form @submit.prevent="enviarLead" class="space-y-6">
+            <div class="row align-items-center">
+                <!-- Formulário à esquerda -->
+                <div class="col-lg-6 mb-8 lg:mb-0">
+                    <div class="card shadow-lg border-0 bg-surface-0 dark:bg-surface-900">
+                        <div class="card-body p-6 lg:p-8">
+                            <div class="text-center mb-6">
+                                <h3 class="text-2xl font-bold text-surface-900 dark:text-surface-0 mb-3">
+                                    Entre em Contato
+                                </h3>
+                                <p class="text-surface-600 dark:text-surface-400">
+                                    Preencha o formulário e entraremos em contato
+                                </p>
+                            </div>
+                            
+                            <form @submit.prevent="enviarLead" class="space-y-6">
                     <div>
                         <label for="nome" class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                             Nome completo
@@ -55,19 +59,57 @@
                         </template>
                         {{ loading ? 'Enviando...' : 'Enviar dados' }}
                     </Button>
-                </form>
+                            </form>
 
-                <div v-if="mensagemSucesso" class="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-                    <div class="flex items-center">
-                        <i class="pi pi-check-circle text-green-600 dark:text-green-400 mr-2"></i>
-                        <span class="text-green-800 dark:text-green-200">{{ mensagemSucesso }}</span>
+                            <div v-if="mensagemSucesso" class="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                                <div class="flex items-center">
+                                    <i class="pi pi-check-circle text-green-600 dark:text-green-400 mr-2"></i>
+                                    <span class="text-green-800 dark:text-green-200">{{ mensagemSucesso }}</span>
+                                </div>
+                            </div>
+
+                            <div v-if="mensagemErro" class="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                                <div class="flex items-center">
+                                    <i class="pi pi-exclamation-triangle text-red-600 dark:text-red-400 mr-2"></i>
+                                    <span class="text-red-800 dark:text-red-200">{{ mensagemErro }}</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div v-if="mensagemErro" class="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                    <div class="flex items-center">
-                        <i class="pi pi-exclamation-triangle text-red-600 dark:text-red-400 mr-2"></i>
-                        <span class="text-red-800 dark:text-red-200">{{ mensagemErro }}</span>
+                <!-- Texto à direita -->
+                <div class="col-lg-6">
+                    <div class="text-content">
+                        <h2 class="text-3xl lg:text-4xl font-bold text-surface-900 dark:text-surface-0 mb-6">
+                            Interessado em nossa plataforma?
+                        </h2>
+                        <p class="text-lg text-surface-600 dark:text-surface-400 mb-6 leading-relaxed">
+                            Deixe seus dados e entraremos em contato para demonstrar como podemos ajudar você a gerenciar seus pacientes de forma mais eficiente.
+                        </p>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center">
+                                <div class="w-2 h-8 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center mr-3">
+                                    <i class="pi pi-check text-primary-600 dark:text-primary-400 text-sm"></i>
+                                </div>
+                                <span class="text-surface-700 dark:text-surface-300">Demonstração personalizada</span>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <div class="w-2 h-8 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center mr-3">
+                                    <i class="pi pi-check text-primary-600 dark:text-primary-400 text-sm"></i>
+                                </div>
+                                <span class="text-surface-700 dark:text-surface-300">Suporte completo na implementação</span>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <div class="w-2 h-8 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center mr-3">
+                                    <i class="pi pi-check text-primary-600 dark:text-primary-400 text-sm"></i>
+                                </div>
+                                <span class="text-surface-700 dark:text-surface-300">Período de teste gratuito</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -199,34 +241,32 @@ const enviarLead = async () => {
 
 <style scoped>
 .leads-section {
-    /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
-    /* color: white; */
+    background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
 }
 
-.leads-section h2,
-.leads-section p {
-    color: white;
+.card {
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
 }
 
-.leads-section label {
-    color: white;
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Estilização dos inputs para o tema escuro */
-:deep(.p-inputtext) {
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: white;
+.text-content {
+    padding-left: 2rem;
 }
 
-:deep(.p-inputtext::placeholder) {
-    color: rgba(255, 255, 255, 0.7);
-}
-
-:deep(.p-inputtext:focus) {
-    background-color: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.5);
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+@media (max-width: 992px) {
+    .text-content {
+        padding-left: 0;
+        text-align: center;
+    }
+    
+    .card {
+        margin-bottom: 2rem;
+    }
 }
 
 :deep(.p-inputtext.p-invalid) {
@@ -236,5 +276,13 @@ const enviarLead = async () => {
 :deep(.p-button:disabled) {
     opacity: 0.6;
     transform: none;
+}
+
+.space-y-4 > * + * {
+    margin-top: 1rem;
+}
+
+.space-y-6 > * + * {
+    margin-top: 1.5rem;
 }
 </style> 
