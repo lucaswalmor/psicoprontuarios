@@ -43,17 +43,28 @@ export const loadThemeConfig = () => {
             localStorage.setItem('theme', 'light');
         }
         
+        // Define darkTheme baseado no valor da chave 'theme' no localStorage
+        const isDarkTheme = themeKey === 'dark';
+        
         if (stored) {
             const config = JSON.parse(stored);
             return {
                 ...DEFAULT_CONFIG,
-                ...config
+                ...config,
+                darkTheme: isDarkTheme
             };
         }
-        return { ...DEFAULT_CONFIG };
+        
+        return { 
+            ...DEFAULT_CONFIG,
+            darkTheme: isDarkTheme
+        };
     } catch (error) {
         console.warn('Erro ao carregar configurações do tema:', error);
-        return { ...DEFAULT_CONFIG };
+        return { 
+            ...DEFAULT_CONFIG,
+            darkTheme: false
+        };
     }
 };
 
