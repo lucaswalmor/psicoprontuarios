@@ -17,6 +17,7 @@
         "axios": "^1.11.0",
         "chart.js": "3.3.2",
         "jspdf": "^3.0.1",
+        "lucide-vue-next": "^0.544.0",
         "pinia": "^3.0.3",
         "primeflex": "^4.0.0",
         "primeicons": "^7.0.0",
