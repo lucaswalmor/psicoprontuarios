@@ -146,7 +146,7 @@ export default {
                     } else if (err.response.status === 429) {
                         this.errorMessage = 'Muitas tentativas de login. Tente novamente em alguns minutos.';
                     } else {
-                        this.errorMessage = 'Erro ao fazer login. Tente novamente.';
+                        this.errorMessage = err.response.data.error || 'Erro ao fazer login. Tente novamente.';
                     }
                 } else if (err.request) {
                     // Erro de rede

@@ -47,6 +47,22 @@
                         <small v-if="errors.telefone" class="p-error">{{ errors.telefone }}</small>
                     </div>
 
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                            Email
+                        </label>
+                        <InputText
+                            id="email"
+                            v-model="formData.email"
+                            class="w-full"
+                            :class="{ 'p-invalid': errors.email }"
+                            placeholder="seu@email.com"
+                            type="email"
+                            required
+                        />
+                        <small v-if="errors.email" class="p-error">{{ errors.email }}</small>
+                    </div>
+
                     <Button
                         type="submit"
                         :loading="loading"
@@ -117,124 +133,149 @@
     </div>
 </template>
 
-<script setup>
-import { ref, reactive, getCurrentInstance } from 'vue';
+<script>
 import { useToast } from 'primevue/usetoast';
 import leadsService from '@/services/leadsService';
 
-const toast = useToast();
-const { proxy } = getCurrentInstance();
-
-const formData = reactive({
-    nome: '',
-    telefone: ''
-});
-
-const errors = reactive({
-    nome: '',
-    telefone: ''
-});
-
-const loading = ref(false);
-const mensagemSucesso = ref('');
-const mensagemErro = ref('');
-
-const formatarTelefone = (event) => {
-    let value = event.target.value.replace(/\D/g, '');
-    
-    if (value.length <= 11) {
-        if (value.length > 0) {
-            value = `(${value}`;
-        }
-        if (value.length > 3) {
-            value = `${value.slice(0, 3)}) ${value.slice(3)}`;
-        }
-        if (value.length > 10) {
-            value = `${value.slice(0, 10)}-${value.slice(10)}`;
-        }
-    }
-    
-    formData.telefone = value;
-};
-
-const validarFormulario = () => {
-    let valido = true;
-    
-    // Limpar erros anteriores
-    errors.nome = '';
-    errors.telefone = '';
-    
-    if (!formData.nome.trim()) {
-        errors.nome = 'Nome é obrigatório';
-        valido = false;
-    }
-    
-    if (!formData.telefone.trim()) {
-        errors.telefone = 'Telefone é obrigatório';
-        valido = false;
-    } else {
-        const telefoneLimpo = formData.telefone.replace(/\D/g, '');
-        if (telefoneLimpo.length < 10) {
-            errors.telefone = 'Telefone deve ter pelo menos 10 dígitos';
-            valido = false;
-        }
-    }
-    
-    return valido;
-};
-
-const enviarLead = async () => {
-    if (!validarFormulario()) {
-        return;
-    }
-    
-    loading.value = true;
-    mensagemSucesso.value = '';
-    mensagemErro.value = '';
-    
-    try {
-        const dados = {
-            nome: formData.nome.trim(),
-            telefone: formData.telefone
+export default {
+    name: 'LeadsWidget',
+    data() {
+        return {
+            formData: {
+                nome: '',
+                telefone: '',
+                email: ''
+            },
+            errors: {
+                nome: '',
+                telefone: '',
+                email: ''
+            },
+            loading: false,
+            mensagemSucesso: '',
+            mensagemErro: ''
         };
-        
-        await leadsService.cadastrarLead(dados);
-        
-        // Limpar formulário
-        formData.nome = '';
-        formData.telefone = '';
-        
-        mensagemSucesso.value = 'Dados enviados com sucesso! Entraremos em contato em breve.';
-        
-        toast.add({
-            severity: 'success',
-            summary: 'Sucesso',
-            detail: 'Lead cadastrado com sucesso!',
-            life: 3000
-        });
-        
-    } catch (error) {
-        console.error('Erro ao enviar lead:', error);
-        
-        let mensagem = 'Erro ao enviar dados. Tente novamente.';
-        
-        if (error.response?.data?.message) {
-            mensagem = error.response.data.message;
-        } else if (error.message) {
-            mensagem = error.message;
+    },
+    methods: {
+        formatarTelefone(event) {
+            let value = event.target.value.replace(/\D/g, '');
+            
+            if (value.length <= 11) {
+                if (value.length > 0) {
+                    value = `(${value}`;
+                }
+                if (value.length > 3) {
+                    value = `${value.slice(0, 3)}) ${value.slice(3)}`;
+                }
+                if (value.length > 10) {
+                    value = `${value.slice(0, 10)}-${value.slice(10)}`;
+                }
+            }
+            
+            this.formData.telefone = value;
+        },
+
+        validarFormulario() {
+            let valido = true;
+            
+            // Limpar erros anteriores
+            this.errors.nome = '';
+            this.errors.telefone = '';
+            this.errors.email = '';
+            
+            if (!this.formData.nome.trim()) {
+                this.errors.nome = 'Nome é obrigatório';
+                valido = false;
+            }
+            
+            if (!this.formData.telefone.trim()) {
+                this.errors.telefone = 'Telefone é obrigatório';
+                valido = false;
+            } else {
+                const telefoneLimpo = this.formData.telefone.replace(/\D/g, '');
+                if (telefoneLimpo.length < 10) {
+                    this.errors.telefone = 'Telefone deve ter pelo menos 10 dígitos';
+                    valido = false;
+                }
+            }
+
+            if (!this.formData.email.trim()) {
+                this.errors.email = 'Email é obrigatório';
+                valido = false;
+            } else {
+                // Validação básica de email
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(this.formData.email.trim())) {
+                    this.errors.email = 'Email inválido';
+                    valido = false;
+                }
+            }
+            
+            return valido;
+        },
+
+        async enviarLead() {
+            if (!this.validarFormulario()) {
+                return;
+            }
+            
+            this.loading = true;
+            this.mensagemSucesso = '';
+            this.mensagemErro = '';
+            
+            try {
+                const dados = {
+                    nome: this.formData.nome.trim(),
+                    telefone: this.formData.telefone,
+                    email: this.formData.email.trim()
+                };
+                
+                await leadsService.cadastrarLead(dados);
+                
+                // Limpar formulário
+                this.formData.nome = '';
+                this.formData.telefone = '';
+                this.formData.email = '';
+                
+                this.mensagemSucesso = 'Dados enviados com sucesso! Entraremos em contato em breve.';
+                
+                this.$toast.add({
+                    severity: 'success',
+                    summary: 'Sucesso',
+                    detail: 'Lead cadastrado com sucesso!',
+                    life: 3000
+                });
+                
+            } catch (error) {
+                console.error('Erro ao enviar lead:', error);
+                
+                let mensagem = 'Erro ao enviar dados. Tente novamente.';
+                
+                if (error.response?.data?.message) {
+                    mensagem = error.response.data.message;
+                } else if (error.message) {
+                    mensagem = error.message;
+                }
+                
+                this.mensagemErro = mensagem;
+                
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: mensagem,
+                    life: 5000
+                });
+                
+            } finally {
+                this.loading = false;
+            }
         }
-        
-        mensagemErro.value = mensagem;
-        
-        toast.add({
-            severity: 'error',
-            summary: 'Erro',
-            detail: mensagem,
-            life: 5000
-        });
-        
-    } finally {
-        loading.value = false;
+    },
+    setup() {
+        const toast = useToast();
+        return {
+            toast
+        };
     }
 };
 </script>

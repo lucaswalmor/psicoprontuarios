@@ -180,7 +180,7 @@ onMounted(() => {
             </section>
 
             <!-- Testimonials Section -->
-            <section id="testimonials" class="py-16 lg:py-24 bg-surface-50 dark:bg-surface-800" aria-label="Depoimentos de clientes">
+            <section id="testimonials" class="bg-surface-50 dark:bg-surface-800" aria-label="Depoimentos de clientes">
                 <TestimonialsWidget />
             </section>
         </main>
