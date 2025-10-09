@@ -8,7 +8,6 @@ import userService from './userService';
 import planService from './planService';
 import leadsService from './leadsService';
 import anexosService from './anexosService';
-import carneLeaoService from './carneLeaoService';
 
 export {
     pacientesService,
@@ -20,8 +19,7 @@ export {
     userService,
     planService,
     leadsService,
-    anexosService,
-    carneLeaoService
+    anexosService
 };
 
 // Exportar como objeto para uso global
@@ -35,6 +33,5 @@ export default {
     userService,
     planService,
     leadsService,
-    anexosService,
-    carneLeaoService
+    anexosService
 }; 

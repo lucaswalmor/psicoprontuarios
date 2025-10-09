@@ -78,10 +78,7 @@ export default {
                 'notfound': 'Página Não Encontrada',
                 'accessDenied': 'Acesso Negado',
                 'error': 'Erro',
-                'carne-leao': 'Carne Leão',
                 'cadastro': 'Cadastro',
-                'CarneLeao': 'Lista de Carne Leão',
-                'GerarCarneLeao': 'Gerar Carne Leão',
             };
             
             const pathSegments = route.path.split('/').filter(segment => segment);
