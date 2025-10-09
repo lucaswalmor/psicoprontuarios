@@ -186,56 +186,100 @@
                         <TabPanel value="2">
                             <div class="p-4">
                                 <div class="surface-card p-4 border-round">
-                                    <h6 class="mb-3 text-800 font-bold">Preferências do Sistema</h6>
-                                    <div class="flex flex-column gap-3">
-                                        <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
-                                            <div class="flex align-items-center gap-3">
-                                                <i class="pi pi-bell text-primary text-xl"></i>
-                                                <div>
-                                                    <h6 class="m-0 text-800">Notificações</h6>
-                                                    <small class="text-600">Configure suas preferências de notificação</small>
+                                    <h6 class="mb-3 text-800 font-bold">Preferências de Notificação</h6>
+                                    <p class="text-600 mb-4">Configure como você deseja receber notificações sobre suas consultas</p>
+                                    
+                                    <div v-if="loadingNotificacoes" class="flex justify-content-center p-4">
+                                        <ProgressSpinner />
+                                    </div>
+
+                                    <div v-else class="flex flex-column gap-4">
+                                        <!-- Notificações para o Psicólogo -->
+                                        <div class="surface-100 p-4 border-round">
+                                            <h6 class="mb-3 text-800 font-bold">Notificações para Você</h6>
+                                            <div class="flex flex-column gap-3">
+                                                <div class="flex align-items-center justify-content-between">
+                                                    <div class="flex align-items-center gap-3">
+                                                        <i class="pi pi-whatsapp text-green-500 text-xl"></i>
+                                                        <div>
+                                                            <h6 class="m-0 text-800">WhatsApp</h6>
+                                                            <small class="text-600">Receber lembretes de consultas via WhatsApp</small>
+                                                        </div>
+                                                    </div>
+                                                    <Checkbox 
+                                                        v-model="configNotificacoes.notificacoes_consultas_whatsapp" 
+                                                        :binary="true" 
+                                                        inputId="whatsapp_psicologo"
+                                                    />
+                                                </div>
+
+                                                <div class="flex align-items-center justify-content-between">
+                                                    <div class="flex align-items-center gap-3">
+                                                        <i class="pi pi-envelope text-blue-500 text-xl"></i>
+                                                        <div>
+                                                            <h6 class="m-0 text-800">Email</h6>
+                                                            <small class="text-600">Receber lembretes de consultas via email</small>
+                                                        </div>
+                                                    </div>
+                                                    <Checkbox 
+                                                        v-model="configNotificacoes.notificacoes_consultas_email" 
+                                                        :binary="true" 
+                                                        inputId="email_psicologo"
+                                                    />
                                                 </div>
                                             </div>
-                                            <Button 
-                                                label="Configurar" 
-                                                icon="pi pi-cog" 
-                                                severity="secondary" 
-                                                outlined 
-                                                disabled
-                                            />
                                         </div>
-                                        
-                                        <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
-                                            <div class="flex align-items-center gap-3">
-                                                <i class="pi pi-palette text-primary text-xl"></i>
-                                                <div>
-                                                    <h6 class="m-0 text-800">Tema</h6>
-                                                    <small class="text-600">Escolha entre tema claro ou escuro</small>
+
+                                        <!-- Notificações para os Pacientes -->
+                                        <div class="surface-100 p-4 border-round">
+                                            <h6 class="mb-3 text-800 font-bold">Notificações para Pacientes</h6>
+                                            <div class="flex flex-column gap-3">
+                                                <div class="flex align-items-center justify-content-between">
+                                                    <div class="flex align-items-center gap-3">
+                                                        <i class="pi pi-whatsapp text-green-500 text-xl"></i>
+                                                        <div>
+                                                            <h6 class="m-0 text-800">WhatsApp</h6>
+                                                            <small class="text-600">Enviar lembretes de consultas para pacientes via WhatsApp</small>
+                                                        </div>
+                                                    </div>
+                                                    <Checkbox 
+                                                        v-model="configNotificacoes.notificacoes_consultas_pacientes_whatsapp" 
+                                                        :binary="true" 
+                                                        inputId="whatsapp_pacientes"
+                                                    />
+                                                </div>
+
+                                                <div class="flex align-items-center justify-content-between">
+                                                    <div class="flex align-items-center gap-3">
+                                                        <i class="pi pi-envelope text-blue-500 text-xl"></i>
+                                                        <div>
+                                                            <h6 class="m-0 text-800">Email</h6>
+                                                            <small class="text-600">Enviar lembretes de consultas para pacientes via email</small>
+                                                        </div>
+                                                    </div>
+                                                    <Checkbox 
+                                                        v-model="configNotificacoes.notificacoes_consultas_pacientes_email" 
+                                                        :binary="true" 
+                                                        inputId="email_pacientes"
+                                                    />
                                                 </div>
                                             </div>
-                                            <Button 
-                                                label="Configurar" 
-                                                icon="pi pi-cog" 
-                                                severity="secondary" 
-                                                outlined 
-                                                disabled
-                                            />
                                         </div>
-                                        
-                                        <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
-                                            <div class="flex align-items-center gap-3">
-                                                <i class="pi pi-globe text-primary text-xl"></i>
-                                                <div>
-                                                    <h6 class="m-0 text-800">Idioma</h6>
-                                                    <small class="text-600">Defina o idioma do sistema</small>
-                                                </div>
-                                            </div>
+
+                                        <div class="flex justify-content-between mt-4">
                                             <Button 
-                                                label="Configurar" 
-                                                icon="pi pi-cog" 
+                                                label="Resetar para Padrão" 
+                                                icon="pi pi-refresh" 
                                                 severity="secondary" 
                                                 outlined 
-                                                disabled
+                                                @click="resetarNotificacoes"
+                                                :loading="resetandoNotificacoes"
+                                            />
+                                            <Button 
+                                                label="Salvar Preferências" 
+                                                icon="pi pi-save" 
+                                                @click="salvarNotificacoes"
+                                                :loading="salvandoNotificacoes"
                                             />
                                         </div>
                                     </div>
@@ -331,6 +375,7 @@ import TabList from 'primevue/tablist';
 import Tab from 'primevue/tab';
 import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
+import Checkbox from 'primevue/checkbox';
 import api from '@/utils/axios';
 
 const router = useRouter();
@@ -343,6 +388,17 @@ const showReactivateDialog = ref(false);
 const showChangePasswordModal = ref(false);
 const loading = ref(false);
 const activeTab = ref('0');
+
+// Configurações de notificação
+const loadingNotificacoes = ref(false);
+const salvandoNotificacoes = ref(false);
+const resetandoNotificacoes = ref(false);
+const configNotificacoes = ref({
+    notificacoes_consultas_whatsapp: true,
+    notificacoes_consultas_email: true,
+    notificacoes_consultas_pacientes_whatsapp: true,
+    notificacoes_consultas_pacientes_email: true
+});
 
 // Computed properties
 const shouldShowUpgradeButton = computed(() => {
@@ -419,6 +475,76 @@ const getPlanSeverity = () => {
 const getStatusText = () => {
     if (isPlanPaused.value) return 'Pausado';
     return 'Ativo';
+};
+
+// Métodos para configurações de notificação
+const carregarConfiguracoesNotificacao = async () => {
+    try {
+        loadingNotificacoes.value = true;
+        const response = await api.get('/user-config');
+        configNotificacoes.value = response.data;
+    } catch (error) {
+        console.error('Erro ao carregar configurações:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: 'Erro ao carregar configurações de notificação',
+            life: 3000
+        });
+    } finally {
+        loadingNotificacoes.value = false;
+    }
+};
+
+const salvarNotificacoes = async () => {
+    try {
+        salvandoNotificacoes.value = true;
+        await api.put('/user-config', configNotificacoes.value);
+        
+        toast.add({
+            severity: 'success',
+            summary: 'Sucesso',
+            detail: 'Preferências de notificação salvas com sucesso!',
+            life: 3000
+        });
+    } catch (error) {
+        console.error('Erro ao salvar configurações:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: 'Erro ao salvar preferências de notificação',
+            life: 3000
+        });
+    } finally {
+        salvandoNotificacoes.value = false;
+    }
+};
+
+const resetarNotificacoes = async () => {
+    try {
+        resetandoNotificacoes.value = true;
+        await api.post('/user-config/reset');
+        
+        // Recarregar configurações após reset
+        await carregarConfiguracoesNotificacao();
+        
+        toast.add({
+            severity: 'success',
+            summary: 'Sucesso',
+            detail: 'Preferências resetadas para valores padrão!',
+            life: 3000
+        });
+    } catch (error) {
+        console.error('Erro ao resetar configurações:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: 'Erro ao resetar preferências',
+            life: 3000
+        });
+    } finally {
+        resetandoNotificacoes.value = false;
+    }
 };
 
 const getStatusSeverity = () => {
@@ -518,6 +644,7 @@ onMounted(async () => {
     if (!planStore.hasPlanData) {
         await planStore.fetchPlanInfo();
     }
+    await carregarConfiguracoesNotificacao();
 });
 </script>
 
