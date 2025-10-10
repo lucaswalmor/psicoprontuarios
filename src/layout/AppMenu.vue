@@ -69,7 +69,7 @@ export default {
                     label: 'Configurações',
                     items: [
                         {
-                            label: 'Gerenciar Plano', 
+                            label: 'Geral', 
                             icon: 'pi pi-fw pi-cog', 
                             to: '/configuracoes',
                             requiredFeature: null // Sempre disponível

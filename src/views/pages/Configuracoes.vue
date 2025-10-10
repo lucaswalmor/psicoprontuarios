@@ -81,7 +81,7 @@
                                 <div class="grid">
                                     <div class="col-12 md:col-6">
                                         <div class="surface-card p-4 border-round">
-                                            <h6 class="mb-3">Gerenciar Plano</h6>
+                                            <h6 class="mb-3">Geral</h6>
 
                                             <!-- Botão de Upgrade -->
                                             <Button v-if="shouldShowUpgradeButton" label="Fazer Upgrade do Plano" icon="pi pi-star"
