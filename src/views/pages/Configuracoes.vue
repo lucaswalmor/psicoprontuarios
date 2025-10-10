@@ -25,20 +25,14 @@
                             <div class="p-4">
                                 <!-- Alerta de Pagamento Recusado -->
                                 <Message v-if="statusPagamento?.tem_pendencia" severity="error" :closable="false" class="mb-4">
-                                    <div class="flex align-items-center justify-content-between">
-                                        <div>
+                                    <div class="">
+                                        <div class="flex flex-column gap-2">
                                             <strong>Pagamento Recusado</strong>
                                             <p class="mt-2 mb-0">
                                                 Seu último pagamento não foi aprovado. Atualize seu cartão para continuar aproveitando o plano 
                                                 <strong>{{ statusPagamento.assinatura.plano }}</strong>.
                                             </p>
                                         </div>
-                                        <Button 
-                                            label="Atualizar Cartão" 
-                                            icon="pi pi-credit-card"
-                                            @click="mostrarDialogoAtualizarCartao = true"
-                                            severity="danger"
-                                        />
                                     </div>
                                 </Message>
 
@@ -105,6 +99,14 @@
                                             <!-- Botão de Upgrade -->
                                             <Button v-if="shouldShowUpgradeButton" label="Fazer Upgrade do Plano" icon="pi pi-star"
                                                 class="w-full mb-3" @click="goToUpgrade" />
+                                            
+                                                <Button 
+                                                label="Atualizar Cartão" 
+                                                icon="pi pi-credit-card"
+                                                @click="mostrarDialogoAtualizarCartao = true"
+                                                severity="danger"
+                                                class="w-full mb-3"
+                                            />
 
                                             <!-- Botão de Pausar/Reativar -->
                                             <Button v-if="planStore.planInfo?.asaas_subscription_id"

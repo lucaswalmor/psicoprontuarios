@@ -1,11 +1,7 @@
 <template>
     <Dialog v-model:visible="dialogVisible" modal header="Atualizar Cartão de Crédito" :style="{ width: '500px' }">
         <div class="update-card-content">
-            <Message severity="warn" :closable="false">
-                Seu último pagamento foi recusado. Atualize seu cartão para reativar sua assinatura.
-            </Message>
-
-            <div class="mt-4">
+            <div class="mt-4 col-md-12">
                 <div class="form-group mb-3">
                     <label>Número do Cartão *</label>
                     <InputMask 
@@ -13,6 +9,7 @@
                         mask="9999 9999 9999 9999"
                         placeholder="0000 0000 0000 0000"
                         :class="{ 'p-invalid': errors.cardNumber }"
+                        class="w-full"
                     />
                     <small v-if="errors.cardNumber" class="p-error">{{ errors.cardNumber }}</small>
                 </div>
@@ -23,6 +20,7 @@
                         v-model="formData.cardName"
                         placeholder="Como está impresso no cartão"
                         :class="{ 'p-invalid': errors.cardName }"
+                        class="w-full"
                     />
                     <small v-if="errors.cardName" class="p-error">{{ errors.cardName }}</small>
                 </div>
@@ -36,6 +34,7 @@
                                 mask="99/99"
                                 placeholder="MM/AA"
                                 :class="{ 'p-invalid': errors.expiry }"
+                                class="w-full"
                             />
                             <small v-if="errors.expiry" class="p-error">{{ errors.expiry }}</small>
                         </div>
@@ -48,6 +47,7 @@
                                 mask="999"
                                 placeholder="123"
                                 :class="{ 'p-invalid': errors.cvv }"
+                                class="w-full"
                             />
                             <small v-if="errors.cvv" class="p-error">{{ errors.cvv }}</small>
                         </div>

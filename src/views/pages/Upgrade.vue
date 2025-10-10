@@ -1,146 +1,150 @@
 <template>
-    <div class="upgrade-page">
-        <!-- Cabeçalho com plano atual -->
-        <div class="current-plan-header">
-            <div class="container">
-                <div class="plan-info">
-                    <h1>Upgrade de Plano</h1>
-                    <div class="current-plan-badge" :class="currentPlanClass">
-                        <i class="pi pi-crown"></i>
-                        <span class="text-800">Você está no plano {{ currentPlanName }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="container">
-            <!-- Stepper de progresso -->
-            <UpgradeStepper 
-                :current-step="currentStep" 
-                :steps="steps"
-                @step-change="handleStepChange"
-            />
-
-            <!-- Conteúdo baseado no step atual -->
-            <div class="upgrade-content">
-                <!-- Step 1: Escolha do plano -->
-                <div v-if="currentStep === 1" class="step-content">
-                    <h2>Escolha seu novo plano</h2>
-                    <p class="step-description">
-                        Selecione o plano que melhor atende às suas necessidades
-                    </p>
-                    
-                    <div class="plans-grid">
-                        <PlanoCard
-                            v-for="plan in availablePlans"
-                            :key="plan.id"
-                            :plan="plan"
-                            :is-selected="selectedPlan?.id === plan.id"
-                            :is-current="plan.nome === currentPlanName"
-                            @select="selectPlan"
-                        />
-                    </div>
-
-                    <div class="step-actions">
-                        <Button 
-                            label="Continuar" 
-                            :disabled="!selectedPlan"
-                            @click="nextStep"
-                            class="p-button-primary"
-                        />
-                    </div>
-                </div>
-
-                <!-- Step 2: Confirmação -->
-                <div v-if="currentStep === 2" class="step-content">
-                    <h2>Confirme sua escolha</h2>
-                    <p class="step-description">
-                        Revise os detalhes do seu upgrade
-                    </p>
-
-                    <!-- Aviso sobre período gratuito -->
-                    <div class="trial-notice">
-                        <i class="pi pi-gift"></i>
-                        <div class="trial-content">
-                            <h4>🎉 7 dias gratuitos para teste!</h4>
-                            <p>Você terá acesso completo ao plano por 7 dias sem cobrança. Após esse período, a cobrança será automática. Pode cancelar a qualquer momento dentro dos 7 dias.</p>
+    <Card class="mb-5">
+        <template #content>
+            <div>
+                <!-- Cabeçalho com plano atual -->
+                <div class="current-plan-header">
+                    <div class="container">
+                        <div class="plan-info">
+                            <h1>Upgrade de Plano</h1>
+                            <div class="current-plan-badge" :class="currentPlanClass">
+                                <i class="pi pi-crown"></i>
+                                <span class="text-800">Você está no plano {{ currentPlanName }}</span>
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="confirmation-card">
-                        <div class="plan-summary">
-                            <h3>Resumo do Upgrade</h3>
-                            <div class="summary-item">
-                                <span class="label">Plano Atual:</span>
-                                <span class="value">{{ currentPlanName }}</span>
+                <div class="container">
+                    <!-- Stepper de progresso -->
+                    <UpgradeStepper 
+                        :current-step="currentStep" 
+                        :steps="steps"
+                        @step-change="handleStepChange"
+                    />
+
+                    <!-- Conteúdo baseado no step atual -->
+                    <div class="upgrade-content4">
+                        <!-- Step 1: Escolha do plano -->
+                        <div v-if="currentStep === 1" class="step-content pt-6">
+                            <h2>Escolha seu novo plano</h2>
+                            <p class="step-description">
+                                Selecione o plano que melhor atende às suas necessidades
+                            </p>
+                            
+                            <div class="plans-grid">
+                                <PlanoCard
+                                    v-for="plan in availablePlans"
+                                    :key="plan.id"
+                                    :plan="plan"
+                                    :is-selected="selectedPlan?.id === plan.id"
+                                    :is-current="plan.nome === currentPlanName"
+                                    @select="selectPlan"
+                                />
                             </div>
-                            <div class="summary-item">
-                                <span class="label">Novo Plano:</span>
-                                <span class="value">{{ selectedPlan?.nome }}</span>
-                            </div>
-                            <div class="summary-item">
-                                <span class="label">Valor:</span>
-                                <span class="value price">{{ selectedPlan?.preco }}</span>
+
+                            <div class="step-actions">
+                                <Button 
+                                    label="Continuar" 
+                                    :disabled="!selectedPlan"
+                                    @click="nextStep"
+                                    class="p-button-primary"
+                                />
                             </div>
                         </div>
 
-                        <div class="plan-features">
-                            <h4>Recursos incluídos:</h4>
-                            <ul>
-                                <li v-for="feature in selectedPlan?.features" :key="feature">
-                                    <i class="pi pi-check"></i>
-                                    {{ feature }}
-                                </li>
-                            </ul>
+                        <!-- Step 2: Confirmação -->
+                        <div v-if="currentStep === 2" class="step-content">
+                            <h2>Confirme sua escolha</h2>
+                            <p class="step-description">
+                                Revise os detalhes do seu upgrade
+                            </p>
+
+                            <!-- Aviso sobre período gratuito -->
+                            <div class="trial-notice">
+                                <i class="pi pi-gift"></i>
+                                <div class="trial-content">
+                                    <h4>🎉 7 dias gratuitos para teste!</h4>
+                                    <p>Você terá acesso completo ao plano por 7 dias sem cobrança. Após esse período, a cobrança será automática. Pode cancelar a qualquer momento dentro dos 7 dias.</p>
+                                </div>
+                            </div>
+
+                            <div class="confirmation-card">
+                                <div class="plan-summary">
+                                    <h3>Resumo do Upgrade</h3>
+                                    <div class="summary-item">
+                                        <span class="label">Plano Atual:</span>
+                                        <span class="value">{{ currentPlanName }}</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="label">Novo Plano:</span>
+                                        <span class="value">{{ selectedPlan?.nome }}</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="label">Valor:</span>
+                                        <span class="value price">{{ selectedPlan?.preco }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="plan-features">
+                                    <h4>Recursos incluídos:</h4>
+                                    <ul>
+                                        <li v-for="feature in selectedPlan?.features" :key="feature">
+                                            <i class="pi pi-check"></i>
+                                            {{ feature }}
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="step-actions">
+                                <Button 
+                                    label="Voltar" 
+                                    @click="previousStep"
+                                    class="p-button-secondary"
+                                />
+                                <Button 
+                                    label="Prosseguir para Pagamento" 
+                                    @click="nextStep"
+                                    class="p-button-primary"
+                                />
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Pagamento -->
+                        <div v-if="currentStep === 3" class="step-content">
+                            <h2>Pagamento</h2>
+                            <p class="step-description">
+                                Complete o pagamento para ativar seu novo plano
+                            </p>
+
+                            <div class="payment-section">
+                                <PaymentForm 
+                                    :plan="selectedPlan"
+                                    @payment-success="handlePaymentSuccess"
+                                    @payment-error="handlePaymentError"
+                                />
+                            </div>
+
+                            <div class="step-actions">
+                                <Button 
+                                    label="Voltar" 
+                                    @click="previousStep"
+                                    class="p-button-secondary"
+                                />
+                            </div>
                         </div>
                     </div>
 
-                    <div class="step-actions">
-                        <Button 
-                            label="Voltar" 
-                            @click="previousStep"
-                            class="p-button-secondary"
-                        />
-                        <Button 
-                            label="Prosseguir para Pagamento" 
-                            @click="nextStep"
-                            class="p-button-primary"
-                        />
-                    </div>
-                </div>
-
-                <!-- Step 3: Pagamento -->
-                <div v-if="currentStep === 3" class="step-content">
-                    <h2>Pagamento</h2>
-                    <p class="step-description">
-                        Complete o pagamento para ativar seu novo plano
-                    </p>
-
-                    <div class="payment-section">
-                        <PaymentForm 
-                            :plan="selectedPlan"
-                            @payment-success="handlePaymentSuccess"
-                            @payment-error="handlePaymentError"
-                        />
-                    </div>
-
-                    <div class="step-actions">
-                        <Button 
-                            label="Voltar" 
-                            @click="previousStep"
-                            class="p-button-secondary"
-                        />
+                    <!-- FAQ Section -->
+                    <div class="faq-section mb-5">
+                        <h3>Perguntas Frequentes</h3>
+                        <FaqModal />
                     </div>
                 </div>
             </div>
-
-            <!-- FAQ Section -->
-            <div class="faq-section mb-5">
-                <h3>Perguntas Frequentes</h3>
-                <FaqModal />
-            </div>
-        </div>
-    </div>
+        </template>
+    </Card>
 </template>
 
 <script>
@@ -316,11 +320,6 @@ export default {
 </script>
 
 <style scoped>
-.upgrade-page {
-    min-height: 100vh;
-    background: var(--surface-ground);
-}
-
 .current-plan-header {
     background: linear-gradient(135deg, var(--primary-color), var(--primary-600));
     color: white;
@@ -385,7 +384,7 @@ export default {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
     margin-bottom: 2rem;
-    padding-top: 2rem;
+    padding-top: 1rem;
     position: relative;
 }
 
