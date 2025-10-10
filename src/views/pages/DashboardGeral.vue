@@ -207,8 +207,6 @@
                     </div>
                 </div>
 
-
-
                 <!-- Alertas -->
                 <div class="grid mt-4" v-if="mostrarAlertas && isPlanoProfissional">
                     <div class="col-12">
@@ -223,41 +221,15 @@
 
                 <!-- Gráficos -->
                 <div class="grid mt-4">
-                    <!-- Gráfico Pizza - Receitas vs Despesas -->
-                    <div class="col-12 md:col-4" v-if="isPlanoProfissional">
-                        <div class="card">
-                            <h6 class="text-500 mb-3">Receitas vs Despesas (Mês)</h6>
-                            <Chart 
-                                type="pie" 
-                                :data="pieChartData" 
-                                :options="pieChartOptions" 
-                                class="h-[250px]"
-                            />
-                        </div>
-                    </div>
-                    
-                    <!-- Gráfico Linha - Evolução Financeira -->
-                    <div class="col-12 md:col-4" v-if="isPlanoProfissional">
-                        <div class="card">
-                            <h6 class="text-500 mb-3">Evolução Financeira (6 meses)</h6>
-                            <Chart 
-                                type="line" 
-                                :data="lineChartData" 
-                                :options="lineChartOptions" 
-                                class="h-[250px]"
-                            />
-                        </div>
-                    </div>
-                    
                     <!-- Gráfico Barra - Crescimento de Pacientes -->
-                    <div class="col-12" :class="isPlanoProfissional ? 'md:col-4' : 'md:col-12'">
+                    <div class="col-12">
                         <div class="card">
                             <h6 class="text-500 mb-3">Crescimento de Pacientes (6 meses)</h6>
                             <Chart 
                                 type="bar" 
                                 :data="barChartData" 
-                                :options="barChartOptions" 
-                                class="h-[250px]"
+                                :options="barChartOptions"
+                                class="h-[200px]"
                             />
                         </div>
                     </div>
@@ -383,123 +355,13 @@ export default {
                 return this.planStore.isPlanPaused;
             }
         },
-        pieChartData() {
-            if (!this.isPlanoProfissional) {
-                return {
-                    labels: [],
-                    datasets: [{
-                        data: [],
-                        backgroundColor: [],
-                        borderWidth: 2,
-                        borderColor: '#374151'
-                    }]
-                };
-            }
-            
-            return {
-                labels: ['Receitas', 'Despesas'],
-                datasets: [{
-                    data: [
-                        this.dados.financeiro?.total_receitas_mes || 0,
-                        this.dados.financeiro?.total_despesas_mes || 0
-                    ],
-                    backgroundColor: ['#22c55e', '#ef4444'],
-                    borderWidth: 2,
-                    borderColor: '#374151'
-                }]
-            };
-        },
-        pieChartOptions() {
-            return {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            color: '#ffffff'
-                        }
-                    }
-                }
-            };
-        },
-        lineChartData() {
-            if (!this.isPlanoProfissional) {
-                return {
-                    labels: [],
-                    datasets: []
-                };
-            }
-            
-            const labels = [];
-            const receitasData = [];
-            const despesasData = [];
-            
-            Object.values(this.dados.financeiro?.evolucao_financeira || {}).forEach(item => {
-                labels.push(item.mes);
-                receitasData.push(parseFloat(item.receitas || 0));
-                despesasData.push(parseFloat(item.despesas || 0));
-            });
-
-            return {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Receitas',
-                        data: receitasData,
-                        borderColor: '#22c55e',
-                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                        tension: 0.4
-                    },
-                    {
-                        label: 'Despesas',
-                        data: despesasData,
-                        borderColor: '#ef4444',
-                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                        tension: 0.4
-                    }
-                ]
-            };
-        },
-        lineChartOptions() {
-            return {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: {
-                            color: '#ffffff'
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: '#374151'
-                        },
-                        ticks: {
-                            color: '#ffffff'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            color: '#374151'
-                        },
-                        ticks: {
-                            color: '#ffffff'
-                        }
-                    }
-                }
-            };
-        },
         barChartData() {
             const labels = [];
             const data = [];
             
-            // Mapeamento de meses em inglês para português
+            // Mapeamento completo de meses em inglês para português brasileiro
             const mesesTraduzidos = {
+                // Meses completos
                 'January': 'Janeiro',
                 'February': 'Fevereiro',
                 'March': 'Março',
@@ -512,6 +374,7 @@ export default {
                 'October': 'Outubro',
                 'November': 'Novembro',
                 'December': 'Dezembro',
+                // Meses abreviados
                 'Jan': 'Jan',
                 'Feb': 'Fev',
                 'Mar': 'Mar',
@@ -523,13 +386,74 @@ export default {
                 'Sep': 'Set',
                 'Oct': 'Out',
                 'Nov': 'Nov',
-                'Dec': 'Dez'
+                'Dec': 'Dez',
+                // Possíveis variações
+                'JANUARY': 'Janeiro',
+                'FEBRUARY': 'Fevereiro',
+                'MARCH': 'Março',
+                'APRIL': 'Abril',
+                'MAY': 'Maio',
+                'JUNE': 'Junho',
+                'JULY': 'Julho',
+                'AUGUST': 'Agosto',
+                'SEPTEMBER': 'Setembro',
+                'OCTOBER': 'Outubro',
+                'NOVEMBER': 'Novembro',
+                'DECEMBER': 'Dezembro',
+                'JAN': 'Jan',
+                'FEB': 'Fev',
+                'MAR': 'Mar',
+                'APR': 'Abr',
+                'MAY': 'Mai',
+                'JUN': 'Jun',
+                'JUL': 'Jul',
+                'AUG': 'Ago',
+                'SEP': 'Set',
+                'OCT': 'Out',
+                'NOV': 'Nov',
+                'DEC': 'Dez'
             };
             
             Object.values(this.dados.pacientes?.crescimento_pacientes || {}).forEach(item => {
                 // Traduz o nome do mês se estiver em inglês
-                const mesOriginal = item.mes;
-                const mesTraduzido = mesesTraduzidos[mesOriginal] || mesOriginal;
+                let mesOriginal = item.mes;
+                let mesTraduzido = null;
+                
+                // Se o formato for "May/2025", extrai apenas o mês
+                if (typeof mesOriginal === 'string' && mesOriginal.includes('/')) {
+                    const partes = mesOriginal.split('/');
+                    const mesParte = partes[0].trim();
+                    const anoParte = partes[1] ? partes[1].trim() : '';
+                    
+                    // Traduz o mês
+                    mesTraduzido = mesesTraduzidos[mesParte];
+                    
+                    // Se encontrou tradução, reconstrói com o ano
+                    if (mesTraduzido && anoParte) {
+                        mesTraduzido = `${mesTraduzido}/${anoParte}`;
+                    } else if (mesTraduzido) {
+                        mesTraduzido = mesTraduzido;
+                    } else {
+                        mesTraduzido = mesOriginal; // Fallback para o original
+                    }
+                } else {
+                    // Busca tradução direta
+                    mesTraduzido = mesesTraduzidos[mesOriginal];
+                }
+                
+                // Se não encontrou tradução, tenta converter número para nome do mês
+                if (!mesTraduzido && typeof mesOriginal === 'number') {
+                    const mesesNumericos = [
+                        'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                        'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+                    ];
+                    mesTraduzido = mesesNumericos[mesOriginal - 1] || mesOriginal;
+                }
+                
+                // Se ainda não encontrou, usa o original
+                if (!mesTraduzido) {
+                    mesTraduzido = mesOriginal;
+                }
                 
                 labels.push(mesTraduzido);
                 data.push(item.total);
@@ -559,18 +483,18 @@ export default {
                     y: {
                         beginAtZero: true,
                         grid: {
-                            color: '#374151'
+                            color: this.themeStore.theme === 'dark' ? '#374151' : '#e5e7eb'
                         },
                         ticks: {
-                            color: '#ffffff'
+                            color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000'
                         }
                     },
                     x: {
                         grid: {
-                            color: '#374151'
+                            color: this.themeStore.theme === 'dark' ? '#374151' : '#e5e7eb'
                         },
                         ticks: {
-                            color: '#ffffff'
+                            color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000'
                         }
                     }
                 }

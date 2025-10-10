@@ -53,18 +53,7 @@
 
                 <!-- Gráficos -->
                 <div class="grid">
-                    <div class="col-12 md:col-6">
-                        <div class="card">
-                            <h6 class="text-600 mb-3">Distribuição Receitas/Despesas</h6>
-                            <Chart 
-                                type="pie" 
-                                :data="pieChartData" 
-                                :options="pieChartOptions" 
-                                class="h-[300px]"
-                            />
-                        </div>
-                    </div>
-                    <div class="col-12 md:col-6">
+                    <div class="col-12 md:col-12">
                         <div class="card">
                             <h6 class="text-600 mb-3">Evolução Mensal</h6>
                             <Chart 
@@ -236,7 +225,7 @@ export default {
                     legend: {
                         position: 'bottom',
                         labels: {
-                            color: '#ffffff'
+                            color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000'
                         }
                     }
                 }
@@ -284,7 +273,7 @@ export default {
                     legend: {
                         position: 'top',
                         labels: {
-                            color: '#ffffff'
+                            color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000'
                         }
                     }
                 },
@@ -292,18 +281,18 @@ export default {
                     y: {
                         beginAtZero: true,
                         grid: {
-                            color: '#374151'
+                            color: this.themeStore.theme === 'dark' ? '#374151' : '#e5e7eb'
                         },
                         ticks: {
-                            color: '#ffffff'
+                            color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000'
                         }
                     },
                     x: {
                         grid: {
-                            color: '#374151'
+                            color: this.themeStore.theme === 'dark' ? '#374151' : '#e5e7eb'
                         },
                         ticks: {
-                            color: '#ffffff'
+                            color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000'
                         }
                     }
                 }
