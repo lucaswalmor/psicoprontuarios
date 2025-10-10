@@ -115,7 +115,27 @@ class PlanService {
         }
     }
 
+    // Verificar status de pagamento
+    async verificarStatusPagamento() {
+        try {
+            const response = await api.get('/assinatura/verificar-status');
+            return response.data;
+        } catch (error) {
+            console.error('Erro ao verificar status de pagamento:', error);
+            throw error;
+        }
+    }
 
+    // Atualizar cartão de crédito
+    async atualizarCartao(dadosCartao) {
+        try {
+            const response = await api.post('/assinatura/atualizar-cartao', dadosCartao);
+            return response.data;
+        } catch (error) {
+            console.error('Erro ao atualizar cartão:', error);
+            throw error;
+        }
+    }
 }
 
-export default new PlanService(); 
+export default new PlanService();

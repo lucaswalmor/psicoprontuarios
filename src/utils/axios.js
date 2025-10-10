@@ -1,12 +1,14 @@
 import axios from 'axios';
 
+var urlProdV2 = 'https://psicoprontuarios-v2.lksoftware.com.br/public/api/';
 var urlProd = 'https://psicoprontuarios.lksoftware.com.br/public/api/';
 // var urlDev = 'http://localhost:8000/api';
 var urlDev = 'http://127.0.0.1:8000/api';
 
 // Configuração base do axios
 const api = axios.create({
-    baseURL: urlProd,
+    baseURL: urlProdV2,
+    // baseURL: urlProd,
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -79,6 +81,23 @@ api.interceptors.response.use(
         // Não processar respostas de blob (downloads)
         if (response.config.responseType === 'blob') {
             return response;
+        }
+        
+        // Verificar status de pagamento após login bem-sucedido
+        if (response.config.url?.includes('/login') && response.status === 200) {
+            setTimeout(async () => {
+                try {
+                    const statusResp = await api.get('/assinatura/verificar-status');
+                    if (statusResp.data.tem_pendencia) {
+                        // Emitir evento global
+                        window.dispatchEvent(new CustomEvent('payment-pending', { 
+                            detail: statusResp.data 
+                        }));
+                    }
+                } catch (err) {
+                    console.error('Erro ao verificar status pagamento:', err);
+                }
+            }, 1000);
         }
         
         return response;

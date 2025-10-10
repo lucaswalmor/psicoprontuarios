@@ -23,6 +23,25 @@
                         <!-- Aba do Plano -->
                         <TabPanel value="0">
                             <div class="p-4">
+                                <!-- Alerta de Pagamento Recusado -->
+                                <Message v-if="statusPagamento?.tem_pendencia" severity="error" :closable="false" class="mb-4">
+                                    <div class="flex align-items-center justify-content-between">
+                                        <div>
+                                            <strong>Pagamento Recusado</strong>
+                                            <p class="mt-2 mb-0">
+                                                Seu último pagamento não foi aprovado. Atualize seu cartão para continuar aproveitando o plano 
+                                                <strong>{{ statusPagamento.assinatura.plano }}</strong>.
+                                            </p>
+                                        </div>
+                                        <Button 
+                                            label="Atualizar Cartão" 
+                                            icon="pi pi-credit-card"
+                                            @click="mostrarDialogoAtualizarCartao = true"
+                                            severity="danger"
+                                        />
+                                    </div>
+                                </Message>
+
                                 <!-- Seção do Plano Atual -->
                                 <div class="surface-card p-4 border-round mb-4">
                                     <div class="flex align-items-center justify-content-between mb-3">
@@ -362,6 +381,12 @@
         v-model:visible="showChangePasswordModal"
         @success="handlePasswordChangeSuccess"
     />
+    <!-- Dialog de Atualização de Cartão -->
+    <UpdateCardDialog 
+        v-model:visible="mostrarDialogoAtualizarCartao"
+        :assinatura-info="statusPagamento?.assinatura"
+        @success="verificarStatusPagamento"
+    />
 </template>
 
 <script setup>
@@ -370,6 +395,7 @@ import { useRouter } from 'vue-router';
 import { usePlanStore } from '@/store/plan';
 import { useToast } from 'primevue/usetoast';
 import DialogChangePassword from '@/components/dialogs/configuracoes/DialogChangePassword.vue';
+import UpdateCardDialog from '@/components/dialogs/UpdateCardDialog.vue';
 import Tabs from 'primevue/tabs';
 import TabList from 'primevue/tablist';
 import Tab from 'primevue/tab';
@@ -377,6 +403,7 @@ import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
 import Checkbox from 'primevue/checkbox';
 import api from '@/utils/axios';
+import { planService } from '@/services';
 
 const router = useRouter();
 const planStore = usePlanStore();
@@ -388,6 +415,8 @@ const showReactivateDialog = ref(false);
 const showChangePasswordModal = ref(false);
 const loading = ref(false);
 const activeTab = ref('0');
+const statusPagamento = ref(null);
+const mostrarDialogoAtualizarCartao = ref(false);
 
 // Configurações de notificação
 const loadingNotificacoes = ref(false);
@@ -562,6 +591,24 @@ const goToUpgrade = () => {
     router.push('/upgrade');
 };
 
+const verificarStatusPagamento = async () => {
+    try {
+        const response = await planService.verificarStatusPagamento();
+        statusPagamento.value = response;
+        
+        if (response.tem_pendencia) {
+            toast.add({
+                severity: 'warn',
+                summary: 'Atenção',
+                detail: 'Há um problema com seu pagamento. Atualize seu cartão.',
+                life: 10000
+            });
+        }
+    } catch (error) {
+        console.error('Erro ao verificar status:', error);
+    }
+};
+
 const togglePlanStatus = () => {
     if (isPlanPaused.value) {
         showReactivateDialog.value = true;
@@ -645,6 +692,7 @@ onMounted(async () => {
         await planStore.fetchPlanInfo();
     }
     await carregarConfiguracoesNotificacao();
+    await verificarStatusPagamento();
 });
 </script>
 
