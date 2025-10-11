@@ -141,7 +141,6 @@ export default {
 .google-signin-button {
     width: 100%;
     height: 48px;
-    border: 1px solid #dadce0;
     border-radius: 8px;
     background: white;
     display: flex;
