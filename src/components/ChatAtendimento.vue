@@ -9,7 +9,7 @@
         <!-- Janela de Chat -->
         <div v-if="isOpen" class="chat-window">
             <div class="chat-header">
-                <h6>💬 F.A.Q</h6>
+                <h6 class="text-white">💬 F.A.Q</h6>
                 <button @click="toggleChat" class="close-btn">×</button>
             </div>
             
@@ -17,7 +17,7 @@
                 <div class="messages" ref="messagesContainer">
                     <div v-for="message in messages" :key="message.id" class="message" :class="{ 'user': message.isUser }">
                         <div class="message-content" v-html="formatMessage(message.text)"></div>
-                        <div class="message-time">{{ formatTime(message.timestamp) }}</div>
+                        <div class="message-time text-500">{{ formatTime(message.timestamp) }}</div>
                     </div>
                     
                     <!-- Indicador de digitando -->
@@ -431,96 +431,10 @@ export default {
     background: #a0aec0 !important;
 }
 
-/* Efeito de digitando melhorado */
-.typing-message {
-    justify-content: flex-start !important;
-    animation: typingPulse 2s infinite ease-in-out !important;
-}
-
-.typing-content {
-    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%) !important;
-    color: #6b7280 !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.75rem !important;
-    padding: 0.75rem 1rem !important;
-    border-radius: 12px !important;
-    max-width: 80% !important;
-    border: 1px solid #d1d5db !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-}
-
-.typing-indicator {
-    display: flex !important;
-    gap: 4px !important;
-    align-items: center !important;
-}
-
-.typing-indicator .dot {
-    width: 8px !important;
-    height: 8px !important;
-    border-radius: 50% !important;
-    background: #3b82f6 !important;
-    animation: typingBounce 1.4s infinite ease-in-out !important;
-    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3) !important;
-}
-
-.typing-indicator .dot:nth-child(1) {
-    animation-delay: -0.32s !important;
-}
-
-.typing-indicator .dot:nth-child(2) {
-    animation-delay: -0.16s !important;
-}
-
-.typing-indicator .dot:nth-child(3) {
-    animation-delay: 0s !important;
-}
-
-@keyframes typingBounce {
-    0%, 80%, 100% {
-        transform: scale(0.6) translateY(0) !important;
-        opacity: 0.4 !important;
-        box-shadow: 0 1px 2px rgba(59, 130, 246, 0.2) !important;
-    }
-    40% {
-        transform: scale(1.3) translateY(-6px) !important;
-        opacity: 1 !important;
-        box-shadow: 0 4px 8px rgba(59, 130, 246, 0.5) !important;
-    }
-}
-
-@keyframes typingPulse {
-    0%, 100% {
-        transform: scale(1) !important;
-        opacity: 0.9 !important;
-    }
-    50% {
-        transform: scale(1.02) !important;
-        opacity: 1 !important;
-    }
-}
-
-.typing-text {
-    font-size: 0.875rem !important;
-    font-style: italic !important;
-    color: #6b7280 !important;
-    font-weight: 500 !important;
-    animation: typingText 2s infinite ease-in-out !important;
-}
-
-@keyframes typingText {
-    0%, 100% {
-        opacity: 0.6 !important;
-    }
-    50% {
-        opacity: 1 !important;
-    }
-}
-
 .message {
     display: flex !important;
     margin-bottom: 0.5rem !important;
+    gap: 0.5rem !important;
 }
 
 .message.user {
@@ -542,7 +456,6 @@ export default {
 
 .message-time {
     font-size: 0.75rem !important;
-    opacity: 0.7 !important;
     margin-top: 0.25rem !important;
 }
 
@@ -642,4 +555,33 @@ export default {
         max-height: calc(100vh - 200px) !important;
     }
 }
+
+/* Container do typing */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 20px;
+}
+
+/* Pontos */
+.typing-indicator .dot {
+  width: 8px;
+  height: 8px;
+  background-color: #555;
+  border-radius: 50%;
+  animation: typing 1s infinite;
+}
+
+/* Animação dos pontos */
+@keyframes typing {
+  0%, 20% { transform: translateY(0); opacity: 0.3; }
+  50% { transform: translateY(-5px); opacity: 1; }
+  100% { transform: translateY(0); opacity: 0.3; }
+}
+
+/* Delay para cada ponto */
+.typing-indicator .dot:nth-child(1) { animation-delay: 0s; }
+.typing-indicator .dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator .dot:nth-child(3) { animation-delay: 0.4s; }
 </style>
