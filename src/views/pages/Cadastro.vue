@@ -1,257 +1,177 @@
 <template>
     <div class="cadastro-page bg-surface-0 dark:bg-surface-900 min-h-screen">
-        <!-- Header -->
-        <header class="bg-surface-0 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700">
-            <div class="container mx-auto px-4 py-4">
-                <div class="flex items-center justify-between">
-                    <!-- Logo -->
-                    <div class="flex items-center">
-                        <svg viewBox="0 0 54 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-10 w-auto">
-                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                d="M17.1637 19.2467C17.1566 19.4033 17.1529 19.561 17.1529 19.7194C17.1529 25.3503 21.7203 29.915 27.3546 29.915C32.9887 29.915 37.5561 25.3503 37.5561 19.7194C37.5561 19.5572 37.5524 19.3959 37.5449 19.2355C38.5617 19.0801 39.5759 18.9013 40.5867 18.6994L40.6926 18.6782C40.7191 19.0218 40.7326 19.369 40.7326 19.7194C40.7326 27.1036 34.743 33.0896 27.3546 33.0896C19.966 33.0896 13.9765 27.1036 13.9765 19.7194C13.9765 19.374 13.9896 19.0316 14.0154 18.6927L14.0486 18.6994C15.0837 18.9062 16.1223 19.0886 17.1637 19.2467ZM33.3284 11.4538C31.6493 10.2396 29.5855 9.52381 27.3546 9.52381C25.1195 9.52381 23.0524 10.2421 21.3717 11.4603C20.0078 11.3232 18.6475 11.1387 17.2933 10.907C19.7453 8.11308 23.3438 6.34921 27.3546 6.34921C31.36 6.34921 34.9543 8.10844 37.4061 10.896C36.0521 11.1292 34.692 11.3152 33.3284 11.4538ZM43.826 18.0518C43.881 18.6003 43.9091 19.1566 43.9091 19.7194C43.9091 28.8568 36.4973 36.2642 27.3546 36.2642C18.2117 36.2642 10.8 28.8568 10.8 19.7194C10.8 19.1615 10.8276 18.61 10.8816 18.0663L7.75383 17.4411C7.66775 18.1886 7.62354 18.9488 7.62354 19.7194C7.62354 30.6102 16.4574 39.4388 27.3546 39.4388C38.2517 39.4388 47.0855 30.6102 47.0855 19.7194C47.0855 18.9439 47.0407 18.1789 46.9536 17.4267L43.826 18.0518ZM44.2613 9.54743L40.9084 10.2176C37.9134 5.95821 32.9593 3.1746 27.3546 3.1746C21.7442 3.1746 16.7856 5.96385 13.7915 10.2305L10.4399 9.56057C13.892 3.83178 20.1756 0 27.3546 0C34.5281 0 40.8075 3.82591 44.2613 9.54743Z"
-                                fill="var(--primary-color)" />
-                            <mask id="mask0_1413_1551" style="mask-type: alpha" maskUnits="userSpaceOnUse" x="0" y="8"
-                                width="54" height="11">
-                                <path
-                                    d="M27 18.3652C10.5114 19.1944 0 8.88892 0 8.88892C0 8.88892 16.5176 14.5866 27 14.5866C37.4824 14.5866 54 8.88892 54 8.88892C54 8.88892 43.4886 17.5361 27 18.3652Z"
-                                    fill="var(--primary-color)" />
-                            </mask>
-                            <g mask="url(#mask0_1413_1551)">
-                                <path
-                                    d="M-4.673e-05 8.88887L3.73084 -1.91434L-8.00806 17.0473L-4.673e-05 8.88887ZM27 18.3652L26.4253 6.95109L27 18.3652ZM54 8.88887L61.2673 17.7127L50.2691 -1.91434L54 8.88887ZM-4.673e-05 8.88887C-8.00806 17.0473 -8.00469 17.0505 -8.00132 17.0538C-8.00018 17.055 -7.99675 17.0583 -7.9944 17.0607C-7.98963 17.0653 -7.98474 17.0701 -7.97966 17.075C-7.96949 17.0849 -7.95863 17.0955 -7.94707 17.1066C-7.92401 17.129 -7.89809 17.1539 -7.86944 17.1812C-7.8122 17.236 -7.74377 17.3005 -7.66436 17.3743C-7.50567 17.5218 -7.30269 17.7063 -7.05645 17.9221C-6.56467 18.3532 -5.89662 18.9125 -5.06089 19.5534C-3.39603 20.83 -1.02575 22.4605 1.98012 24.0457C7.97874 27.2091 16.7723 30.3226 27.5746 29.7793L26.4253 6.95109C20.7391 7.23699 16.0326 5.61231 12.6534 3.83024C10.9703 2.94267 9.68222 2.04866 8.86091 1.41888C8.45356 1.10653 8.17155 0.867278 8.0241 0.738027C7.95072 0.673671 7.91178 0.637576 7.90841 0.634492C7.90682 0.63298 7.91419 0.639805 7.93071 0.65557C7.93897 0.663455 7.94952 0.673589 7.96235 0.686039C7.96883 0.692262 7.97582 0.699075 7.98338 0.706471C7.98719 0.710167 7.99113 0.714014 7.99526 0.718014C7.99729 0.720008 8.00047 0.723119 8.00148 0.724116C8.00466 0.727265 8.00796 0.730446 -4.673e-05 8.88887ZM27.5746 29.7793C37.6904 29.2706 45.9416 26.3684 51.6602 23.6054C54.5296 22.2191 56.8064 20.8465 58.4186 19.7784C59.2265 19.2431 59.873 18.7805 60.3494 18.4257C60.5878 18.2482 60.7841 18.0971 60.9374 17.977C61.014 17.9169 61.0799 17.8645 61.1349 17.8203C61.1624 17.7981 61.1872 17.7781 61.2093 17.7602C61.2203 17.7512 61.2307 17.7427 61.2403 17.7348C61.2452 17.7308 61.2499 17.727 61.2544 17.7233C61.2566 17.7215 61.2598 17.7188 61.261 17.7179C61.2642 17.7153 61.2673 17.7127 54 8.88887C46.7326 0.0650536 46.7357 0.0625219 46.7387 0.0600241C46.7397 0.0592345 46.7427 0.0567658 46.7446 0.0551857C46.7485 0.0520238 46.7521 0.0489887 46.7557 0.0460799C46.7628 0.0402623 46.7694 0.0349487 46.7753 0.0301318C46.7871 0.0204986 46.7966 0.0128495 46.8037 0.00712562C46.818 -0.00431848 46.8228 -0.00808311 46.8184 -0.00463784C46.8096 0.00228345 46.764 0.0378652 46.6828 0.0983779C46.5199 0.219675 46.2165 0.439161 45.7812 0.727519C44.9072 1.30663 43.5257 2.14765 41.7061 3.02677C38.0469 4.79468 32.7981 6.63058 26.4253 6.95109L27.5746 29.7793ZM54 8.88887C50.2691 -1.91433 50.27 -1.91467 50.271 -1.91498C50.2712 -1.91506 50.272 -1.91535 50.2724 -1.9155C50.2733 -1.91581 50.274 -1.91602 50.2743 -1.91616C50.2752 -1.91643 50.275 -1.91636 50.2738 -1.91595C50.2714 -1.91515 50.2652 -1.91302 50.2552 -1.9096C50.2351 -1.90276 50.1999 -1.89078 50.1503 -1.874C50.0509 -1.84043 49.8938 -1.78773 49.6844 -1.71863C49.2652 -1.58031 48.6387 -1.377 47.8481 -1.13035C46.2609 -0.635237 44.0427 0.0249875 41.5325 0.6823C36.215 2.07471 30.6736 3.15796 27 3.15796V26.0151C33.8087 26.0151 41.7672 24.2495 47.3292 22.7931C50.2586 22.026 52.825 21.2618 54.6625 20.6886C55.5842 20.4011 56.33 20.1593 56.8551 19.986C57.1178 19.8993 57.3258 19.8296 57.4735 19.7797C57.5474 19.7548 57.6062 19.7348 57.6493 19.72C57.6709 19.7127 57.6885 19.7066 57.7021 19.7019C57.7089 19.6996 57.7147 19.6976 57.7195 19.696C57.7219 19.6952 57.7241 19.6944 57.726 19.6938C57.7269 19.6934 57.7281 19.693 57.7286 19.6929C57.7298 19.6924 57.7309 19.692 54 8.88887ZM27 3.15796C23.3263 3.15796 17.7849 2.07471 12.4674 0.6823C9.95717 0.0249875 7.73904 -0.635237 6.15184 -1.13035C5.36118 -1.377 4.73467 -1.58031 4.3155 -1.71863C4.10609 -1.78773 3.94899 -1.84043 3.84961 -1.874C3.79994 -1.89078 3.76474 -1.90276 3.74471 -1.9096C3.73469 -1.91302 3.72848 -1.91515 3.72613 -1.91595C3.72496 -1.91636 3.72476 -1.91643 3.72554 -1.91616C3.72593 -1.91602 3.72657 -1.91581 3.72745 -1.9155C3.72789 -1.91535 3.72874 -1.91506 3.72896 -1.91498C3.72987 -1.91467 3.73084 -1.91433 -4.673e-05 8.88887C-3.73093 19.692 -3.72983 19.6924 -3.72868 19.6929C-3.72821 19.693 -3.72698 19.6934 -3.72603 19.6938C-3.72415 19.6944 -3.72201 19.6952 -3.71961 19.696C-3.71482 19.6976 -3.70901 19.6996 -3.7022 19.7019C-3.68858 19.7066 -3.67095 19.7127 -3.6494 19.72C-3.60629 19.7348 -3.54745 19.7548 -3.47359 19.7797C-3.32589 19.8296 -3.11788 19.8993 -2.85516 19.986C-2.33008 20.1593 -1.58425 20.4011 -0.662589 20.6886C1.17485 21.2618 3.74125 22.026 6.67073 22.7931C12.2327 24.2495 20.1913 26.0151 27 26.0151V3.15796Z"
-                                    fill="var(--primary-color)" />
-                            </g>
-                        </svg>
-                        <span
-                            class="text-surface-900 dark:text-surface-0 font-bold text-xl ml-3">PsicoProntuários</span>
+
+        <!-- Main Content -->
+        <main class="min-h-screen flex">
+            <!-- Coluna Esquerda: Promocional -->
+            <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-purple-600 to-purple-800 relative overflow-hidden">
+                <!-- Padrão de fundo -->
+                <div class="absolute inset-0 opacity-10">
+                    <div class="absolute top-10 left-10 w-32 h-32 bg-white rounded-full"></div>
+                    <div class="absolute top-40 right-20 w-24 h-24 bg-white rounded-full"></div>
+                    <div class="absolute bottom-20 left-20 w-40 h-40 bg-white rounded-full"></div>
+                    <div class="absolute bottom-40 right-10 w-20 h-20 bg-white rounded-full"></div>
+                </div>
+                
+                <!-- Card central -->
+                <div class="relative z-10 flex items-center justify-center w-full p-12">
+                    <div class="bg-purple-700 rounded-2xl p-8 max-w-md text-center">
+                        
+                        <!-- Título -->
+                        <h2 class="text-white text-2xl font-bold mb-4">
+                            A plataforma mais amada pelos Psicólogos
+                        </h2>
+                        
+                        <!-- Descrição -->
+                        <p class="text-purple-100 text-lg leading-relaxed">
+                            Junte-se a milhares de profissionais que já transformaram sua prática clínica com nossa plataforma completa e intuitiva.
+                        </p>
                     </div>
                 </div>
             </div>
-        </header>
 
-        <!-- Main Content -->
-        <main class="container mx-auto px-4 py-12">
-            <div class="max-w-4xl mx-auto">
-                <!-- Header da Página -->
-                <div class="text-center mb-12">
-                    <h1 class="text-4xl lg:text-5xl font-bold text-surface-900 dark:text-surface-100 mb-4">
-                        Cadastre-se como Psicólogo
-                    </h1>
-                    <p class="text-lg text-surface-600 dark:text-surface-400 max-w-2xl mx-auto">
-                        Junte-se a milhares de psicólogos que já utilizam nossa plataforma para gerenciar seus
-                        prontuários de forma segura e eficiente.
-                    </p>
-                </div>
-
-                <!-- Formulário de Cadastro -->
-                <div
-                    class="bg-surface-0 dark:bg-surface-800 rounded-xl shadow-lg border border-surface-200 dark:border-surface-700 p-8 mobile-form">
+            <!-- Coluna Direita: Formulário -->
+            <div class="lg:w-1/2 bg-white flex items-center justify-center">
+                <div class="w-full max-w-md">
+                    <!-- Logo/Título -->
+                    <div class="mb-8">
+                        <h1 class="text-2xl font-bold text-gray-900 mb-2">PsicoProntuários</h1>
+                        <p class="text-gray-600">Não precisa de cartão de crédito para testar.</p>
+                    </div>
+                    <!-- Formulário -->
                     <form @submit.prevent="handleSubmit" class="space-y-6">
-                        <!-- Informações Pessoais -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label for="nome"
-                                    class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                                    Nome <span class="text-danger"> *</span>
-                                </label>
-                                <InputText id="nome" v-model="form.nome" class="w-full" placeholder="Seu nome"
-                                    :class="{ 'p-invalid': errors.nome }" />
-                                <small v-if="errors.nome" class="p-error">{{ errors.nome }}</small>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="sobrenome"
-                                    class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                                    Sobrenome <span class="text-danger"> *</span>
-                                </label>
-                                <InputText id="sobrenome" v-model="form.sobrenome" class="w-full"
-                                    placeholder="Seu sobrenome" :class="{ 'p-invalid': errors.sobrenome }" />
-                                <small v-if="errors.sobrenome" class="p-error">{{ errors.sobrenome }}</small>
-                            </div>
+                        <!-- Nome -->
+                        <div>
+                            <InputText 
+                                id="nome" 
+                                v-model="form.nome" 
+                                class="w-full h-12 text-lg" 
+                                placeholder="Digite seu NOME"
+                                :class="{ 'p-invalid': errors.nome }" 
+                            />
+                            <small v-if="errors.nome" class="text-red-500 text-sm mt-1 block">{{ errors.nome }}</small>
                         </div>
 
-                        <!-- Email e Telefone -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label for="email"
-                                    class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                                    Email <span class="text-danger"> *</span>
-                                </label>
-                                <InputText id="email" v-model="form.email" type="email" class="w-full"
-                                    placeholder="seu@email.com" :class="{ 'p-invalid': errors.email }" />
-                                <small v-if="errors.email" class="p-error">{{ errors.email }}</small>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="telefone"
-                                    class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                                    Telefone <span class="text-danger"> *</span>
-                                </label>
-                                <InputMask id="telefone" v-model="form.telefone" mask="(99) 99999-9999" class="w-full"
-                                    placeholder="(11) 99999-9999" :class="{ 'p-invalid': errors.telefone }" />
-                                <small v-if="errors.telefone" class="p-error">{{ errors.telefone }}</small>
-                            </div>
+                        <!-- Email -->
+                        <div>
+                            <InputText 
+                                id="email" 
+                                v-model="form.email" 
+                                type="email" 
+                                class="w-full h-12 text-lg" 
+                                placeholder="Digite seu E-MAIL"
+                                :class="{ 'p-invalid': errors.email }" 
+                            />
+                            <small v-if="errors.email" class="text-red-500 text-sm mt-1 block">{{ errors.email }}</small>
                         </div>
 
-                        <!-- CPF e CRP -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label for="cpf"
-                                    class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                                    CPF <span class="text-danger"> *</span>
-                                </label>
-                                <InputMask id="cpf" v-model="form.cpf" mask="999.999.999-99" class="w-full"
-                                    placeholder="000.000.000-00" :class="{ 'p-invalid': errors.cpf }" />
-                                <small v-if="errors.cpf" class="p-error">{{ errors.cpf }}</small>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="crp"
-                                    class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                                    <span class="crp-text">CRP</span> <span class="text-danger"> *</span>
-                                </label>
-                                <InputMask id="crp" v-model="form.crp" mask="99/99999" class="w-full"
-                                    placeholder="00/00000" :class="{ 'p-invalid': errors.crp }" />
-                                <small v-if="errors.crp" class="p-error">{{ errors.crp }}</small>
-                            </div>
+                        <!-- Telefone -->
+                        <div>
+                            <InputMask 
+                                id="telefone" 
+                                v-model="form.telefone" 
+                                mask="(99) 99999-9999"
+                                class="w-full h-12 text-lg" 
+                                placeholder="+55 Digite seu WHATSAPP"
+                                :class="{ 'p-invalid': errors.telefone }" 
+                            />
+                            <small v-if="errors.telefone" class="text-red-500 text-sm mt-1 block">{{ errors.telefone }}</small>
                         </div>
 
-                        <!-- Endereço -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label for="cep"
-                                    class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                                    CEP <span class="text-danger"> *</span>
-                                </label>
-                                <IconField>
-                                    <InputMask id="cep" v-model="form.cep" mask="99999-999" class="w-full"
-                                        placeholder="00000-000" :class="{ 'p-invalid': errors.cep }" 
-                                        @change="buscarCep" />
-                                    <InputIcon class="pi pi-sparkles" />
-                                </IconField>
-                                <small v-if="errors.cep" class="p-error">{{ errors.cep }}</small>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="estado"
-                                    class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                                    Estado <span class="text-danger"> *</span>
-                                </label>
-                                <InputText id="estado" v-model="form.estado" class="w-full" 
-                                    placeholder="SP" maxlength="2" 
-                                    :class="{ 'p-invalid': errors.estado }" />
-                                <small v-if="errors.estado" class="p-error">{{ errors.estado }}</small>
-                            </div>
+                        <!-- CPF -->
+                        <div>
+                            <InputMask 
+                                id="cpf" 
+                                v-model="form.cpf" 
+                                mask="999.999.999-99" 
+                                class="w-full h-12 text-lg"
+                                placeholder="Digite seu CPF" 
+                                :class="{ 'p-invalid': errors.cpf }" 
+                            />
+                            <small v-if="errors.cpf" class="text-red-500 text-sm mt-1 block">{{ errors.cpf }}</small>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label for="cidade"
-                                    class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                                    Cidade <span class="text-danger"> *</span>
-                                </label>
-                                <InputText id="cidade" v-model="form.cidade" class="w-full" placeholder="Sua cidade"
-                                    :class="{ 'p-invalid': errors.cidade }" />
-                                <small v-if="errors.cidade" class="p-error">{{ errors.cidade }}</small>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="bairro"
-                                    class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                                    Bairro <span class="text-danger"> *</span>
-                                </label>
-                                <InputText id="bairro" v-model="form.bairro" class="w-full" placeholder="Seu bairro"
-                                    :class="{ 'p-invalid': errors.bairro }" />
-                                <small v-if="errors.bairro" class="p-error">{{ errors.bairro }}</small>
-                            </div>
-                        </div>
-
-                        <div class="col-md-12">
-                            <label for="rua"
-                                class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                                Rua <span class="text-danger"> *</span>
-                            </label>
-                            <InputText id="rua" v-model="form.rua" class="w-full" placeholder="Sua rua"
-                                :class="{ 'p-invalid': errors.rua }" />
-                            <small v-if="errors.rua" class="p-error">{{ errors.rua }}</small>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label for="numero"
-                                    class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                                    Número <span class="text-danger"> *</span>
-                                </label>
-                                <InputText id="numero" v-model="form.numero" class="w-full" placeholder="123"
-                                    :class="{ 'p-invalid': errors.numero }" />
-                                <small v-if="errors.numero" class="p-error">{{ errors.numero }}</small>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="complemento"
-                                    class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                                    Complemento
-                                </label>
-                                <InputText id="complemento" v-model="form.complemento" class="w-full" 
-                                    placeholder="Apto 45, Bloco B, etc."
-                                    :class="{ 'p-invalid': errors.complemento }" />
-                                <small v-if="errors.complemento" class="p-error">{{ errors.complemento }}</small>
-                            </div>
+                        <!-- CRP -->
+                        <div>
+                            <InputMask 
+                                id="crp" 
+                                v-model="form.crp" 
+                                mask="99/99999" 
+                                class="w-full h-12 text-lg"
+                                placeholder="Digite seu CRP" 
+                                :class="{ 'p-invalid': errors.crp }" 
+                            />
+                            <small v-if="errors.crp" class="text-red-500 text-sm mt-1 block">{{ errors.crp }}</small>
                         </div>
 
                         <!-- Senha -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label for="password"
-                                    class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                                    Senha <span class="text-danger"> *</span>
-                                </label>
-                                <InputText id="password" v-model="form.password" type="password" class="w-full"
-                                    placeholder="Mínimo 6 caracteres" :class="{ 'p-invalid': errors.password }" />
-                                <small v-if="errors.password" class="p-error">{{ errors.password }}</small>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="password_confirmation"
-                                    class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                                    Confirmar Senha <span class="text-danger"> *</span>
-                                </label>
-                                <InputText id="password_confirmation" v-model="form.password_confirmation"
-                                    type="password" class="w-full" placeholder="Confirme sua senha"
-                                    :class="{ 'p-invalid': errors.password_confirmation }" />
-                                <small v-if="errors.password_confirmation" class="p-error">{{
-                                    errors.password_confirmation }}</small>
-                            </div>
+                        <div>
+                            <InputText 
+                                id="password" 
+                                v-model="form.password" 
+                                type="password" 
+                                class="w-full h-12 text-lg"
+                                placeholder="Sua SENHA"
+                                :class="{ 'p-invalid': errors.password }" 
+                            />
+                            <small v-if="errors.password" class="text-red-500 text-sm mt-1 block">{{ errors.password }}</small>
+                        </div>
+
+                        <!-- Confirmar Senha -->
+                        <div>
+                            <InputText 
+                                id="password_confirmation" 
+                                v-model="form.password_confirmation"
+                                type="password" 
+                                class="w-full h-12 text-lg" 
+                                placeholder="Confirme sua SENHA"
+                                :class="{ 'p-invalid': errors.password_confirmation }" 
+                            />
+                            <small v-if="errors.password_confirmation" class="text-red-500 text-sm mt-1 block">{{ errors.password_confirmation }}</small>
                         </div>
 
                         <!-- Termos e Condições -->
-                        <div class="flex items-start space-x-3 termos-container">
-                            <Checkbox id="politica_privacidade" v-model="form.politica_privacidade" :binary="true"
-                                :class="{ 'p-invalid': errors.politica_privacidade }" />
-                            <label for="politica_privacidade" class="text-sm text-surface-600 dark:text-surface-400">
+                        <div class="flex items-start space-x-3 mt-6">
+                            <Checkbox 
+                                id="politica_privacidade" 
+                                v-model="form.politica_privacidade"
+                                :binary="true" 
+                                :class="{ 'p-invalid': errors.politica_privacidade }" 
+                            />
+                            <label for="politica_privacidade" class="text-sm text-gray-600 leading-relaxed">
                                 Li e aceito os
-                                <router-link to="/termos-uso" class="text-primary-600 hover:text-primary-500 underline"
-                                    target="_blank">Termos de Uso</router-link>
+                                <router-link to="/termos-uso" class="text-purple-600 hover:text-purple-500 underline" target="_blank">
+                                    Termos de Uso
+                                </router-link>
                                 e a
-                                <router-link to="/politica-privacidade"
-                                    class="text-primary-600 hover:text-primary-500 underline" target="_blank">Política
-                                    de Privacidade</router-link>
+                                <router-link to="/politica-privacidade" class="text-purple-600 hover:text-purple-500 underline" target="_blank">
+                                    Política de Privacidade
+                                </router-link>
                             </label>
                         </div>
-                        <small v-if="errors.politica_privacidade" class="p-error">{{ errors.politica_privacidade
-                            }}</small>
+                        <small v-if="errors.politica_privacidade" class="text-red-500 text-sm block">{{ errors.politica_privacidade }}</small>
 
                         <!-- Botão de Envio -->
-                        <div class="text-center">
-                            <Button type="submit" :loading="loading" label="Criar Conta" class="w-full" />
-                        </div>
+                        <Button 
+                            type="submit" 
+                            :loading="loading" 
+                            label="CRIAR MINHA CONTA" 
+                            class="w-full h-12 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-lg border-0 rounded-lg mt-6" 
+                        />
 
                         <!-- Mensagens de Erro -->
-                        <div v-if="error"
-                            class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-                            <p class="text-red-800 dark:text-red-200">{{ error }}</p>
+                        <div v-if="error" class="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
+                            <p class="text-red-800">{{ error }}</p>
                         </div>
                     </form>
 
-                    <!-- Informações Adicionais -->
-                    <div class="mt-4 text-center">
-                        <p class="text-sm text-surface-600 dark:text-surface-400">
-                            Já tem uma conta?
-                            <router-link to="/login" class="text-primary-600 hover:text-primary-500 font-medium">Faça
-                                login</router-link>
+                    <!-- Link de Login -->
+                    <div class="mt-6 text-center">
+                        <p class="text-sm text-gray-600">
+                            Já possui conta? 
+                            <router-link to="/login" class="text-purple-600 hover:text-purple-500 font-medium">
+                                Faça login aqui!
+                            </router-link>
                         </p>
                     </div>
                 </div>
@@ -299,7 +219,7 @@
 </template>
 
 <script>
-import logo from '@/assets/img/logo-branca.jpg';
+import logo from '@/assets/img/no-bg.webp';
 import userService from '@/services/userService';
 import InputText from 'primevue/inputtext';
 import InputMask from 'primevue/inputmask';
@@ -337,13 +257,6 @@ export default {
                 telefone: '',
                 cpf: '',
                 crp: '',
-                cep: '',
-                cidade: '',
-                estado: '',
-                rua: '',
-                bairro: '',
-                numero: '',
-                complemento: '',
                 password: '',
                 password_confirmation: '',
                 codigo_cupom: '',
@@ -513,61 +426,6 @@ export default {
             return formData;
         },
 
-        // Buscar CEP na API ViaCEP
-        async buscarCep() {
-            const cep = this.form.cep.replace(/\D/g, ''); // Remove caracteres não numéricos
-            
-            if (cep.length !== 8) {
-                return; // CEP incompleto
-            }
-
-            try {
-                this.loadingCep = true;
-                const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-                const data = await response.json();
-
-                if (!data.erro) {
-                    // Preencher campos automaticamente
-                    this.form.estado = data.uf;
-                    this.form.cidade = data.localidade;
-                    this.form.bairro = data.bairro;
-                    this.form.rua = data.logradouro;
-                    
-                    // Tentar extrair número do logradouro se disponível
-                    if (data.logradouro) {
-                        const numeroMatch = data.logradouro.match(/\d+/);
-                        if (numeroMatch) {
-                            this.form.numero = numeroMatch[0];
-                        }
-                    }
-                    
-                    // Mostrar mensagem de sucesso
-                    this.$toast.add({
-                        severity: 'success',
-                        summary: 'CEP encontrado!',
-                        detail: 'Endereço preenchido automaticamente',
-                        life: 3000
-                    });
-                } else {
-                    this.$toast.add({
-                        severity: 'warn',
-                        summary: 'CEP não encontrado',
-                        detail: 'Verifique se o CEP está correto',
-                        life: 3000
-                    });
-                }
-            } catch (error) {
-                console.error('Erro ao buscar CEP:', error);
-                this.$toast.add({
-                    severity: 'error',
-                    summary: 'Erro ao buscar CEP',
-                    detail: 'Tente novamente mais tarde',
-                    life: 3000
-                });
-            } finally {
-                this.loadingCep = false;
-            }
-        }
     }
 };
 </script>
@@ -599,29 +457,41 @@ img {
     animation: fadeIn 0.6s ease-out;
 }
 
+/* Layout de duas colunas */
+.grid {
+    display: grid;
+    gap: 2rem;
+}
+
+.grid-cols-1 {
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 1024px) {
+    .lg\:grid-cols-2 {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
 /* Responsividade */
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
     .cadastro-page {
         padding: 0 1rem;
     }
-    
+
     /* Ajustar container principal em mobile */
     .container.mx-auto {
         padding-left: 0.5rem !important;
         padding-right: 0.5rem !important;
     }
-    
-    .max-w-4xl {
-        max-width: 100% !important;
-    }
-    
+
     /* Garantir que inputs usem 100% da largura em mobile */
     .row .col-md-6,
     .row .col-md-12 {
         width: 100% !important;
         margin-bottom: 1rem;
     }
-    
+
     /* Remover margens laterais dos inputs em mobile */
     .p-inputtext,
     .p-inputmask,
@@ -629,35 +499,41 @@ img {
         width: 100% !important;
         max-width: none !important;
     }
-    
+
     /* Ajustar espaçamento entre campos */
     .row {
         margin: 0;
     }
-    
-    .row > div {
+
+    .row>div {
         padding: 0;
         margin-bottom: 1rem;
     }
-    
+
     /* Ajustar formulário em mobile */
     .mobile-form {
         padding: 1.5rem !important;
         margin: 0 0.5rem;
     }
-    
+
     /* Garantir que todos os inputs ocupem 100% da largura */
     .p-component {
         box-sizing: border-box;
     }
+
+    /* Ajustar coluna esquerda em mobile */
+    .space-y-8 > * + * {
+        margin-top: 1.5rem;
+    }
 }
 
 @media (max-width: 480px) {
+
     /* Ajustes para telas muito pequenas */
     .cadastro-page {
         padding: 0 0.5rem;
     }
-    
+
     .bg-surface-0.dark\\:bg-surface-800 {
         padding: 1rem !important;
     }
@@ -721,12 +597,12 @@ label[for="crp"] {
         gap: 0.75rem !important;
         flex-wrap: wrap !important;
     }
-    
+
     .termos-container .p-checkbox {
         flex-shrink: 0 !important;
         margin-top: 0.125rem !important;
     }
-    
+
     .termos-container label {
         flex: 1 !important;
         min-width: 0 !important;
@@ -735,5 +611,237 @@ label[for="crp"] {
         line-height: 1.5 !important;
         font-size: 0.875rem !important;
     }
+}
+
+/* Estilos das seções do formulário */
+.form-section {
+    background: var(--surface-50);
+    border: 1px solid var(--surface-200);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+}
+
+.form-section:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary-200);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--primary-100);
+}
+
+.section-icon {
+    background: var(--primary-50);
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.section-icon i {
+    font-size: 1.25rem;
+}
+
+.section-title h3 {
+    margin: 0;
+    color: var(--surface-900);
+    font-weight: 600;
+}
+
+.section-title p {
+    margin: 0.25rem 0 0 0;
+    color: var(--surface-600);
+    font-size: 0.875rem;
+}
+
+.section-content {
+    padding-left: 0.5rem;
+}
+
+/* Dark mode para as seções */
+.dark .form-section {
+    background: var(--surface-800);
+    border-color: var(--surface-700);
+}
+
+.dark .form-section:hover {
+    border-color: var(--primary-600);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dark .section-header {
+    border-bottom-color: var(--primary-800);
+}
+
+.dark .section-icon {
+    background: var(--primary-900);
+}
+
+.dark .section-title h3 {
+    color: var(--surface-100);
+}
+
+.dark .section-title p {
+    color: var(--surface-400);
+}
+
+/* Responsividade das seções */
+@media (max-width: 1023px) {
+    .form-section {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+        gap: 0.75rem;
+    }
+
+    .section-icon {
+        margin-right: 0;
+        margin-bottom: 0.5rem;
+    }
+
+    .section-content {
+        padding-left: 0;
+    }
+}
+
+/* Ajustes específicos para o layout de duas colunas */
+@media (min-width: 1024px) {
+    .grid {
+        align-items: stretch;
+        gap: 3rem;
+        min-height: 80vh;
+    }
+    
+    .space-y-8 > * + * {
+        margin-top: 2rem;
+    }
+    
+    /* Garantir que a coluna esquerda tenha altura adequada */
+    .h-100 {
+        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+}
+
+/* Estilos para a coluna esquerda */
+.space-y-8 h1 {
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.space-y-8 p {
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.space-y-8 h3 {
+    text-align: center;
+}
+
+@media (min-width: 1024px) {
+    .space-y-8 h1 {
+        text-align: left;
+    }
+    
+    .space-y-8 p {
+        text-align: left;
+    }
+    
+    .space-y-8 h3 {
+        text-align: left;
+    }
+}
+
+/* Centralização responsiva */
+.text-center.lg\:text-left {
+    text-align: center !important;
+}
+
+@media (min-width: 1024px) {
+    .text-center.lg\:text-left {
+        text-align: left !important;
+    }
+}
+
+/* Centralização vertical e horizontal */
+.h-100 {
+    height: 100%;
+}
+
+.flex.flex-col.justify-center.align-middle {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+@media (min-width: 1024px) {
+    .flex.flex-col.justify-center.align-middle {
+        align-items: flex-start;
+    }
+}
+
+/* Lista de benefícios */
+.space-y-3 > * + * {
+    margin-top: 0.75rem;
+}
+
+.flex.items-start.space-x-3 {
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+/* Centralização dos itens da lista */
+.justify-center.lg\:justify-start {
+    justify-content: center;
+}
+
+@media (min-width: 1024px) {
+    .justify-center.lg\:justify-start {
+        justify-content: flex-start;
+    }
+}
+
+.flex.items-start.space-x-3 i {
+    color: var(--primary-color);
+    margin-top: 0.125rem;
+}
+
+.flex.items-start.space-x-3 span {
+    line-height: 1.5;
+    color: var(--surface-700);
+}
+
+.dark .flex.items-start.space-x-3 span {
+    color: var(--surface-300);
+}
+
+/* Ajustar formulário na coluna direita */
+.bg-surface-0.dark\:bg-surface-800 {
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.dark .bg-surface-0.dark\:bg-surface-800 {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
 }
 </style>
