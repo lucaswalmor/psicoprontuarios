@@ -55,7 +55,68 @@
                 <div class="grid">
                     <div class="col-12 md:col-12">
                         <div class="card">
-                            <h6 class="text-600 mb-3">Evolução Mensal</h6>
+                            <h6 class="text-600 mb-3">Fluxo de Caixa</h6>
+                            
+                            <!-- Filtros de Data -->
+                            <div class="grid mb-4">
+                                <div class="col-12 md:col-6">
+                                    <div class="flex gap-2">
+                                        <div class="flex-1">
+                                            <label class="block text-600 mb-2">Data Inicial</label>
+                                            <DatePicker 
+                                                v-model="filtrosData.data_inicial" 
+                                                dateFormat="dd/mm/yy" 
+                                                placeholder="Data inicial"
+                                                class="w-full"
+                                                @date-select="aplicarFiltrosData"
+                                            />
+                                        </div>
+                                        <div class="flex-1">
+                                            <label class="block text-600 mb-2">Data Final</label>
+                                            <DatePicker 
+                                                v-model="filtrosData.data_final" 
+                                                dateFormat="dd/mm/yy" 
+                                                placeholder="Data final"
+                                                class="w-full"
+                                                @date-select="aplicarFiltrosData"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12 md:col-6">
+                                    <div class="flex flex-column justify-content-end">
+                                        <label class="block text-600 mb-2">Filtros Rápidos</label>
+                                        <div class="flex gap-2">
+                                            <Button 
+                                                label="DIA" 
+                                                size="small" 
+                                                :severity="filtroAtivo === 'dia' ? 'primary' : 'secondary'"
+                                                @click="aplicarFiltroRapido('dia')"
+                                            />
+                                            <Button 
+                                                label="SEMANA" 
+                                                size="small" 
+                                                :severity="filtroAtivo === 'semana' ? 'primary' : 'secondary'"
+                                                @click="aplicarFiltroRapido('semana')"
+                                            />
+                                            <Button 
+                                                label="MÊS" 
+                                                size="small" 
+                                                :severity="filtroAtivo === 'mes' ? 'primary' : 'secondary'"
+                                                @click="aplicarFiltroRapido('mes')"
+                                            />
+                                            <Button 
+                                                label="TRIMESTRE" 
+                                                size="small" 
+                                                :severity="filtroAtivo === 'trimestre' ? 'primary' : 'secondary'"
+                                                @click="aplicarFiltroRapido('trimestre')"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <Chart 
                                 type="bar" 
                                 :data="barChartData" 
@@ -176,6 +237,11 @@ export default {
                 ano: new Date().getFullYear(),
                 mes: new Date().getMonth() + 1
             },
+            filtrosData: {
+                data_inicial: null,
+                data_final: null
+            },
+            filtroAtivo: 'mes', // dia, semana, mes, trimestre
             drawerFilterFinanceiro: false,
             hasFiltros: false,
             limparCampos: false
@@ -232,6 +298,58 @@ export default {
             };
         },
         barChartData() {
+            // Se temos dados de fluxo de caixa (período específico), usar eles
+            if (this.dados.fluxo_caixa && this.dados.fluxo_caixa.length > 0) {
+                // Formatar labels para exibição (dd/mm)
+                const labels = this.dados.fluxo_caixa.map(item => {
+                    const data = new Date(item.data);
+                    return `${data.getDate().toString().padStart(2, '0')}/${(data.getMonth() + 1).toString().padStart(2, '0')}`;
+                });
+                
+                const receitasData = this.dados.fluxo_caixa.map(item => parseFloat(item.receitas || 0));
+                const despesasData = this.dados.fluxo_caixa.map(item => parseFloat(item.despesas || 0));
+                
+                // Calcular saldo acumulativo
+                let saldoAcumulativo = 0;
+                const saldoAcumulativoData = this.dados.fluxo_caixa.map(item => {
+                    saldoAcumulativo += parseFloat(item.saldo || 0);
+                    return saldoAcumulativo;
+                });
+
+                return {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Receitas',
+                            data: receitasData,
+                            backgroundColor: '#22c55e',
+                            borderColor: '#16a34a',
+                            borderWidth: 1,
+                            type: 'bar'
+                        },
+                        {
+                            label: 'Despesas',
+                            data: despesasData,
+                            backgroundColor: '#ef4444',
+                            borderColor: '#dc2626',
+                            borderWidth: 1,
+                            type: 'bar'
+                        },
+                        {
+                            label: 'Saldo Acumulativo',
+                            data: saldoAcumulativoData,
+                            backgroundColor: 'transparent',
+                            borderColor: '#3b82f6',
+                            borderWidth: 3,
+                            type: 'line',
+                            fill: false,
+                            tension: 0.1
+                        }
+                    ]
+                };
+            }
+
+            // Se não há filtros de data específicos, mostrar dados mensais do ano
             const labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
             const receitasData = [];
             const despesasData = [];
@@ -295,6 +413,10 @@ export default {
                             color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000'
                         }
                     }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
                 }
             };
         }
@@ -303,7 +425,15 @@ export default {
         // Inicializar o store do tema
         this.themeStore.init();
 
-        await this.carregarDados();
+        // Inicializar filtros de data com o mês atual
+        this.inicializarFiltrosData();
+        
+        // Carregar dados com filtros do mês atual
+        await this.carregarDados({
+            data_inicial: this.formatarDataParaAPI(this.filtrosData.data_inicial),
+            data_final: this.formatarDataParaAPI(this.filtrosData.data_final),
+            tipo_periodo: 'mes'
+        });
     },
     methods: {
         formatarValor(valor) {
@@ -320,8 +450,13 @@ export default {
                     ...filtrosAdicionais
                 };
                 
+                console.log('🔍 Parâmetros enviados para API:', params);
+                
                 const response = await this.$financeirosService.dashboard(params);
                 this.dados = response.data;
+                
+                console.log('📊 Dados recebidos da API:', this.dados);
+                console.log('📈 Fluxo de caixa:', this.dados.fluxo_caixa);
             } catch (error) {
                 console.error('Erro ao carregar dados:', error);
             }
@@ -339,6 +474,78 @@ export default {
         },
         onUpdateDrawerFilterFinanceiro(event) {
             this.drawerFilterFinanceiro = event;
+        },
+        
+        inicializarFiltrosData() {
+            const hoje = new Date();
+            const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+            const ultimoDiaMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+            
+            this.filtrosData.data_inicial = primeiroDiaMes;
+            this.filtrosData.data_final = ultimoDiaMes;
+            this.filtroAtivo = 'mes';
+        },
+        
+        aplicarFiltrosData() {
+            if (this.filtrosData.data_inicial && this.filtrosData.data_final) {
+                this.filtroAtivo = 'custom';
+                this.carregarDados({
+                    data_inicial: this.formatarDataParaAPI(this.filtrosData.data_inicial),
+                    data_final: this.formatarDataParaAPI(this.filtrosData.data_final),
+                    tipo_periodo: 'custom'
+                });
+            }
+        },
+        
+        aplicarFiltroRapido(tipo) {
+            this.filtroAtivo = tipo;
+            const hoje = new Date();
+            
+            switch (tipo) {
+                case 'dia':
+                    this.filtrosData.data_inicial = new Date(hoje);
+                    this.filtrosData.data_final = new Date(hoje);
+                    break;
+                    
+                case 'semana':
+                    const inicioSemana = new Date(hoje);
+                    inicioSemana.setDate(hoje.getDate() - hoje.getDay());
+                    const fimSemana = new Date(inicioSemana);
+                    fimSemana.setDate(inicioSemana.getDate() + 6);
+                    
+                    this.filtrosData.data_inicial = inicioSemana;
+                    this.filtrosData.data_final = fimSemana;
+                    break;
+                    
+                case 'mes':
+                    const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+                    const ultimoDiaMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+                    
+                    this.filtrosData.data_inicial = primeiroDiaMes;
+                    this.filtrosData.data_final = ultimoDiaMes;
+                    break;
+                    
+                case 'trimestre':
+                    const trimestreAtual = Math.floor(hoje.getMonth() / 3);
+                    const primeiroDiaTrimestre = new Date(hoje.getFullYear(), trimestreAtual * 3, 1);
+                    const ultimoDiaTrimestre = new Date(hoje.getFullYear(), (trimestreAtual + 1) * 3, 0);
+                    
+                    this.filtrosData.data_inicial = primeiroDiaTrimestre;
+                    this.filtrosData.data_final = ultimoDiaTrimestre;
+                    break;
+            }
+            
+            this.carregarDados({
+                data_inicial: this.formatarDataParaAPI(this.filtrosData.data_inicial),
+                data_final: this.formatarDataParaAPI(this.filtrosData.data_final),
+                tipo_periodo: tipo
+            });
+        },
+        
+        formatarDataParaAPI(data) {
+            if (!data) return null;
+            const d = new Date(data);
+            return d.toISOString().split('T')[0]; // Formato YYYY-MM-DD
         }
     }
 };

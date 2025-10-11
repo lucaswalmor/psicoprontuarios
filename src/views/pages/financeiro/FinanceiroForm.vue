@@ -40,12 +40,24 @@
                         
                         <div class="col-12 md:col-6">
                             <div class="field">
-                                <label for="categoria" class="block text-900 font-medium mb-2">Categoria *</label>
-                                <InputText 
+                                <div class="flex align-items-center gap-2 mb-2">
+                                    <label for="categoria" class="block text-900 font-medium">Categoria *</label>
+                                    <span 
+                                        class="text-blue-500 text-sm cursor-pointer hover:text-blue-700"
+                                        @click="abrirModalNovaCategoria"
+                                    >
+                                        criar
+                                    </span>
+                                </div>
+                                <Select 
                                     v-model="form.categoria" 
-                                    placeholder="Ex: Consulta, Material, Aluguel..."
+                                    :options="categorias" 
+                                    optionLabel="nome" 
+                                    optionValue="nome"
+                                    placeholder="Selecione uma categoria"
                                     class="w-full"
                                     :class="{ 'p-invalid': errors.categoria }"
+                                    :loading="carregandoCategorias"
                                 />
                                 <small v-if="errors.categoria" class="p-error">{{ errors.categoria }}</small>
                             </div>
@@ -210,6 +222,43 @@
             />
         </template>
     </Dialog>
+
+    <!-- Modal para criar nova categoria -->
+    <Dialog 
+        v-model:visible="showModalNovaCategoria" 
+        modal 
+        header="Nova Categoria"
+        :style="{ width: '400px' }"
+    >
+        <div class="flex flex-column gap-3">
+            <div class="field">
+                <label for="novaCategoria" class="block text-900 font-medium mb-2">Nome da Categoria *</label>
+                <InputText 
+                    v-model="novaCategoria.nome" 
+                    placeholder="Ex: Consulta, Material, Aluguel..."
+                    class="w-full"
+                    :class="{ 'p-invalid': errorsNovaCategoria.nome }"
+                    @keyup.enter="salvarNovaCategoria"
+                />
+                <small v-if="errorsNovaCategoria.nome" class="p-error">{{ errorsNovaCategoria.nome }}</small>
+            </div>
+        </div>
+        
+        <template #footer>
+            <div class="flex gap-2">
+                <Button 
+                    label="Cancelar" 
+                    severity="secondary"
+                    @click="fecharModalNovaCategoria"
+                />
+                <Button 
+                    label="Salvar" 
+                    :loading="salvandoNovaCategoria"
+                    @click="salvarNovaCategoria"
+                />
+            </div>
+        </template>
+    </Dialog>
 </template>
 
 <script>
@@ -221,6 +270,14 @@ export default {
             errors: {},
             showDialogDivisao: false,
             parcelas: [],
+            categorias: [],
+            carregandoCategorias: false,
+            showModalNovaCategoria: false,
+            salvandoNovaCategoria: false,
+            novaCategoria: {
+                nome: ''
+            },
+            errorsNovaCategoria: {},
             form: {
                 tipo: null,
                 categoria: '',
@@ -268,6 +325,7 @@ export default {
         }
     },
     async mounted() {
+        await this.carregarCategorias();
         if (this.isEditing) {
             await this.carregarTransacao(this.$route.params.id);
         }
@@ -456,6 +514,102 @@ export default {
         formatarData(data) {
             if (!data) return '-';
             return new Date(data).toLocaleDateString('pt-BR');
+        },
+
+        // === MÉTODOS PARA CATEGORIAS ===
+        
+        async carregarCategorias() {
+            this.carregandoCategorias = true;
+            try {
+                const response = await this.$financeirosService.buscarCategorias();
+                if (response.data.success) {
+                    this.categorias = response.data.data;
+                }
+            } catch (error) {
+                console.error('Erro ao carregar categorias:', error);
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: 'Erro ao carregar categorias',
+                    life: 3000
+                });
+            } finally {
+                this.carregandoCategorias = false;
+            }
+        },
+
+        abrirModalNovaCategoria() {
+            this.showModalNovaCategoria = true;
+            this.novaCategoria.nome = '';
+            this.errorsNovaCategoria = {};
+        },
+
+        fecharModalNovaCategoria() {
+            this.showModalNovaCategoria = false;
+            this.novaCategoria.nome = '';
+            this.errorsNovaCategoria = {};
+        },
+
+        validarNovaCategoria() {
+            this.errorsNovaCategoria = {};
+            
+            if (!this.novaCategoria.nome.trim()) {
+                this.errorsNovaCategoria.nome = 'Nome da categoria é obrigatório';
+                return false;
+            }
+            
+            // Verificar se já existe uma categoria com o mesmo nome
+            const categoriaExistente = this.categorias.find(
+                cat => cat.nome.toLowerCase() === this.novaCategoria.nome.trim().toLowerCase()
+            );
+            
+            if (categoriaExistente) {
+                this.errorsNovaCategoria.nome = 'Já existe uma categoria com este nome';
+                return false;
+            }
+            
+            return true;
+        },
+
+        async salvarNovaCategoria() {
+            if (!this.validarNovaCategoria()) {
+                return;
+            }
+            
+            this.salvandoNovaCategoria = true;
+            
+            try {
+                const response = await this.$financeirosService.cadastrarCategoria({
+                    nome: this.novaCategoria.nome.trim()
+                });
+                
+                if (response.data.success) {
+                    // Adicionar a nova categoria à lista
+                    this.categorias.push(response.data.data);
+                    
+                    // Selecionar automaticamente a nova categoria
+                    this.form.categoria = response.data.data.nome;
+                    
+                    this.$toast.add({
+                        severity: 'success',
+                        summary: 'Sucesso',
+                        detail: 'Categoria criada com sucesso',
+                        life: 3000
+                    });
+                    
+                    this.fecharModalNovaCategoria();
+                }
+            } catch (error) {
+                console.error('Erro ao salvar categoria:', error);
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: error.response?.data?.error || 'Erro ao criar categoria',
+                    life: 3000
+                });
+            } finally {
+                this.salvandoNovaCategoria = false;
+            }
         }
     }
 };

@@ -24,6 +24,28 @@ const financeirosService = {
     // Buscar dados do dashboard
     dashboard(params = {}) {
         return api.get('/financeiros/dashboard', { params });
+    },
+
+    // === CATEGORIAS FINANCEIRAS ===
+    
+    // Buscar categorias do usuário
+    buscarCategorias() {
+        return api.get('/categoria-financeiro');
+    },
+
+    // Cadastrar nova categoria
+    cadastrarCategoria(data) {
+        return api.post('/categoria-financeiro', data);
+    },
+
+    // Atualizar categoria
+    atualizarCategoria(id, data) {
+        return api.put(`/categoria-financeiro/${id}`, data);
+    },
+
+    // Excluir categoria
+    excluirCategoria(id) {
+        return api.delete(`/categoria-financeiro/${id}`);
     }
 };
 

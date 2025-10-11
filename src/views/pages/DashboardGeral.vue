@@ -11,7 +11,7 @@
                 <div class="grid">
                     <!-- Total de Pacientes -->
                     <div class="col-12" :class="isPlanoProfissional ? 'md:col-3' : 'md:col-4'">
-                        <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
+                        <div class="card cursor-pointer" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''" @click="$router.push('/pacientes')">
                             <div class="flex align-items-center justify-content-between">
                                 <div>
                                     <span class="block text-2xl text-500 font-medium mb-2">Total de Pacientes</span>
@@ -25,7 +25,7 @@
                     
                     <!-- Sessões do dia -->
                     <div class="col-12" :class="isPlanoProfissional ? 'md:col-3' : 'md:col-4'">
-                        <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
+                        <div class="card cursor-pointer" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''" @click="$router.push('/agendamentos')">
                             <div class="flex align-items-center justify-content-between">
                                 <div>
                                     <span class="block text-2xl text-500 font-medium mb-2">Sessões do dia</span>
@@ -51,7 +51,7 @@
                     
                     <!-- Saldo do Mês -->
                     <div class="col-12 md:col-3" v-if="isPlanoProfissional">
-                        <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
+                        <div class="card cursor-pointer" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''" @click="$router.push('/financeirodashboard')">
                             <div class="flex align-items-center justify-content-between">
                                 <div>
                                     <span class="block font-medium mb-2 text-2xl text-500">Saldo do Mês</span>
@@ -629,5 +629,16 @@ export default {
 
 .card .mt-auto {
     margin-top: auto;
+}
+
+/* Estilo para cards clicáveis */
+.cursor-pointer {
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cursor-pointer:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 </style> 
