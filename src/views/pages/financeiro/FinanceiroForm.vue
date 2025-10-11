@@ -49,16 +49,46 @@
                                         criar
                                     </span>
                                 </div>
-                                <Select 
-                                    v-model="form.categoria" 
-                                    :options="categorias" 
-                                    optionLabel="nome" 
-                                    optionValue="nome"
-                                    placeholder="Selecione uma categoria"
-                                    class="w-full"
-                                    :class="{ 'p-invalid': errors.categoria }"
-                                    :loading="carregandoCategorias"
-                                />
+                                <!-- Dropdown Customizado com Botões nas Opções -->
+                                <div class="relative">
+                                    <Dropdown 
+                                        v-model="form.categoria" 
+                                        :options="categoriasComAcoes" 
+                                        optionLabel="nome" 
+                                        optionValue="nome"
+                                        placeholder="Selecione uma categoria"
+                                        class="w-full"
+                                        :class="{ 'p-invalid': errors.categoria }"
+                                        :loading="carregandoCategorias"
+                                        @change="onCategoriaChange"
+                                    >
+                                        <template #option="slotProps">
+                                            <div class="flex align-items-center justify-content-between w-full">
+                                                <span>{{ slotProps.option.nome }}</span>
+                                                <div class="flex gap-1 ml-2" @click.stop>
+                                                    <Button 
+                                                        icon="pi pi-pencil" 
+                                                        size="small" 
+                                                        severity="info"
+                                                        text
+                                                        rounded
+                                                        @click="editarCategoria(slotProps.option)"
+                                                        v-tooltip.top="'Editar categoria'"
+                                                    />
+                                                    <Button 
+                                                        icon="pi pi-trash" 
+                                                        size="small" 
+                                                        severity="danger"
+                                                        text
+                                                        rounded
+                                                        @click="excluirCategoria(slotProps.option)"
+                                                        v-tooltip.top="'Excluir categoria'"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </Dropdown>
+                                </div>
                                 <small v-if="errors.categoria" class="p-error">{{ errors.categoria }}</small>
                             </div>
                         </div>
@@ -259,6 +289,77 @@
             </div>
         </template>
     </Dialog>
+
+    <!-- Modal para editar categoria -->
+    <Dialog 
+        v-model:visible="showModalEditarCategoria" 
+        modal 
+        header="Editar Categoria"
+        :style="{ width: '400px' }"
+    >
+        <div class="flex flex-column gap-3">
+            <div class="field">
+                <label for="categoriaEditada" class="block text-900 font-medium mb-2">Nome da Categoria *</label>
+                <InputText 
+                    v-model="categoriaEditada.nome" 
+                    placeholder="Ex: Consulta, Material, Aluguel..."
+                    class="w-full"
+                    :class="{ 'p-invalid': errorsCategoriaEditada.nome }"
+                    @keyup.enter="salvarCategoriaEditada"
+                />
+                <small v-if="errorsCategoriaEditada.nome" class="p-error">{{ errorsCategoriaEditada.nome }}</small>
+            </div>
+        </div>
+        
+        <template #footer>
+            <div class="flex gap-2">
+                <Button 
+                    label="Cancelar" 
+                    severity="secondary"
+                    @click="fecharModalEditarCategoria"
+                />
+                <Button 
+                    label="Salvar" 
+                    :loading="salvandoCategoriaEditada"
+                    @click="salvarCategoriaEditada"
+                />
+            </div>
+        </template>
+    </Dialog>
+
+    <!-- Modal de confirmação para excluir categoria -->
+    <Dialog 
+        v-model:visible="showModalExcluirCategoria" 
+        modal 
+        header="Confirmar Exclusão"
+        :style="{ width: '400px' }"
+    >
+        <div class="flex flex-column gap-3">
+            <div class="flex align-items-center gap-3">
+                <i class="pi pi-exclamation-triangle text-orange-500 text-2xl"></i>
+                <div>
+                    <p class="mb-2">Tem certeza que deseja excluir a categoria <strong>"{{ categoriaParaExcluir?.nome }}"</strong>?</p>
+                    <p class="text-sm text-600">Esta ação não pode ser desfeita.</p>
+                </div>
+            </div>
+        </div>
+        
+        <template #footer>
+            <div class="flex gap-2">
+                <Button 
+                    label="Cancelar" 
+                    severity="secondary"
+                    @click="fecharModalExcluirCategoria"
+                />
+                <Button 
+                    label="Excluir" 
+                    severity="danger"
+                    :loading="excluindoCategoria"
+                    @click="confirmarExclusaoCategoria"
+                />
+            </div>
+        </template>
+    </Dialog>
 </template>
 
 <script>
@@ -278,6 +379,18 @@ export default {
                 nome: ''
             },
             errorsNovaCategoria: {},
+            // Novos modais para editar e excluir
+            showModalEditarCategoria: false,
+            showModalExcluirCategoria: false,
+            salvandoCategoriaEditada: false,
+            excluindoCategoria: false,
+            categoriaSelecionada: null,
+            categoriaEditada: {
+                id: null,
+                nome: ''
+            },
+            categoriaParaExcluir: null,
+            errorsCategoriaEditada: {},
             form: {
                 tipo: null,
                 categoria: '',
@@ -301,6 +414,14 @@ export default {
     computed: {
         isEditing() {
             return this.$route.params.id !== undefined;
+        },
+        
+        categoriasComAcoes() {
+            // Retorna as categorias com os dados necessários para os botões
+            return this.categorias.map(categoria => ({
+                ...categoria,
+                nome: categoria.nome
+            }));
         }
     },
     watch: {
@@ -446,7 +567,7 @@ export default {
                     });
                 }
                 
-                this.$router.push('/financeiro/lista');
+                this.$router.push('/financeiro');
             } catch (error) {
                 console.error('Erro ao salvar:', error);
                 this.$toast.add({
@@ -461,7 +582,7 @@ export default {
         },
         
         cancelar() {
-            this.$router.push('/financeiro/lista');
+            this.$router.push('/financeiro');
         },
         
         atualizarParcelas() {
@@ -610,6 +731,134 @@ export default {
             } finally {
                 this.salvandoNovaCategoria = false;
             }
+        },
+
+        // === MÉTODOS PARA EDITAR E EXCLUIR CATEGORIA ===
+        
+        onCategoriaChange() {
+            // Encontrar a categoria selecionada pelos dados completos
+            this.categoriaSelecionada = this.categorias.find(cat => cat.nome === this.form.categoria);
+        },
+
+        editarCategoria(categoria) {
+            this.categoriaEditada = {
+                id: categoria.id,
+                nome: categoria.nome
+            };
+            this.errorsCategoriaEditada = {};
+            this.showModalEditarCategoria = true;
+        },
+
+        excluirCategoria(categoria) {
+            this.categoriaParaExcluir = categoria;
+            this.showModalExcluirCategoria = true;
+        },
+
+        fecharModalEditarCategoria() {
+            this.showModalEditarCategoria = false;
+            this.categoriaEditada = { id: null, nome: '' };
+            this.errorsCategoriaEditada = {};
+        },
+
+        fecharModalExcluirCategoria() {
+            this.showModalExcluirCategoria = false;
+            this.categoriaParaExcluir = null;
+        },
+
+        validarCategoriaEditada() {
+            this.errorsCategoriaEditada = {};
+            
+            if (!this.categoriaEditada.nome.trim()) {
+                this.errorsCategoriaEditada.nome = 'Nome é obrigatório';
+            }
+            
+            return Object.keys(this.errorsCategoriaEditada).length === 0;
+        },
+
+        async salvarCategoriaEditada() {
+            if (!this.validarCategoriaEditada()) {
+                return;
+            }
+            
+            this.salvandoCategoriaEditada = true;
+            
+            try {
+                const response = await this.$financeirosService.atualizarCategoria(this.categoriaEditada.id, {
+                    nome: this.categoriaEditada.nome.trim()
+                });
+                
+                if (response.data.success) {
+                    // Atualizar a categoria na lista
+                    const index = this.categorias.findIndex(cat => cat.id === this.categoriaEditada.id);
+                    if (index !== -1) {
+                        this.categorias[index].nome = this.categoriaEditada.nome.trim();
+                    }
+                    
+                    // Atualizar a categoria selecionada no formulário
+                    this.form.categoria = this.categoriaEditada.nome.trim();
+                    this.categoriaSelecionada = this.categorias[index];
+                    
+                    this.$toast.add({
+                        severity: 'success',
+                        summary: 'Sucesso',
+                        detail: 'Categoria atualizada com sucesso',
+                        life: 3000
+                    });
+                    
+                    this.fecharModalEditarCategoria();
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar categoria:', error);
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: error.response?.data?.error || 'Erro ao atualizar categoria',
+                    life: 3000
+                });
+            } finally {
+                this.salvandoCategoriaEditada = false;
+            }
+        },
+
+        async confirmarExclusaoCategoria() {
+            this.excluindoCategoria = true;
+            
+            try {
+                const response = await this.$financeirosService.excluirCategoria(this.categoriaParaExcluir.id);
+                
+                if (response.data.success) {
+                    // Remover a categoria da lista
+                    const index = this.categorias.findIndex(cat => cat.id === this.categoriaParaExcluir.id);
+                    if (index !== -1) {
+                        this.categorias.splice(index, 1);
+                    }
+                    
+                    // Limpar a categoria selecionada se for a mesma que foi excluída
+                    if (this.form.categoria === this.categoriaParaExcluir.nome) {
+                        this.form.categoria = '';
+                        this.categoriaSelecionada = null;
+                    }
+                    
+                    this.$toast.add({
+                        severity: 'success',
+                        summary: 'Sucesso',
+                        detail: 'Categoria excluída com sucesso',
+                        life: 3000
+                    });
+                    
+                    this.fecharModalExcluirCategoria();
+                }
+            } catch (error) {
+                console.error('Erro ao excluir categoria:', error);
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: error.response?.data?.error || 'Erro ao excluir categoria',
+                    life: 3000
+                });
+            } finally {
+                this.excluindoCategoria = false;
+            }
         }
     }
 };
@@ -619,5 +868,34 @@ export default {
 .card {
     border-radius: 12px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Estilos para o dropdown customizado */
+:deep(.p-dropdown-panel .p-dropdown-items .p-dropdown-item) {
+    padding: 0.75rem 1rem;
+}
+
+:deep(.p-dropdown-panel .p-dropdown-items .p-dropdown-item:hover) {
+    background-color: var(--p-content-hover-background);
+}
+
+/* Estilos para os botões dentro das opções */
+:deep(.p-dropdown-panel .p-dropdown-items .p-dropdown-item .p-button) {
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+}
+
+:deep(.p-dropdown-panel .p-dropdown-items .p-dropdown-item .p-button .p-button-icon) {
+    font-size: 0.875rem;
+}
+
+/* Garantir que os botões não interfiram na seleção */
+:deep(.p-dropdown-panel .p-dropdown-items .p-dropdown-item .flex.gap-1) {
+    pointer-events: auto;
+}
+
+:deep(.p-dropdown-panel .p-dropdown-items .p-dropdown-item .flex.gap-1 .p-button) {
+    pointer-events: auto;
 }
 </style> 

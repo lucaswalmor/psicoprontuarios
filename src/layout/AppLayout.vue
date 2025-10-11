@@ -5,6 +5,7 @@ import AppSidebar from './AppSidebar.vue';
 import AppTopbar from './AppTopbar.vue';
 import Breadcrumb from '@/components/Breadcrumb.vue';
 import PlanLoading from '@/components/PlanLoading.vue';
+import ChatAtendimento from '@/components/ChatAtendimento.vue';
 
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 
@@ -85,4 +86,5 @@ function isOutsideClicked(event) {
     </div>
     <Toast />
     <PlanLoading :loading="planLoading" />
+        <ChatAtendimento />
 </template>
