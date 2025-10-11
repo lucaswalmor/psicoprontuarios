@@ -26,6 +26,12 @@ const router = createRouter({
             component: () => import('@/views/pages/Cadastro.vue')
         },
         {
+            path: '/completar-cadastro',
+            name: 'completar-cadastro',
+            component: () => import('@/views/pages/CompletarCadastro.vue'),
+            meta: { requiresAuth: true }
+        },
+        {
             path: '/politica-privacidade',
             name: 'politica-privacidade',
             component: () => import('@/views/pages/PoliticaPrivacidade.vue')

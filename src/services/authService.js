@@ -118,6 +118,38 @@ class AuthService {
             throw error;
         }
     }
+
+    // Login com Google
+    async googleLogin(credential) {
+        try {
+            const response = await api.post('/auth/google', { token: credential });
+            
+            if (response.data.usuario.token) {
+                localStorage.setItem('token', response.data.usuario.token);
+                sessionStorage.setItem("usuario", JSON.stringify(response.data.usuario));
+                sessionStorage.setItem('sessionTime', 1800);
+                sessionStorage.setItem('isAutenticated', true);
+            }
+            
+            return {
+                ...response.data,
+                user: response.data.usuario,
+                cadastroCompleto: response.data.cadastro_completo
+            };
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Completar cadastro (para usuários sociais)
+    async completarCadastro(dados) {
+        try {
+            const response = await api.put('/user/completar-cadastro', dados);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 export default new AuthService(); 

@@ -39,6 +39,20 @@
                             <ProgressSpinner style="width: 20px; height: 20px" strokeWidth="8" fill="transparent"
                                 animationDuration=".5s" aria-label="Custom ProgressSpinner" v-if="isLoading" />
                         </Button>
+
+                        <!-- Divisor -->
+                        <div class="flex items-center my-4">
+                            <div class="flex-1 border-t border-surface-300"></div>
+                            <span class="px-3 text-surface-600 text-sm">ou</span>
+                            <div class="flex-1 border-t border-surface-300"></div>
+                        </div>
+
+                        <!-- Botão Google -->
+                        <GoogleSignInButton 
+                            button-text="Continuar com Google"
+                            @success="handleGoogleLogin"
+                            @error="handleGoogleError"
+                        />
                     </div>
                 </div>
             </div>
@@ -49,9 +63,13 @@
 <script>
 import { usePlanStore } from '@/store/plan';
 import logo from '@/assets/img/no-bg.webp';
+import GoogleSignInButton from '@/components/GoogleSignInButton.vue';
 
 export default {
     name: 'Login',
+    components: {
+        GoogleSignInButton
+    },
     data() {
         return {
             isLoading: false,
@@ -195,6 +213,55 @@ export default {
 
         goToChangePassword() {
             this.$router.push('/change-password');
+        },
+
+        async handleGoogleLogin(credential) {
+            this.isLoading = true;
+            this.errorMessage = '';
+            
+            try {
+                const response = await this.$authService.googleLogin(credential);
+                
+                // Salvar nome do usuário no localStorage
+                if (response.user && response.user.nome) {
+                    localStorage.setItem('userName', response.user.nome);
+                    this.userName = response.user.nome;
+                }
+                
+                // Verificar se o cadastro está completo
+                if (response.cadastroCompleto === false) {
+                    // Redirecionar para completar cadastro
+                    this.$router.push('/completar-cadastro');
+                } else {
+                    // Buscar informações do plano e redirecionar
+                    await this.redirectBasedOnPlan();
+                }
+                
+            } catch (err) {
+                console.log(err);
+                
+                // Exibir mensagem de erro apropriada
+                if (err.response) {
+                    if (err.response.status === 401) {
+                        this.errorMessage = 'Erro na autenticação com Google. Tente novamente.';
+                    } else if (err.response.status === 422) {
+                        this.errorMessage = 'Dados inválidos. Verifique as informações fornecidas.';
+                    } else {
+                        this.errorMessage = err.response.data.error || 'Erro ao fazer login com Google. Tente novamente.';
+                    }
+                } else if (err.request) {
+                    this.errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.';
+                } else {
+                    this.errorMessage = 'Erro inesperado. Tente novamente.';
+                }
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        handleGoogleError(error) {
+            console.error('Erro no Google Sign-In:', error);
+            this.errorMessage = 'Erro ao conectar com Google. Tente novamente.';
         }
     }
 }

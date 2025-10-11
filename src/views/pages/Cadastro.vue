@@ -38,6 +38,23 @@
                         <h1 class="text-2xl font-bold text-gray-900 mb-2">PsicoProntuários</h1>
                         <p class="text-gray-600">Não precisa de cartão de crédito para testar.</p>
                     </div>
+                    <!-- Botão Google -->
+                    <div class="mb-6">
+                        <GoogleSignInButton 
+                            button-text="Cadastrar com Google"
+                            theme="outline"
+                            @success="handleGoogleSignUp"
+                            @error="handleGoogleError"
+                        />
+                    </div>
+
+                    <!-- Divisor -->
+                    <div class="flex items-center my-6">
+                        <div class="flex-1 border-t border-gray-300"></div>
+                        <span class="px-3 text-gray-600 text-sm">ou</span>
+                        <div class="flex-1 border-t border-gray-300"></div>
+                    </div>
+
                     <!-- Formulário -->
                     <form @submit.prevent="handleSubmit" class="space-y-6">
                         <!-- Nome -->
@@ -221,6 +238,7 @@
 <script>
 import logo from '@/assets/img/no-bg.webp';
 import userService from '@/services/userService';
+import GoogleSignInButton from '@/components/GoogleSignInButton.vue';
 import InputText from 'primevue/inputtext';
 import InputMask from 'primevue/inputmask';
 import Checkbox from 'primevue/checkbox';
@@ -233,6 +251,7 @@ import InputIcon from 'primevue/inputicon';
 export default {
     name: 'Cadastro',
     components: {
+        GoogleSignInButton,
         InputText,
         InputMask,
         Checkbox,
@@ -425,6 +444,41 @@ export default {
 
             return formData;
         },
+
+        async handleGoogleSignUp(credential) {
+            this.loading = true;
+            this.error = '';
+            
+            try {
+                const response = await this.$authService.googleLogin(credential);
+                
+                // Verificar se o cadastro está completo
+                if (response.cadastroCompleto === false) {
+                    // Redirecionar para completar cadastro
+                    this.$router.push('/completar-cadastro');
+                } else {
+                    // Se cadastro completo, mostrar dialog de sucesso e redirecionar
+                    this.showSuccessDialog = true;
+                    this.startCountdown();
+                }
+                
+            } catch (err) {
+                console.error('Erro no cadastro Google:', err);
+                
+                if (err.response?.data?.error) {
+                    this.error = err.response.data.error;
+                } else {
+                    this.error = 'Erro ao cadastrar com Google. Tente novamente.';
+                }
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        handleGoogleError(error) {
+            console.error('Erro no Google Sign-In:', error);
+            this.error = 'Erro ao conectar com Google. Tente novamente.';
+        }
 
     }
 };
