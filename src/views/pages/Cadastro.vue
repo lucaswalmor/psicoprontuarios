@@ -36,7 +36,7 @@
                     <!-- Logo/Título -->
                     <div class="mb-8">
                         <h1 class="text-2xl font-bold text-gray-900 mb-2">PsicoProntuários</h1>
-                        <p class="text-gray-600">Não precisa de cartão de crédito para testar.</p>
+                        <p class="text-600">Não precisa de cartão de crédito para testar.</p>
                     </div>
                     <!-- Botão Google -->
                     <div class="mb-6">
@@ -51,7 +51,7 @@
                     <!-- Divisor -->
                     <div class="flex items-center my-6">
                         <div class="flex-1 border-t border-gray-300"></div>
-                        <span class="px-3 text-gray-600 text-sm">ou</span>
+                        <span class="px-3 text-600 text-sm">ou</span>
                         <div class="flex-1 border-t border-gray-300"></div>
                     </div>
 
@@ -155,7 +155,7 @@
                                 :binary="true" 
                                 :class="{ 'p-invalid': errors.politica_privacidade }" 
                             />
-                            <label for="politica_privacidade" class="text-sm text-gray-600 leading-relaxed">
+                            <label for="politica_privacidade" class="text-sm text-600 leading-relaxed">
                                 Li e aceito os
                                 <router-link to="/termos-uso" class="text-purple-600 hover:text-purple-500 underline" target="_blank">
                                     Termos de Uso
@@ -184,7 +184,7 @@
 
                     <!-- Link de Login -->
                     <div class="mt-6 text-center">
-                        <p class="text-sm text-gray-600">
+                        <p class="text-sm text-600">
                             Já possui conta? 
                             <router-link to="/login" class="text-purple-600 hover:text-purple-500 font-medium">
                                 Faça login aqui!

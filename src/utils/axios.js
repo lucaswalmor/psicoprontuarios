@@ -1,20 +1,19 @@
 import axios from 'axios';
-
-var urlProdV2 = 'https://psicoprontuarios-v2.lksoftware.com.br/public/api/';
-var urlProd = 'https://psicoprontuarios.lksoftware.com.br/public/api/';
-// var urlDev = 'http://localhost:8000/api';
-var urlDev = 'http://127.0.0.1:8000/api';
+import { getApiUrl } from '../config/environment.js';
 
 // Configuração base do axios
 const api = axios.create({
-    baseURL: urlProdV2,
-    // baseURL: urlDev,
+    baseURL: getApiUrl(),
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
     },
     withCredentials: false, // Importante para o Sanctum
 });
+
+// Log para debug - mostra qual URL está sendo usada
+console.log('🌍 Ambiente:', import.meta.env.MODE);
+console.log('🔗 API URL:', api.defaults.baseURL);
 
 // Função para mostrar/esconder loading
 const showLoading = () => {

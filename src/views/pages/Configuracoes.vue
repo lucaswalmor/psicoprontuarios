@@ -115,7 +115,7 @@
                                                 :severity="isPlanPaused ? 'success' : 'warning'" class="w-full"
                                                 @click="togglePlanStatus" />
 
-                                            <small class="text-gray-600 block mt-2">
+                                            <small class="text-600 block mt-2">
                                                 {{ isPlanPaused ?
                                                     'Reative seu plano para voltar a ter acesso completo ao sistema.' :
                                                     'Pause seu plano temporariamente. Você manterá acesso limitado.' }}

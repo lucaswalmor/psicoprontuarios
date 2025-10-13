@@ -10,8 +10,8 @@
         <div v-if="!loading">
             <div class="text-center mb-4">
                 <i class="pi pi-user-plus text-6xl text-blue-500 mb-3"></i>
-                <h3 class="text-2xl font-bold text-gray-800 mb-2">Crie seu Perfil Público</h3>
-                <p class="text-gray-600">
+                <h3 class="text-2xl font-bold text-800 mb-2">Crie seu Perfil Público</h3>
+                <p class="text-600">
                     Configure seu perfil para aparecer no marketplace e receber pacientes diretamente via WhatsApp.
                 </p>
             </div>
@@ -21,14 +21,14 @@
                     <div class="text-center p-4 border rounded-lg">
                         <i class="pi pi-users text-3xl text-green-500 mb-2"></i>
                         <h4 class="font-semibold mb-2">Mais Pacientes</h4>
-                        <p class="text-sm text-gray-600">Apareça nas buscas do marketplace</p>
+                        <p class="text-sm text-600">Apareça nas buscas do marketplace</p>
                     </div>
                 </div>
                 <div class="col-12 md:col-6">
                     <div class="text-center p-4 border rounded-lg">
                         <i class="pi pi-whatsapp text-3xl text-green-500 mb-2"></i>
                         <h4 class="font-semibold mb-2">Contato Direto</h4>
-                        <p class="text-sm text-gray-600">Pacientes entram em contato via WhatsApp</p>
+                        <p class="text-sm text-600">Pacientes entram em contato via WhatsApp</p>
                     </div>
                 </div>
             </div>
@@ -45,7 +45,7 @@
         
         <div v-else class="text-center p-6">
             <ProgressSpinner />
-            <p class="text-gray-600 mt-3">Preparando formulário...</p>
+            <p class="text-600 mt-3">Preparando formulário...</p>
         </div>
         
         <template #footer>

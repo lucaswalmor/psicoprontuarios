@@ -33,7 +33,7 @@
         <div class="mb-4">
             <label class="block text-500 font-medium mb-2">Público-alvo</label>
             <div v-if="perfil.publico_alvo" class="p-3 bg-gray-50 rounded border">
-                <span class="text-gray-700">{{ formatarPublicoAlvo(perfil.publico_alvo) }}</span>
+                <span class="text-700">{{ formatarPublicoAlvo(perfil.publico_alvo) }}</span>
             </div>
             <div v-else class="p-3 bg-yellow-50 border-yellow-200 rounded border">
                 <div class="flex align-items-center">

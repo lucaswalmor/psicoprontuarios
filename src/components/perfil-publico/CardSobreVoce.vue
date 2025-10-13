@@ -44,7 +44,7 @@
         <div class="mb-4">
             <label class="block text-500 font-medium mb-2">Descrição do Perfil</label>
             <div v-if="perfil.descricao" class="p-3 bg-gray-50 rounded border">
-                <p class="text-gray-700 mb-2">{{ perfil.descricao }}</p>
+                <p class="text-700 mb-2">{{ perfil.descricao }}</p>
                 <div class="flex justify-content-between align-items-center">
                     <span class="text-sm text-500">
                         {{ perfil.descricao.length }}/1000 caracteres
@@ -80,7 +80,7 @@
                 <div class="flex align-items-center gap-3">
                     <i class="pi pi-video text-blue-500 text-xl"></i>
                     <div class="flex-grow-1">
-                        <p class="text-gray-700 mb-1">Vídeo de apresentação disponível</p>
+                        <p class="text-700 mb-1">Vídeo de apresentação disponível</p>
                         <p class="text-sm text-500">Os pacientes podem assistir antes de entrar em contato</p>
                     </div>
                     <Button 
@@ -95,7 +95,7 @@
                 <div class="flex align-items-center gap-3">
                     <i class="pi pi-video text-gray-400 text-xl"></i>
                     <div class="flex-grow-1">
-                        <p class="text-gray-600 mb-1">Nenhum vídeo adicionado</p>
+                        <p class="text-600 mb-1">Nenhum vídeo adicionado</p>
                         <p class="text-sm text-500">Adicione um vídeo para aumentar a conversão</p>
                     </div>
                     <Button 

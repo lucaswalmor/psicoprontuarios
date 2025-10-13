@@ -29,7 +29,7 @@
                 <span class="text-yellow-800">Aceita convênios mas não especificou quais</span>
             </div>
             <div v-else class="p-3 bg-gray-50 rounded border">
-                <span class="text-gray-700">Não aceita convênios</span>
+                <span class="text-700">Não aceita convênios</span>
             </div>
         </div>
     </div>

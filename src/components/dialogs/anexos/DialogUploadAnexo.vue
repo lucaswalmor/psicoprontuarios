@@ -38,7 +38,7 @@
                     <template #empty>
                         <div class="flex flex-column align-items-center p-4">
                             <i class="pi pi-file-upload text-4xl text-gray-400 mb-3"></i>
-                            <span class="text-gray-600">Arraste arquivos aqui ou clique para selecionar</span>
+                            <span class="text-600">Arraste arquivos aqui ou clique para selecionar</span>
                             <small class="text-gray-500 mt-2">
                                 Tipos aceitos: PDF, imagens (JPG, PNG, GIF) e planilhas (XLSX, XLS, DOC, DOCX)<br>
                                 Tamanho máximo por arquivo: 10MB<br>
@@ -59,7 +59,7 @@
                         <i class="pi pi-file text-primary"></i>
                         <div class="flex flex-column">
                             <span class="font-medium">{{ arquivo.name }}</span>
-                            <small class="text-gray-600">{{ formatFileSize(arquivo.size) }}</small>
+                            <small class="text-600">{{ formatFileSize(arquivo.size) }}</small>
                         </div>
                     </div>
                     <Button 
@@ -77,8 +77,8 @@
                     <h6 class="m-0">Progresso do Upload</h6>
                     <div v-for="(progress, index) in uploadProgress" :key="index" class="flex flex-column gap-1">
                         <div class="flex align-items-center justify-content-between">
-                            <small class="text-gray-600">{{ progress.fileName }}</small>
-                            <small class="text-gray-600">{{ progress.percentage }}%</small>
+                            <small class="text-600">{{ progress.fileName }}</small>
+                            <small class="text-600">{{ progress.percentage }}%</small>
                         </div>
                         <ProgressBar :value="progress.percentage" :showValue="false" />
                         <small v-if="progress.status === 'success'" class="text-green-600">
