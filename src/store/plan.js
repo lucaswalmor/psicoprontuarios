@@ -5,18 +5,26 @@ export const usePlanStore = defineStore('plan', {
     state: () => ({
         planInfo: null,
         stats: null,
+        userInfo: null,
         loading: false,
         error: null
     }),
 
     getters: {
         // Getters para facilitar o acesso às features
-        isVitalicio: (state) => state.planInfo?.nome === 'Vitalício',
+        isVitalicio: (state) => state.userInfo?.usuario_vitalicio === true,
         canAccessDashboard: (state) => state.planInfo?.features?.dashboard || false,
         canAccessGestaoFinanceira: (state) => state.planInfo?.features?.gestao_financeira || false,
         canAccessProntuariosPDF: (state) => state.planInfo?.features?.prontuarios_pdf || false,
         canAccessAgendamentos: (state) => state.planInfo?.features?.agendamentos || false,
         canAccessBackupAutomatico: (state) => state.planInfo?.features?.backup_automatico || false,
+        canAccessPerfilPublico: (state) => {
+            // Usuários vitalícios têm acesso total
+            if (state.userInfo?.usuario_vitalicio === true) {
+                return true;
+            }
+            return state.planInfo?.features?.perfil_publico || false;
+        },
         
         // Getters para estatísticas
         canAddPaciente: (state) => state.stats?.can_add_paciente || false,
@@ -24,7 +32,7 @@ export const usePlanStore = defineStore('plan', {
         limitePacientes: (state) => state.stats?.limite_pacientes || 0,
         
         // Getter para verificar se tem dados carregados
-        hasPlanData: (state) => state.planInfo !== null && state.stats !== null,
+        hasPlanData: (state) => state.planInfo !== null && state.stats !== null && state.userInfo !== null,
         
         // Getters para status de pausa
         isPlanPaused: (state) => {
@@ -79,10 +87,12 @@ export const usePlanStore = defineStore('plan', {
                 
                 this.planInfo = response.plano;
                 this.stats = response.stats;
+                this.userInfo = response.user;
                 
                 // Salvar no localStorage para persistência
                 localStorage.setItem('userPlanInfo', JSON.stringify(response.plano));
                 localStorage.setItem('userStats', JSON.stringify(response.stats));
+                localStorage.setItem('userInfo', JSON.stringify(response.user));
                 
             } catch (error) {
                 console.error('Erro ao buscar informações do plano:', error);
@@ -96,10 +106,12 @@ export const usePlanStore = defineStore('plan', {
             try {
                 const planInfo = localStorage.getItem('userPlanInfo');
                 const stats = localStorage.getItem('userStats');
+                const userInfo = localStorage.getItem('userInfo');
                 
-                if (planInfo && stats) {
+                if (planInfo && stats && userInfo) {
                     this.planInfo = JSON.parse(planInfo);
                     this.stats = JSON.parse(stats);
+                    this.userInfo = JSON.parse(userInfo);
                 }
             } catch (error) {
                 console.error('Erro ao carregar dados do plano do localStorage:', error);
@@ -109,9 +121,11 @@ export const usePlanStore = defineStore('plan', {
         clearPlanData() {
             this.planInfo = null;
             this.stats = null;
+            this.userInfo = null;
             this.error = null;
             localStorage.removeItem('userPlanInfo');
             localStorage.removeItem('userStats');
+            localStorage.removeItem('userInfo');
         }
     }
 }); 

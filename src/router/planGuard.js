@@ -3,6 +3,7 @@ import { showAccessDeniedToast } from '@/utils/toast';
 // Função para verificar permissões do plano
 function performPlanCheck(planStore, to, next) {
     const planInfo = planStore.planInfo;
+    const userInfo = planStore.userInfo;
     const isVitalicio = planStore.isVitalicio;
 
     // Usuários vitalícios têm acesso total
@@ -19,7 +20,8 @@ function performPlanCheck(planStore, to, next) {
     }
 
     // Se requer feature específica, verificar se está disponível
-    if (requiredFeature && !planInfo.features[requiredFeature]) {
+    // Mas só verificar se NÃO for usuário vitalício
+    if (requiredFeature && !isVitalicio && !planInfo.features[requiredFeature]) {
         // Redirecionar para rota apropriada baseada no plano
         let redirectRoute = '/pacientes'; // Rota padrão
         
@@ -48,6 +50,7 @@ const routeFeatureMap = {
     '/financeiro/editar': 'gestao_financeira',
     '/financeiro/lista': 'gestao_financeira',
     '/agendamentos': 'agendamentos',
+    '/meu-psicologo': 'perfil_publico',
     // Pacientes sempre disponível
     '/pacientes': null,
     '/pacientes/cadastro': null,
@@ -80,6 +83,8 @@ export async function planGuard(to, from, next) {
         return next('/login');
     }
 
+    let needsServerFetch = false;
+
     try {
         // Obter informações do plano do store Pinia
         const { usePlanStore } = await import('@/store/plan');
@@ -91,11 +96,11 @@ export async function planGuard(to, from, next) {
         }
 
         const planInfo = planStore.planInfo;
+        const userInfo = planStore.userInfo;
         const isVitalicio = planStore.isVitalicio;
 
         // Só mostrar loading do plano se realmente precisar buscar dados do servidor
-        let needsServerFetch = false;
-        if (!planInfo) {
+        if (!planInfo || !userInfo) {
             needsServerFetch = true;
             // Emitir evento para mostrar loading apenas quando vai buscar do servidor
             if (to.meta.requiresPlanCheck) {

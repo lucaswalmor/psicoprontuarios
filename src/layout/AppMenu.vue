@@ -63,6 +63,12 @@ export default {
                             to: '/agendamentos',
                             requiredFeature: 'agendamentos'
                         },
+                        {
+                            label: 'Meu Psicólogo', 
+                            icon: 'pi pi-fw pi-user-edit', 
+                            to: '/meu-psicologo',
+                            requiredFeature: 'perfil_publico'
+                        },
                     ]
                 },
                 {
@@ -86,6 +92,7 @@ export default {
 
             // Obter dados do store
             const planInfo = this.planStore?.planInfo;
+            const userInfo = this.planStore?.userInfo;
             const isVitalicio = this.planStore?.isVitalicio;
 
             // Filtrar itens baseado no plano
