@@ -1,18 +1,18 @@
 <template>
-    <Dialog :visible="visible" @update:visible="$emit('update:visible', $event)" modal header="Editar Especialidades" :style="{ width: '600px' }">
+    <Dialog :visible="visible" @update:visible="$emit('update:visible', $event)" modal header="Editar Convênios" :style="{ width: '600px' }">
         <div class="p-4">
-            <label class="block text-500 font-medium mb-2">Especialidades/Abordagens</label>
+            <label class="block text-500 font-medium mb-2">Convênios Aceitos</label>
             <MultiSelect 
-                v-model="especialidades" 
-                :options="opcoesEspecialidades" 
+                v-model="convenios" 
+                :options="opcoesConvenios" 
                 optionLabel="nome" 
                 optionValue="id" 
-                placeholder="Selecione suas especialidades" 
+                placeholder="Selecione os convênios aceitos" 
                 class="w-full"
                 :loading="loading"
                 :disabled="loading"
             />
-            <small class="text-500">Selecione suas especialidades e abordagens terapêuticas</small>
+            <small class="text-500">Selecione os convênios que você aceita para atendimento</small>
         </div>
         <template #footer>
             <div class="flex justify-content-end gap-2">
@@ -27,38 +27,38 @@
 import perfilPublicoService from '@/services/perfilPublicoService';
 
 export default {
-    name: 'DialogEditarEspecialidades',
+    name: 'DialogEditarConvenios',
     props: { visible: { type: Boolean, default: false }, perfil: { type: Object, default: null } },
-    emits: ['update:visible', 'especialidades-atualizadas'],
+    emits: ['update:visible', 'convenios-atualizados'],
     data() {
         return {
-            especialidades: [],
-            opcoesEspecialidades: [],
+            convenios: [],
+            opcoesConvenios: [],
             loading: false
         };
     },
     watch: {
         perfil: {
             handler(newPerfil) {
-                if (newPerfil && newPerfil.especialidades) {
-                    this.especialidades = newPerfil.especialidades.map(e => e.id || e);
+                if (newPerfil && newPerfil.convenios) {
+                    this.convenios = newPerfil.convenios.map(c => c.id || c);
                 }
             },
             immediate: true
         }
     },
     methods: {
-        async carregarEspecialidades() {
+        async carregarConvenios() {
             this.loading = true;
             try {
-                const especialidades = await perfilPublicoService.buscarEspecialidades();
-                this.opcoesEspecialidades = especialidades;
+                const convenios = await perfilPublicoService.buscarConvenios();
+                this.opcoesConvenios = convenios;
             } catch (error) {
-                console.error('Erro ao carregar especialidades:', error);
+                console.error('Erro ao carregar convênios:', error);
                 this.$toast.add({
                     severity: 'error',
                     summary: 'Erro',
-                    detail: 'Erro ao carregar especialidades',
+                    detail: 'Erro ao carregar convênios',
                     life: 3000
                 });
             } finally {
@@ -68,31 +68,31 @@ export default {
         async salvar() {
             try {
                 await perfilPublicoService.atualizarPerfil({
-                    especialidades: this.especialidades
+                    convenios: this.convenios
                 });
                 
                 this.$toast.add({
                     severity: 'success',
                     summary: 'Sucesso',
-                    detail: 'Especialidades atualizadas com sucesso',
+                    detail: 'Convênios atualizados com sucesso',
                     life: 3000
                 });
                 
-                this.$emit('especialidades-atualizadas');
+                this.$emit('convenios-atualizados');
                 this.$emit('update:visible', false);
             } catch (error) {
-                console.error('Erro ao salvar especialidades:', error);
+                console.error('Erro ao salvar convênios:', error);
                 this.$toast.add({
                     severity: 'error',
                     summary: 'Erro',
-                    detail: 'Erro ao salvar especialidades',
+                    detail: 'Erro ao salvar convênios',
                     life: 3000
                 });
             }
         }
     },
     mounted() {
-        this.carregarEspecialidades();
+        this.carregarConvenios();
     }
 };
 </script>

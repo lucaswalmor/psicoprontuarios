@@ -55,30 +55,25 @@ class PerfilPublicoService {
      */
     async atualizarPerfil(dadosPerfil) {
         try {
-            const formData = new FormData();
+            // Separar arquivos dos dados básicos
+            const { foto_profissional, video_apresentacao, ...dadosBasicos } = dadosPerfil;
             
-            // Adicionar campos básicos
-            Object.keys(dadosPerfil).forEach(key => {
-                if (key === 'foto_profissional' || key === 'video_apresentacao') {
-                    if (dadosPerfil[key]) {
-                        formData.append(key, dadosPerfil[key]);
-                    }
-                } else if (Array.isArray(dadosPerfil[key])) {
-                    dadosPerfil[key].forEach(item => {
-                        formData.append(`${key}[]`, item);
-                    });
-                } else if (dadosPerfil[key] !== null && dadosPerfil[key] !== undefined) {
-                    // Converter boolean para string para FormData
-                    const value = typeof dadosPerfil[key] === 'boolean' ? dadosPerfil[key].toString() : dadosPerfil[key];
-                    formData.append(key, value);
-                }
-            });
-
-            const response = await axios.put('/perfil-publico', formData, {
+            // Enviar dados básicos como JSON
+            const response = await axios.put('/perfil-publico', dadosBasicos, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
+                    'Content-Type': 'application/json',
                 },
             });
+            
+            // Se há arquivos para upload, fazer upload separadamente
+            if (foto_profissional) {
+                await this.uploadFoto(foto_profissional);
+            }
+            
+            if (video_apresentacao) {
+                await this.uploadVideo(video_apresentacao);
+            }
+            
             return response.data;
         } catch (error) {
             console.error('Erro ao atualizar perfil:', error);
@@ -281,7 +276,7 @@ class PerfilPublicoService {
      */
     calcularCompletude(perfil) {
         let pontos = 0;
-        const totalPontos = 100;
+        const totalPontos = 120; // Aumentado para incluir convênios e idiomas
 
         // Foto profissional (20 pontos)
         if (perfil.foto_profissional) {
@@ -311,6 +306,16 @@ class PerfilPublicoService {
         // Redes sociais (15 pontos)
         if (perfil.link_instagram || perfil.link_facebook || perfil.link_linkedin) {
             pontos += 15;
+        }
+
+        // Convênios (10 pontos)
+        if (perfil.convenios && perfil.convenios.length > 0) {
+            pontos += 10;
+        }
+
+        // Idiomas (10 pontos)
+        if (perfil.idiomas && perfil.idiomas.length > 0) {
+            pontos += 10;
         }
 
         return Math.round((pontos / totalPontos) * 100);

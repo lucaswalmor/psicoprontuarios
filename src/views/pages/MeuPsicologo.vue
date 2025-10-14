@@ -12,11 +12,6 @@
                             severity="secondary"
                             outlined
                             @click="abrirPreview" />
-                        <Button 
-                            icon="pi pi-power-off" 
-                            :label="perfil?.perfil_ativo ? 'Desativar' : 'Ativar'"
-                            :severity="perfil?.perfil_ativo ? 'danger' : 'success'"
-                            @click="toggleStatus" />
                     </div>
                 </div>
 
@@ -73,6 +68,40 @@
                         </small>
                     </div>
 
+                    <!-- Status do Perfil - Destacado -->
+                    <div class="surface-card p-4 border-round mb-4 border-2" 
+                         :class="perfil?.perfil_ativo ? 'border-green-200 bg-green-50' : 'border-orange-200 bg-orange-50'">
+                        <div class="flex align-items-center justify-content-between">
+                            <div class="flex align-items-center gap-3">
+                                <i class="pi pi-power-off text-xl" 
+                                   :class="perfil?.perfil_ativo ? 'text-green-600' : 'text-orange-600'"></i>
+                                <div>
+                                    <div class="flex align-items-center gap-2 mb-1">
+                                        <h5 class="text-800 font-bold mb-0">Status do Perfil Público</h5>
+                                        <i class="pi pi-info-circle text-primary cursor-pointer" 
+                                           v-tooltip.top="'O perfil público é o seu perfil profissional que aparece na plataforma de captação de pacientes www.meupsicologo.com.br.\n\nQuando ativo, pacientes podem encontrar e entrar em contato com você através desta plataforma.'"></i>
+                                    </div>
+                                    <div class="flex align-items-center gap-2">
+                                        <Tag :severity="perfil?.perfil_ativo ? 'success' : 'warning'"
+                                            :value="perfil?.perfil_ativo ? 'Ativo' : 'Inativo'" />
+                                        <small class="text-600">
+                                            {{ perfil?.perfil_ativo ? 'Seu perfil está visível para pacientes' : 'Seu perfil não está visível para pacientes' }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            <Button 
+                                v-if="!planStore.isPlanPaused"
+                                :label="perfil?.perfil_ativo ? 'Desativar' : 'Ativar'" 
+                                icon="pi pi-power-off" 
+                                :severity="perfil?.perfil_ativo ? 'danger' : 'success'"
+                                outlined 
+                                size="small"
+                                @click="toggleStatus"
+                            />
+                        </div>
+                    </div>
+
                     <div class="surface-card p-4 border-round">
                         <h6 class="mb-3 text-800 font-bold">Informações do Perfil Público</h6>
 
@@ -100,7 +129,7 @@
                                     </div>
 
                                     <!-- Nome Completo -->
-                                    <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
+                                    <div class="flex align-items-center p-3 surface-100 border-round">
                                         <div class="flex align-items-center gap-3">
                                             <i class="pi pi-user text-primary text-xl"></i>
                                             <div>
@@ -108,18 +137,10 @@
                                                 <small class="text-600">{{ psicologo?.nome }} {{ psicologo?.sobrenome }}</small>
                                             </div>
                                         </div>
-                                        <Button 
-                                            label="Editar" 
-                                            icon="pi pi-pencil" 
-                                            severity="secondary" 
-                                            outlined 
-                                            size="small"
-                                            @click="abrirDialogEditarNome"
-                                        />
                                     </div>
 
                                     <!-- CRP -->
-                                    <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
+                                    <div class="flex align-items-center p-3 surface-100 border-round">
                                         <div class="flex align-items-center gap-3">
                                             <i class="pi pi-briefcase text-primary text-xl"></i>
                                             <div>
@@ -127,14 +148,6 @@
                                                 <small class="text-600">{{ psicologo?.crp || 'Não cadastrado' }}</small>
                                             </div>
                                         </div>
-                                        <Button 
-                                            label="Editar" 
-                                            icon="pi pi-pencil" 
-                                            severity="secondary" 
-                                            outlined 
-                                            size="small"
-                                            @click="abrirDialogEditarCrp"
-                                        />
                                     </div>
 
                                     <!-- Descrição -->
@@ -224,7 +237,7 @@
                                             <i class="pi pi-users text-primary text-xl"></i>
                                             <div>
                                                 <h6 class="m-0 text-800">Público-alvo</h6>
-                                                <small class="text-600">{{ perfil?.publico_alvo || 'Não definido' }}</small>
+                                                <small class="text-600">{{ formatarPublicoAlvo(perfil?.publico_alvo) }}</small>
                                             </div>
                                         </div>
                                         <Button 
@@ -233,7 +246,7 @@
                                             severity="secondary" 
                                             outlined 
                                             size="small"
-                                            @click="abrirDialogEditarAtendimento"
+                                            @click="abrirDialogEditarPublicoAlvo"
                                         />
                                     </div>
 
@@ -252,7 +265,7 @@
                                             severity="secondary" 
                                             outlined 
                                             size="small"
-                                            @click="abrirDialogEditarAtendimento"
+                                            @click="abrirDialogEditarTipoAtendimento"
                                         />
                                     </div>
 
@@ -271,7 +284,7 @@
                                             severity="secondary" 
                                             outlined 
                                             size="small"
-                                            @click="abrirDialogEditarAtendimento"
+                                            @click="abrirDialogEditarValores"
                                         />
                                     </div>
 
@@ -313,6 +326,44 @@
                                         />
                                     </div>
 
+                                    <!-- Convênios -->
+                                    <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
+                                        <div class="flex align-items-center gap-3">
+                                            <i class="pi pi-credit-card text-primary text-xl"></i>
+                                            <div>
+                                                <h6 class="m-0 text-800">Convênios Aceitos</h6>
+                                                <small class="text-600">{{ perfil?.convenios?.length || 0 }} convênio(s)</small>
+                                            </div>
+                                        </div>
+                                        <Button 
+                                            label="Editar" 
+                                            icon="pi pi-pencil" 
+                                            severity="secondary" 
+                                            outlined 
+                                            size="small"
+                                            @click="abrirDialogEditarConvenios"
+                                        />
+                                    </div>
+
+                                    <!-- Idiomas -->
+                                    <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
+                                        <div class="flex align-items-center gap-3">
+                                            <i class="pi pi-globe text-primary text-xl"></i>
+                                            <div>
+                                                <h6 class="m-0 text-800">Idiomas de Atendimento</h6>
+                                                <small class="text-600">{{ perfil?.idiomas?.length || 0 }} idioma(s)</small>
+                                            </div>
+                                        </div>
+                                        <Button 
+                                            label="Editar" 
+                                            icon="pi pi-pencil" 
+                                            severity="secondary" 
+                                            outlined 
+                                            size="small"
+                                            @click="abrirDialogEditarIdiomas"
+                                        />
+                                    </div>
+
                                     <!-- Redes Sociais -->
                                     <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
                                         <div class="flex align-items-center gap-3">
@@ -332,26 +383,6 @@
                                         />
                                     </div>
 
-                                    <!-- Status do Perfil -->
-                                    <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
-                                        <div class="flex align-items-center gap-3">
-                                            <i class="pi pi-power-off text-primary text-xl"></i>
-                                            <div>
-                                                <h6 class="m-0 text-800">Status do Perfil</h6>
-                                                <Tag :severity="perfil?.perfil_ativo ? 'success' : 'danger'"
-                                                    :value="perfil?.perfil_ativo ? 'Ativo' : 'Inativo'" />
-                                            </div>
-                                        </div>
-                                        <Button 
-                                            v-if="!planStore.isPlanPaused"
-                                            :label="perfil?.perfil_ativo ? 'Desativar' : 'Ativar'" 
-                                            icon="pi pi-power-off" 
-                                            :severity="perfil?.perfil_ativo ? 'danger' : 'success'"
-                                            outlined 
-                                            size="small"
-                                            @click="toggleStatus"
-                                        />
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -415,12 +446,13 @@
         @temas-atualizados="onTemasAtualizados"
     />
 
-    <DialogEditarAtendimento 
-        :visible="dialogEditarAtendimento"
-        :perfil="perfil"
-        @update:visible="dialogEditarAtendimento = false"
-        @atendimento-atualizado="onAtendimentoAtualizado"
-    />
+        <DialogEditarAtendimento 
+            :visible="dialogEditarAtendimento"
+            :perfil="perfil"
+            :campo-edicao="campoEdicaoAtendimento"
+            @update:visible="dialogEditarAtendimento = false"
+            @atendimento-atualizado="onAtendimentoAtualizado"
+        />
 
     <DialogEditarLocalizacao 
         :visible="dialogEditarLocalizacao"
@@ -441,6 +473,20 @@
         :perfil="perfil"
         @update:visible="dialogEditarRedesSociais = false"
         @redes-atualizadas="onRedesAtualizadas"
+    />
+
+    <DialogEditarConvenios 
+        :visible="dialogEditarConvenios"
+        :perfil="perfil"
+        @update:visible="dialogEditarConvenios = false"
+        @convenios-atualizados="onConveniosAtualizados"
+    />
+
+    <DialogEditarIdiomas 
+        :visible="dialogEditarIdiomas"
+        :perfil="perfil"
+        @update:visible="dialogEditarIdiomas = false"
+        @idiomas-atualizados="onIdiomasAtualizados"
     />
 
     <DialogPreviewPerfil 
@@ -468,6 +514,8 @@ import DialogEditarAtendimento from '@/components/dialogs/perfil-publico/DialogE
 import DialogEditarLocalizacao from '@/components/dialogs/perfil-publico/DialogEditarLocalizacao.vue';
 import DialogEditarContato from '@/components/dialogs/perfil-publico/DialogEditarContato.vue';
 import DialogEditarRedesSociais from '@/components/dialogs/perfil-publico/DialogEditarRedesSociais.vue';
+import DialogEditarConvenios from '@/components/dialogs/perfil-publico/DialogEditarConvenios.vue';
+import DialogEditarIdiomas from '@/components/dialogs/perfil-publico/DialogEditarIdiomas.vue';
 import DialogPreviewPerfil from '@/components/dialogs/perfil-publico/DialogPreviewPerfil.vue';
 
 export default {
@@ -485,6 +533,8 @@ export default {
         DialogEditarLocalizacao,
         DialogEditarContato,
         DialogEditarRedesSociais,
+        DialogEditarConvenios,
+        DialogEditarIdiomas,
         DialogPreviewPerfil,
     },
     computed: {
@@ -516,9 +566,12 @@ export default {
             dialogEditarTemas: false,
             dialogEditarPublico: false,
             dialogEditarAtendimento: false,
+            campoEdicaoAtendimento: 'todos',
             dialogEditarLocalizacao: false,
             dialogEditarContato: false,
             dialogEditarRedesSociais: false,
+            dialogEditarConvenios: false,
+            dialogEditarIdiomas: false,
             dialogPreviewPerfil: false,
         };
     },
@@ -575,9 +628,11 @@ export default {
 
         async criarPerfilBasico() {
             try {
-                // Buscar especialidades e temas disponíveis
+                // Buscar especialidades, temas, convênios e idiomas disponíveis
                 const especialidades = await perfilPublicoService.buscarEspecialidades();
                 const temas = await perfilPublicoService.buscarTemas();
+                const convenios = await perfilPublicoService.buscarConvenios();
+                const idiomas = await perfilPublicoService.buscarIdiomas();
                 
                 // Criar perfil público básico com dados mínimos obrigatórios
                 const dadosBasicos = {
@@ -590,6 +645,8 @@ export default {
                     whatsapp: '11999999999', // Formato: 2 dígitos + 8-9 dígitos
                     especialidades: especialidades.slice(0, 1).map(e => e.id),
                     temas: temas.slice(0, 3).map(t => t.id),
+                    convenios: convenios.slice(0, 1).map(c => c.id), // Primeiro convênio
+                    idiomas: idiomas.slice(0, 1).map(i => i.id), // Primeiro idioma (Português)
                     perfil_ativo: false // Sempre inativo inicialmente
                 };
 
@@ -669,14 +726,23 @@ export default {
             if (!this.perfil?.temas || this.perfil.temas.length === 0) {
                 campos.push('Temas tratados');
             }
-            if (!this.perfil?.publico_alvo) {
+            if (!this.perfil?.publico_alvo || (Array.isArray(this.perfil.publico_alvo) ? this.perfil.publico_alvo.length === 0 : !this.perfil.publico_alvo)) {
                 campos.push('Público-alvo');
+            }
+            if (!this.perfil?.tipo_atendimento || (Array.isArray(this.perfil.tipo_atendimento) ? this.perfil.tipo_atendimento.length === 0 : !this.perfil.tipo_atendimento)) {
+                campos.push('Tipo de atendimento');
             }
             if (!this.perfil?.valor_minimo) {
                 campos.push('Valor mínimo');
             }
             if (!this.perfil?.whatsapp) {
                 campos.push('WhatsApp');
+            }
+            if (!this.perfil?.convenios || this.perfil.convenios.length === 0) {
+                campos.push('Convênios aceitos');
+            }
+            if (!this.perfil?.idiomas || this.perfil.idiomas.length === 0) {
+                campos.push('Idiomas de atendimento');
             }
             
             return campos;
@@ -736,6 +802,22 @@ export default {
         },
 
         abrirDialogEditarAtendimento() {
+            this.campoEdicaoAtendimento = 'todos';
+            this.dialogEditarAtendimento = true;
+        },
+
+        abrirDialogEditarPublicoAlvo() {
+            this.campoEdicaoAtendimento = 'publico_alvo';
+            this.dialogEditarAtendimento = true;
+        },
+
+        abrirDialogEditarTipoAtendimento() {
+            this.campoEdicaoAtendimento = 'tipo_atendimento';
+            this.dialogEditarAtendimento = true;
+        },
+
+        abrirDialogEditarValores() {
+            this.campoEdicaoAtendimento = 'valores';
             this.dialogEditarAtendimento = true;
         },
 
@@ -749,6 +831,14 @@ export default {
 
         abrirDialogEditarRedesSociais() {
             this.dialogEditarRedesSociais = true;
+        },
+
+        abrirDialogEditarConvenios() {
+            this.dialogEditarConvenios = true;
+        },
+
+        abrirDialogEditarIdiomas() {
+            this.dialogEditarIdiomas = true;
         },
 
         // Callbacks dos dialogs
@@ -817,14 +907,64 @@ export default {
             this.carregarPerfil();
         },
 
+        onConveniosAtualizados() {
+            this.dialogEditarConvenios = false;
+            this.carregarPerfil();
+        },
+
+        onIdiomasAtualizados() {
+            this.dialogEditarIdiomas = false;
+            this.carregarPerfil();
+        },
+
         // Métodos de formatação
         formatarTipoAtendimento(tipo) {
+            if (!tipo) return 'Não definido';
+            
+            // Se for array, formatar cada item
+            if (Array.isArray(tipo)) {
+                const tipos = {
+                    'online': 'Online',
+                    'presencial': 'Presencial',
+                    'híbrido': 'Híbrido'
+                };
+                return tipo.map(t => tipos[t] || t).join(', ');
+            }
+            
+            // Se for string única (compatibilidade com dados antigos)
             const tipos = {
                 'online': 'Online',
                 'presencial': 'Presencial',
+                'híbrido': 'Híbrido',
                 'ambos': 'Online e Presencial'
             };
             return tipos[tipo] || 'Não definido';
+        },
+
+        formatarPublicoAlvo(publico) {
+            if (!publico) return 'Não definido';
+            
+            // Se for array, formatar cada item
+            if (Array.isArray(publico)) {
+                const publicos = {
+                    'crianças': 'Crianças',
+                    'adolescentes': 'Adolescentes',
+                    'adultos': 'Adultos',
+                    'casais': 'Casais',
+                    'idosos': 'Idosos'
+                };
+                return publico.map(p => publicos[p] || p).join(', ');
+            }
+            
+            // Se for string única (compatibilidade com dados antigos)
+            const publicos = {
+                'crianças': 'Crianças',
+                'adolescentes': 'Adolescentes',
+                'adultos': 'Adultos',
+                'casais': 'Casais',
+                'idosos': 'Idosos'
+            };
+            return publicos[publico] || publico || 'Não definido';
         },
 
         formatarLocalizacao() {
