@@ -6,11 +6,13 @@ import AppTopbar from './AppTopbar.vue';
 import Breadcrumb from '@/components/Breadcrumb.vue';
 import PlanLoading from '@/components/PlanLoading.vue';
 import ChatAtendimento from '@/components/ChatAtendimento.vue';
+import DialogNps from '@/components/dialogs/DialogNps.vue';
 
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 
 const outsideClickListener = ref(null);
 const planLoading = ref(false);
+const showNpsDialog = ref(false);
 
 // Event listeners para loading de plano
 onMounted(() => {
@@ -23,6 +25,9 @@ onMounted(() => {
         planLoading.value = false;
         window.planLoadingActive = false; // Variável global para o axios
     });
+    
+    // Verificar se precisa mostrar dialog NPS
+    checkNpsRequired();
 });
 
 watch(isSidebarActive, (newVal) => {
@@ -69,6 +74,23 @@ function isOutsideClicked(event) {
 
     return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || topbarEl.isSameNode(event.target) || topbarEl.contains(event.target));
 }
+
+// Função para verificar se precisa mostrar dialog NPS
+async function checkNpsRequired() {
+    try {
+        const usuario = JSON.parse(sessionStorage.getItem('usuario') || '{}');
+        if (usuario.pesquisa_nps) {
+            showNpsDialog.value = true;
+        }
+    } catch (error) {
+        console.error('Erro ao verificar pesquisa NPS:', error);
+    }
+}
+
+// Função para lidar com sucesso da pesquisa NPS
+function handleNpsSuccess() {
+    showNpsDialog.value = false;
+}
 </script>
 
 <template>
@@ -86,5 +108,11 @@ function isOutsideClicked(event) {
     </div>
     <Toast />
     <PlanLoading :loading="planLoading" />
-        <ChatAtendimento />
+    <ChatAtendimento />
+    
+    <!-- Dialog NPS -->
+    <DialogNps 
+        v-model:visible="showNpsDialog"
+        @success="handleNpsSuccess"
+    />
 </template>

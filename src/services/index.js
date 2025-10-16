@@ -10,6 +10,7 @@ import leadsService from './leadsService';
 import anexosService from './anexosService';
 import perfilPublicoService from './perfilPublicoService';
 import marketplaceService from './marketplaceService';
+import npsService from './npsService';
 
 export {
     pacientesService,
@@ -23,7 +24,8 @@ export {
     leadsService,
     anexosService,
     perfilPublicoService,
-    marketplaceService
+    marketplaceService,
+    npsService
 };
 
 // Exportar como objeto para uso global
@@ -39,5 +41,6 @@ export default {
     leadsService,
     anexosService,
     perfilPublicoService,
-    marketplaceService
+    marketplaceService,
+    npsService
 }; 

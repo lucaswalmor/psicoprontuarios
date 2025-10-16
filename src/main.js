@@ -82,5 +82,6 @@ app.config.globalProperties.$financeirosService = services.financeirosService;
 app.config.globalProperties.$userService = services.userService;
 app.config.globalProperties.$leadsService = services.leadsService;
 app.config.globalProperties.$anexosService = services.anexosService;
+app.config.globalProperties.$npsService = services.npsService;
 
 app.mount('#app');
