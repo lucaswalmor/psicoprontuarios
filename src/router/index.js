@@ -247,6 +247,12 @@ const router = createRouter({
                     name: 'Upgrade',
                     component: () => import('@/views/pages/Upgrade.vue'),
                     meta: { requiresPlanCheck: true }
+                },
+                {
+                    path: '/modelos-arquivos',
+                    name: 'ModelosArquivos',
+                    component: () => import('@/views/pages/ModelosArquivos.vue'),
+                    meta: { requiresPlanCheck: false }
                 }
             ]
         },

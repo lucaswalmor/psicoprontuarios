@@ -69,6 +69,12 @@ export default {
                             to: '/meu-psicologo',
                             requiredFeature: 'perfil_publico'
                         },
+                        {
+                            label: 'Arquivos', 
+                            icon: 'pi pi-fw pi-file-word', 
+                            to: '/modelos-arquivos',
+                            requiredFeature: null // Sempre disponível
+                        },
                     ]
                 },
                 {
