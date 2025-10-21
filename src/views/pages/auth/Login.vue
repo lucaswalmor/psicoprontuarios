@@ -134,6 +134,7 @@ export default {
                     telefone: this.telefone 
                 });
                 
+                console.log('response', response);
                 // Salvar nome do usuário no localStorage
                 if (response.user && response.user.nome) {
                     localStorage.setItem('userName', response.user.nome);
@@ -194,7 +195,7 @@ export default {
                 if (planInfo?.nome === 'Vitalício') {
                     // Usuários vitalícios vão para dashboard
                     redirectRoute = '/dashboard';
-                } else if (planInfo?.features?.dashboard) {
+                } else if (this.planStore?.podeAcessarModulo?.('dashboard')) {
                     // Se tem dashboard, vai para dashboard
                     redirectRoute = '/dashboard';
                 } else {

@@ -81,7 +81,7 @@ export default {
                             text: 'signin_with',
                             shape: 'rectangular',
                             logo_alignment: 'left',
-                            width: '100%',
+                            width: 300, // Valor fixo em pixels
                         });
                     }
                 } catch (error) {

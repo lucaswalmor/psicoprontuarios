@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia';
-import { planService } from '@/services';
 
 export const usePlanStore = defineStore('plan', {
     state: () => ({
-        planInfo: null,
+        // Dados básicos do usuário e assinatura (vindos do login)
+        assinatura: null,
         stats: null,
         userInfo: null,
         loading: false,
@@ -11,59 +11,105 @@ export const usePlanStore = defineStore('plan', {
     }),
 
     getters: {
-        // Getters para facilitar o acesso às features
-        isVitalicio: (state) => state.userInfo?.usuario_vitalicio === true,
-        canAccessDashboard: (state) => state.planInfo?.features?.dashboard || false,
-        canAccessGestaoFinanceira: (state) => state.planInfo?.features?.gestao_financeira || false,
-        canAccessProntuariosPDF: (state) => state.planInfo?.features?.prontuarios_pdf || false,
-        canAccessAgendamentos: (state) => state.planInfo?.features?.agendamentos || false,
-        canAccessBackupAutomatico: (state) => state.planInfo?.features?.backup_automatico || false,
-        canAccessPerfilPublico: (state) => {
-            // Usuários vitalícios têm acesso total
-            if (state.userInfo?.usuario_vitalicio === true) {
-                return true;
-            }
-            return state.planInfo?.features?.perfil_publico || false;
-        },
+        // Getters simplificados usando dados do localStorage
+        isVitalicio: () => localStorage.getItem('usuarioVitalicio') === 'true',
         
-        // Getters para estatísticas
+        // Getters para assinatura
+        temAssinaturaAtiva: () => localStorage.getItem('temAssinaturaAtiva') === 'true',
+        statusAssinatura: () => localStorage.getItem('statusAssinatura') || 'sem_assinatura',
+        
+        // Getters para estatísticas (mantidos para compatibilidade)
         canAddPaciente: (state) => state.stats?.can_add_paciente || false,
         pacientesCount: (state) => state.stats?.pacientes_count || 0,
         limitePacientes: (state) => state.stats?.limite_pacientes || 0,
         
-        // Getter para verificar se tem dados carregados
-        hasPlanData: (state) => state.planInfo !== null && state.stats !== null && state.userInfo !== null,
+        // Getters para módulos específicos (compatibilidade)
+        canAccessDashboard: () => {
+            const isVitalicio = localStorage.getItem('usuarioVitalicio') === 'true';
+            if (isVitalicio) return true;
+            
+            const assinatura = JSON.parse(localStorage.getItem('userAssinatura') || 'null');
+            const modulosDisponiveis = assinatura?.plano?.modulos?.map(modulo => modulo.chave) || [];
+            return modulosDisponiveis.includes('dashboard');
+        },
         
-        // Getters para status de pausa
-        isPlanPaused: (state) => {
-            if (!state.planInfo) return false;
-            return state.planInfo.status === 'INACTIVE' || state.planInfo.paused === true;
+        canAccessGestaoFinanceira: () => {
+            const isVitalicio = localStorage.getItem('usuarioVitalicio') === 'true';
+            if (isVitalicio) return true;
+            
+            const assinatura = JSON.parse(localStorage.getItem('userAssinatura') || 'null');
+            const modulosDisponiveis = assinatura?.plano?.modulos?.map(modulo => modulo.chave) || [];
+            return modulosDisponiveis.includes('gestao_financeira');
+        },
+        
+        canAccessAgendamentos: () => {
+            const isVitalicio = localStorage.getItem('usuarioVitalicio') === 'true';
+            if (isVitalicio) return true;
+            
+            const assinatura = JSON.parse(localStorage.getItem('userAssinatura') || 'null');
+            const modulosDisponiveis = assinatura?.plano?.modulos?.map(modulo => modulo.chave) || [];
+            return modulosDisponiveis.includes('agendamentos');
+        },
+        
+        canAccessProntuariosPDF: () => {
+            const isVitalicio = localStorage.getItem('usuarioVitalicio') === 'true';
+            if (isVitalicio) return true;
+            
+            const assinatura = JSON.parse(localStorage.getItem('userAssinatura') || 'null');
+            const modulosDisponiveis = assinatura?.plano?.modulos?.map(modulo => modulo.chave) || [];
+            return modulosDisponiveis.includes('prontuarios_pdf');
+        },
+        
+        canAccessBackupAutomatico: () => {
+            const isVitalicio = localStorage.getItem('usuarioVitalicio') === 'true';
+            if (isVitalicio) return true;
+            
+            const assinatura = JSON.parse(localStorage.getItem('userAssinatura') || 'null');
+            const modulosDisponiveis = assinatura?.plano?.modulos?.map(modulo => modulo.chave) || [];
+            return modulosDisponiveis.includes('backup_automatico');
+        },
+        
+        // Getters para status de pausa (compatibilidade com código antigo)
+        isPlanPaused: () => {
+            const status = localStorage.getItem('statusAssinatura') || 'sem_assinatura';
+            return ['pausada', 'cancelada', 'vencida'].includes(status);
         },
         
         // Getters para funcionalidades com restrições de pausa
-        canAccessGestaoFinanceiraWithPause: (state) => {
-            const canAccess = state.planInfo?.features?.gestao_financeira || false;
-            const isPaused = state.planInfo?.status === 'INACTIVE' || state.planInfo?.paused === true;
-            return canAccess && !isPaused;
+        canAccessGestaoFinanceiraWithPause: () => {
+            const isVitalicio = localStorage.getItem('usuarioVitalicio') === 'true';
+            const temAssinaturaAtiva = localStorage.getItem('temAssinaturaAtiva') === 'true';
+            const assinatura = JSON.parse(localStorage.getItem('userAssinatura') || 'null');
+            
+            if (isVitalicio) return true;
+            if (!temAssinaturaAtiva) return false;
+            
+            const modulosDisponiveis = assinatura?.plano?.modulos?.map(modulo => modulo.chave) || [];
+            return modulosDisponiveis.includes('gestao_financeira');
         },
         
-        canAccessAgendamentosWithPause: (state) => {
-            const canAccess = state.planInfo?.features?.agendamentos || false;
-            const isPaused = state.planInfo?.status === 'INACTIVE' || state.planInfo?.paused === true;
-            return canAccess && !isPaused;
+        canAccessAgendamentosWithPause: () => {
+            const isVitalicio = localStorage.getItem('usuarioVitalicio') === 'true';
+            const temAssinaturaAtiva = localStorage.getItem('temAssinaturaAtiva') === 'true';
+            const assinatura = JSON.parse(localStorage.getItem('userAssinatura') || 'null');
+            
+            if (isVitalicio) return true;
+            if (!temAssinaturaAtiva) return false;
+            
+            const modulosDisponiveis = assinatura?.plano?.modulos?.map(modulo => modulo.chave) || [];
+            return modulosDisponiveis.includes('agendamentos');
         },
         
         canAddPacienteWithPause: (state) => {
+            const temAssinaturaAtiva = localStorage.getItem('temAssinaturaAtiva') === 'true';
             const canAdd = state.stats?.can_add_paciente || false;
-            const isPaused = state.planInfo?.status === 'INACTIVE' || state.planInfo?.paused === true;
-            return canAdd && !isPaused;
+            return canAdd && temAssinaturaAtiva;
         },
         
         canUploadAnexos: (state) => {
-            const isPaused = state.planInfo?.status === 'INACTIVE' || state.planInfo?.paused === true;
-            if (isPaused) return false;
+            const temAssinaturaAtiva = localStorage.getItem('temAssinaturaAtiva') === 'true';
+            if (!temAssinaturaAtiva) return false;
             
-            // Verificar se pode adicionar anexos baseado no plano
             return state.stats?.can_add_anexo || false;
         },
         
@@ -74,25 +120,52 @@ export const usePlanStore = defineStore('plan', {
             const count = state.stats?.anexos_count || 0;
             if (limite === -1) return 'Ilimitado';
             return Math.max(0, limite - count);
+        },
+
+        // Getter para verificar acesso a módulo específico
+        podeAcessarModulo: () => (moduloChave) => {
+            const isVitalicio = localStorage.getItem('usuarioVitalicio') === 'true';
+            if (isVitalicio) return true;
+            
+            const assinatura = JSON.parse(localStorage.getItem('userAssinatura') || 'null');
+            const modulosDisponiveis = assinatura?.plano?.modulos?.map(modulo => modulo.chave) || [];
+            return modulosDisponiveis.includes(moduloChave);
+        },
+
+        // Getter para verificar se tem dados carregados (compatibilidade)
+        hasPlanData: (state) => {
+            const hasAssinatura = localStorage.getItem('userAssinatura') !== null;
+            const hasStats = state.stats !== null;
+            const hasUserInfo = state.userInfo !== null;
+            return hasAssinatura || hasStats || hasUserInfo;
         }
     },
 
     actions: {
+        // Actions simplificadas - apenas para compatibilidade com código existente
+        loadPlanFromStorage() {
+            try {
+                const stats = localStorage.getItem('userStats');
+                const userInfo = localStorage.getItem('userInfo');
+                const assinatura = localStorage.getItem('userAssinatura');
+                
+                if (stats) this.stats = JSON.parse(stats);
+                if (userInfo) this.userInfo = JSON.parse(userInfo);
+                if (assinatura) this.assinatura = JSON.parse(assinatura);
+                
+            } catch (error) {
+                console.error('Erro ao carregar dados do plano do localStorage:', error);
+            }
+        },
+
+        // Método para compatibilidade - agora apenas carrega do localStorage
         async fetchPlanInfo() {
             try {
                 this.loading = true;
                 this.error = null;
                 
-                const response = await planService.getUserPlanInfo();
-                
-                this.planInfo = response.plano;
-                this.stats = response.stats;
-                this.userInfo = response.user;
-                
-                // Salvar no localStorage para persistência
-                localStorage.setItem('userPlanInfo', JSON.stringify(response.plano));
-                localStorage.setItem('userStats', JSON.stringify(response.stats));
-                localStorage.setItem('userInfo', JSON.stringify(response.user));
+                // Carregar dados do localStorage (vindos do login)
+                this.loadPlanFromStorage();
                 
             } catch (error) {
                 console.error('Erro ao buscar informações do plano:', error);
@@ -102,30 +175,26 @@ export const usePlanStore = defineStore('plan', {
             }
         },
 
-        loadPlanFromStorage() {
-            try {
-                const planInfo = localStorage.getItem('userPlanInfo');
-                const stats = localStorage.getItem('userStats');
-                const userInfo = localStorage.getItem('userInfo');
-                
-                if (planInfo && stats && userInfo) {
-                    this.planInfo = JSON.parse(planInfo);
-                    this.stats = JSON.parse(stats);
-                    this.userInfo = JSON.parse(userInfo);
-                }
-            } catch (error) {
-                console.error('Erro ao carregar dados do plano do localStorage:', error);
-            }
+        // Métodos para compatibilidade com código existente
+        async carregarAssinatura() {
+            // Dados já vêm do login, apenas carregar do localStorage
+            this.loadPlanFromStorage();
+        },
+
+        async carregarModulosAcesso() {
+            // Dados já vêm do login, apenas carregar do localStorage
+            this.loadPlanFromStorage();
         },
 
         clearPlanData() {
-            this.planInfo = null;
+            this.assinatura = null;
             this.stats = null;
             this.userInfo = null;
             this.error = null;
-            localStorage.removeItem('userPlanInfo');
+            
+            // Limpar dados específicos do plano (mantidos para compatibilidade)
             localStorage.removeItem('userStats');
             localStorage.removeItem('userInfo');
         }
     }
-}); 
+});

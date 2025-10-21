@@ -136,6 +136,135 @@ class PlanService {
             throw error;
         }
     }
+
+    // === NOVOS MÉTODOS STRIPE ===
+
+    // Criar checkout session para assinatura
+    async criarCheckoutSession(planoId) {
+        try {
+            const response = await api.post('/assinaturas/checkout-session', { plano_id: planoId });
+            return response.data;
+        } catch (error) {
+            console.error('Erro ao criar checkout session:', error);
+            throw error;
+        }
+    }
+
+    // Validar checkout bem-sucedido
+    async validarCheckoutSucesso(sessionId) {
+        try {
+            const response = await api.get(`/assinaturas/validar-checkout?session_id=${sessionId}`);
+            return response.data;
+        } catch (error) {
+            console.error('Erro ao validar checkout:', error);
+            throw error;
+        }
+    }
+
+    // Obter assinatura ativa
+    async getAssinaturaAtiva() {
+        try {
+            const response = await api.get('/assinaturas/ativa');
+            return response.data;
+        } catch (error) {
+            console.error('Erro ao obter assinatura ativa:', error);
+            throw error;
+        }
+    }
+
+    // Verificar status da assinatura
+    async checkStatusAssinatura(assinaturaId) {
+        try {
+            const response = await api.get(`/assinaturas/${assinaturaId}/status`);
+            return response.data;
+        } catch (error) {
+            console.error('Erro ao verificar status da assinatura:', error);
+            throw error;
+        }
+    }
+
+    // Pausar assinatura
+    async pausarAssinatura(assinaturaId) {
+        try {
+            const response = await api.post(`/assinaturas/${assinaturaId}/pausar`);
+            return response.data;
+        } catch (error) {
+            console.error('Erro ao pausar assinatura:', error);
+            throw error;
+        }
+    }
+
+    // Reativar assinatura
+    async reativarAssinatura(assinaturaId) {
+        try {
+            const response = await api.post(`/assinaturas/${assinaturaId}/reativar`);
+            return response.data;
+        } catch (error) {
+            console.error('Erro ao reativar assinatura:', error);
+            throw error;
+        }
+    }
+
+    // Atualizar método de pagamento
+    async atualizarMetodoPagamento(assinaturaId, paymentMethodId) {
+        try {
+            const response = await api.put(`/assinaturas/${assinaturaId}/metodo-pagamento`, {
+                payment_method_id: paymentMethodId
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Erro ao atualizar método de pagamento:', error);
+            throw error;
+        }
+    }
+
+    // Cancelar assinatura
+    async cancelarAssinatura(assinaturaId, motivo = null) {
+        try {
+            const response = await api.delete(`/assinaturas/${assinaturaId}`, {
+                data: { motivo_cancelamento: motivo }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Erro ao cancelar assinatura:', error);
+            throw error;
+        }
+    }
+
+    // Obter módulos de acesso
+    async getModulosAcesso() {
+        try {
+            const response = await api.get('/modulos/acesso');
+            return response.data;
+        } catch (error) {
+            console.error('Erro ao obter módulos de acesso:', error);
+            throw error;
+        }
+    }
+
+    // Verificar acesso a módulo específico
+    async verificarAcessoModulo(moduloChave) {
+        try {
+            const response = await api.post('/modulos/verificar-acesso', {
+                modulo_chave: moduloChave
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Erro ao verificar acesso ao módulo:', error);
+            throw error;
+        }
+    }
+
+    // Obter informações completas de acesso
+    async getInformacoesAcesso() {
+        try {
+            const response = await api.get('/modulos/informacoes-acesso');
+            return response.data;
+        } catch (error) {
+            console.error('Erro ao obter informações de acesso:', error);
+            throw error;
+        }
+    }
 }
 
 export default new PlanService();

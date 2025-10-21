@@ -67,15 +67,8 @@ export default {
 
         async checkFeatureAccess(feature) {
             try {
-                // Usar dados do store para verificar acesso
-                const planInfo = this.planInfo;
-                if (!planInfo) return false;
-                
-                // Usuários vitalícios têm acesso total
-                if (this.isVitalicio) return true;
-                
-                // Verificar se a feature está disponível
-                return planInfo.features?.[feature] || false;
+                // Usar sistema de módulos
+                return this.planStore?.podeAcessarModulo?.(feature) || false;
             } catch (error) {
                 console.error('Erro ao verificar acesso à feature:', error);
                 return false;

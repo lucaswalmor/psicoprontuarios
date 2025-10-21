@@ -5,7 +5,12 @@
                 <div class="flex justify-content-between align-items-center mb-4">
                     <h5>Transações Financeiras</h5>
                     <div class="flex gap-2">
-                        <Button label="Nova Transação" icon="pi pi-plus" @click="novaTransacao" />
+                        <Button 
+                            v-if="!planStore.isPlanPaused"
+                            label="Nova Transação" 
+                            icon="pi pi-plus" 
+                            @click="novaTransacao" 
+                        />
                     </div>
                 </div>
 
@@ -73,10 +78,22 @@
 
                     <Column header="Ações" :exportable="false" style="min-width:8rem">
                         <template #body="{ data }">
-                            <Button icon="pi pi-pencil" rounded outlined class="mr-2"
-                                @click="editarTransacao(data.id)" />
-                            <Button icon="pi pi-trash" rounded outlined severity="danger"
-                                @click="confirmarExclusao(data)" />
+                            <Button 
+                                v-if="!planStore.isPlanPaused"
+                                icon="pi pi-pencil" 
+                                rounded 
+                                outlined 
+                                class="mr-2"
+                                @click="editarTransacao(data.id)" 
+                            />
+                            <Button 
+                                v-if="!planStore.isPlanPaused"
+                                icon="pi pi-trash" 
+                                rounded 
+                                outlined 
+                                severity="danger"
+                                @click="confirmarExclusao(data)" 
+                            />
                         </template>
                     </Column>
                 </DataTable>
@@ -92,7 +109,13 @@
         </div>
         <template #footer>
             <Button label="Não" icon="pi pi-times" outlined @click="dialogVisible = false" />
-            <Button label="Sim" icon="pi pi-check" severity="danger" @click="excluirTransacao" />
+            <Button 
+                v-if="!planStore.isPlanPaused"
+                label="Sim" 
+                icon="pi pi-check" 
+                severity="danger" 
+                @click="excluirTransacao" 
+            />
         </template>
     </Dialog>
 </template>

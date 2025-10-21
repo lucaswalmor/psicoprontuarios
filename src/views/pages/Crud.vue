@@ -139,8 +139,22 @@ function getStatusLabel(status) {
         <div class="card">
             <Toolbar class="mb-6">
                 <template #start>
-                    <Button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" @click="openNew" />
-                    <Button label="Delete" icon="pi pi-trash" severity="secondary" @click="confirmDeleteSelected" :disabled="!selectedProducts || !selectedProducts.length" />
+                    <Button 
+                        v-if="!planStore.isPlanPaused"
+                        label="New" 
+                        icon="pi pi-plus" 
+                        severity="secondary" 
+                        class="mr-2" 
+                        @click="openNew" 
+                    />
+                    <Button 
+                        v-if="!planStore.isPlanPaused"
+                        label="Delete" 
+                        icon="pi pi-trash" 
+                        severity="secondary" 
+                        @click="confirmDeleteSelected" 
+                        :disabled="!selectedProducts || !selectedProducts.length" 
+                    />
                 </template>
 
                 <template #end>
@@ -198,8 +212,22 @@ function getStatusLabel(status) {
                 </Column>
                 <Column :exportable="false" style="min-width: 12rem">
                     <template #body="slotProps">
-                        <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editProduct(slotProps.data)" />
-                        <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteProduct(slotProps.data)" />
+                        <Button 
+                            v-if="!planStore.isPlanPaused"
+                            icon="pi pi-pencil" 
+                            outlined 
+                            rounded 
+                            class="mr-2" 
+                            @click="editProduct(slotProps.data)" 
+                        />
+                        <Button 
+                            v-if="!planStore.isPlanPaused"
+                            icon="pi pi-trash" 
+                            outlined 
+                            rounded 
+                            severity="danger" 
+                            @click="confirmDeleteProduct(slotProps.data)" 
+                        />
                     </template>
                 </Column>
             </DataTable>

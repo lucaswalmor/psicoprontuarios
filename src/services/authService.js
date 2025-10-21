@@ -10,6 +10,20 @@ class AuthService {
                 sessionStorage.setItem("usuario", JSON.stringify(response.data.usuario));
                 sessionStorage.setItem('sessionTime', 1800)
                 sessionStorage.setItem('isAutenticated', true)
+                
+                // Salvar dados da assinatura no localStorage para uso simplificado
+                if (response.data.usuario.assinatura) {
+                    localStorage.setItem('userAssinatura', JSON.stringify(response.data.usuario.assinatura));
+                }
+                if (response.data.usuario.usuario_vitalicio !== undefined) {
+                    localStorage.setItem('usuarioVitalicio', response.data.usuario.usuario_vitalicio);
+                }
+                if (response.data.usuario.status_assinatura) {
+                    localStorage.setItem('statusAssinatura', response.data.usuario.status_assinatura);
+                }
+                if (response.data.usuario.tem_assinatura_ativa !== undefined) {
+                    localStorage.setItem('temAssinaturaAtiva', response.data.usuario.tem_assinatura_ativa);
+                }
             }
             return {
                 ...response.data,
@@ -25,12 +39,20 @@ class AuthService {
         try {
             await api.post('/logout');
             localStorage.removeItem('token');
+            localStorage.removeItem('userAssinatura');
+            localStorage.removeItem('usuarioVitalicio');
+            localStorage.removeItem('statusAssinatura');
+            localStorage.removeItem('temAssinaturaAtiva');
             sessionStorage.removeItem('usuario');
             sessionStorage.removeItem('sessionTime');
             sessionStorage.removeItem('isAutenticated');
         } catch (error) {
             // Mesmo se der erro, remove o token local
             localStorage.removeItem('token');
+            localStorage.removeItem('userAssinatura');
+            localStorage.removeItem('usuarioVitalicio');
+            localStorage.removeItem('statusAssinatura');
+            localStorage.removeItem('temAssinaturaAtiva');
             throw error;
         }
     }
@@ -129,6 +151,20 @@ class AuthService {
                 sessionStorage.setItem("usuario", JSON.stringify(response.data.usuario));
                 sessionStorage.setItem('sessionTime', 1800);
                 sessionStorage.setItem('isAutenticated', true);
+                
+                // Salvar dados da assinatura no localStorage para uso simplificado
+                if (response.data.usuario.assinatura) {
+                    localStorage.setItem('userAssinatura', JSON.stringify(response.data.usuario.assinatura));
+                }
+                if (response.data.usuario.usuario_vitalicio !== undefined) {
+                    localStorage.setItem('usuarioVitalicio', response.data.usuario.usuario_vitalicio);
+                }
+                if (response.data.usuario.status_assinatura) {
+                    localStorage.setItem('statusAssinatura', response.data.usuario.status_assinatura);
+                }
+                if (response.data.usuario.tem_assinatura_ativa !== undefined) {
+                    localStorage.setItem('temAssinaturaAtiva', response.data.usuario.tem_assinatura_ativa);
+                }
             }
             
             return {

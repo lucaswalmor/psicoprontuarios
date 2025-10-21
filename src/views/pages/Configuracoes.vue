@@ -40,7 +40,7 @@
                                 <div class="surface-card p-4 border-round mb-4">
                                     <div class="flex align-items-center justify-content-between mb-3">
                                         <h6 class="m-0">Plano Atual</h6>
-                                        <Tag :value="planStore.planInfo?.nome || 'Carregando...'" :severity="getPlanSeverity()" />
+                                        <Tag :value="getPlanName()" :severity="getPlanSeverity()" />
                                     </div>
 
                                     <div class="grid">
@@ -49,7 +49,7 @@
                                                 <div class="flex align-items-center gap-2">
                                                     <i class="pi pi-calendar text-primary"></i>
                                                     <span class="text-800 font-bold">Próximo Vencimento:</span>
-                                                    <span class="text-500">{{ formatDate(planStore.planInfo?.data_fim_plano) }}</span>
+                                                    <span class="text-500">{{ formatDate(getNextPaymentDate()) }}</span>
                                                 </div>
                                                 <div class="flex align-items-center gap-2">
                                                     <i class="pi pi-users text-primary"></i>
@@ -68,7 +68,7 @@
                                                 <div class="flex align-items-center gap-2">
                                                     <i class="pi pi-dollar text-primary"></i>
                                                     <span class="text-800 font-bold">Valor Mensal:</span>
-                                                    <span class="text-500">{{ formatCurrency(planStore.planInfo?.preco) }}</span>
+                                                    <span class="text-500">{{ formatCurrency(getPlanPrice()) }}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -96,20 +96,24 @@
                                         <div class="surface-card p-4 border-round">
                                             <h6 class="mb-3">Geral</h6>
 
-                                            <!-- Botão de Upgrade -->
-                                            <Button v-if="shouldShowUpgradeButton" label="Fazer Upgrade do Plano" icon="pi pi-star"
-                                                class="w-full mb-3" @click="goToUpgrade" />
-                                            
-                                                <Button 
-                                                label="Atualizar Cartão" 
-                                                icon="pi pi-credit-card"
-                                                @click="mostrarDialogoAtualizarCartao = true"
+                                            <!-- Botão de Renovar Assinatura (quando pagamento falhou) -->
+                                            <Button v-if="shouldShowRenewButton" 
+                                                label="Renovar Assinatura" 
+                                                icon="pi pi-refresh"
+                                                @click="renovarAssinatura"
                                                 severity="danger"
                                                 class="w-full mb-3"
                                             />
 
+                                            <!-- Botão de Upgrade -->
+                                            <Button v-if="shouldShowUpgradeButton" 
+                                                label="Fazer Upgrade do Plano" 
+                                                icon="pi pi-star"
+                                                class="w-full mb-3" 
+                                                @click="goToUpgrade" />
+
                                             <!-- Botão de Pausar/Reativar -->
-                                            <Button v-if="planStore.planInfo?.asaas_subscription_id"
+                                            <Button v-if="planStore.assinatura?.stripe_subscription_id"
                                                 :label="isPlanPaused ? 'Reativar Plano' : 'Pausar Plano'"
                                                 :icon="isPlanPaused ? 'pi pi-play' : 'pi pi-pause'"
                                                 :severity="isPlanPaused ? 'success' : 'warning'" class="w-full"
@@ -383,12 +387,6 @@
         v-model:visible="showChangePasswordModal"
         @success="handlePasswordChangeSuccess"
     />
-    <!-- Dialog de Atualização de Cartão -->
-    <UpdateCardDialog 
-        v-model:visible="mostrarDialogoAtualizarCartao"
-        :assinatura-info="statusPagamento?.assinatura"
-        @success="verificarStatusPagamento"
-    />
 </template>
 
 <script setup>
@@ -397,7 +395,6 @@ import { useRouter } from 'vue-router';
 import { usePlanStore } from '@/store/plan';
 import { useToast } from 'primevue/usetoast';
 import DialogChangePassword from '@/components/dialogs/configuracoes/DialogChangePassword.vue';
-import UpdateCardDialog from '@/components/dialogs/UpdateCardDialog.vue';
 import Tabs from 'primevue/tabs';
 import TabList from 'primevue/tablist';
 import Tab from 'primevue/tab';
@@ -418,7 +415,6 @@ const showChangePasswordModal = ref(false);
 const loading = ref(false);
 const activeTab = ref('0');
 const statusPagamento = ref(null);
-const mostrarDialogoAtualizarCartao = ref(false);
 
 // Configurações de notificação
 const loadingNotificacoes = ref(false);
@@ -433,13 +429,34 @@ const configNotificacoes = ref({
 
 // Computed properties
 const shouldShowUpgradeButton = computed(() => {
-    if (!planStore.planInfo) return false;
-    const currentPlan = planStore.planInfo.nome;
-    return currentPlan === 'Gratuito' || currentPlan === 'Essencial';
+    // Verificar se é usuário vitalício
+    if (planStore.isVitalicio) return false;
+    
+    // Verificar se tem assinatura ativa
+    if (!planStore.temAssinaturaAtiva) return true;
+    
+    // Se tem assinatura, verificar o plano
+    const assinatura = JSON.parse(localStorage.getItem('userAssinatura') || 'null');
+    if (assinatura && assinatura.plano) {
+        const currentPlan = assinatura.plano.nome;
+        return currentPlan === 'Gratuito' || currentPlan === 'Essencial';
+    }
+    
+    return true; // Se não tem dados, mostrar botão de upgrade
+});
+
+const shouldShowRenewButton = computed(() => {
+    // Mostrar botão de renovar quando:
+    // 1. Assinatura existe
+    // 2. Status é 'past_due' (pagamento falhou) ou 'unpaid' (não pago)
+    // 3. Não está pausada
+    return planStore.assinatura?.stripe_subscription_id && 
+           ['past_due', 'unpaid'].includes(planStore.assinatura?.status) &&
+           !isPlanPaused.value;
 });
 
 const isPlanPaused = computed(() => {
-    return planStore.planInfo?.status === 'INACTIVE' || planStore.planInfo?.paused === true;
+    return planStore.assinatura?.status === 'pausada';
 });
 
 const availableFeatures = computed(() => [
@@ -495,8 +512,24 @@ const formatCurrency = (value) => {
     }).format(value);
 };
 
+const getPlanName = () => {
+    const assinatura = JSON.parse(localStorage.getItem('userAssinatura') || 'null');
+    return assinatura?.plano?.nome || 'Carregando...';
+};
+
+const getNextPaymentDate = () => {
+    const assinatura = JSON.parse(localStorage.getItem('userAssinatura') || 'null');
+    return assinatura?.data_proxima_cobranca;
+};
+
+const getPlanPrice = () => {
+    const assinatura = JSON.parse(localStorage.getItem('userAssinatura') || 'null');
+    return assinatura?.plano?.valor;
+};
+
 const getPlanSeverity = () => {
-    const planName = planStore.planInfo?.nome;
+    const assinatura = JSON.parse(localStorage.getItem('userAssinatura') || 'null');
+    const planName = assinatura?.plano?.nome;
     if (planName === 'Vitalício') return 'success';
     if (planName === 'Premium') return 'info';
     if (planName === 'Essencial') return 'warning';
@@ -583,7 +616,8 @@ const getStatusSeverity = () => {
 };
 
 const getPaymentMethod = () => {
-    const method = planStore.planInfo?.forma_pagamento;
+    const assinatura = JSON.parse(localStorage.getItem('userAssinatura') || 'null');
+    const method = assinatura?.forma_pagamento;
     if (method === 'CREDIT_CARD') return 'Cartão de Crédito';
     if (method === 'PIX') return 'PIX';
     return 'N/A';
@@ -591,6 +625,30 @@ const getPaymentMethod = () => {
 
 const goToUpgrade = () => {
     router.push('/upgrade');
+};
+
+const renovarAssinatura = async () => {
+    try {
+        // Usar a API específica para renovação
+        const response = await api.post('/assinaturas/renovar');
+        
+        if (response.data.checkout_url) {
+            // Redirecionar para Stripe Checkout
+            window.location.href = response.data.checkout_url;
+        } else {
+            throw new Error('URL de checkout não recebida');
+        }
+
+    } catch (error) {
+        console.error('Erro ao renovar assinatura:', error);
+        const errorMessage = error.response?.data?.error || 'Erro ao renovar assinatura. Tente novamente.';
+        toast.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: errorMessage,
+            life: 3000
+        });
+    }
 };
 
 const verificarStatusPagamento = async () => {
@@ -623,7 +681,7 @@ const confirmPausePlan = async () => {
     try {
         loading.value = true;
 
-        const response = await api.post('/assinatura/pausar');
+        const response = await api.post('/assinaturas/pause');
 
         toast.add({
             severity: 'success',
@@ -632,8 +690,16 @@ const confirmPausePlan = async () => {
             life: 3000
         });
 
-        // Recarregar informações do plano
-        await planStore.fetchPlanInfo();
+        // Atualizar dados no localStorage (base da nossa lógica simplificada)
+        if (response.data?.assinatura) {
+            localStorage.setItem('userAssinatura', JSON.stringify(response.data.assinatura));
+            localStorage.setItem('statusAssinatura', response.data.assinatura.status);
+            localStorage.setItem('temAssinaturaAtiva', response.data.assinatura.permiteAcesso());
+            
+            // Atualizar o store para reatividade
+            planStore.assinatura = response.data.assinatura;
+        }
+        
         showPauseDialog.value = false;
     } catch (error) {
         console.error('Erro ao pausar plano:', error);
@@ -662,7 +728,7 @@ const confirmReactivatePlan = async () => {
     try {
         loading.value = true;
 
-        const response = await api.post('/assinatura/reativar');
+        const response = await api.post('/assinaturas/resume');
 
         toast.add({
             severity: 'success',
@@ -671,8 +737,16 @@ const confirmReactivatePlan = async () => {
             life: 3000
         });
 
-        // Recarregar informações do plano
-        await planStore.fetchPlanInfo();
+        // Atualizar dados no localStorage (base da nossa lógica simplificada)
+        if (response.data?.assinatura) {
+            localStorage.setItem('userAssinatura', JSON.stringify(response.data.assinatura));
+            localStorage.setItem('statusAssinatura', response.data.assinatura.status);
+            localStorage.setItem('temAssinaturaAtiva', response.data.assinatura.permiteAcesso());
+            
+            // Atualizar o store para reatividade
+            planStore.assinatura = response.data.assinatura;
+        }
+        
         showReactivateDialog.value = false;
     } catch (error) {
         console.error('Erro ao reativar plano:', error);
@@ -690,10 +764,15 @@ const confirmReactivatePlan = async () => {
 
 // Carregar dados na montagem
 onMounted(async () => {
+    // Carregar dados básicos se necessário
     if (!planStore.hasPlanData) {
         await planStore.fetchPlanInfo();
     }
+    
+    // Carregar configurações de notificação
     await carregarConfiguracoesNotificacao();
+    
+    // Verificar status de pagamento
     await verificarStatusPagamento();
 });
 </script>

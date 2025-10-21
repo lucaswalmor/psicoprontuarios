@@ -24,24 +24,24 @@
             <div class="plan-features">
                 <h4 class="features-title">Recursos disponíveis:</h4>
                 <ul class="features-list">
-                    <li class="feature-item" :class="{ 'available': planInfo.features.dashboard }">
-                        <i class="pi" :class="planInfo.features.dashboard ? 'pi-check text-green-500' : 'pi-times text-red-500'"></i>
+                    <li class="feature-item" :class="{ 'available': planStore.podeAcessarModulo('dashboard') }">
+                        <i class="pi" :class="planStore.podeAcessarModulo('dashboard') ? 'pi-check text-green-500' : 'pi-times text-red-500'"></i>
                         <span>Dashboard</span>
                     </li>
-                    <li class="feature-item" :class="{ 'available': planInfo.features.gestao_financeira }">
-                        <i class="pi" :class="planInfo.features.gestao_financeira ? 'pi-check text-green-500' : 'pi-times text-red-500'"></i>
+                    <li class="feature-item" :class="{ 'available': planStore.podeAcessarModulo('gestao_financeira') }">
+                        <i class="pi" :class="planStore.podeAcessarModulo('gestao_financeira') ? 'pi-check text-green-500' : 'pi-times text-red-500'"></i>
                         <span>Gestão Financeira</span>
                     </li>
-                    <li class="feature-item" :class="{ 'available': planInfo.features.prontuarios_pdf }">
-                        <i class="pi" :class="planInfo.features.prontuarios_pdf ? 'pi-check text-green-500' : 'pi-times text-red-500'"></i>
+                    <li class="feature-item" :class="{ 'available': planStore.podeAcessarModulo('prontuarios_pdf') }">
+                        <i class="pi" :class="planStore.podeAcessarModulo('prontuarios_pdf') ? 'pi-check text-green-500' : 'pi-times text-red-500'"></i>
                         <span>Prontuários PDF</span>
                     </li>
-                    <li class="feature-item" :class="{ 'available': planInfo.features.agendamentos }">
-                        <i class="pi" :class="planInfo.features.agendamentos ? 'pi-check text-green-500' : 'pi-times text-red-500'"></i>
+                    <li class="feature-item" :class="{ 'available': planStore.podeAcessarModulo('agendamentos') }">
+                        <i class="pi" :class="planStore.podeAcessarModulo('agendamentos') ? 'pi-check text-green-500' : 'pi-times text-red-500'"></i>
                         <span>Agendamentos</span>
                     </li>
-                    <li class="feature-item" :class="{ 'available': planInfo.features.backup_automatico }">
-                        <i class="pi" :class="planInfo.features.backup_automatico ? 'pi-check text-green-500' : 'pi-times text-red-500'"></i>
+                    <li class="feature-item" :class="{ 'available': planStore.podeAcessarModulo('backup_automatico') }">
+                        <i class="pi" :class="planStore.podeAcessarModulo('backup_automatico') ? 'pi-check text-green-500' : 'pi-times text-red-500'"></i>
                         <span>Backup Automático</span>
                     </li>
                 </ul>

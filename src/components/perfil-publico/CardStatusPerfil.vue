@@ -20,17 +20,17 @@
             </div>
         </div>
         
-        <!-- Explicação sobre o MeuPsicólogo -->
+        <!-- Explicação sobre o Encontre Psicólogo -->
         <div class="mb-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
             <div class="flex align-items-start gap-3">
                 <i class="pi pi-globe text-blue-600 text-xl mt-1"></i>
                 <div class="flex-grow-1">
-                    <h6 class="text-blue-800 font-semibold mb-2">O que é o MeuPsicólogo?</h6>
+                    <h6 class="text-blue-800 font-semibold mb-2">O que é o Encontre Psicólogo?</h6>
                     <p class="text-blue-700 text-sm mb-2">
-                        O <strong>MeuPsicólogo</strong> é um marketplace público onde pacientes podem encontrar psicólogos 
+                        O <strong>Encontre Psicólogo</strong> é um marketplace público onde pacientes podem encontrar psicólogos 
                         próximos a eles. Seu perfil aparecerá em 
-                        <a href="https://www.meupsicologo.com.br" target="_blank" class="text-blue-600 hover:text-blue-800 underline font-semibold">
-                            www.meupsicologo.com.br
+                        <a href="https://www.encontrepsicologo.com.br" target="_blank" class="text-blue-600 hover:text-blue-800 underline font-semibold">
+                            www.encontrepsicologo.com.br
                         </a> 
                         para que pacientes possam entrar em contato diretamente com você via WhatsApp.
                     </p>

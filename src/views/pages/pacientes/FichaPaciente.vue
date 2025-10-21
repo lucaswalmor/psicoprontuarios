@@ -538,7 +538,15 @@ export default {
             this.carregarEstatisticas();
         },
 
-
+        async recarregarAssinatura() {
+            try {
+                console.log('🔄 Recarregando assinatura...');
+                await this.planStore.carregarAssinatura();
+                console.log('✅ Assinatura recarregada:', this.planStore.assinatura);
+            } catch (error) {
+                console.error('❌ Erro ao recarregar assinatura:', error);
+            }
+        }
     }
 };
 </script>

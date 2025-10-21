@@ -14,10 +14,20 @@ const themeStore = useThemeStore();
 
 // Computed para verificar se deve mostrar o botão de upgrade
 const shouldShowUpgradeButton = computed(() => {
-    if (!planStore.planInfo) return false;
-
-    const currentPlan = planStore.planInfo.nome;
-    return currentPlan === 'Gratuito' || currentPlan === 'Essencial';
+    // Verificar se é usuário vitalício
+    if (planStore.isVitalicio) return false;
+    
+    // Verificar se tem assinatura ativa
+    if (!planStore.temAssinaturaAtiva) return true;
+    
+    // Se tem assinatura, verificar o plano
+    const assinatura = JSON.parse(localStorage.getItem('userAssinatura') || 'null');
+    if (assinatura && assinatura.plano) {
+        const currentPlan = assinatura.plano.nome;
+        return currentPlan === 'Gratuito' || currentPlan === 'Essencial';
+    }
+    
+    return true; // Se não tem dados, mostrar botão de upgrade
 });
 
 const goToUpgrade = () => {

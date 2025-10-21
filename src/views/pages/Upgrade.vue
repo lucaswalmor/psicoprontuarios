@@ -119,11 +119,28 @@
                             </p>
 
                             <div class="payment-section">
-                                <PaymentForm 
-                                    :plan="selectedPlan"
-                                    @payment-success="handlePaymentSuccess"
-                                    @payment-error="handlePaymentError"
-                                />
+                                <div class="surface-card p-6 text-center">
+                                    <i class="pi pi-credit-card text-6xl text-blue-500 mb-4"></i>
+                                    <h3 class="text-xl font-semibold mb-2">Pagamento Seguro</h3>
+                                    <p class="text-600 mb-4">
+                                        Você será redirecionado para o Stripe, onde poderá inserir seus dados de pagamento de forma segura.
+                                    </p>
+                                    
+                                    <div class="payment-summary mb-4">
+                                        <div class="flex justify-content-between align-items-center p-3 bg-50 rounded">
+                                            <span class="font-semibold">{{ selectedPlan?.nome }}</span>
+                                            <span class="text-lg font-bold text-primary">{{ selectedPlan?.preco }}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <Button 
+                                        label="Ir para Pagamento" 
+                                        icon="pi pi-external-link" 
+                                        @click="processarPagamento"
+                                        :loading="loading"
+                                        class="p-button-primary p-button-lg w-full"
+                                        size="large" />
+                                </div>
                             </div>
 
                             <div class="step-actions">
@@ -151,9 +168,10 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { usePlanStore } from '@/store/plan';
+import { useStripe } from '@/composables/useStripe';
+import { useToast } from 'primevue/usetoast';
 import UpgradeStepper from '@/components/upgrade/UpgradeStepper.vue';
 import PlanoCard from '@/components/upgrade/PlanoCard.vue';
-import PaymentForm from '@/components/upgrade/PaymentForm.vue';
 import FaqModal from '@/components/upgrade/FaqModal.vue';
 
 export default {
@@ -161,12 +179,13 @@ export default {
     components: {
         UpgradeStepper,
         PlanoCard,
-        PaymentForm,
         FaqModal
     },
     setup() {
         const router = useRouter();
         const planStore = usePlanStore();
+        const toast = useToast();
+        const stripe = useStripe();
         
         const currentStep = ref(1);
         const selectedPlan = ref(null);
@@ -275,17 +294,19 @@ export default {
             currentStep.value = step;
         };
 
-        const handlePaymentSuccess = () => {
-            // Atualizar informações do plano
-            planStore.fetchPlanInfo();
-            
-            // Mostrar mensagem de sucesso
-            // O modal de sucesso será mostrado pelo PaymentForm
-        };
-
-        const handlePaymentError = (error) => {
-            console.error('Erro no pagamento:', error);
-            // Mostrar mensagem de erro
+        const processarPagamento = async () => {
+            try {
+                await stripe.criarCheckout(selectedPlan.value.id);
+                // O redirecionamento será feito automaticamente pelo Stripe
+            } catch (error) {
+                console.error('Erro ao processar pagamento:', error);
+                toast.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: 'Erro ao processar pagamento. Tente novamente.',
+                    life: 5000
+                });
+            }
         };
 
         // Lifecycle
@@ -312,8 +333,8 @@ export default {
             nextStep,
             previousStep,
             handleStepChange,
-            handlePaymentSuccess,
-            handlePaymentError
+            processarPagamento,
+            loading: stripe.loading
         };
     }
 };

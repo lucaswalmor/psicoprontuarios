@@ -10,11 +10,14 @@ export default {
     },
     data() {
         return {
-            planStore: null,
             layoutComposable: null
         };
     },
     computed: {
+        planStore() {
+            return usePlanStore();
+        },
+
         // Computed para verificar se deve mostrar o botão de upgrade
         shouldShowUpgradeButton() {
             if (!this.planStore?.planInfo) return false;
@@ -64,7 +67,7 @@ export default {
                             requiredFeature: 'agendamentos'
                         },
                         {
-                            label: 'Meu Psicólogo', 
+                            label: 'Encontre Psicólogo', 
                             icon: 'pi pi-fw pi-user-edit', 
                             to: '/meu-psicologo',
                             requiredFeature: 'perfil_publico'
@@ -96,15 +99,11 @@ export default {
                 }
             ];
 
-            // Obter dados do store
-            const planInfo = this.planStore?.planInfo;
-            const userInfo = this.planStore?.userInfo;
-            const isVitalicio = this.planStore?.isVitalicio;
-
             // Filtrar itens baseado no plano
             return baseMenu.map(section => ({
                 ...section,
                 items: section.items.filter(item => {
+                    const isVitalicio = this.planStore?.planInfo?.nome === 'Vitalício';
                     // Usuários vitalícios têm acesso total
                     if (isVitalicio) {
                         return true;
@@ -118,12 +117,12 @@ export default {
                     // Se o plano está pausado, verificar se a feature é permitida
                     if (this.planStore?.isPlanPaused) {
                         // Quando pausado, apenas algumas features são permitidas
-                        const allowedWhenPaused = ['dashboard', null]; // null = sempre disponível
+                        const allowedWhenPaused = [null]; // null = sempre disponível
                         return allowedWhenPaused.includes(item.requiredFeature);
                     }
                     
-                    // Verificar se a feature está disponível no plano
-                    return planInfo?.features?.[item.requiredFeature] || false;
+                    // Verificar se a feature está disponível no plano (sistema de módulos)
+                    return this.planStore?.podeAcessarModulo?.(item.requiredFeature) || false;
                 })
             }));
         }

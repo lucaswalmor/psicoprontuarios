@@ -21,8 +21,13 @@
                         Este paciente ainda não possui prontuários registrados. Crie o primeiro prontuário para começar
                         a documentar os atendimentos.
                     </p>
-                    <Button label="Criar Primeiro Prontuário" icon="pi pi-file-plus" @click="criarPrimeiroProntuario"
-                        class="mt-3" />
+                    <Button 
+                        v-if="!planStore.isPlanPaused"
+                        label="Criar Primeiro Prontuário" 
+                        icon="pi pi-file-plus" 
+                        @click="criarPrimeiroProntuario"
+                        class="mt-3" 
+                    />
                 </div>
             </div>
         </template>

@@ -4,7 +4,7 @@
             <div class="card">
                 <!-- Cabeçalho -->
                 <div class="flex justify-content-between align-items-center mb-4">
-                    <h5 class="mb-0">Meu Perfil Público</h5>
+                    <h5 class="mb-0">Encontre Psicólogo - Perfil Público</h5>
                     <div class="flex gap-2" v-if="perfil && !planStore.isPlanPaused">
                         <Button 
                             icon="pi pi-eye" 
@@ -20,17 +20,17 @@
                     <i class="pi pi-user-plus text-6xl text-500 mb-4"></i>
                     <h3 class="text-500 mb-3">Crie seu perfil público</h3>
                     
-                    <!-- Explicação sobre o MeuPsicólogo -->
+                    <!-- Explicação sobre o Encontre Psicólogo -->
                     <div class="mb-4 p-4 surface-50 border-1 surface-border border-round text-left">
                         <div class="flex align-items-start gap-3">
                             <i class="pi pi-globe text-primary text-xl mt-1"></i>
                             <div class="flex-grow-1">
-                                <h6 class="text-800 font-semibold mb-2">O que é o MeuPsicólogo?</h6>
+                                <h6 class="text-800 font-semibold mb-2">O que é o Encontre Psicólogo?</h6>
                                 <p class="text-700 text-sm mb-2">
-                                    O <strong>MeuPsicólogo</strong> é um marketplace público onde pacientes podem encontrar psicólogos 
+                                    O <strong>Encontre Psicólogo</strong> é um marketplace público onde pacientes podem encontrar psicólogos 
                                     próximos a eles. Seu perfil aparecerá em 
-                                    <a href="https://www.meupsicologo.com.br" target="_blank" class="text-primary hover:text-primary-emphasis underline font-semibold">
-                                        www.meupsicologo.com.br
+                                    <a href="https://www.encontrepsicologo.com.br" target="_blank" class="text-primary hover:text-primary-emphasis underline font-semibold">
+                                        www.encontrepsicologo.com.br
                                     </a> 
                                     para que pacientes possam entrar em contato diretamente com você via WhatsApp.
                                 </p>
@@ -45,7 +45,12 @@
                     <p class="text-500 mb-4">
                         Configure seu perfil para aparecer no marketplace e receber pacientes diretamente via WhatsApp.
                     </p>
-                    <Button label="Criar Perfil" icon="pi pi-plus" @click="abrirDialogCriarPerfil" />
+                    <Button 
+                        v-if="!planStore.isPlanPaused"
+                        label="Criar Perfil" 
+                        icon="pi pi-plus" 
+                        @click="abrirDialogCriarPerfil" 
+                    />
                 </div>
 
                 <!-- Loading -->
@@ -79,7 +84,7 @@
                                     <div class="flex align-items-center gap-2 mb-1">
                                         <h5 class="text-800 font-bold mb-0">Status do Perfil Público</h5>
                                         <i class="pi pi-info-circle text-primary cursor-pointer" 
-                                           v-tooltip.top="'O perfil público é o seu perfil profissional que aparece na plataforma de captação de pacientes www.meupsicologo.com.br.\n\nQuando ativo, pacientes podem encontrar e entrar em contato com você através desta plataforma.'"></i>
+                                           v-tooltip.top="'O perfil público é o seu perfil profissional que aparece na plataforma de captação de pacientes www.encontrepsicologo.com.br.\n\nQuando ativo, pacientes podem encontrar e entrar em contato com você através desta plataforma.'"></i>
                                     </div>
                                     <div class="flex align-items-center gap-2">
                                         <Tag :severity="perfil?.perfil_ativo ? 'success' : 'warning'"
@@ -519,7 +524,7 @@ import DialogEditarIdiomas from '@/components/dialogs/perfil-publico/DialogEdita
 import DialogPreviewPerfil from '@/components/dialogs/perfil-publico/DialogPreviewPerfil.vue';
 
 export default {
-    name: 'MeuPsicologo',
+    name: 'EncontrePsicologo',
     components: {
         DialogCriarPerfil,
         DialogEditarNome,

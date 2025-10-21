@@ -11,10 +11,6 @@ const api = axios.create({
     withCredentials: false, // Importante para o Sanctum
 });
 
-// Log para debug - mostra qual URL está sendo usada
-console.log('🌍 Ambiente:', import.meta.env.MODE);
-console.log('🔗 API URL:', api.defaults.baseURL);
-
 // Função para mostrar/esconder loading
 const showLoading = () => {
     if (window.$loading) {

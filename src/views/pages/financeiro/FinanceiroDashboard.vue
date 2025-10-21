@@ -10,7 +10,12 @@
                         @click="drawerFilterFinanceiro = true" />
                     <Button label="Limpar Filtros" severity="danger" @click="limparFiltros" v-else />
                     <Button label="Atualizar" icon="pi pi-refresh" @click="carregarDados" />
-                    <Button label="Nova Transação" icon="pi pi-plus" @click="$router.push('/financeiro/novo')" />
+                    <Button 
+                        v-if="!planStore.isPlanPaused"
+                        label="Nova Transação" 
+                        icon="pi pi-plus" 
+                        @click="$router.push('/financeiro/novo')" 
+                    />
                     <Button label="Lista de Transações" icon="pi pi-list" @click="$router.push('/financeiro/lista')" />
                 </div>
 
@@ -206,6 +211,7 @@
 <script>
 import DrawerFilterFinanceiro from '@/components/drawers/DrawerFilterFinanceiro.vue';
 import { useThemeStore } from '@/store/theme';
+import { usePlanStore } from '@/store/plan';
 
 export default {
     name: 'FinanceiroDashboard',
@@ -252,6 +258,11 @@ export default {
         // Store do tema como propriedade computada
         themeStore() {
             return useThemeStore();
+        },
+
+        // Store do plano como propriedade computada
+        planStore() {
+            return usePlanStore();
         },
 
         saldo() {

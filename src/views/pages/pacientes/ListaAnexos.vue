@@ -182,6 +182,16 @@ export default {
         async onAnexoUploaded() {
             // Emitir evento para o componente pai recarregar os dados
             this.$emit('anexoUploaded');
+        },
+
+        async recarregarAssinatura() {
+            try {
+                console.log('🔄 Recarregando assinatura...');
+                await this.planStore.carregarAssinatura();
+                console.log('✅ Assinatura recarregada:', this.planStore.assinatura);
+            } catch (error) {
+                console.error('❌ Erro ao recarregar assinatura:', error);
+            }
         }
     }
 };

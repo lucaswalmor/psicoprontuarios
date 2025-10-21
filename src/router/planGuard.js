@@ -1,67 +1,94 @@
 import { showAccessDeniedToast } from '@/utils/toast';
 
-// Função para verificar permissões do plano
-function performPlanCheck(planStore, to, next) {
-    const planInfo = planStore.planInfo;
-    const userInfo = planStore.userInfo;
-    const isVitalicio = planStore.isVitalicio;
+// Função para verificar permissões do plano usando dados do localStorage
+function performPlanCheck(to, next) {
+    // Obter dados do localStorage (vindos do login)
+    const usuarioVitalicio = localStorage.getItem('usuarioVitalicio') === 'true';
+    const statusAssinatura = localStorage.getItem('statusAssinatura') || 'sem_assinatura';
+    const temAssinaturaAtiva = localStorage.getItem('temAssinaturaAtiva') === 'true';
+    const assinatura = JSON.parse(localStorage.getItem('userAssinatura') || 'null');
 
     // Usuários vitalícios têm acesso total
-    if (isVitalicio) {
+    if (usuarioVitalicio) {
         return next();
     }
 
     // Verificar se a rota requer uma feature específica
-    const requiredFeature = routeFeatureMap[to.path];
+    const requiredModulo = routeModuleMap[to.path];
     
-    // Se não requer feature específica, permite acesso
-    if (requiredFeature === null) {
+    // Se não requer módulo específico, permite acesso
+    if (requiredModulo === null) {
         return next();
     }
 
-    // Se requer feature específica, verificar se está disponível
-    // Mas só verificar se NÃO for usuário vitalício
-    if (requiredFeature && !isVitalicio && !planInfo.features[requiredFeature]) {
-        // Redirecionar para rota apropriada baseada no plano
-        let redirectRoute = '/pacientes'; // Rota padrão
-        
-        if (planInfo.features.dashboard) {
-            redirectRoute = '/dashboard';
-        } else if (planInfo.features.agendamentos) {
-            redirectRoute = '/agendamentos';
-        }
+    // Verificar se assinatura permite acesso (ativa ou pendente)
+    if (!temAssinaturaAtiva) {
+        console.warn(`Acesso negado: assinatura ${statusAssinatura} não permite acesso`);
+        showAccessDeniedToast(to.path, statusAssinatura);
+        return next('/upgrade');
+    }
 
-        // Mostrar mensagem de erro
-        console.warn(`Acesso negado: ${to.path} não está disponível no plano ${planInfo.nome}`);
-        showAccessDeniedToast(to.path, planInfo.nome);
+    // Se requer módulo específico, verificar se está disponível no plano
+    if (requiredModulo && assinatura && assinatura.plano && assinatura.plano.modulos) {
+        const modulosDisponiveis = assinatura.plano.modulos.map(modulo => modulo.chave);
         
-        return next(redirectRoute);
+        if (!modulosDisponiveis.includes(requiredModulo)) {
+            // Redirecionar para rota apropriada baseada no plano
+            let redirectRoute = '/pacientes'; // Rota padrão
+            
+            if (modulosDisponiveis.includes('dashboard')) {
+                redirectRoute = '/dashboard';
+            } else if (modulosDisponiveis.includes('agendamentos')) {
+                redirectRoute = '/agendamentos';
+            }
+
+            // Mostrar mensagem de erro
+            console.warn(`Acesso negado: ${to.path} não está disponível no plano atual`);
+            showAccessDeniedToast(to.path, 'plano atual');
+            
+            return next(redirectRoute);
+        }
     }
 
     // Se tem acesso, permite
     return next();
 }
 
-// Mapeamento de rotas para features requeridas
-const routeFeatureMap = {
+// Mapeamento de rotas para módulos requeridos
+const routeModuleMap = {
     '/dashboard': 'dashboard',
     '/financeiro': 'gestao_financeira',
     '/financeiro/novo': 'gestao_financeira',
     '/financeiro/editar': 'gestao_financeira',
     '/financeiro/lista': 'gestao_financeira',
+    '/financeiro/categorias': 'gestao_financeira',
     '/agendamentos': 'agendamentos',
+    '/agendamentos/novo': 'agendamentos',
+    '/agendamentos/editar': 'agendamentos',
     '/meu-psicologo': 'perfil_publico',
-    // Pacientes sempre disponível
-    '/pacientes': null,
-    '/pacientes/cadastro': null,
-    '/pacientes/editar': null,
-    '/pacientes/prontuarios': null
+    '/meu-psicologo/editar': 'perfil_publico',
+    '/meu-psicologo/foto': 'perfil_publico',
+    '/meu-psicologo/video': 'perfil_publico',
+    '/pacientes': null, // sempre acessível
+    '/pacientes/cadastro': null, // sempre acessível
+    '/pacientes/editar': null, // sempre acessível
+    '/pacientes/prontuarios': null, // sempre acessível
+    '/prontuarios': 'prontuario', // sempre acessível (plano gratuito tem)
+    '/prontuarios/novo': 'prontuario',
+    '/prontuarios/editar': 'prontuario',
+    '/prontuarios/pdf': 'prontuarios_pdf',
+    '/upgrade': null, // sempre acessível
+    '/assinatura': null, // sempre acessível
+    '/configuracoes': null, // sempre acessível
+    '/checkout/sucesso': null, // sempre acessível
+    '/checkout/cancelado': null, // sempre acessível
 };
 
 // Rotas que sempre devem ser acessíveis
 const alwaysAllowedRoutes = [
     '/',
     '/login',
+    '/modelos-arquivos',
     '/change-password',
     '/cadastro',
     '/politica-privacidade',
@@ -71,7 +98,7 @@ const alwaysAllowedRoutes = [
     '/auth/error'
 ];
 
-export async function planGuard(to, from, next) {
+export function planGuard(to, from, next) {
     // Se é uma rota sempre permitida, permite acesso
     if (alwaysAllowedRoutes.includes(to.path)) {
         return next();
@@ -83,57 +110,11 @@ export async function planGuard(to, from, next) {
         return next('/login');
     }
 
-    let needsServerFetch = false;
-
-    try {
-        // Obter informações do plano do store Pinia
-        const { usePlanStore } = await import('@/store/plan');
-        const planStore = usePlanStore();
-
-        // Carregar dados do localStorage se não estiverem no store
-        if (!planStore.hasPlanData) {
-            planStore.loadPlanFromStorage();
-        }
-
-        const planInfo = planStore.planInfo;
-        const userInfo = planStore.userInfo;
-        const isVitalicio = planStore.isVitalicio;
-
-        // Só mostrar loading do plano se realmente precisar buscar dados do servidor
-        if (!planInfo || !userInfo) {
-            needsServerFetch = true;
-            // Emitir evento para mostrar loading apenas quando vai buscar do servidor
-            if (to.meta.requiresPlanCheck) {
-                window.dispatchEvent(new CustomEvent('plan-check-start'));
-            }
-            await planStore.fetchPlanInfo();
-        }
-
-        // Se os dados já estavam disponíveis, não precisa de loading
-        if (!needsServerFetch) {
-            // Verificação instantânea sem loading
-            return performPlanCheck(planStore, to, next);
-        }
-
-        // Se precisou buscar dados do servidor, fazer verificação com loading
-        const result = performPlanCheck(planStore, to, next);
-        
-        // Sempre finalizar o loading se foi iniciado
-        window.dispatchEvent(new CustomEvent('plan-check-end'));
-        
-        return result;
-
-    } catch (error) {
-        console.error('Erro ao verificar plano do usuário:', error);
-        if (needsServerFetch) {
-            window.dispatchEvent(new CustomEvent('plan-check-end'));
-        }
-        // Em caso de erro, redireciona para pacientes
-        return next('/pacientes');
-    }
+    // Verificação simples usando dados do localStorage (vindos do login)
+    return performPlanCheck(to, next);
 }
 
 // Função para configurar o guard no router
 export function setupPlanGuard(router) {
     router.beforeEach(planGuard);
-} 
+}

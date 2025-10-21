@@ -117,7 +117,7 @@ const router = createRouter({
                 },
                 {
                     path: '/meu-psicologo',
-                    name: 'MeuPsicologo',
+                    name: 'EncontrePsicologo',
                     component: () => import('@/views/pages/MeuPsicologo.vue'),
                     meta: { requiresPlanCheck: true }
                 },
@@ -247,6 +247,24 @@ const router = createRouter({
                     name: 'Upgrade',
                     component: () => import('@/views/pages/Upgrade.vue'),
                     meta: { requiresPlanCheck: true }
+                },
+                {
+                    path: '/checkout/sucesso',
+                    name: 'CheckoutSucesso',
+                    component: () => import('@/views/pages/CheckoutSucesso.vue'),
+                    meta: { requiresAuth: true }
+                },
+                {
+                    path: '/checkout/cancelado',
+                    name: 'CheckoutCancelado',
+                    component: () => import('@/views/pages/CheckoutCancelado.vue'),
+                    meta: { requiresAuth: true }
+                },
+                {
+                    path: '/assinatura',
+                    name: 'ConfiguracoesAssinatura',
+                    component: () => import('@/views/pages/ConfiguracoesAssinatura.vue'),
+                    meta: { requiresAuth: true }
                 },
                 {
                     path: '/modelos-arquivos',

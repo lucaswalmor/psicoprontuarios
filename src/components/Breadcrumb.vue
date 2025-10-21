@@ -49,7 +49,7 @@ export default {
             const routeNameMapping = {
                 'landing': 'Página Inicial',
                 'login': 'Login',
-                'DashboardGeral': 'Dashboard',
+                'DashboardGeral': '',
                 'pacientes': 'Pacientes',
                 'prontuarios': 'Prontuários',
                 'FinanceiroLista': 'Lista de Transações',

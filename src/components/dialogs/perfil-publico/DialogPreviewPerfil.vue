@@ -24,7 +24,7 @@
                             <p class="text-blue-600 font-medium mb-3">CRP {{ perfil?.psicologo?.crp }}</p>
                             
                             <div v-if="perfil?.descricao" class="mb-4">
-                                <p class="text-700">{{ perfil.descricao }}</p>
+                                <div class="text-700 descricao-preview" v-html="perfil.descricao"></div>
                             </div>
                             
                             <div class="flex flex-wrap gap-2 mb-3">
@@ -65,3 +65,32 @@ export default {
     emits: ['update:visible']
 };
 </script>
+
+<style scoped>
+.descricao-preview {
+    word-wrap: break-word;
+    word-break: break-word;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    line-height: 1.6;
+}
+
+.descricao-preview p {
+    margin-bottom: 0.5rem;
+}
+
+.descricao-preview p:last-child {
+    margin-bottom: 0;
+}
+
+/* Garantir que o dialog não ultrapasse os limites */
+:deep(.p-dialog-content) {
+    overflow-x: hidden;
+}
+
+:deep(.p-dialog) {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+</style>
