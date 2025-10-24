@@ -1,32 +1,77 @@
 import { showAccessDeniedToast } from '@/utils/toast';
 
-// Função para verificar permissões do plano usando dados do localStorage
+// Função para obter o módulo requerido pela rota
+function getRequiredModule(path) {
+    // Rotas sempre acessíveis (não requerem módulo específico)
+    const alwaysAccessible = [
+        '/pacientes',
+        '/pacientes/cadastro',
+        '/pacientes/editar',
+        '/pacientes/ficha',
+        '/pacientes/prontuarios',
+        '/prontuarios',
+        '/prontuarios/novo',
+        '/prontuarios/editar',
+        '/upgrade',
+        '/assinatura',
+        '/configuracoes',
+        '/checkout/sucesso',
+        '/checkout/cancelado'
+    ];
+    
+    // Verificar rotas dinâmicas sempre acessíveis
+    if (path.startsWith('/pacientes/ficha/') || 
+        path.startsWith('/pacientes/editar/') || 
+        path.startsWith('/prontuarios/editar/')) {
+        return null;
+    }
+    
+    // Verificar rotas sempre acessíveis
+    if (alwaysAccessible.some(route => path.startsWith(route))) {
+        return null;
+    }
+    
+    // Mapeamento de rotas que requerem módulos específicos
+    const moduleMap = {
+        '/dashboard': 'dashboard',
+        '/financeiro': 'gestao_financeira',
+        '/agendamentos': 'agendamentos',
+        '/meu-psicologo': 'perfil_publico',
+        '/prontuarios/pdf': 'prontuarios_pdf'
+    };
+    
+    // Verificar padrões dinâmicos que requerem módulos
+    if (path.startsWith('/financeiro/')) return 'gestao_financeira';
+    if (path.startsWith('/agendamentos/')) return 'agendamentos';
+    if (path.startsWith('/meu-psicologo/')) return 'perfil_publico';
+    
+    return moduleMap[path] || null;
+}
+
+// Função principal de verificação de plano
 function performPlanCheck(to, next) {
-    // Obter dados do localStorage (vindos do login)
     const planoId = parseInt(localStorage.getItem('planoId'));
     const statusAssinatura = localStorage.getItem('statusAssinatura') || 'sem_assinatura';
     const modulosPlano = JSON.parse(localStorage.getItem('modulosPlano') || '{}');
 
-    // Plano Vitalício (id=4): acesso total
+    // Plano Vitalício: acesso total
     if (planoId === 4) {
         return next();
     }
 
-    // Verificar se a rota requer módulo específico
-    const requiredModulo = routeModuleMap[to.path];
+    // Obter módulo requerido pela rota
+    const requiredModulo = getRequiredModule(to.path);
     
     // Rota sempre acessível
-    if (requiredModulo === null) {
+    if (!requiredModulo) {
         return next();
     }
 
     // Planos pagos (2=Essencial, 3=Profissional): verificar status da assinatura
-    if ([2, 3].includes(planoId)) {
-        if (statusAssinatura !== 'ativa') {
-            console.warn(`Acesso negado: assinatura ${statusAssinatura} não permite acesso`);
-            showAccessDeniedToast(to.path, statusAssinatura);
-            return next('/upgrade');
-        }
+    if ([2, 3].includes(planoId) && statusAssinatura !== 'ativa') {
+        console.warn(`Acesso negado: assinatura ${statusAssinatura} não permite acesso`);
+        showAccessDeniedToast(to.path, statusAssinatura);
+        return next('/upgrade');
     }
 
     // Verificar se o módulo está disponível no plano
@@ -36,41 +81,10 @@ function performPlanCheck(to, next) {
         return next('/upgrade');
     }
 
-    // Se tem acesso, permite
     return next();
 }
 
-// Mapeamento de rotas para módulos requeridos
-const routeModuleMap = {
-    '/dashboard': 'dashboard',
-    '/financeiro': 'gestao_financeira',
-    '/financeiro/novo': 'gestao_financeira',
-    '/financeiro/editar': 'gestao_financeira',
-    '/financeiro/lista': 'gestao_financeira',
-    '/financeiro/categorias': 'gestao_financeira',
-    '/agendamentos': 'agendamentos',
-    '/agendamentos/novo': 'agendamentos',
-    '/agendamentos/editar': 'agendamentos',
-    '/meu-psicologo': 'perfil_publico',
-    '/meu-psicologo/editar': 'perfil_publico',
-    '/meu-psicologo/foto': 'perfil_publico',
-    '/meu-psicologo/video': 'perfil_publico',
-    '/prontuarios/pdf': 'prontuarios_pdf',
-    '/pacientes': null, // sempre acessível
-    '/pacientes/cadastro': null, // sempre acessível
-    '/pacientes/editar': null, // sempre acessível
-    '/pacientes/prontuarios': null, // sempre acessível
-    '/prontuarios': null, // sempre acessível
-    '/prontuarios/novo': null,
-    '/prontuarios/editar': null,
-    '/upgrade': null, // sempre acessível
-    '/assinatura': null, // sempre acessível
-    '/configuracoes': null, // sempre acessível
-    '/checkout/sucesso': null, // sempre acessível
-    '/checkout/cancelado': null, // sempre acessível
-};
-
-// Rotas que sempre devem ser acessíveis
+// Rotas que sempre devem ser acessíveis (sem autenticação)
 const alwaysAllowedRoutes = [
     '/',
     '/login',
@@ -96,7 +110,7 @@ export function planGuard(to, from, next) {
         return next('/login');
     }
 
-    // Verificação simplificada usando dados do localStorage (vindos do login)
+    // Verificação de plano simplificada
     return performPlanCheck(to, next);
 }
 
