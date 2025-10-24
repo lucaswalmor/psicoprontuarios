@@ -20,10 +20,8 @@ export default {
 
         // Computed para verificar se deve mostrar o botão de upgrade
         shouldShowUpgradeButton() {
-            if (!this.planStore?.planInfo) return false;
-
-            const currentPlan = this.planStore.planInfo.nome;
-            return currentPlan === 'Gratuito' || currentPlan === 'Essencial';
+            // Mostrar para planos Gratuito e Essencial
+            return this.planStore.isGratuito || (this.planStore.planoId === 2);
         },
         
         // Computed para detectar se é layout mobile
@@ -103,26 +101,23 @@ export default {
             return baseMenu.map(section => ({
                 ...section,
                 items: section.items.filter(item => {
-                    const isVitalicio = this.planStore?.planInfo?.nome === 'Vitalício';
-                    // Usuários vitalícios têm acesso total
-                    if (isVitalicio) {
+                    // Plano Vitalício: acesso total
+                    if (this.planStore.isVitalicio) {
                         return true;
                     }
                     
-                    // Se não tem feature requerida, sempre disponível
+                    // Sem feature requerida: sempre disponível
                     if (!item.requiredFeature) {
                         return true;
                     }
                     
-                    // Se o plano está pausado, verificar se a feature é permitida
-                    if (this.planStore?.isPlanPaused) {
-                        // Quando pausado, apenas algumas features são permitidas
-                        const allowedWhenPaused = [null]; // null = sempre disponível
-                        return allowedWhenPaused.includes(item.requiredFeature);
+                    // Planos pagos inativos: ocultar módulos premium
+                    if (this.planStore.isPlanoPago && !this.planStore.podeEditarDados) {
+                        return false;
                     }
                     
-                    // Verificar se a feature está disponível no plano (sistema de módulos)
-                    return this.planStore?.podeAcessarModulo?.(item.requiredFeature) || false;
+                    // Verificar se tem acesso ao módulo
+                    return this.planStore.temAcessoModulo(item.requiredFeature);
                 })
             }));
         }
@@ -133,11 +128,11 @@ export default {
             try {
                 // Se não tem dados no store, carregar do localStorage ou servidor
                 if (!this.planStore.hasPlanData) {
-                    this.planStore.loadPlanFromStorage();
+                    this.planStore.loadFromStorage();
                     
                     // Se ainda não tem dados, buscar do servidor
                     if (!this.planStore.hasPlanData) {
-                        await this.planStore.fetchPlanInfo();
+                        await this.planStore.fetchModulosAcesso();
                     }
                 }
             } catch (error) {

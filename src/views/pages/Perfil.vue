@@ -101,30 +101,30 @@
                                             <div class="flex flex-column gap-3">
                                                 <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
                                                     <div class="flex align-items-center gap-3">
-                                                        <i class="pi pi-calendar text-primary text-xl"></i>
-                                                        <div>
-                                                            <h6 class="m-0 text-800">Plano Ativo Até</h6>
-                                                            <small class="text-600">{{ userProfile?.data_fim_plano || 'N/A' }}</small>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
-                                                    <div class="flex align-items-center gap-3">
                                                         <i class="pi pi-star text-primary text-xl"></i>
                                                         <div>
-                                                            <h6 class="m-0 text-800">Status do Plano</h6>
-                                                            <small class="text-600">{{ userProfile?.usuario_vitalicio ? 'Vitalício' : 'Ativo' }}</small>
+                                                            <h6 class="m-0 text-800">Plano Atual</h6>
+                                                            <small class="text-600">{{ planStore.planoNome || 'Carregando...' }}</small>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
                                                     <div class="flex align-items-center gap-3">
-                                                        <i class="pi pi-clock text-primary text-xl"></i>
+                                                        <i class="pi pi-check-circle text-primary text-xl"></i>
                                                         <div>
-                                                            <h6 class="m-0 text-800">Dias Restantes</h6>
-                                                            <small class="text-600">{{ userProfile?.qtd_dias_plano || '0' }} dias</small>
+                                                            <h6 class="m-0 text-800">Status da Assinatura</h6>
+                                                            <small class="text-600">{{ planStore.statusAssinatura || 'Sem assinatura' }}</small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
+                                                    <div class="flex align-items-center gap-3">
+                                                        <i class="pi pi-users text-primary text-xl"></i>
+                                                        <div>
+                                                            <h6 class="m-0 text-800">Pacientes</h6>
+                                                            <small class="text-600">{{ planStore.pacientesCount }} / {{ planStore.limitePacientes === -1 ? 'Ilimitado' : planStore.limitePacientes }}</small>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -228,13 +228,13 @@ export default {
     },
     computed: {
         hasProfessionalPlan() {
-            return this.planStore.isVitalicio || this.planStore.planInfo?.nome === 'Profissional';
+            return this.planStore.isVitalicio || this.planStore.planoId === 3;
         }
     },
     async mounted() {
         // Carregar dados do plano primeiro
         if (!this.planStore.hasPlanData) {
-            await this.planStore.fetchPlanInfo();
+            await this.planStore.fetchModulosAcesso();
         }
         
         await this.loadUserProfile();

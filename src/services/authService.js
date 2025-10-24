@@ -11,15 +11,29 @@ class AuthService {
                 sessionStorage.setItem('sessionTime', 1800)
                 sessionStorage.setItem('isAutenticated', true)
                 
-                // Salvar dados da assinatura no localStorage para uso simplificado
+                // Salvar dados do plano no localStorage (nova estrutura)
+                if (response.data.usuario.plano_id) {
+                    localStorage.setItem('planoId', response.data.usuario.plano_id);
+                }
+                if (response.data.usuario.plano_nome) {
+                    localStorage.setItem('planoNome', response.data.usuario.plano_nome);
+                }
+                if (response.data.usuario.modulos_plano) {
+                    localStorage.setItem('modulosPlano', JSON.stringify(response.data.usuario.modulos_plano));
+                }
+                if (response.data.usuario.status_assinatura) {
+                    localStorage.setItem('statusAssinatura', response.data.usuario.status_assinatura);
+                }
+                if (response.data.usuario.assinatura_ativa !== undefined) {
+                    localStorage.setItem('assinaturaAtiva', response.data.usuario.assinatura_ativa);
+                }
+                
+                // Manter compatibilidade com dados antigos (será removido posteriormente)
                 if (response.data.usuario.assinatura) {
                     localStorage.setItem('userAssinatura', JSON.stringify(response.data.usuario.assinatura));
                 }
                 if (response.data.usuario.usuario_vitalicio !== undefined) {
                     localStorage.setItem('usuarioVitalicio', response.data.usuario.usuario_vitalicio);
-                }
-                if (response.data.usuario.status_assinatura) {
-                    localStorage.setItem('statusAssinatura', response.data.usuario.status_assinatura);
                 }
                 if (response.data.usuario.tem_assinatura_ativa !== undefined) {
                     localStorage.setItem('temAssinaturaAtiva', response.data.usuario.tem_assinatura_ativa);
@@ -39,9 +53,15 @@ class AuthService {
         try {
             await api.post('/logout');
             localStorage.removeItem('token');
+            // Limpar dados da nova estrutura
+            localStorage.removeItem('planoId');
+            localStorage.removeItem('planoNome');
+            localStorage.removeItem('modulosPlano');
+            localStorage.removeItem('statusAssinatura');
+            localStorage.removeItem('assinaturaAtiva');
+            // Limpar dados antigos (compatibilidade)
             localStorage.removeItem('userAssinatura');
             localStorage.removeItem('usuarioVitalicio');
-            localStorage.removeItem('statusAssinatura');
             localStorage.removeItem('temAssinaturaAtiva');
             sessionStorage.removeItem('usuario');
             sessionStorage.removeItem('sessionTime');
@@ -49,9 +69,13 @@ class AuthService {
         } catch (error) {
             // Mesmo se der erro, remove o token local
             localStorage.removeItem('token');
+            localStorage.removeItem('planoId');
+            localStorage.removeItem('planoNome');
+            localStorage.removeItem('modulosPlano');
+            localStorage.removeItem('statusAssinatura');
+            localStorage.removeItem('assinaturaAtiva');
             localStorage.removeItem('userAssinatura');
             localStorage.removeItem('usuarioVitalicio');
-            localStorage.removeItem('statusAssinatura');
             localStorage.removeItem('temAssinaturaAtiva');
             throw error;
         }
@@ -152,15 +176,29 @@ class AuthService {
                 sessionStorage.setItem('sessionTime', 1800);
                 sessionStorage.setItem('isAutenticated', true);
                 
-                // Salvar dados da assinatura no localStorage para uso simplificado
+                // Salvar dados do plano no localStorage (nova estrutura)
+                if (response.data.usuario.plano_id) {
+                    localStorage.setItem('planoId', response.data.usuario.plano_id);
+                }
+                if (response.data.usuario.plano_nome) {
+                    localStorage.setItem('planoNome', response.data.usuario.plano_nome);
+                }
+                if (response.data.usuario.modulos_plano) {
+                    localStorage.setItem('modulosPlano', JSON.stringify(response.data.usuario.modulos_plano));
+                }
+                if (response.data.usuario.status_assinatura) {
+                    localStorage.setItem('statusAssinatura', response.data.usuario.status_assinatura);
+                }
+                if (response.data.usuario.assinatura_ativa !== undefined) {
+                    localStorage.setItem('assinaturaAtiva', response.data.usuario.assinatura_ativa);
+                }
+                
+                // Manter compatibilidade com dados antigos (será removido posteriormente)
                 if (response.data.usuario.assinatura) {
                     localStorage.setItem('userAssinatura', JSON.stringify(response.data.usuario.assinatura));
                 }
                 if (response.data.usuario.usuario_vitalicio !== undefined) {
                     localStorage.setItem('usuarioVitalicio', response.data.usuario.usuario_vitalicio);
-                }
-                if (response.data.usuario.status_assinatura) {
-                    localStorage.setItem('statusAssinatura', response.data.usuario.status_assinatura);
                 }
                 if (response.data.usuario.tem_assinatura_ativa !== undefined) {
                     localStorage.setItem('temAssinaturaAtiva', response.data.usuario.tem_assinatura_ativa);

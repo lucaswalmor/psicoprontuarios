@@ -20,7 +20,7 @@
                                 :value="paciente?.status_tratamento || 'N/A'" 
                                 class="cursor-pointer"
                                 @click="abrirDialogAlterarStatus"
-                                v-if="!planStore.isPlanPaused" />
+                                v-if="podeEditar" />
                             <Tag :severity="getStatusSeverity(paciente?.status_tratamento)"
                                 :value="paciente?.status_tratamento || 'N/A'" 
                                 v-else />
@@ -29,9 +29,9 @@
                 </div>
                 <div class="flex gap-2">
                     <Button icon="pi pi-user-edit" label="Editar" @click="editarPaciente"
-                        v-if="!planStore.isPlanPaused" />
+                        v-if="podeEditar" />
                     <Button icon="pi pi-trash" label="Excluir" severity="danger" @click="confirmarExclusao($event)"
-                        v-if="!planStore.isPlanPaused" />
+                        v-if="podeEditar" />
                 </div>
             </div>
         </div>
@@ -140,7 +140,7 @@
                     <div class="card">
                         <div class="flex justify-content-between align-items-center mb-4">
                             <h5 class="text-500 mb-0">Lista de Prontuários</h5>
-                            <Button v-if="!planStore.isPlanPaused && paciente" label="Novo Prontuário" icon="pi pi-plus"
+                            <Button v-if="podeEditar && paciente" label="Novo Prontuário" icon="pi pi-plus"
                                 @click="abrirDialogNovoProntuario" />
                         </div>
                         <ListaProntuarios 
@@ -231,6 +231,16 @@ export default {
     computed: {
         planStore() {
             return usePlanStore();
+        },
+        
+        // Computed para controle de edição baseado no plano e status da assinatura
+        podeEditar() {
+            // Plano gratuito e vitalício: sempre pode
+            if (this.planStore.isGratuito || this.planStore.isVitalicio) {
+                return true;
+            }
+            // Planos pagos: verificar se pode editar dados
+            return this.planStore.podeEditarDados;
         }
     },
     data() {

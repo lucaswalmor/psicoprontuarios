@@ -3,51 +3,37 @@ import { showAccessDeniedToast } from '@/utils/toast';
 // Função para verificar permissões do plano usando dados do localStorage
 function performPlanCheck(to, next) {
     // Obter dados do localStorage (vindos do login)
-    const usuarioVitalicio = localStorage.getItem('usuarioVitalicio') === 'true';
+    const planoId = parseInt(localStorage.getItem('planoId'));
     const statusAssinatura = localStorage.getItem('statusAssinatura') || 'sem_assinatura';
-    const temAssinaturaAtiva = localStorage.getItem('temAssinaturaAtiva') === 'true';
-    const assinatura = JSON.parse(localStorage.getItem('userAssinatura') || 'null');
+    const modulosPlano = JSON.parse(localStorage.getItem('modulosPlano') || '{}');
 
-    // Usuários vitalícios têm acesso total
-    if (usuarioVitalicio) {
+    // Plano Vitalício (id=4): acesso total
+    if (planoId === 4) {
         return next();
     }
 
-    // Verificar se a rota requer uma feature específica
+    // Verificar se a rota requer módulo específico
     const requiredModulo = routeModuleMap[to.path];
     
-    // Se não requer módulo específico, permite acesso
+    // Rota sempre acessível
     if (requiredModulo === null) {
         return next();
     }
 
-    // Verificar se assinatura permite acesso (ativa ou pendente)
-    if (!temAssinaturaAtiva) {
-        console.warn(`Acesso negado: assinatura ${statusAssinatura} não permite acesso`);
-        showAccessDeniedToast(to.path, statusAssinatura);
-        return next('/upgrade');
+    // Planos pagos (2=Essencial, 3=Profissional): verificar status da assinatura
+    if ([2, 3].includes(planoId)) {
+        if (statusAssinatura !== 'ativa') {
+            console.warn(`Acesso negado: assinatura ${statusAssinatura} não permite acesso`);
+            showAccessDeniedToast(to.path, statusAssinatura);
+            return next('/upgrade');
+        }
     }
 
-    // Se requer módulo específico, verificar se está disponível no plano
-    if (requiredModulo && assinatura && assinatura.plano && assinatura.plano.modulos) {
-        const modulosDisponiveis = assinatura.plano.modulos.map(modulo => modulo.chave);
-        
-        if (!modulosDisponiveis.includes(requiredModulo)) {
-            // Redirecionar para rota apropriada baseada no plano
-            let redirectRoute = '/pacientes'; // Rota padrão
-            
-            if (modulosDisponiveis.includes('dashboard')) {
-                redirectRoute = '/dashboard';
-            } else if (modulosDisponiveis.includes('agendamentos')) {
-                redirectRoute = '/agendamentos';
-            }
-
-            // Mostrar mensagem de erro
-            console.warn(`Acesso negado: ${to.path} não está disponível no plano atual`);
-            showAccessDeniedToast(to.path, 'plano atual');
-            
-            return next(redirectRoute);
-        }
+    // Verificar se o módulo está disponível no plano
+    if (!modulosPlano[requiredModulo]) {
+        console.warn(`Acesso negado: ${to.path} não está disponível no plano atual`);
+        showAccessDeniedToast(to.path, 'módulo não disponível');
+        return next('/upgrade');
     }
 
     // Se tem acesso, permite
@@ -69,14 +55,14 @@ const routeModuleMap = {
     '/meu-psicologo/editar': 'perfil_publico',
     '/meu-psicologo/foto': 'perfil_publico',
     '/meu-psicologo/video': 'perfil_publico',
+    '/prontuarios/pdf': 'prontuarios_pdf',
     '/pacientes': null, // sempre acessível
     '/pacientes/cadastro': null, // sempre acessível
     '/pacientes/editar': null, // sempre acessível
     '/pacientes/prontuarios': null, // sempre acessível
-    '/prontuarios': 'prontuario', // sempre acessível (plano gratuito tem)
-    '/prontuarios/novo': 'prontuario',
-    '/prontuarios/editar': 'prontuario',
-    '/prontuarios/pdf': 'prontuarios_pdf',
+    '/prontuarios': null, // sempre acessível
+    '/prontuarios/novo': null,
+    '/prontuarios/editar': null,
     '/upgrade': null, // sempre acessível
     '/assinatura': null, // sempre acessível
     '/configuracoes': null, // sempre acessível
@@ -110,7 +96,7 @@ export function planGuard(to, from, next) {
         return next('/login');
     }
 
-    // Verificação simples usando dados do localStorage (vindos do login)
+    // Verificação simplificada usando dados do localStorage (vindos do login)
     return performPlanCheck(to, next);
 }
 

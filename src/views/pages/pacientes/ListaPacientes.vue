@@ -7,7 +7,7 @@
                 @click="drawerFilterPaciente = true" />
             <Button label="Limpar Filtros" severity="danger" @click="limparFiltros" v-else />
             <Button 
-                v-if="!planStore.isPlanPaused" 
+                v-if="podeAdicionarPaciente" 
                 label="Novo Paciente" 
                 icon="pi pi-user-plus" 
                 @click="$router.push('/pacientes/cadastro')" 
@@ -43,7 +43,7 @@
                             {{ hasFiltros ? 'Nenhum paciente corresponde aos filtros aplicados.' : 'Comece adicionando seu primeiro paciente para organizar seus atendimentos.' }}
                         </p>
                         <Button 
-                            v-if="!hasFiltros"
+                            v-if="!hasFiltros && podeAdicionarPaciente"
                             label="Adicionar Primeiro Paciente" 
                             icon="pi pi-user-plus" 
                             @click="$router.push('/pacientes/cadastro')"
@@ -101,6 +101,11 @@ export default {
     computed: {
         planStore() {
             return usePlanStore();
+        },
+        
+        // Computed para verificar se pode adicionar pacientes
+        podeAdicionarPaciente() {
+            return this.planStore.canAddPaciente;
         }
     },
     data() {
