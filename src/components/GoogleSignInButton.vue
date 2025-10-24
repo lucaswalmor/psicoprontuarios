@@ -152,11 +152,6 @@ export default {
     overflow: hidden;
 }
 
-.google-signin-button:hover {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-color: #c6c6c6;
-}
-
 .google-signin-button:active {
     background: #f8f9fa;
 }

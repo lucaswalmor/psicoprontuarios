@@ -42,7 +42,7 @@
                         <p class="text-600">Não precisa de cartão de crédito para testar.</p>
                     </div>
                     <!-- Botão Google -->
-                    <div class="mb-6">
+                    <div class="mt-3">
                         <GoogleSignInButton 
                             button-text="Cadastrar com Google"
                             theme="outline"
@@ -52,7 +52,7 @@
                     </div>
 
                     <!-- Divisor -->
-                    <div class="flex items-center my-6">
+                    <div class="flex items-center my-2">
                         <div class="flex-1 border-t border-gray-300"></div>
                         <span class="px-3 text-600 text-sm">ou</span>
                         <div class="flex-1 border-t border-gray-300"></div>
