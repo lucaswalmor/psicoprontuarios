@@ -7,7 +7,7 @@ export const config = {
         development: 'http://127.0.0.1:8000/api',
         // production: 'https://psicoprontuarios-v2.lksoftware.com.br/public/api/',
         productionV1: 'https://psicoprontuarios.lksoftware.com.br/public/api/',
-        production: 'https://psicoprontuarios-v2.5.75.170.215.sslip.io/api/'
+        production: 'https://api.psicoprontuarios.com.br/api/'
     },
     
     // Configurações do Google OAuth
