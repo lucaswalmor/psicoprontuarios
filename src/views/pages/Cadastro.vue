@@ -104,7 +104,8 @@
                                             id="nome" 
                                             v-model="form.nome" 
                                             class="w-100 h-12 text-lg" 
-                                            :class="{ 'p-invalid': errors.nome }" 
+                                            :class="{ 'p-invalid': errors.nome }"
+                                            @input="clearError('nome')"
                                         />
                                         <label for="nome">Nome</label>
                                     </IftaLabel>
@@ -120,7 +121,8 @@
                                             id="sobrenome" 
                                             v-model="form.sobrenome" 
                                             class="w-100 h-12 text-lg" 
-                                            :class="{ 'p-invalid': errors.sobrenome }" 
+                                            :class="{ 'p-invalid': errors.sobrenome }"
+                                            @input="clearError('sobrenome')"
                                         />
                                         <label for="sobrenome">Sobrenome</label>
                                     </IftaLabel>
@@ -132,14 +134,15 @@
                             <div class="row mb-3">
                                 <div class="col-md-12">
                                     <IftaLabel>
-                                        <InputMask 
-                                            id="telefone" 
-                                            v-model="form.telefone" 
-                                            mask="(99) 99999-9999"
-                                            class="w-100 h-12 text-lg" 
-                                            :class="{ 'p-invalid': errors.telefone }" 
-                                        />
-                                        <label for="telefone">Telefone</label>
+                                    <InputMask 
+                                        id="telefone" 
+                                        v-model="form.telefone" 
+                                        mask="(99) 99999-9999"
+                                        class="w-100 h-12 text-lg" 
+                                        :class="{ 'p-invalid': errors.telefone }"
+                                        @update:modelValue="clearError('telefone')"
+                                    />
+                                    <label for="telefone">Telefone</label>
                                     </IftaLabel>
                                     <small v-if="errors.telefone" class="text-red-500 text-sm mt-1 block">{{ errors.telefone }}</small>
                                 </div>
@@ -149,14 +152,15 @@
                             <div class="row mb-3">
                                 <div class="col-md-12">
                                     <IftaLabel>
-                                        <InputMask 
-                                            id="cpf" 
-                                            v-model="form.cpf" 
-                                            mask="999.999.999-99" 
-                                            class="w-100 h-12 text-lg"
-                                            :class="{ 'p-invalid': errors.cpf }" 
-                                        />
-                                        <label for="cpf">CPF</label>
+                                    <InputMask 
+                                        id="cpf" 
+                                        v-model="form.cpf" 
+                                        mask="999.999.999-99" 
+                                        class="w-100 h-12 text-lg"
+                                        :class="{ 'p-invalid': errors.cpf }"
+                                        @update:modelValue="clearError('cpf')"
+                                    />
+                                    <label for="cpf">CPF</label>
                                     </IftaLabel>
                                     <small v-if="errors.cpf" class="text-red-500 text-sm mt-1 block">{{ errors.cpf }}</small>
                                 </div>
@@ -171,7 +175,8 @@
                                             v-model="form.crp" 
                                             mask="99/99999" 
                                             class="w-100 h-12 text-lg"
-                                            :class="{ 'p-invalid': errors.crp }" 
+                                            :class="{ 'p-invalid': errors.crp }"
+                                            @update:modelValue="clearError('crp')"
                                         />
                                         <label for="crp">CRP</label>
                                     </IftaLabel>
@@ -198,6 +203,7 @@
                                             class="w-100 h-12 text-lg"
                                             :class="{ 'p-invalid': errors.cep }"
                                             @blur="buscarCep"
+                                            @update:modelValue="clearError('cep')"
                                             :loading="loadingCep"
                                         />
                                         <label for="cep">CEP</label>
@@ -218,7 +224,8 @@
                                             id="estado" 
                                             v-model="form.estado" 
                                             class="w-100 h-12 text-lg"
-                                            :class="{ 'p-invalid': errors.estado, 'bg-green-50': form.estado && !errors.estado }" 
+                                            :class="{ 'p-invalid': errors.estado, 'bg-green-50': form.estado && !errors.estado }"
+                                            @input="clearError('estado')"
                                         />
                                         <label for="estado">Estado</label>
                                     </IftaLabel>
@@ -238,7 +245,8 @@
                                             id="cidade" 
                                             v-model="form.cidade" 
                                             class="w-100 h-12 text-lg"
-                                            :class="{ 'p-invalid': errors.cidade, 'bg-green-50': form.cidade && !errors.cidade }" 
+                                            :class="{ 'p-invalid': errors.cidade, 'bg-green-50': form.cidade && !errors.cidade }"
+                                            @input="clearError('cidade')"
                                         />
                                         <label for="cidade">Cidade</label>
                                     </IftaLabel>
@@ -258,7 +266,8 @@
                                             id="bairro" 
                                             v-model="form.bairro" 
                                             class="w-100 h-12 text-lg"
-                                            :class="{ 'p-invalid': errors.bairro, 'bg-green-50': form.bairro && !errors.bairro }" 
+                                            :class="{ 'p-invalid': errors.bairro, 'bg-green-50': form.bairro && !errors.bairro }"
+                                            @input="clearError('bairro')"
                                         />
                                         <label for="bairro">Bairro</label>
                                     </IftaLabel>
@@ -278,7 +287,8 @@
                                             id="rua" 
                                             v-model="form.rua" 
                                             class="w-100 h-12 text-lg"
-                                            :class="{ 'p-invalid': errors.rua, 'bg-green-50': form.rua && !errors.rua }" 
+                                            :class="{ 'p-invalid': errors.rua, 'bg-green-50': form.rua && !errors.rua }"
+                                            @input="clearError('rua')"
                                         />
                                         <label for="rua">Rua</label>
                                     </IftaLabel>
@@ -424,42 +434,18 @@
         </main>
 
         <!-- Dialog de Sucesso -->
-        <Dialog v-model:visible="showSuccessDialog" :dismissable="false" :closable="false" modal class="success-dialog">
-            <template #header>
-                <div class="flex items-center">
-                    <i class="pi pi-check-circle text-green-500 text-2xl mr-3"></i>
-                    <h3 class="text-xl font-semibold text-surface-900 dark:text-surface-100">
-                        Cadastro Realizado com Sucesso!
-                    </h3>
-                </div>
-            </template>
+        <DialogCadastroSucesso 
+            :visible="showSuccessDialog" 
+            :countdown="countdown"
+            @update:visible="showSuccessDialog = $event"
+        />
 
-            <div class="text-center py-6">
-                <div class="mb-4">
-                    <i class="pi pi-check-circle text-green-500 text-6xl mb-4"></i>
-                    <h4 class="text-lg font-medium text-surface-900 dark:text-surface-100 mb-2">
-                        Parabéns pelo seu cadastro!
-                    </h4>
-                    <p class="text-surface-600 dark:text-surface-400 mb-4">
-                        Sua conta foi criada com sucesso. Você será redirecionado para a página de login em alguns
-                        segundos.
-                    </p>
-                </div>
-
-                <div class="flex items-center justify-center space-x-2 mb-4">
-                    <ProgressSpinner style="width: 30px; height: 30px" strokeWidth="4" fill="var(--surface-ground)"
-                        animationDuration=".5s" />
-                    <span class="text-surface-600 dark:text-surface-400">
-                        Redirecionando...
-                    </span>
-                </div>
-
-                <div class="text-sm text-surface-500 dark:text-surface-400">
-                    <i class="pi pi-clock mr-1"></i>
-                    Aguarde {{ countdown }} segundos
-                </div>
-            </div>
-        </Dialog>
+        <!-- Dialog Conta Já Cadastrada -->
+        <DialogContaExistente 
+            :visible="showExistingUserDialog" 
+            @update:visible="showExistingUserDialog = $event"
+            @access-system="goToSystem"
+        />
     </div>
 </template>
 
@@ -467,13 +453,14 @@
 import logo from '@/assets/img/no-bg.webp';
 import userService from '@/services/userService';
 import GoogleSignInButton from '@/components/GoogleSignInButton.vue';
+import DialogCadastroSucesso from '@/components/dialogs/DialogCadastroSucesso.vue';
+import DialogContaExistente from '@/components/dialogs/DialogContaExistente.vue';
 import InputText from 'primevue/inputtext';
 import InputMask from 'primevue/inputmask';
 import Password from 'primevue/password';
 import Checkbox from 'primevue/checkbox';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
-import ProgressSpinner from 'primevue/progressspinner';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 
@@ -481,13 +468,14 @@ export default {
     name: 'Cadastro',
     components: {
         GoogleSignInButton,
+        DialogCadastroSucesso,
+        DialogContaExistente,
         InputText,
         InputMask,
         Password,
         Checkbox,
         Button,
         Dialog,
-        ProgressSpinner,
         IconField,
         InputIcon,
     },
@@ -498,6 +486,7 @@ export default {
             loadingCep: false,
             error: '',
             showSuccessDialog: false,
+            showExistingUserDialog: false,
             countdown: 3,
             etapaAtual: 1,
             totalEtapas: 3,
@@ -621,7 +610,21 @@ export default {
             try {
                 const response = await this.$authService.googleLogin(credential);
                 
-                // Verificar se o cadastro está completo
+                // Verificar se é um novo usuário ou usuário existente
+                if (response.is_new_user === false) {
+                    // Usuário já existente - mostrar dialog informando
+                    // Salvar dados no sessionStorage
+                    sessionStorage.setItem('usuario', JSON.stringify(response.usuario));
+                    localStorage.setItem('token', response.usuario.token);
+                    sessionStorage.setItem('sessionTime', 1800);
+                    sessionStorage.setItem('isAutenticated', true);
+                    
+                    // Mostrar dialog de conta já cadastrada
+                    this.showExistingUserDialog = true;
+                    return;
+                }
+                
+                // Se é novo usuário, verificar se cadastro está completo
                 if (response.cadastroCompleto === false) {
                     // Redirecionar para completar cadastro
                     this.$router.push('/completar-cadastro');
@@ -644,6 +647,11 @@ export default {
             }
         },
 
+        goToSystem() {
+            // Redirecionar para o sistema
+            this.$router.push('/pacientes');
+        },
+
         handleGoogleError(error) {
             console.error('Erro no Google Sign-In:', error);
             this.error = 'Erro ao conectar com Google. Tente novamente.';
@@ -661,6 +669,24 @@ export default {
             }
         },
 
+        clearError(field) {
+            if (this.errors[field]) {
+                delete this.errors[field];
+            }
+        },
+
+        validarNumeroSequencial(valor) {
+            // Remove caracteres não numéricos
+            const numeros = valor.replace(/\D/g, '');
+            
+            // Verifica se todos os dígitos são iguais ou sequenciais
+            if (/^(\d)\1{4,}$/.test(numeros)) {
+                return true; // Números sequenciais detectados
+            }
+            
+            return false; // Número válido
+        },
+
         validarEtapaAtual() {
             this.errors = {};
 
@@ -676,15 +702,21 @@ export default {
             }
             if (!this.form.cpf.trim()) {
                 this.errors.cpf = 'CPF é obrigatório';
+            } else if (this.validarNumeroSequencial(this.form.cpf)) {
+                this.errors.cpf = 'CPF não pode conter números sequenciais ou repetitivos';
             }
             if (!this.form.crp.trim()) {
                 this.errors.crp = 'CRP é obrigatório';
+            } else if (this.validarNumeroSequencial(this.form.crp)) {
+                this.errors.crp = 'CRP não pode conter números sequenciais ou repetitivos';
             }
 
             // Validar endereço se estiver na etapa 2 ou 3
             if (this.etapaAtual >= 2) {
                 if (!this.form.cep.trim()) {
                     this.errors.cep = 'CEP é obrigatório';
+                } else if (this.validarNumeroSequencial(this.form.cep)) {
+                    this.errors.cep = 'CEP não pode conter números sequenciais ou repetitivos';
                 }
                 if (!this.form.cidade.trim()) {
                     this.errors.cidade = 'Cidade é obrigatória';
@@ -892,24 +924,6 @@ img {
     }
 }
 
-/* Dialog de Sucesso */
-.success-dialog .p-dialog {
-    max-width: 500px;
-    width: 90%;
-}
-
-.success-dialog .p-dialog-header {
-    border-bottom: 1px solid var(--surface-border);
-    padding: 1.5rem 1.5rem 1rem;
-}
-
-.success-dialog .p-dialog-content {
-    padding: 0 1.5rem 1.5rem;
-}
-
-.success-dialog .p-dialog-header-icon {
-    display: none;
-}
 
 /* Solução simples para o problema do CRP */
 .crp-text {
@@ -1197,4 +1211,5 @@ label[for="crp"] {
 .dark .bg-surface-0.dark\:bg-surface-800 {
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
 }
+
 </style>

@@ -5,6 +5,12 @@ class NpsService {
     async salvarPesquisa(dadosPesquisa) {
         try {
             const response = await api.post('/nps', dadosPesquisa);
+            
+            // Atualizar o usuário no sessionStorage para não mostrar o modal novamente
+            const usuario = JSON.parse(sessionStorage.getItem('usuario') || '{}');
+            usuario.pesquisa_nps = false;
+            sessionStorage.setItem('usuario', JSON.stringify(usuario));
+            
             return response.data;
         } catch (error) {
             throw error;

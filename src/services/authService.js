@@ -11,6 +11,9 @@ class AuthService {
                 sessionStorage.setItem('sessionTime', 1800)
                 sessionStorage.setItem('isAutenticated', true)
                 
+                // Limpar flag de NPS para validar novamente
+                sessionStorage.removeItem('nps_respondido')
+                
                 // Salvar dados do plano no localStorage (nova estrutura)
                 if (response.data.usuario.plano_id) {
                     localStorage.setItem('planoId', response.data.usuario.plano_id);
@@ -66,6 +69,7 @@ class AuthService {
             sessionStorage.removeItem('usuario');
             sessionStorage.removeItem('sessionTime');
             sessionStorage.removeItem('isAutenticated');
+            sessionStorage.removeItem('nps_respondido');
         } catch (error) {
             // Mesmo se der erro, remove o token local
             localStorage.removeItem('token');
@@ -77,6 +81,10 @@ class AuthService {
             localStorage.removeItem('userAssinatura');
             localStorage.removeItem('usuarioVitalicio');
             localStorage.removeItem('temAssinaturaAtiva');
+            sessionStorage.removeItem('usuario');
+            sessionStorage.removeItem('sessionTime');
+            sessionStorage.removeItem('isAutenticated');
+            sessionStorage.removeItem('nps_respondido');
             throw error;
         }
     }
@@ -175,6 +183,9 @@ class AuthService {
                 sessionStorage.setItem("usuario", JSON.stringify(response.data.usuario));
                 sessionStorage.setItem('sessionTime', 1800);
                 sessionStorage.setItem('isAutenticated', true);
+                
+                // Limpar flag de NPS para validar novamente
+                sessionStorage.removeItem('nps_respondido')
                 
                 // Salvar dados do plano no localStorage (nova estrutura)
                 if (response.data.usuario.plano_id) {

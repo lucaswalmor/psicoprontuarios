@@ -79,7 +79,11 @@ function isOutsideClicked(event) {
 async function checkNpsRequired() {
     try {
         const usuario = JSON.parse(sessionStorage.getItem('usuario') || '{}');
-        if (usuario.pesquisa_nps) {
+        
+        // Verificar se a pesquisa NPS é necessária E se ainda não foi respondida nesta sessão
+        const npsRespondido = sessionStorage.getItem('nps_respondido');
+        
+        if (usuario.pesquisa_nps === true && !npsRespondido) {
             showNpsDialog.value = true;
         }
     } catch (error) {
@@ -90,6 +94,8 @@ async function checkNpsRequired() {
 // Função para lidar com sucesso da pesquisa NPS
 function handleNpsSuccess() {
     showNpsDialog.value = false;
+    // Marcar que o NPS foi respondido nesta sessão
+    sessionStorage.setItem('nps_respondido', 'true');
 }
 </script>
 
