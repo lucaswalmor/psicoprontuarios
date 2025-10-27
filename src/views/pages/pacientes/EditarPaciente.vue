@@ -5,13 +5,21 @@
                 <h1 class="text-3xl font-bold text-900 mb-2">Editar Paciente</h1>
                 <p class="text-600 m-0">Atualize os dados do paciente</p>
             </div>
-            <Button 
-                label="Voltar" 
-                icon="pi pi-arrow-left" 
-                severity="secondary" 
-                @click="$router.push('/pacientes')"
-                class="p-button-outlined"
-            />
+            <div class="flex gap-2">
+                <Button 
+                    label="Voltar" 
+                    icon="pi pi-arrow-left" 
+                    severity="secondary" 
+                    @click="$router.push('/pacientes')"
+                    class="p-button-outlined"
+                />
+                <Button 
+                    label="Atualizar Paciente" 
+                    icon="pi pi-check" 
+                    @click="atualizarPaciente"
+                    :loading="isSaving"
+                />
+            </div>
         </div>
 
         <div v-if="isLoading" class="flex justify-content-center">
@@ -19,35 +27,16 @@
         </div>
 
         <div v-else class="card">
-            <Steps v-model:activeStep="activeStep" :readonly="false" class="mb-5">
-                <StepItem>
-                    <template #label="{ item }">
-                        <span class="flex align-items-center">
-                            <i class="pi pi-user mr-2"></i>
-                            Dados Pessoais
-                        </span>
+            <Accordion :activeIndex="[0, 1, 2]" :multiple="true" class="custom-accordion">
+                <!-- Seção 1: Dados Pessoais -->
+                <AccordionTab>
+                    <template #header>
+                        <div class="flex align-items-center gap-2">
+                            <i class="pi pi-user"></i>
+                            <span>Dados Pessoais</span>
+                        </div>
                     </template>
-                </StepItem>
-                <StepItem>
-                    <template #label="{ item }">
-                        <span class="flex align-items-center">
-                            <i class="pi pi-briefcase mr-2"></i>
-                            Dados Profissionais
-                        </span>
-                    </template>
-                </StepItem>
-                <StepItem>
-                    <template #label="{ item }">
-                        <span class="flex align-items-center">
-                            <i class="pi pi-map-marker mr-2"></i>
-                            Endereço
-                        </span>
-                    </template>
-                </StepItem>
-            </Steps>
-
-            <!-- Step 1: Dados Pessoais -->
-            <div v-if="activeStep === 0" class="p-fluid">
+                    <div class="p-fluid">
                 <div class="grid">
                     <div class="col-12 md:col-4">
                         <label for="nome" class="text-600 mb-2 block">Nome Completo <span class="text-red-500">*</span></label>
@@ -145,25 +134,18 @@
                         />
                     </div>
                 </div>
+                    </div>
+                </AccordionTab>
 
-                <div class="flex justify-content-between mt-5">
-                    <Button 
-                        label="Cancelar" 
-                        severity="secondary" 
-                        @click="$router.push('/pacientes')"
-                        class="p-button-outlined"
-                    />
-                    <Button 
-                        label="Próximo" 
-                        icon="pi pi-arrow-right" 
-                        iconPos="right"
-                        @click="nextStep"
-                    />
-                </div>
-            </div>
-
-            <!-- Step 2: Dados Profissionais -->
-            <div v-if="activeStep === 1" class="p-fluid">
+                <!-- Seção 2: Dados Profissionais -->
+                <AccordionTab>
+                    <template #header>
+                        <div class="flex align-items-center gap-2">
+                            <i class="pi pi-briefcase"></i>
+                            <span>Dados Profissionais</span>
+                        </div>
+                    </template>
+                    <div class="p-fluid">
                 <div class="grid">
                     <div class="col-12 md:col-6">
                         <label for="escolaridade" class="text-600 mb-2 block">Escolaridade</label>
@@ -406,26 +388,18 @@
                         </div>
                     </div>
                 </div>
+                    </div>
+                </AccordionTab>
 
-                <div class="flex justify-content-between mt-5">
-                    <Button 
-                        label="Anterior" 
-                        icon="pi pi-arrow-left" 
-                        severity="secondary" 
-                        @click="prevStep"
-                        class="p-button-outlined"
-                    />
-                    <Button 
-                        label="Próximo" 
-                        icon="pi pi-arrow-right" 
-                        iconPos="right"
-                        @click="nextStep"
-                    />
-                </div>
-            </div>
-
-            <!-- Step 3: Endereço -->
-            <div v-if="activeStep === 2" class="p-fluid">
+                <!-- Seção 3: Endereço -->
+                <AccordionTab>
+                    <template #header>
+                        <div class="flex align-items-center gap-2">
+                            <i class="pi pi-map-marker"></i>
+                            <span>Endereço</span>
+                        </div>
+                    </template>
+                    <div class="p-fluid">
                 <div class="grid">
                     <div class="col-12 md:col-4">
                         <label for="cep" class="text-600 mb-2 block">CEP</label>
@@ -475,24 +449,9 @@
                         />
                     </div>
                 </div>
-
-                <div class="flex justify-content-between mt-5">
-                    <Button 
-                        label="Anterior" 
-                        icon="pi pi-arrow-left" 
-                        severity="secondary" 
-                        @click="prevStep"
-                        class="p-button-outlined"
-                    />
-                    <Button 
-                        label="Atualizar Paciente" 
-                        icon="pi pi-check" 
-                        severity="success"
-                        @click="atualizarPaciente"
-                        :loading="isSaving"
-                    />
-                </div>
-            </div>
+                    </div>
+                </AccordionTab>
+            </Accordion>
         </div>
 
         <Toast />
@@ -507,7 +466,6 @@ export default {
     mixins: [profissoes, escolaridades, convenios],
     data() {
         return {
-            activeStep: 0,
             isLoading: true,
             isSaving: false,
             paciente: {
@@ -598,16 +556,6 @@ export default {
                 this.$router.push('/pacientes');
             } finally {
                 this.isLoading = false;
-            }
-        },
-        nextStep() {
-            if (this.activeStep < 2) {
-                this.activeStep++;
-            }
-        },
-        prevStep() {
-            if (this.activeStep > 0) {
-                this.activeStep--;
             }
         },
         async buscarCep() {
@@ -809,30 +757,27 @@ export default {
     box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
 }
 
-.p-steps .p-steps-item .p-menuitem-link {
-    background: transparent;
-    transition: box-shadow 0.2s;
-    border-radius: 6px;
-    padding: 1rem;
+/* Estilos para Accordion */
+.custom-accordion :deep(.p-accordion-header-link) {
+    cursor: default !important;
+    font-weight: bold;
 }
 
-.p-steps .p-steps-item .p-menuitem-link .p-steps-number {
-    background: var(--primary-color);
-    color: var(--primary-color-text);
-    border-radius: 50%;
-    width: 2rem;
-    height: 2rem;
-    line-height: 2rem;
-    text-align: center;
-    margin-bottom: 0.5rem;
+.custom-accordion :deep(.p-accordion-header-link:hover) {
+    background: transparent !important;
 }
 
-.p-steps .p-steps-item.p-highlight .p-menuitem-link {
-    background: var(--primary-50);
+.custom-accordion :deep(.p-accordion-header-link:focus) {
+    box-shadow: none !important;
 }
 
-.p-steps .p-steps-item.p-highlight .p-menuitem-link .p-steps-number {
-    background: var(--primary-color);
-    color: var(--primary-color-text);
+/* Espaçamento entre ícone e texto */
+.custom-accordion :deep(.p-accordion-header-link) span {
+    margin-left: 0.5rem;
+    font-weight: bold;
+}
+
+.custom-accordion :deep(.p-accordion-header-link i) {
+    margin-right: 0.5rem;
 }
 </style> 

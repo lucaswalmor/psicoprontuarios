@@ -303,9 +303,7 @@ export default {
         },
         async carregarEstatisticas() {
             try {
-                console.log('Carregando estatísticas para paciente:', this.pacienteId);
                 const response = await this.$pacientesService.buscarEstatisticas(this.pacienteId);
-                console.log('Resposta da API de estatísticas:', response);
                 
                 // A resposta já vem diretamente do backend, não precisa de .data
                 if (response.sessoes_agendadas !== undefined) {
@@ -323,7 +321,6 @@ export default {
                     };
                 }
                 
-                console.log('Estatísticas atualizadas:', this.estatisticas);
             } catch (error) {
                 console.error('Erro ao carregar estatísticas:', error);
                 // Em caso de erro, usar valores padrão
