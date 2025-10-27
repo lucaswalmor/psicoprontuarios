@@ -19,122 +19,204 @@
                 <div class="bg-surface-50 dark:bg-surface-800 rounded-lg p-6 shadow-sm">
                     <form @submit.prevent="handleSubmit" class="space-y-6">
                         <!-- CPF -->
-                        <div>
-                            <label for="cpf" class="block text-surface-900 dark:text-surface-100 font-medium mb-2">
-                                CPF <span class="text-red-500">*</span>
-                            </label>
-                            <InputMask 
-                                id="cpf" 
-                                v-model="form.cpf" 
-                                mask="999.999.999-99" 
-                                class="w-full h-12 text-lg"
-                                placeholder="Digite seu CPF" 
-                                :class="{ 'p-invalid': errors.cpf }" 
-                            />
-                            <small v-if="errors.cpf" class="text-red-500 text-sm mt-1 block">{{ errors.cpf }}</small>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <IftaLabel>
+                                    <InputMask 
+                                        id="cpf" 
+                                        v-model="form.cpf" 
+                                        mask="999.999.999-99" 
+                                        class="w-100 h-12 text-lg" 
+                                        :class="{ 'p-invalid': errors.cpf }" 
+                                    />
+                                    <label for="cpf">CPF</label>
+                                </IftaLabel>
+                                <small v-if="errors.cpf" class="text-red-500 text-sm mt-1 block">{{ errors.cpf }}</small>
+                            </div>
                         </div>
 
                         <!-- CRP -->
-                        <div>
-                            <label for="crp" class="block text-surface-900 dark:text-surface-100 font-medium mb-2">
-                                CRP <span class="text-red-500">*</span>
-                            </label>
-                            <InputMask 
-                                id="crp" 
-                                v-model="form.crp" 
-                                mask="99/99999" 
-                                class="w-full h-12 text-lg"
-                                placeholder="Digite seu CRP" 
-                                :class="{ 'p-invalid': errors.crp }" 
-                            />
-                            <small v-if="errors.crp" class="text-red-500 text-sm mt-1 block">{{ errors.crp }}</small>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <IftaLabel>
+                                    <InputMask 
+                                        id="crp" 
+                                        v-model="form.crp" 
+                                        mask="99/99999" 
+                                        class="w-100 h-12 text-lg" 
+                                        :class="{ 'p-invalid': errors.crp }" 
+                                    />
+                                    <label for="crp">CRP</label>
+                                </IftaLabel>
+                                <small v-if="errors.crp" class="text-red-500 text-sm mt-1 block">{{ errors.crp }}</small>
+                            </div>
                         </div>
 
                         <!-- Telefone -->
-                        <div>
-                            <label for="telefone" class="block text-surface-900 dark:text-surface-100 font-medium mb-2">
-                                Telefone/WhatsApp <span class="text-red-500">*</span>
-                            </label>
-                            <InputMask 
-                                id="telefone" 
-                                v-model="form.telefone" 
-                                mask="(99) 99999-9999"
-                                class="w-full h-12 text-lg" 
-                                placeholder="+55 Digite seu telefone"
-                                :class="{ 'p-invalid': errors.telefone }" 
-                            />
-                            <small v-if="errors.telefone" class="text-red-500 text-sm mt-1 block">{{ errors.telefone }}</small>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <IftaLabel>
+                                    <InputMask 
+                                        id="telefone" 
+                                        v-model="form.telefone" 
+                                        mask="(99) 99999-9999"
+                                        class="w-100 h-12 text-lg" 
+                                        :class="{ 'p-invalid': errors.telefone }" 
+                                    />
+                                    <label for="telefone">Telefone</label>
+                                </IftaLabel>
+                                <small v-if="errors.telefone" class="text-red-500 text-sm mt-1 block">{{ errors.telefone }}</small>
+                            </div>
+                        </div>
+
+                        <!-- CEP -->
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <IftaLabel>
+                                    <InputMask 
+                                        id="cep" 
+                                        v-model="form.cep" 
+                                        mask="99999-999"
+                                        class="w-100 h-12 text-lg" 
+                                        :class="{ 'p-invalid': errors.cep }" 
+                                        @blur="buscarCep"
+                                    />
+                                    <label for="cep">CEP</label>
+                                </IftaLabel>
+                                <small v-if="errors.cep" class="text-red-500 text-sm mt-1 block">{{ errors.cep }}</small>
+                                <small v-if="loadingCep" class="text-blue-500 text-sm mt-1 block">
+                                    <i class="pi pi-spin pi-spinner mr-1"></i>
+                                    Buscando endereço...
+                                </small>
+                            </div>
                         </div>
 
                         <!-- Cidade -->
-                        <div>
-                            <label for="cidade" class="block text-surface-900 dark:text-surface-100 font-medium mb-2">
-                                Cidade <span class="text-red-500">*</span>
-                            </label>
-                            <InputText 
-                                id="cidade" 
-                                v-model="form.cidade" 
-                                class="w-full h-12 text-lg"
-                                placeholder="Digite sua cidade" 
-                                :class="{ 'p-invalid': errors.cidade }" 
-                            />
-                            <small v-if="errors.cidade" class="text-red-500 text-sm mt-1 block">{{ errors.cidade }}</small>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <IftaLabel>
+                                    <InputText 
+                                        id="cidade" 
+                                        v-model="form.cidade" 
+                                        class="w-100 h-12 text-lg" 
+                                        :class="{ 'p-invalid': errors.cidade, '': form.cidade && !errors.cidade }" 
+                                    />
+                                    <label for="cidade">Cidade</label>
+                                </IftaLabel>
+                                <small v-if="errors.cidade" class="text-red-500 text-sm mt-1 block">{{ errors.cidade }}</small>
+                                <small v-if="form.cidade && !errors.cidade" class="text-green-600 text-sm mt-1 block">
+                                    <i class="pi pi-check-circle mr-1"></i>
+                                    Preenchido automaticamente
+                                </small>
+                            </div>
                         </div>
 
                         <!-- Estado -->
-                        <div>
-                            <label for="estado" class="block text-surface-900 dark:text-surface-100 font-medium mb-2">
-                                Estado <span class="text-red-500">*</span>
-                            </label>
-                            <Select 
-                                id="estado" 
-                                v-model="form.estado" 
-                                :options="estados" 
-                                optionLabel="nome" 
-                                optionValue="sigla"
-                                class="w-full h-12 text-lg"
-                                placeholder="Selecione seu estado"
-                                :class="{ 'p-invalid': errors.estado }" 
-                            />
-                            <small v-if="errors.estado" class="text-red-500 text-sm mt-1 block">{{ errors.estado }}</small>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <IftaLabel>
+                                    <Select 
+                                        id="estado" 
+                                        v-model="form.estado" 
+                                        :options="estados" 
+                                        optionLabel="nome" 
+                                        optionValue="sigla"
+                                        class="w-100 h-12 text-lg" 
+                                        :class="{ 'p-invalid': errors.estado, '': form.estado && !errors.estado }" 
+                                    />
+                                    <label for="estado">Estado</label>
+                                </IftaLabel>
+                                <small v-if="errors.estado" class="text-red-500 text-sm mt-1 block">{{ errors.estado }}</small>
+                                <small v-if="form.estado && !errors.estado" class="text-green-600 text-sm mt-1 block">
+                                    <i class="pi pi-check-circle mr-1"></i>
+                                    Preenchido automaticamente
+                                </small>
+                            </div>
                         </div>
 
                         <!-- Rua -->
-                        <div>
-                            <label for="rua" class="block text-surface-900 dark:text-surface-100 font-medium mb-2">
-                                Rua <span class="text-red-500">*</span>
-                            </label>
-                            <InputText 
-                                id="rua" 
-                                v-model="form.rua" 
-                                class="w-full h-12 text-lg"
-                                placeholder="Digite sua rua" 
-                                :class="{ 'p-invalid': errors.rua }" 
-                            />
-                            <small v-if="errors.rua" class="text-red-500 text-sm mt-1 block">{{ errors.rua }}</small>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <IftaLabel>
+                                    <InputText 
+                                        id="rua" 
+                                        v-model="form.rua" 
+                                        class="w-100 h-12 text-lg" 
+                                        :class="{ 'p-invalid': errors.rua, '': form.rua && !errors.rua }" 
+                                    />
+                                    <label for="rua">Rua</label>
+                                </IftaLabel>
+                                <small v-if="errors.rua" class="text-red-500 text-sm mt-1 block">{{ errors.rua }}</small>
+                                <small v-if="form.rua && !errors.rua" class="text-green-600 text-sm mt-1 block">
+                                    <i class="pi pi-check-circle mr-1"></i>
+                                    Preenchido automaticamente
+                                </small>
+                            </div>
                         </div>
 
                         <!-- Bairro -->
-                        <div>
-                            <label for="bairro" class="block text-surface-900 dark:text-surface-100 font-medium mb-2">
-                                Bairro <span class="text-red-500">*</span>
-                            </label>
-                            <InputText 
-                                id="bairro" 
-                                v-model="form.bairro" 
-                                class="w-full h-12 text-lg"
-                                placeholder="Digite seu bairro" 
-                                :class="{ 'p-invalid': errors.bairro }" 
-                            />
-                            <small v-if="errors.bairro" class="text-red-500 text-sm mt-1 block">{{ errors.bairro }}</small>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <IftaLabel>
+                                    <InputText 
+                                        id="bairro" 
+                                        v-model="form.bairro" 
+                                        class="w-100 h-12 text-lg" 
+                                        :class="{ 'p-invalid': errors.bairro, '': form.bairro && !errors.bairro }" 
+                                    />
+                                    <label for="bairro">Bairro</label>
+                                </IftaLabel>
+                                <small v-if="errors.bairro" class="text-red-500 text-sm mt-1 block">{{ errors.bairro }}</small>
+                                <small v-if="form.bairro && !errors.bairro" class="text-green-600 text-sm mt-1 block">
+                                    <i class="pi pi-check-circle mr-1"></i>
+                                    Preenchido automaticamente
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Senha -->
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <IftaLabel>
+                                    <Password 
+                                        id="password" 
+                                        v-model="form.password" 
+                                        class="w-100"
+                                        inputClass="w-100 h-12 text-lg"
+                                        :feedback="false"
+                                        :toggleMask="true"
+                                        :class="{ 'p-invalid': errors.password }" 
+                                    />
+                                    <label for="password">Senha</label>
+                                </IftaLabel>
+                                <small v-if="errors.password" class="text-red-500 text-sm mt-1 block">{{ errors.password }}</small>
+                            </div>
+                        </div>
+
+                        <!-- Confirmar Senha -->
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <IftaLabel>
+                                    <Password 
+                                        id="password_confirmation" 
+                                        v-model="form.password_confirmation"
+                                        class="w-100"
+                                        inputClass="w-100 h-12 text-lg" 
+                                        :feedback="false"
+                                        :toggleMask="true"
+                                        :class="{ 'p-invalid': errors.password_confirmation }" 
+                                    />
+                                    <label for="password_confirmation">Confirmar Senha</label>
+                                </IftaLabel>
+                                <small v-if="errors.password_confirmation" class="text-red-500 text-sm mt-1 block">{{ errors.password_confirmation }}</small>
+                            </div>
                         </div>
 
                         <!-- Botão de Envio -->
                         <Button 
                             type="submit" 
                             :loading="loading" 
-                            label="COMPLETAR CADASTRO" 
-                            class="w-full h-12 bg-primary hover:bg-primary-600 text-white font-semibold text-lg border-0 rounded-lg mt-6" 
+                            label="Completar Cadastro" 
                         />
 
                         <!-- Mensagens de Erro -->
@@ -159,29 +241,37 @@
 <script>
 import InputText from 'primevue/inputtext';
 import InputMask from 'primevue/inputmask';
-import Select from 'primevue/select';
 import Button from 'primevue/button';
+import Select from 'primevue/select';
+import Password from 'primevue/password';
+import IftaLabel from 'primevue/iftalabel';
 
 export default {
     name: 'CompletarCadastro',
     components: {
         InputText,
         InputMask,
+        Button,
         Select,
-        Button
+        Password,
+        IftaLabel
     },
     data() {
         return {
             loading: false,
+            loadingCep: false,
             error: '',
             form: {
                 cpf: '',
                 crp: '',
                 telefone: '',
+                cep: '',
                 cidade: '',
                 estado: '',
                 rua: '',
-                bairro: ''
+                bairro: '',
+                password: '',
+                password_confirmation: ''
             },
             errors: {},
             estados: [
@@ -250,6 +340,10 @@ export default {
                 this.errors.telefone = 'Telefone é obrigatório';
             }
 
+            if (!this.form.cep.trim()) {
+                this.errors.cep = 'CEP é obrigatório';
+            }
+
             if (!this.form.cidade.trim()) {
                 this.errors.cidade = 'Cidade é obrigatória';
             }
@@ -266,7 +360,80 @@ export default {
                 this.errors.bairro = 'Bairro é obrigatório';
             }
 
+            if (!this.form.password) {
+                this.errors.password = 'Senha é obrigatória';
+            } else if (this.form.password.length < 6) {
+                this.errors.password = 'Senha deve ter pelo menos 6 caracteres';
+            }
+
+            if (!this.form.password_confirmation) {
+                this.errors.password_confirmation = 'Confirmação de senha é obrigatória';
+            } else if (this.form.password !== this.form.password_confirmation) {
+                this.errors.password_confirmation = 'As senhas não coincidem';
+            }
+
             return Object.keys(this.errors).length === 0;
+        },
+
+        async buscarCep() {
+            // Remover caracteres não numéricos do CEP
+            const cep = this.form.cep.replace(/\D/g, '');
+            
+            // Verificar se o CEP tem 8 dígitos
+            if (cep.length !== 8) {
+                return;
+            }
+
+            this.loadingCep = true;
+            this.error = '';
+
+            try {
+                const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                const data = await response.json();
+
+                if (data.erro) {
+                    this.error = 'CEP não encontrado. Verifique o número digitado.';
+                    this.$toast.add({
+                        severity: 'error',
+                        summary: 'CEP não encontrado',
+                        detail: 'Verifique o número digitado e tente novamente.',
+                        life: 3000
+                    });
+                    return;
+                }
+
+                // Preencher automaticamente os campos de endereço
+                this.form.cidade = data.localidade || '';
+                this.form.estado = data.uf || '';
+                this.form.rua = data.logradouro || '';
+                this.form.bairro = data.bairro || '';
+
+                // Limpar erros dos campos preenchidos automaticamente
+                if (this.errors.cidade) delete this.errors.cidade;
+                if (this.errors.estado) delete this.errors.estado;
+                if (this.errors.rua) delete this.errors.rua;
+                if (this.errors.bairro) delete this.errors.bairro;
+
+                // Mostrar mensagem de sucesso
+                this.$toast.add({
+                    severity: 'success',
+                    summary: 'Endereço encontrado!',
+                    detail: 'Os campos de endereço foram preenchidos automaticamente.',
+                    life: 3000
+                });
+
+            } catch (err) {
+                console.error('Erro ao buscar CEP:', err);
+                this.error = 'Erro ao buscar endereço. Tente novamente.';
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Erro na busca',
+                    detail: 'Não foi possível buscar o endereço. Tente novamente.',
+                    life: 3000
+                });
+            } finally {
+                this.loadingCep = false;
+            }
         },
 
         async handleSubmit() {

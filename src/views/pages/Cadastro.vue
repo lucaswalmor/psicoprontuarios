@@ -42,14 +42,11 @@
                         <p class="text-600">Não precisa de cartão de crédito para testar.</p>
                     </div>
                     <!-- Botão Google -->
-                    <div class="mt-3">
-                        <GoogleSignInButton 
-                            button-text="Cadastrar com Google"
-                            theme="outline"
-                            @success="handleGoogleSignUp"
-                            @error="handleGoogleError"
-                        />
-                    </div>
+                    <GoogleSignInButton 
+                        button-text="Cadastrar com Google"
+                        @success="handleGoogleSignUp"
+                        @error="handleGoogleError"
+                    />
 
                     <!-- Divisor -->
                     <div class="flex items-center my-2">
