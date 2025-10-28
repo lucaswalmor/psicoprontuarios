@@ -1,6 +1,6 @@
 <template>
     <div class="card">
-        <div class="flex align-items-center justify-content-between mb-4">
+        <div class="flex align-items-center justify-content-between mb-4 flex-wrap">
             <div>
                 <h1 class="text-3xl font-bold text-900 mb-2">Editar Paciente</h1>
                 <p class="text-600 m-0">Atualize os dados do paciente</p>
@@ -455,6 +455,20 @@
         </div>
 
         <Toast />
+        
+        <!-- Botões Flutuantes -->
+        <div v-if="formularioModificado" :class="['floating-buttons', { 'slide-down': slideDown }]">
+            <Card class="bg-gray-900">
+                <template #content>
+                    <div class=" d-flex gap-3 justify-content-between">
+
+                        <Button icon="pi pi-times" severity="secondary" @click="cancelarAlteracoes" label="Cancelar" />
+                         <Button icon="pi pi-check" :loading="isSaving" @click="atualizarPaciente"
+                             label="Salvar Alterações" />
+                    </div>
+                </template>
+            </Card>
+        </div>
     </div>
 </template>
 
@@ -468,6 +482,10 @@ export default {
         return {
             isLoading: true,
             isSaving: false,
+            formularioModificado: false,
+            formularioInicializado: false,
+            slideDown: false,
+            pacienteOriginal: null,
             paciente: {
                 nome: '',
                 nome_mae: '',
@@ -518,8 +536,23 @@ export default {
             return this.$route.params.id;
         }
     },
+    watch: {
+        paciente: {
+            handler() {
+                // Só marcar como modificado se o formulário já foi inicializado
+                if (this.formularioInicializado) {
+                    this.formularioModificado = true;
+                }
+            },
+            deep: true
+        }
+    },
     async mounted() {
         await this.carregarPaciente();
+        // Marcar que o formulário foi inicializado após carregar os dados
+        this.$nextTick(() => {
+            this.formularioInicializado = true;
+        });
     },
     methods: {
         async carregarPaciente() {
@@ -545,6 +578,10 @@ export default {
                 pacienteData.tem_diagnostico_previo = Number(pacienteData.tem_diagnostico_previo);
                 
                 this.paciente = { ...pacienteData };
+                // Salvar cópia original dos dados para o botão cancelar
+                this.pacienteOriginal = JSON.parse(JSON.stringify(pacienteData));
+                // Resetar flag de modificação após carregar dados
+                this.formularioModificado = false;
             } catch (error) {
                 console.error('Erro ao carregar paciente:', error);
                 this.$toast.add({
@@ -604,14 +641,15 @@ export default {
 
                 await this.$pacientesService.update(this.pacienteId, pacienteData);
                 
+                // Resetar flag de modificação após salvar
+                this.formularioModificado = false;
+                
                 this.$toast.add({
                     severity: 'success',
                     summary: 'Sucesso!',
                     detail: 'Paciente atualizado com sucesso',
                     life: 3000
                 });
-
-                this.$router.push('/pacientes');
             } catch (error) {
                 console.error('Erro ao atualizar paciente:', error);
                 this.$toast.add({
@@ -742,6 +780,38 @@ export default {
                 return date.toISOString().split('T')[0];
             }
             return null;
+        },
+
+        cancelarAlteracoes() {
+            // Ativar animação de saída
+            this.slideDown = true;
+            
+            // Desabilitar o watcher ANTES de resetar dados
+            this.formularioInicializado = false;
+            
+            // Aguardar animação terminar antes de resetar
+            setTimeout(() => {
+                // Restaurar dados originais
+                if (this.pacienteOriginal) {
+                    this.paciente = JSON.parse(JSON.stringify(this.pacienteOriginal));
+                }
+                
+                // Resetar flags (watcher continua desabilitado)
+                this.formularioModificado = false;
+                this.slideDown = false;
+                
+                // Aguardar mais um ciclo para reabilitar o watcher
+                this.$nextTick(() => {
+                    this.formularioInicializado = true;
+                });
+            }, 300); // Aguardar animação de 300ms
+            
+            this.$toast.add({
+                severity: 'info',
+                summary: 'Cancelado',
+                detail: 'Alterações descartadas. Dados restaurados.',
+                life: 2000
+            });
         }
     }
 };
@@ -779,5 +849,63 @@ export default {
 
 .custom-accordion :deep(.p-accordion-header-link i) {
     margin-right: 0.5rem;
+}
+
+/* Container para botões flutuantes */
+.floating-buttons {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 7rem;
+    display: flex;
+    gap: 0.75rem;
+    z-index: 1000;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+
+.floating-buttons.slide-down {
+    animation: slideDown 0.3s ease-out;
+}
+
+/* Estilos para os botões flutuantes */
+.floating-save-button,
+.floating-cancel-button {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.floating-save-button:hover,
+.floating-cancel-button:hover {
+    transform: translateY(-2px);
+    transition: transform 0.2s ease;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .floating-buttons {
+        bottom: 1.5rem;
+        right: 6rem;
+        gap: 0.5rem;
+    }
 }
 </style> 

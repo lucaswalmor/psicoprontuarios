@@ -79,6 +79,15 @@ export default {
                 'accessDenied': 'Acesso Negado',
                 'error': 'Erro',
                 'cadastro': 'Cadastro',
+                'CadastroPaciente': 'Cadastro de Paciente',
+                'EditarPaciente': 'Editar Paciente',
+                'Prontuarios': 'Prontuários',
+                'Anexos': 'Anexos',
+                'Agendamentos': 'Agendamentos',
+                'Financeiro': 'Financeiro',
+                'Configurações': 'Configurações',
+                'Assinatura': 'Assinatura',
+                'Upgrade': 'Upgrade',
             };
             
             const pathSegments = route.path.split('/').filter(segment => segment);

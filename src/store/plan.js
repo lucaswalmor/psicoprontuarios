@@ -49,14 +49,26 @@ export const usePlanStore = defineStore('plan', {
         },
         
         // Stats de limites
-        canAddPaciente: (state) => {
+        canAddPaciente: (state, getters) => {
             if (!state.stats) return false;
-            return state.stats.can_add_paciente && state.podeEditarDados;
+            // Verificação de segurança para evitar erro durante atualização
+            if (!getters || !getters.podeEditarDados) {
+                // Se getters não está disponível, usar a lógica direta
+                if (state.planoId === 1 || state.planoId === 4) return state.stats.can_add_paciente;
+                return state.stats.can_add_paciente && state.statusAssinatura === 'ativa';
+            }
+            return state.stats.can_add_paciente && getters.podeEditarDados;
         },
         
-        canAddAnexo: (state) => {
+        canAddAnexo: (state, getters) => {
             if (!state.stats) return false;
-            return state.stats.can_add_anexo && state.podeEditarDados;
+            // Verificação de segurança para evitar erro durante atualização
+            if (!getters || !getters.podeEditarDados) {
+                // Se getters não está disponível, usar a lógica direta
+                if (state.planoId === 1 || state.planoId === 4) return state.stats.can_add_anexo;
+                return state.stats.can_add_anexo && state.statusAssinatura === 'ativa';
+            }
+            return state.stats.can_add_anexo && getters.podeEditarDados;
         },
         
         pacientesCount: (state) => state.stats?.pacientes_count || 0,
@@ -174,6 +186,22 @@ export const usePlanStore = defineStore('plan', {
 
         async carregarModulosAcesso() {
             return this.fetchModulosAcesso();
+        },
+
+        // Método para atualizar apenas as stats (quando paciente é editado/adicionado)
+        async atualizarStats() {
+            try {
+                const response = await api.get('/user/modulos-acesso');
+                
+                // Atualizar apenas as stats sem tocar no loading para evitar conflitos
+                if (response.data.stats) {
+                    this.stats = response.data.stats;
+                }
+                
+            } catch (error) {
+                console.error('Erro ao atualizar stats:', error);
+                // Não atualizar error global para evitar problemas com a UI
+            }
         }
     }
 });

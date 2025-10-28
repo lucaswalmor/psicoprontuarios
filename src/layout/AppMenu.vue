@@ -167,8 +167,7 @@ export default {
         }
     },
     async mounted() {
-        // Inicializar stores e composables
-        this.planStore = usePlanStore();
+        // Inicializar composables (planStore é computed, não precisa ser atribuído)
         this.layoutComposable = useLayout();
         
         // Carregar informações do plano

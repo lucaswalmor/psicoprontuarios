@@ -122,6 +122,8 @@ export default {
         };
     },
     async mounted() {
+        // Atualizar stats do plano para garantir botão de adicionar paciente correto
+        await this.planStore.atualizarStats();
         await this.carregarPacientes();
     },
     methods: {
