@@ -214,8 +214,9 @@ export default {
                     this.userName = response.user.nome;
                 }
                 
-                // Verificar se o cadastro está completo
-                if (response.cadastroCompleto === false) {
+                // Verificar se é um novo usuário ou se o cadastro não está completo
+                // Se for novo usuário, o backend já criou a conta, só precisa completar cadastro
+                if (response.is_new_user === true || response.cadastroCompleto === false || response.cadastro_completo === false) {
                     // Redirecionar para completar cadastro
                     this.$router.push('/completar-cadastro');
                 } else {

@@ -220,7 +220,9 @@ class AuthService {
             return {
                 ...response.data,
                 user: response.data.usuario,
-                cadastroCompleto: response.data.cadastro_completo
+                cadastroCompleto: response.data.cadastro_completo,
+                is_new_user: response.data.is_new_user,
+                cadastro_completo: response.data.cadastro_completo // Manter compatibilidade
             };
         } catch (error) {
             throw error;
