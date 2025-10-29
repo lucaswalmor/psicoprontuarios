@@ -59,12 +59,12 @@
                     </div>
                     <div class="col-12 md:col-4">
                         <label for="data_nascimento" class="text-600 mb-2 block">Data de Nascimento</label>
-                        <Calendar 
+                        <InputMask 
                             id="data_nascimento" 
                             v-model="paciente.data_nascimento" 
-                            dateFormat="dd/mm/yy"
                             placeholder="dd/mm/aaaa"
                             class="w-full"
+                            mask="99/99/9999"
                         />
                     </div>
                     <div class="col-12 md:col-4">
@@ -164,6 +164,8 @@
                             v-model="paciente.data_inicio_tratamento" 
                             dateFormat="dd/mm/yy"
                             placeholder="dd/mm/aaaa"
+                            :manualInput="false"
+                            showIcon
                             class="w-full"
                         />
                     </div>
@@ -560,11 +562,7 @@ export default {
                 this.isLoading = true;
                 const pacienteData = await this.$pacientesService.getById(this.pacienteId);
                 
-                // Converter datas do formato dd/mm/yyyy para Date
-                if (pacienteData.data_nascimento) {
-                    const [day, month, year] = pacienteData.data_nascimento.split('/');
-                    pacienteData.data_nascimento = new Date(year, month - 1, day);
-                }
+                // Mantém a data de nascimento como string (dd/mm/yyyy) para o InputMask
                 if (pacienteData.data_inicio_tratamento) {
                     const [day, month, year] = pacienteData.data_inicio_tratamento.split('/');
                     pacienteData.data_inicio_tratamento = new Date(year, month - 1, day);
@@ -634,7 +632,7 @@ export default {
                 const pacienteData = {
                     ...this.paciente,
                     data_nascimento: this.paciente.data_nascimento ? 
-                        this.formatDate(this.paciente.data_nascimento) : null,
+                        this.parseDateToISO(this.paciente.data_nascimento) : null,
                     data_inicio_tratamento: this.paciente.data_inicio_tratamento ? 
                         this.formatDate(this.paciente.data_inicio_tratamento) : null
                 };
@@ -728,18 +726,26 @@ export default {
             
             try {
                 let dataObj;
+                let dia, mes, ano;
                 
-                // Se for um objeto Date (do Calendar), usar diretamente
+                // Se vier como Date (outros campos), usar diretamente
                 if (data instanceof Date) {
                     dataObj = data;
+                    dia = dataObj.getDate();
+                    mes = dataObj.getMonth() + 1;
+                    ano = dataObj.getFullYear();
                 } else {
                     // Converter data do formato DD/MM/YYYY para Date
-                    const [dia, mes, ano] = data.split('/');
-                    dataObj = new Date(ano, mes - 1, dia);
+                    [dia, mes, ano] = data.split('/').map(Number);
+                    dataObj = new Date(ano, (mes || 1) - 1, dia || 1);
                 }
                 
                 // Verificar se a data é válida
                 if (isNaN(dataObj.getTime())) {
+                    return false;
+                }
+                // Validação estrita do calendário (evitar 31/02 etc.)
+                if (dataObj.getFullYear() !== ano || (dataObj.getMonth() + 1) !== mes || dataObj.getDate() !== dia) {
                     return false;
                 }
                 
@@ -747,18 +753,16 @@ export default {
                 hoje.setHours(0, 0, 0, 0);
                 
                 if (tipo === 'nascimento') {
-                    // Data de nascimento não pode ser futura
-                    if (dataObj > hoje) {
-                        return false;
-                    }
-                    
-                    // Data de nascimento deve ser razoável (não muito antiga)
-                    const dataMinima = new Date();
+                    // Não pode ser futura
+                    if (dataObj > hoje) return false;
+                    // Idade mínima: 5 anos
+                    const limiteMinimoIdade = new Date(hoje);
+                    limiteMinimoIdade.setFullYear(hoje.getFullYear() - 5);
+                    if (dataObj > limiteMinimoIdade) return false;
+                    // Idade máxima razoável: 150 anos
+                    const dataMinima = new Date(hoje);
                     dataMinima.setFullYear(hoje.getFullYear() - 150);
-                    
-                    if (dataObj < dataMinima) {
-                        return false;
-                    }
+                    if (dataObj < dataMinima) return false;
                 } else if (tipo === 'inicio_tratamento') {
                     // Data de início de tratamento pode ser até 30 dias no futuro
                     const dataMaxima = new Date();
@@ -773,6 +777,18 @@ export default {
             } catch (error) {
                 return false;
             }
+        },
+        parseDateToISO(dateStr) {
+            if (!dateStr) return null;
+            if (dateStr instanceof Date) {
+                return dateStr.toISOString().split('T')[0];
+            }
+            const [dia, mes, ano] = dateStr.split('/');
+            if (!dia || !mes || !ano) return null;
+            const dd = String(dia).padStart(2, '0');
+            const mm = String(mes).padStart(2, '0');
+            const yyyy = String(ano).padStart(4, '0');
+            return `${yyyy}-${mm}-${dd}`;
         },
         formatDate(date) {
             if (typeof date === 'string') return date;

@@ -212,6 +212,27 @@
                             </div>
                         </div>
 
+                        <!-- Termos e Condições -->
+                        <div class="flex items-start space-x-3 mt-6">
+                            <Checkbox 
+                                id="politica_privacidade" 
+                                v-model="form.politica_privacidade"
+                                :binary="true" 
+                                :class="{ 'p-invalid': errors.politica_privacidade }" 
+                            />
+                            <label for="politica_privacidade" class="text-sm text-600 leading-relaxed">
+                                Li e aceito os
+                                <router-link to="/termos-uso" class="text-purple-600 hover:text-purple-500 underline" target="_blank">
+                                    Termos de Uso
+                                </router-link>
+                                e a
+                                <router-link to="/politica-privacidade" class="text-purple-600 hover:text-purple-500 underline" target="_blank">
+                                    Política de Privacidade
+                                </router-link>
+                            </label>
+                        </div>
+                        <small v-if="errors.politica_privacidade" class="text-red-500 text-sm block">{{ errors.politica_privacidade }}</small>
+
                         <!-- Botão de Envio -->
                         <Button 
                             type="submit" 
@@ -244,6 +265,7 @@ import InputMask from 'primevue/inputmask';
 import Button from 'primevue/button';
 import Select from 'primevue/select';
 import Password from 'primevue/password';
+import Checkbox from 'primevue/checkbox';
 import IftaLabel from 'primevue/iftalabel';
 
 export default {
@@ -254,6 +276,7 @@ export default {
         Button,
         Select,
         Password,
+        Checkbox,
         IftaLabel
     },
     data() {
@@ -271,7 +294,8 @@ export default {
                 rua: '',
                 bairro: '',
                 password: '',
-                password_confirmation: ''
+                password_confirmation: '',
+                politica_privacidade: false
             },
             errors: {},
             estados: [
@@ -372,6 +396,10 @@ export default {
                 this.errors.password_confirmation = 'As senhas não coincidem';
             }
 
+            if (!this.form.politica_privacidade) {
+                this.errors.politica_privacidade = 'Você deve aceitar os termos de uso e política de privacidade';
+            }
+
             return Object.keys(this.errors).length === 0;
         },
 
@@ -448,7 +476,12 @@ export default {
             this.loading = true;
 
             try {
-                const response = await this.$authService.completarCadastro(this.form);
+                // Garantir que politica_privacidade seja boolean
+                const formData = {
+                    ...this.form,
+                    politica_privacidade: Boolean(this.form.politica_privacidade)
+                };
+                const response = await this.$authService.completarCadastro(formData);
                 
                 // Sucesso - redirecionar para dashboard
                 this.$toast.add({

@@ -442,7 +442,7 @@ export default {
                         this.formatDate(this.paciente.data_inicio_tratamento) : null
                 };
 
-                await this.$pacientesService.create(pacienteData);
+                const response = await this.$pacientesService.create(pacienteData);
 
                 // Resetar flag de modificação
                 this.formularioModificado = false;
@@ -454,7 +454,7 @@ export default {
                     life: 3000
                 });
 
-                this.$router.push('/pacientes');
+                this.$router.push('/pacientes/editar/' + response.paciente);
             } catch (error) {
                 console.error('Erro ao salvar paciente:', error);
                 this.$toast.add({

@@ -96,32 +96,12 @@ export default {
             return 'Faça login para acessar sua conta';
         }
     },
-    async mounted() {
+    mounted() {
         // Carregar nome do usuário se existir
         this.userName = localStorage.getItem('userName') || '';
         
-        // Verificar se já existe token válido
-        await this.checkAutoLogin();
     },
     methods: {
-        async checkAutoLogin() {
-            const token = localStorage.getItem('token');
-            
-            if (token) {
-                try {
-                    // Verificar se o token ainda é válido
-                    await this.$authService.validateToken();
-                    
-                    // Se chegou aqui, o token é válido - fazer login automático
-                    await this.redirectBasedOnPlan();
-                    
-                } catch (error) {
-                    console.log('Token inválido ou expirado:', error);
-                    // Limpar apenas o token inválido
-                    localStorage.removeItem('token');
-                }
-            }
-        },
 
         async login() {
             this.isLoading = true;
@@ -139,6 +119,11 @@ export default {
                 if (response.user && response.user.nome) {
                     localStorage.setItem('userName', response.user.nome);
                     this.userName = response.user.nome;
+                }
+                // Se cadastro não está completo, redirecionar para completar cadastro
+                if (response.cadastroCompleto === false || response.cadastro_completo === false || response.user?.cadastro_completo === false) {
+                    this.$router.push('/completar-cadastro');
+                    return;
                 }
                 
                 // Buscar informações do plano e redirecionar

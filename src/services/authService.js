@@ -44,7 +44,8 @@ class AuthService {
             }
             return {
                 ...response.data,
-                user: response.data.usuario // Adicionar user para facilitar acesso
+                user: response.data.usuario,
+                cadastroCompleto: response.data.cadastro_completo
             };
         } catch (error) {
             throw error;

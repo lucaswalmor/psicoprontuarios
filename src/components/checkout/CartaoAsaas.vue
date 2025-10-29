@@ -121,7 +121,7 @@
             <!-- Mensagem de Segurança -->
             <div class="security-notice mt-4 p-3 bg-blue-50 border-round">
                 <i class="pi pi-shield text-blue-600 mr-2"></i>
-                <span class="text-sm text-600">
+                <span class="text-sm text-blue-600">
                     Seus dados estão protegidos. O pagamento é processado de forma segura pela Asaas.
                 </span>
             </div>
