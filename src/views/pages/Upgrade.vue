@@ -16,15 +16,24 @@
                 </div>
 
                 <div class="container">
-                    <!-- Stepper de progresso -->
+                    <!-- Stepper de progresso (oculto quando pagamentoSucesso) -->
                     <UpgradeStepper 
+                        v-if="!pagamentoSucesso"
                         :current-step="currentStep" 
                         :steps="steps"
                         @step-change="handleStepChange"
                     />
 
-                    <!-- Conteúdo baseado no step atual -->
-                    <div class="upgrade-content4">
+                    <!-- Mensagem de sucesso após pagamento -->
+                    <div v-if="pagamentoSucesso" class="sucesso-container">
+                        <SucessoPagamento 
+                            :plano-nome="planoContratado"
+                            @continuar="irParaDashboard"
+                        />
+                    </div>
+
+                    <!-- Conteúdo baseado no step atual (oculto quando pagamentoSucesso) -->
+                    <div v-else class="upgrade-content4">
                         <!-- Step 1: Escolha do plano -->
                         <div v-if="currentStep === 1" class="step-content pt-6">
                             <h2>Escolha seu novo plano</h2>
@@ -119,28 +128,22 @@
                             </p>
 
                             <div class="payment-section">
-                                <div class="surface-card p-6 text-center">
-                                    <i class="pi pi-credit-card text-6xl text-blue-500 mb-4"></i>
-                                    <h3 class="text-xl font-semibold mb-2">Pagamento Seguro</h3>
-                                    <p class="text-600 mb-4">
-                                        Você será redirecionado para o Stripe, onde poderá inserir seus dados de pagamento de forma segura.
-                                    </p>
-                                    
-                                    <div class="payment-summary mb-4">
-                                        <div class="flex justify-content-between align-items-center p-3 bg-50 rounded">
-                                            <span class="font-semibold">{{ selectedPlan?.nome }}</span>
-                                            <span class="text-lg font-bold text-primary">{{ selectedPlan?.preco }}</span>
+                                <!-- Resumo do Plano -->
+                                <div class="plan-summary-card mb-4">
+                                    <div class="flex justify-content-between align-items-center p-4 rounded">
+                                        <div>
+                                            <h3 class="m-0 font-semibold">{{ selectedPlan?.nome }}</h3>
+                                            <p class="m-0 text-600 text-sm">{{ selectedPlan?.descricao }}</p>
                                         </div>
+                                        <span class="text-2xl font-bold text-primary">{{ selectedPlan?.preco }}</span>
                                     </div>
-                                    
-                                    <Button 
-                                        label="Ir para Pagamento" 
-                                        icon="pi pi-external-link" 
-                                        @click="processarPagamento"
-                                        :loading="loading"
-                                        class="p-button-primary p-button-lg w-full"
-                                        size="large" />
                                 </div>
+
+                                <!-- Formulário de Cartão -->
+                                <CartaoAsaas
+                                    :loading="loading"
+                                    @submit="processarPagamento"
+                                />
                             </div>
 
                             <div class="step-actions">
@@ -148,13 +151,14 @@
                                     label="Voltar" 
                                     @click="previousStep"
                                     class="p-button-secondary"
+                                    :disabled="loading"
                                 />
                             </div>
                         </div>
                     </div>
 
-                    <!-- FAQ Section -->
-                    <div class="faq-section mb-5">
+                    <!-- FAQ Section (oculto quando pagamentoSucesso) -->
+                    <div v-if="!pagamentoSucesso" class="faq-section mb-5">
                         <h3>Perguntas Frequentes</h3>
                         <FaqModal />
                     </div>
@@ -168,27 +172,33 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { usePlanStore } from '@/store/plan';
-import { useStripe } from '@/composables/useStripe';
+import { useAsaas } from '@/composables/useAsaas';
 import { useToast } from 'primevue/usetoast';
 import UpgradeStepper from '@/components/upgrade/UpgradeStepper.vue';
 import PlanoCard from '@/components/upgrade/PlanoCard.vue';
 import FaqModal from '@/components/upgrade/FaqModal.vue';
+import CartaoAsaas from '@/components/checkout/CartaoAsaas.vue';
+import SucessoPagamento from '@/components/checkout/SucessoPagamento.vue';
 
 export default {
     name: 'Upgrade',
     components: {
         UpgradeStepper,
         PlanoCard,
-        FaqModal
+        FaqModal,
+        CartaoAsaas,
+        SucessoPagamento
     },
     setup() {
         const router = useRouter();
         const planStore = usePlanStore();
         const toast = useToast();
-        const stripe = useStripe();
+        const asaas = useAsaas();
         
         const currentStep = ref(1);
         const selectedPlan = ref(null);
+        const pagamentoSucesso = ref(false);
+        const planoContratado = ref(null);
         
         const steps = [
             { id: 1, title: 'Escolha do Plano', icon: 'pi pi-list' },
@@ -198,7 +208,7 @@ export default {
 
         // Computed properties
         const currentPlanName = computed(() => {
-            return planStore.planInfo?.nome || 'Gratuito';
+            return planStore.planoNome || 'Gratuito';
         });
 
         const currentPlanClass = computed(() => {
@@ -294,19 +304,38 @@ export default {
             currentStep.value = step;
         };
 
-        const processarPagamento = async () => {
+        const processarPagamento = async (dadosFormulario) => {
             try {
-                await stripe.criarCheckout(selectedPlan.value.id);
-                // O redirecionamento será feito automaticamente pelo Stripe
+                // Enviar apenas CPF e telefone (name e email vêm automaticamente do usuário autenticado no backend)
+                const dadosUsuario = {
+                    cpf: dadosFormulario.usuario.cpf,
+                    phone: dadosFormulario.usuario.phone
+                };
+
+                await asaas.criarCheckout(
+                    selectedPlan.value.id,
+                    dadosFormulario.cartao,
+                    dadosUsuario
+                );
+
+                // Marcar pagamento como sucesso e armazenar nome do plano
+                pagamentoSucesso.value = true;
+                planoContratado.value = selectedPlan.value.nome;
+
             } catch (error) {
                 console.error('Erro ao processar pagamento:', error);
                 toast.add({
                     severity: 'error',
                     summary: 'Erro',
-                    detail: 'Erro ao processar pagamento. Tente novamente.',
+                    detail: error.message || 'Erro ao processar pagamento. Tente novamente.',
                     life: 5000
                 });
             }
+        };
+
+        // Método para ir ao dashboard após sucesso
+        const irParaDashboard = () => {
+            router.push('/dashboard');
         };
 
         // Lifecycle
@@ -325,6 +354,8 @@ export default {
         return {
             currentStep,
             selectedPlan,
+            pagamentoSucesso,
+            planoContratado,
             steps,
             currentPlanName,
             currentPlanClass,
@@ -334,7 +365,8 @@ export default {
             previousStep,
             handleStepChange,
             processarPagamento,
-            loading: stripe.loading
+            irParaDashboard,
+            loading: asaas.loading
         };
     }
 };
@@ -352,6 +384,10 @@ export default {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 1rem;
+}
+
+.sucesso-container {
+    padding: 2rem 0;
 }
 
 .plan-info {

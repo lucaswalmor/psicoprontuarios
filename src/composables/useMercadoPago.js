@@ -1,24 +1,34 @@
 import { ref } from 'vue';
 import { usePlanStore } from '@/store/plan';
-import { planService } from '@/services';
+import { mercadoPagoService } from '@/services';
 
-export function useStripe() {
+/**
+ * Composable para integração com Mercado Pago
+ * Usa Pre-Approval (Assinatura Recorrente) para débito automático mensal
+ */
+export function useMercadoPago() {
     const planStore = usePlanStore();
     const loading = ref(false);
     const error = ref(null);
 
     /**
-     * Criar checkout session para assinatura
+     * Criar checkout para assinatura recorrente
+     * Redireciona para o Pre-Approval do Mercado Pago
      */
     const criarCheckout = async (planoId) => {
         try {
             loading.value = true;
             error.value = null;
 
-            const response = await planService.criarCheckoutSession(planoId);
+            const response = await mercadoPagoService.criarCheckout(planoId);
             
             if (response.checkout_url) {
-                // Redirecionar para Stripe Checkout
+                // Salvar dados para validação posterior
+                sessionStorage.setItem('mercadopago_preapproval_id', response.preapproval_id);
+                sessionStorage.setItem('mercadopago_plano_id', planoId);
+                sessionStorage.setItem('mercadopago_external_reference', response.external_reference || '');
+                
+                // Redirecionar para Mercado Pago Checkout
                 window.location.href = response.checkout_url;
             } else {
                 throw new Error('URL de checkout não recebida');
@@ -34,27 +44,44 @@ export function useStripe() {
     };
 
     /**
-     * Validar checkout bem-sucedido
+     * Validar pagamento e criar assinatura
+     * Chamado quando retorna do Mercado Pago após pagar
      */
-    const validarCheckout = async (sessionId) => {
+    const validarCheckout = async () => {
         try {
             loading.value = true;
             error.value = null;
 
-            const response = await planService.validarCheckoutSucesso(sessionId);
+            // Obter dados salvos no sessionStorage
+            const preApprovalId = sessionStorage.getItem('mercadopago_preapproval_id');
+            const planoId = sessionStorage.getItem('mercadopago_plano_id');
+            const externalReference = sessionStorage.getItem('mercadopago_external_reference');
+
+            if (!preApprovalId || !planoId) {
+                throw new Error('Dados de checkout não encontrados');
+            }
+
+            const response = await mercadoPagoService.validarCheckout(
+                preApprovalId, 
+                planoId,
+                externalReference
+            );
             
             if (response.success) {
                 // Atualizar store com nova assinatura
                 planStore.assinatura = response.assinatura;
-                planStore.modulosAcesso = response.assinatura.plano.modulos.map(m => m.chave);
                 
                 // Salvar no localStorage
                 localStorage.setItem('userAssinatura', JSON.stringify(response.assinatura));
-                localStorage.setItem('userModulosAcesso', JSON.stringify(planStore.modulosAcesso));
+                
+                // Limpar session storage
+                sessionStorage.removeItem('mercadopago_preapproval_id');
+                sessionStorage.removeItem('mercadopago_plano_id');
+                sessionStorage.removeItem('mercadopago_external_reference');
                 
                 return response;
             } else {
-                throw new Error('Checkout não foi validado com sucesso');
+                throw new Error('Assinatura não foi criada com sucesso');
             }
 
         } catch (err) {
@@ -69,12 +96,12 @@ export function useStripe() {
     /**
      * Pausar assinatura
      */
-    const pausarAssinatura = async (assinaturaId) => {
+    const pausarAssinatura = async () => {
         try {
             loading.value = true;
             error.value = null;
 
-            const response = await planService.pausarAssinatura(assinaturaId);
+            const response = await mercadoPagoService.pausarAssinatura();
             
             if (response.success) {
                 // Atualizar store
@@ -98,12 +125,12 @@ export function useStripe() {
     /**
      * Reativar assinatura
      */
-    const reativarAssinatura = async (assinaturaId) => {
+    const reativarAssinatura = async () => {
         try {
             loading.value = true;
             error.value = null;
 
-            const response = await planService.reativarAssinatura(assinaturaId);
+            const response = await mercadoPagoService.reativarAssinatura();
             
             if (response.success) {
                 // Atualizar store
@@ -125,48 +152,19 @@ export function useStripe() {
     };
 
     /**
-     * Atualizar método de pagamento
-     */
-    const atualizarMetodoPagamento = async (assinaturaId, paymentMethodId) => {
-        try {
-            loading.value = true;
-            error.value = null;
-
-            const response = await planService.atualizarMetodoPagamento(assinaturaId, paymentMethodId);
-            
-            if (response.success) {
-                // Atualizar store
-                planStore.assinatura = response.assinatura;
-                localStorage.setItem('userAssinatura', JSON.stringify(response.assinatura));
-                
-                return response;
-            } else {
-                throw new Error('Erro ao atualizar método de pagamento');
-            }
-
-        } catch (err) {
-            console.error('Erro ao atualizar método de pagamento:', err);
-            error.value = err.message || 'Erro ao atualizar método de pagamento';
-            throw err;
-        } finally {
-            loading.value = false;
-        }
-    };
-
-    /**
      * Cancelar assinatura
      */
-    const cancelarAssinatura = async (assinaturaId, motivo = null) => {
+    const cancelarAssinatura = async (motivo = null) => {
         try {
             loading.value = true;
             error.value = null;
 
-            const response = await planService.cancelarAssinatura(assinaturaId, motivo);
+            const response = await mercadoPagoService.cancelarAssinatura(motivo);
             
             if (response.success) {
                 // Atualizar store
                 planStore.assinatura = response.assinatura;
-                planStore.modulosAcesso = []; // Limpar módulos após cancelamento
+                planStore.modulosAcesso = [];
                 
                 // Salvar no localStorage
                 localStorage.setItem('userAssinatura', JSON.stringify(response.assinatura));
@@ -186,35 +184,6 @@ export function useStripe() {
         }
     };
 
-    /**
-     * Carregar status atualizado da assinatura
-     */
-    const carregarStatusAtualizado = async (assinaturaId) => {
-        try {
-            loading.value = true;
-            error.value = null;
-
-            const response = await planService.checkStatusAssinatura(assinaturaId);
-            
-            if (response.assinatura) {
-                // Atualizar store
-                planStore.assinatura = response.assinatura;
-                localStorage.setItem('userAssinatura', JSON.stringify(response.assinatura));
-                
-                return response;
-            } else {
-                throw new Error('Erro ao carregar status da assinatura');
-            }
-
-        } catch (err) {
-            console.error('Erro ao carregar status da assinatura:', err);
-            error.value = err.message || 'Erro ao carregar status da assinatura';
-            throw err;
-        } finally {
-            loading.value = false;
-        }
-    };
-
     return {
         loading,
         error,
@@ -222,8 +191,7 @@ export function useStripe() {
         validarCheckout,
         pausarAssinatura,
         reativarAssinatura,
-        atualizarMetodoPagamento,
-        cancelarAssinatura,
-        carregarStatusAtualizado
+        cancelarAssinatura
     };
 }
+

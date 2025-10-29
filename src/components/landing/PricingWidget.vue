@@ -95,7 +95,7 @@
                             <span class="amount">29</span>
                             <span class="period">,90/mês</span>
                         </div>
-                        <p class="text-sm text-surface-500 dark:text-surface-400">Perfeito para psicólogos em crescimento</p>
+                        <p class="text-sm text-600">Perfeito para psicólogos em crescimento</p>
                     </div>
                     
                     <Divider class="divider" />

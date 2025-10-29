@@ -172,6 +172,16 @@ export default {
         
         // Carregar informações do plano
         await this.loadPlanInfo();
+        
+        // Escutar mudanças de plano em tempo real
+        window.addEventListener('plan-updated', async () => {
+            await this.loadPlanInfo();
+        });
+    },
+
+    beforeUnmount() {
+        // Remover listener ao desmontar
+        window.removeEventListener('plan-updated', this.loadPlanInfo);
     }
 };
 </script>

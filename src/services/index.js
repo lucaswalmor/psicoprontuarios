@@ -11,6 +11,8 @@ import anexosService from './anexosService';
 import perfilPublicoService from './perfilPublicoService';
 import marketplaceService from './marketplaceService';
 import npsService from './npsService';
+import mercadoPagoService from './mercadoPagoService';
+import asaasService from './asaasService';
 
 export {
     pacientesService,
@@ -25,7 +27,9 @@ export {
     anexosService,
     perfilPublicoService,
     marketplaceService,
-    npsService
+    npsService,
+    mercadoPagoService,
+    asaasService
 };
 
 // Exportar como objeto para uso global
@@ -42,5 +46,7 @@ export default {
     anexosService,
     perfilPublicoService,
     marketplaceService,
-    npsService
+    npsService,
+    mercadoPagoService,
+    asaasService
 }; 
