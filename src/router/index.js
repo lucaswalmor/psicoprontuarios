@@ -249,18 +249,6 @@ const router = createRouter({
                     meta: { requiresPlanCheck: true }
                 },
                 {
-                    path: '/checkout/sucesso',
-                    name: 'CheckoutSucesso',
-                    component: () => import('@/views/pages/CheckoutSucesso.vue'),
-                    meta: { requiresAuth: true }
-                },
-                {
-                    path: '/checkout/cancelado',
-                    name: 'CheckoutCancelado',
-                    component: () => import('@/views/pages/CheckoutCancelado.vue'),
-                    meta: { requiresAuth: true }
-                },
-                {
                     path: '/assinatura',
                     name: 'ConfiguracoesAssinatura',
                     component: () => import('@/views/pages/ConfiguracoesAssinatura.vue'),

@@ -179,14 +179,14 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { useStripe } from '@/composables/useStripe';
+import { useAsaas } from '@/composables/useAsaas';
 import { usePlanStore } from '@/store/plan';
 import { useToast } from 'primevue/usetoast';
 
 const router = useRouter();
 const toast = useToast();
 const planStore = usePlanStore();
-const { pausarAssinatura: pauseAssinatura, reativarAssinatura: resumeAssinatura, cancelarAssinatura: cancelAssinatura, loading } = useStripe();
+const { pausarAssinatura: pauseAssinatura, reativarAssinatura: resumeAssinatura, cancelarAssinatura: cancelAssinatura, loading } = useAsaas();
 
 const mostrarDialogCancelamento = ref(false);
 const mostrarDialogCartao = ref(false);
