@@ -47,11 +47,6 @@
                                         <div class="col-12 md:col-6">
                                             <div class="flex flex-column gap-2">
                                                 <div class="flex align-items-center gap-2">
-                                                    <i class="pi pi-calendar text-primary"></i>
-                                                    <span class="text-800 font-bold">Próximo Vencimento:</span>
-                                                    <span class="text-500">{{ formatDate(getNextPaymentDate()) }}</span>
-                                                </div>
-                                                <div class="flex align-items-center gap-2">
                                                     <i class="pi pi-users text-primary"></i>
                                                     <span class="text-800 font-bold">Pacientes:</span>
                                                     <span class="text-500">{{ planStore.pacientesCount }} / {{ planStore.limitePacientes
@@ -68,22 +63,12 @@
                                                 <div class="flex align-items-center gap-2">
                                                     <i class="pi pi-dollar text-primary"></i>
                                                     <span class="text-800 font-bold">Valor Mensal:</span>
-                                                    <span class="text-500">{{ formatCurrency(getPlanPrice()) }}</span>
+                                                    <span class="text-500">{{ getPlanPrice() }}</span>
                                                 </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-12 md:col-6">
-                                            <div class="flex flex-column gap-2">
                                                 <div class="flex align-items-center gap-2">
                                                     <i class="pi pi-check-circle text-green-500"></i>
                                                     <span class="text-800 font-bold">Status:</span>
                                                     <Tag :value="getStatusText()" :severity="getStatusSeverity()" />
-                                                </div>
-                                                <div class="flex align-items-center gap-2">
-                                                    <i class="pi pi-credit-card text-primary"></i>
-                                                    <span class="text-800 font-bold">Forma de Pagamento:</span>
-                                                    <span class="text-500">{{ getPaymentMethod() }}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -135,7 +120,7 @@
                                                     class="flex align-items-center gap-2">
                                                     <i
                                                         :class="['pi', feature.icon, feature.available ? 'text-green-500' : 'text-gray-400']"></i>
-                                                    <span :class="{ 'text-gray-400': !feature.available }" class="text-800 font-bold">{{
+                                                    <span :class="feature.available ? 'text-green-600' : 'text-gray-400'" class="text-800 font-bold">{{
                                                         feature.label }}</span>
                                                 </div>
                                             </div>
@@ -390,7 +375,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onActivated, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { usePlanStore } from '@/store/plan';
 import { useToast } from 'primevue/usetoast';
@@ -429,20 +414,13 @@ const configNotificacoes = ref({
 
 // Computed properties
 const shouldShowUpgradeButton = computed(() => {
-    // Verificar se é usuário vitalício
     if (planStore.isVitalicio) return false;
-    
-    // Verificar se tem assinatura ativa
     if (!planStore.temAssinaturaAtiva) return true;
-    
-    // Se tem assinatura, verificar o plano
-    const assinatura = JSON.parse(localStorage.getItem('userAssinatura') || 'null');
-    if (assinatura && assinatura.plano) {
-        const currentPlan = assinatura.plano.nome;
+    const currentPlan = localStorage.getItem('planoNome');
+    if (currentPlan) {
         return currentPlan === 'Gratuito' || currentPlan === 'Essencial';
     }
-    
-    return true; // Se não tem dados, mostrar botão de upgrade
+    return true;
 });
 
 const shouldShowRenewButton = computed(() => {
@@ -459,79 +437,88 @@ const isPlanPaused = computed(() => {
     return planStore.assinatura?.status === 'pausada';
 });
 
-const availableFeatures = computed(() => [
-    {
-        key: 'dashboard',
-        label: 'Dashboard',
-        icon: 'pi-home',
-        available: planStore.canAccessDashboard || isPlanPaused.value
-    },
-    {
-        key: 'gestao_financeira',
-        label: 'Gestão Financeira',
-        icon: 'pi-wallet',
-        available: planStore.canAccessGestaoFinanceira && !isPlanPaused.value
-    },
-    {
-        key: 'agendamentos',
-        label: 'Agendamentos',
-        icon: 'pi-calendar',
-        available: planStore.canAccessAgendamentos && !isPlanPaused.value
-    },
-    {
-        key: 'prontuarios_pdf',
-        label: 'Exportar Prontuários PDF',
-        icon: 'pi-file-pdf',
-        available: planStore.canAccessProntuariosPDF || isPlanPaused.value
-    },
-    {
-        key: 'anexos',
-        label: `Anexos (${planStore.anexosLimite === -1 ? 'Ilimitado' : planStore.anexosLimite})`,
-        icon: 'pi-paperclip',
-        available: planStore.canUploadAnexos
-    },
-    {
-        key: 'backup_automatico',
-        label: 'Backup Automático',
-        icon: 'pi-cloud',
-        available: planStore.canAccessBackupAutomatico && !isPlanPaused.value
-    }
-]);
-
-// Métodos
-const formatDate = (date) => {
-    if (!date) return 'N/A';
-    return new Date(date).toLocaleDateString('pt-BR');
-};
-
-const formatCurrency = (value) => {
-    if (!value) return 'N/A';
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    }).format(value);
-};
+const availableFeatures = computed(() => {
+    const modules = JSON.parse(localStorage.getItem('modulosPlano') || 'null') || {};
+    return [
+        {
+            key: 'pacientes',
+            label: 'Pacientes',
+            icon: 'pi-users',
+            available: true
+        },
+        {
+            key: 'prontuarios',
+            label: 'Prontuários',
+            icon: 'pi-file',
+            available: true
+        },
+        {
+            key: 'dashboard',
+            label: 'Dashboard',
+            icon: 'pi-home',
+            available: !!modules.dashboard
+        },
+        {
+            key: 'gestao_financeira',
+            label: 'Gestão Financeira',
+            icon: 'pi-wallet',
+            available: !!modules.gestao_financeira
+        },
+        {
+            key: 'agendamentos',
+            label: 'Agendamentos',
+            icon: 'pi-calendar',
+            available: !!modules.agendamentos
+        },
+        {
+            key: 'prontuarios_pdf',
+            label: 'Exportar Prontuários PDF',
+            icon: 'pi-file-pdf',
+            available: !!modules.prontuarios_pdf
+        },
+        {
+            key: 'anexos',
+            label: `Anexos (${planStore.anexosLimite === -1 ? 'Ilimitado' : planStore.anexosLimite})`,
+            icon: 'pi-paperclip',
+            available: !!modules.arquivos
+        },
+        {
+            key: 'backup_automatico',
+            label: 'Backup Automático',
+            icon: 'pi-cloud',
+            available: !!modules.backup_automatico
+        },
+        {
+            key: 'perfil_publico',
+            label: 'Perfil Público',
+            icon: 'pi-id-card',
+            available: !!modules.perfil_publico
+        }
+    ];
+});
 
 const getPlanName = () => {
-    const assinatura = JSON.parse(localStorage.getItem('userAssinatura') || 'null');
-    return assinatura?.plano?.nome || 'Carregando...';
-};
-
-const getNextPaymentDate = () => {
-    const assinatura = JSON.parse(localStorage.getItem('userAssinatura') || 'null');
-    return assinatura?.data_proxima_cobranca;
+    return localStorage.getItem('planoNome') || 'Carregando...';
 };
 
 const getPlanPrice = () => {
-    const assinatura = JSON.parse(localStorage.getItem('userAssinatura') || 'null');
-    return assinatura?.plano?.valor;
+    const plan = (localStorage.getItem('planoNome') || '').toLowerCase();
+    switch (plan) {
+        case 'gratuito':
+            return 'R$ 0,00';
+        case 'essencial':
+            return 'R$ 29,90';
+        case 'profissional':
+            return 'R$ 69,90';
+        case 'vitalício':
+            return 'R$ 0,00';
+    }
 };
 
 const getPlanSeverity = () => {
-    const assinatura = JSON.parse(localStorage.getItem('userAssinatura') || 'null');
-    const planName = assinatura?.plano?.nome;
-    if (planName === 'Vitalício') return 'success';
-    if (planName === 'Premium') return 'info';
+    const planName = localStorage.getItem('planoNome');
+    if (planName === 'Vitalício' || planName === 'Vitalicio') return 'success';
+    if (planName === 'Profissional') return 'info';
     if (planName === 'Essencial') return 'warning';
     return 'secondary';
 };
@@ -616,10 +603,6 @@ const getStatusSeverity = () => {
 };
 
 const getPaymentMethod = () => {
-    const assinatura = JSON.parse(localStorage.getItem('userAssinatura') || 'null');
-    const method = assinatura?.forma_pagamento;
-    if (method === 'CREDIT_CARD') return 'Cartão de Crédito';
-    if (method === 'PIX') return 'PIX';
     return 'N/A';
 };
 
@@ -774,6 +757,28 @@ onMounted(async () => {
     
     // Verificar status de pagamento
     await verificarStatusPagamento();
+
+    // Atualizar stats quando eventos de criação/alteração ocorrerem em outras telas
+    const handleStatsUpdate = async () => {
+        await planStore.atualizarStats();
+    };
+    window.addEventListener('paciente-criado', handleStatsUpdate);
+    window.addEventListener('anexo-uploaded', handleStatsUpdate);
+    window.addEventListener('paciente-atualizado', handleStatsUpdate);
+    window.addEventListener('anexo-removido', handleStatsUpdate);
+
+    // Guardar para remover no unmount
+    onUnmounted(() => {
+        window.removeEventListener('paciente-criado', handleStatsUpdate);
+        window.removeEventListener('anexo-uploaded', handleStatsUpdate);
+        window.removeEventListener('paciente-atualizado', handleStatsUpdate);
+        window.removeEventListener('anexo-removido', handleStatsUpdate);
+    });
+});
+
+// Quando voltar para esta tela, garantir atualização dos contadores
+onActivated(async () => {
+    await planStore.atualizarStats();
 });
 </script>
 

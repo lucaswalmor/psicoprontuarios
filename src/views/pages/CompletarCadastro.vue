@@ -31,7 +31,7 @@
                                     />
                                     <label for="cpf">CPF</label>
                                 </IftaLabel>
-                                <small v-if="errors.cpf" class="text-red-500 text-sm mt-1 block">{{ errors.cpf }}</small>
+                                <small v-if="errors.cpf" class="text-red-500 text-sm mt-1 block">{{ errors.cpf[0] }}</small>
                             </div>
                         </div>
 
@@ -48,7 +48,7 @@
                                     />
                                     <label for="crp">CRP</label>
                                 </IftaLabel>
-                                <small v-if="errors.crp" class="text-red-500 text-sm mt-1 block">{{ errors.crp }}</small>
+                                <small v-if="errors.crp" class="text-red-500 text-sm mt-1 block">{{ errors.crp[0] }}</small>
                             </div>
                         </div>
 
@@ -65,7 +65,7 @@
                                     />
                                     <label for="telefone">Telefone</label>
                                 </IftaLabel>
-                                <small v-if="errors.telefone" class="text-red-500 text-sm mt-1 block">{{ errors.telefone }}</small>
+                                <small v-if="errors.telefone" class="text-red-500 text-sm mt-1 block">{{ errors.telefone[0] }}</small>
                             </div>
                         </div>
 
@@ -83,7 +83,7 @@
                                     />
                                     <label for="cep">CEP</label>
                                 </IftaLabel>
-                                <small v-if="errors.cep" class="text-red-500 text-sm mt-1 block">{{ errors.cep }}</small>
+                                <small v-if="errors.cep" class="text-red-500 text-sm mt-1 block">{{ errors.cep[0] }}</small>
                                 <small v-if="loadingCep" class="text-blue-500 text-sm mt-1 block">
                                     <i class="pi pi-spin pi-spinner mr-1"></i>
                                     Buscando endereço...
@@ -103,7 +103,7 @@
                                     />
                                     <label for="cidade">Cidade</label>
                                 </IftaLabel>
-                                <small v-if="errors.cidade" class="text-red-500 text-sm mt-1 block">{{ errors.cidade }}</small>
+                                <small v-if="errors.cidade" class="text-red-500 text-sm mt-1 block">{{ errors.cidade[0] }}</small>
                                 <small v-if="form.cidade && !errors.cidade" class="text-green-600 text-sm mt-1 block">
                                     <i class="pi pi-check-circle mr-1"></i>
                                     Preenchido automaticamente
@@ -126,7 +126,7 @@
                                     />
                                     <label for="estado">Estado</label>
                                 </IftaLabel>
-                                <small v-if="errors.estado" class="text-red-500 text-sm mt-1 block">{{ errors.estado }}</small>
+                                <small v-if="errors.estado" class="text-red-500 text-sm mt-1 block">{{ errors.estado[0] }}</small>
                                 <small v-if="form.estado && !errors.estado" class="text-green-600 text-sm mt-1 block">
                                     <i class="pi pi-check-circle mr-1"></i>
                                     Preenchido automaticamente
@@ -146,7 +146,7 @@
                                     />
                                     <label for="rua">Rua</label>
                                 </IftaLabel>
-                                <small v-if="errors.rua" class="text-red-500 text-sm mt-1 block">{{ errors.rua }}</small>
+                                <small v-if="errors.rua" class="text-red-500 text-sm mt-1 block">{{ errors.rua[0] }}</small>
                                 <small v-if="form.rua && !errors.rua" class="text-green-600 text-sm mt-1 block">
                                     <i class="pi pi-check-circle mr-1"></i>
                                     Preenchido automaticamente
@@ -166,7 +166,7 @@
                                     />
                                     <label for="bairro">Bairro</label>
                                 </IftaLabel>
-                                <small v-if="errors.bairro" class="text-red-500 text-sm mt-1 block">{{ errors.bairro }}</small>
+                                <small v-if="errors.bairro" class="text-red-500 text-sm mt-1 block">{{ errors.bairro[0] }}</small>
                                 <small v-if="form.bairro && !errors.bairro" class="text-green-600 text-sm mt-1 block">
                                     <i class="pi pi-check-circle mr-1"></i>
                                     Preenchido automaticamente
@@ -189,7 +189,7 @@
                                     />
                                     <label for="password">Senha</label>
                                 </IftaLabel>
-                                <small v-if="errors.password" class="text-red-500 text-sm mt-1 block">{{ errors.password }}</small>
+                                <small v-if="errors.password" class="text-red-500 text-sm mt-1 block">{{ errors.password[0] }}</small>
                             </div>
                         </div>
 
@@ -208,7 +208,7 @@
                                     />
                                     <label for="password_confirmation">Confirmar Senha</label>
                                 </IftaLabel>
-                                <small v-if="errors.password_confirmation" class="text-red-500 text-sm mt-1 block">{{ errors.password_confirmation }}</small>
+                                <small v-if="errors.password_confirmation" class="text-red-500 text-sm mt-1 block">{{ errors.password_confirmation[0] }}</small>
                             </div>
                         </div>
 
@@ -231,7 +231,7 @@
                                 </router-link>
                             </label>
                         </div>
-                        <small v-if="errors.politica_privacidade" class="text-red-500 text-sm block">{{ errors.politica_privacidade }}</small>
+                        <small v-if="errors.politica_privacidade" class="text-red-500 text-sm block">{{ errors.politica_privacidade[0] }}</small>
 
                         <!-- Botão de Envio -->
                         <Button 

@@ -2,12 +2,12 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 import pinia from './store';
+import planValidations from '@/utils/planValidations';
 
 import Aura from '@primeuix/themes/aura';
 import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
 import ToastService from 'primevue/toastservice';
-
 
 import '@/assets/styles.scss';
 import { loadThemeConfig, applyThemeConfig } from '@/utils/themeStorage';
@@ -85,5 +85,7 @@ app.config.globalProperties.$userService = services.userService;
 app.config.globalProperties.$leadsService = services.leadsService;
 app.config.globalProperties.$anexosService = services.anexosService;
 app.config.globalProperties.$npsService = services.npsService;
+app.config.globalProperties.$hasAccessToModule = planValidations.hasAccessToModule;
+app.config.globalProperties.$tipoPlano = planValidations.tipoPlano;
 
 app.mount('#app');

@@ -36,14 +36,14 @@ function getRequiredModule(path) {
         '/dashboard': 'dashboard',
         '/financeiro': 'gestao_financeira',
         '/agendamentos': 'agendamentos',
-        '/meu-psicologo': 'perfil_publico',
+        '/encontre-psicologo': 'perfil_publico',
         '/prontuarios/pdf': 'prontuarios_pdf'
     };
     
     // Verificar padrões dinâmicos que requerem módulos
     if (path.startsWith('/financeiro/')) return 'gestao_financeira';
     if (path.startsWith('/agendamentos/')) return 'agendamentos';
-    if (path.startsWith('/meu-psicologo/')) return 'perfil_publico';
+    if (path.startsWith('/encontre-psicologo/')) return 'perfil_publico';
     
     return moduleMap[path] || null;
 }

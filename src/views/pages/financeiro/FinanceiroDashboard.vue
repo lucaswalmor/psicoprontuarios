@@ -1,5 +1,5 @@
 <template>
-    <div class="grid">
+    <div class="grid" v-if="$hasAccessToModule('financeiro')">
         <div class="col-12">
             <div class="card">
                 <h5 class="text-600">Dashboard Financeiro</h5>
@@ -205,6 +205,21 @@
             @filtrarFinanceiro="filtrarFinanceiro"
             @limparFiltros="limparFiltros"
         />
+    </div>
+
+    <div class="card" v-else>
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="pi pi-exclamation-triangle text-6xl text-gray-400"></i>
+            </div>
+            <div class="empty-content">
+                <h3 class="empty-title">Módulo indisponível</h3>
+                <p class="empty-description">
+                    Este módulo não está disponível para o seu plano.
+                </p>
+                <Button label="Clique aqui para atualizar seu plano" @click="$router.push('/upgrade')" />
+            </div>
+        </div>
     </div>
 </template>
 
@@ -433,6 +448,11 @@ export default {
         }
     },
     async mounted() {
+
+        if (!this.$hasAccessToModule('financeiro')) {
+            return;
+        }
+
         // Inicializar o store do tema
         this.themeStore.init();
 

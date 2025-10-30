@@ -50,7 +50,6 @@ const router = createRouter({
                     path: '/dashboard',
                     name: 'DashboardGeral',
                     component: () => import('@/views/pages/DashboardGeral.vue'),
-                    meta: { requiresPlanCheck: true }
                 },
                 {
                     path: '/pacientes',
@@ -116,9 +115,9 @@ const router = createRouter({
                     meta: { requiresPlanCheck: false }
                 },
                 {
-                    path: '/meu-psicologo',
+                    path: '/encontre-psicologo',
                     name: 'EncontrePsicologo',
-                    component: () => import('@/views/pages/MeuPsicologo.vue'),
+                    component: () => import('@/views/pages/EncontrePsicologo.vue'),
                     meta: { requiresPlanCheck: true }
                 },
                 {
@@ -286,6 +285,6 @@ const router = createRouter({
 });
 
 // Configurar o guard de plano
-setupPlanGuard(router);
+// setupPlanGuard(router);
 
 export default router;

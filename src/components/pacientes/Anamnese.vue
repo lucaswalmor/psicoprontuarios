@@ -2,14 +2,8 @@
     <div class="card">
         <div class="flex justify-content-between align-items-center mb-4">
             <h5 class="text-500 mb-0">Anamnese</h5>
-            <div class="flex gap-2">
-                <Button 
-                    label="Salvar" 
-                    icon="pi pi-save" 
-                    :loading="loading"
-                    @click="salvar"
-                    v-if="!planStore.isPlanPaused"
-                />
+            <div class="flex gap-2" v-if="$hasAccessToModule('anamnese')">
+                <Button label="Salvar" icon="pi pi-save" :loading="loading" @click="salvar" />
             </div>
         </div>
 
@@ -19,12 +13,8 @@
                 <div class="col-12">
                     <div class="field">
                         <label class="block text-500 font-medium mb-2">Motivo da Consulta</label>
-                        <Textarea 
-                            v-model="form.motivo_consulta" 
-                            rows="3" 
-                            placeholder="Descreva o motivo principal da consulta..."
-                            class="w-full"
-                        />
+                        <Textarea v-model="form.motivo_consulta" rows="3" :disabled="!$hasAccessToModule('anamnese')"
+                            placeholder="Descreva o motivo principal da consulta..." class="w-full" />
                     </div>
                 </div>
 
@@ -32,12 +22,8 @@
                 <div class="col-12">
                     <div class="field">
                         <label class="block text-500 font-medium mb-2">História do Problema Atual</label>
-                        <Textarea 
-                            v-model="form.historia_problema_atual" 
-                            rows="4" 
-                            placeholder="Descreva como o problema começou e evoluiu..."
-                            class="w-full"
-                        />
+                        <Textarea v-model="form.historia_problema_atual" rows="4" :disabled="!$hasAccessToModule('anamnese')"
+                            placeholder="Descreva como o problema começou e evoluiu..." class="w-full" />
                     </div>
                 </div>
 
@@ -45,12 +31,8 @@
                 <div class="col-12">
                     <div class="field">
                         <label class="block text-500 font-medium mb-2">Sintomas Principais</label>
-                        <Textarea 
-                            v-model="form.sintomas_principais" 
-                            rows="3" 
-                            placeholder="Liste os principais sintomas apresentados..."
-                            class="w-full"
-                        />
+                        <Textarea v-model="form.sintomas_principais" rows="3" :disabled="!$hasAccessToModule('anamnese')"
+                            placeholder="Liste os principais sintomas apresentados..." class="w-full" />
                     </div>
                 </div>
 
@@ -58,12 +40,8 @@
                 <div class="col-12 md:col-6">
                     <div class="field">
                         <label class="block text-500 font-medium mb-2">Duração dos Sintomas</label>
-                        <Textarea 
-                            v-model="form.duracao_sintomas" 
-                            rows="2" 
-                            placeholder="Há quanto tempo os sintomas estão presentes?"
-                            class="w-full"
-                        />
+                        <Textarea v-model="form.duracao_sintomas" rows="2" :disabled="!$hasAccessToModule('anamnese')"
+                            placeholder="Há quanto tempo os sintomas estão presentes?" class="w-full" />
                     </div>
                 </div>
 
@@ -71,12 +49,8 @@
                 <div class="col-12 md:col-6">
                     <div class="field">
                         <label class="block text-500 font-medium mb-2">Intensidade dos Sintomas</label>
-                        <Textarea 
-                            v-model="form.intensidade_sintomas" 
-                            rows="2" 
-                            placeholder="Como você avalia a intensidade dos sintomas?"
-                            class="w-full"
-                        />
+                        <Textarea v-model="form.intensidade_sintomas" rows="2" :disabled="!$hasAccessToModule('anamnese')"
+                            placeholder="Como você avalia a intensidade dos sintomas?" class="w-full" />
                     </div>
                 </div>
 
@@ -84,12 +58,8 @@
                 <div class="col-12">
                     <div class="field">
                         <label class="block text-500 font-medium mb-2">Fatores Desencadeantes</label>
-                        <Textarea 
-                            v-model="form.fatores_desencadeantes" 
-                            rows="3" 
-                            placeholder="O que desencadeia ou piora os sintomas?"
-                            class="w-full"
-                        />
+                        <Textarea v-model="form.fatores_desencadeantes" rows="3" :disabled="!$hasAccessToModule('anamnese')"
+                            placeholder="O que desencadeia ou piora os sintomas?" class="w-full" />
                     </div>
                 </div>
 
@@ -97,12 +67,8 @@
                 <div class="col-12 md:col-6">
                     <div class="field">
                         <label class="block text-500 font-medium mb-2">Fatores que Melhoram</label>
-                        <Textarea 
-                            v-model="form.fatores_melhoram" 
-                            rows="2" 
-                            placeholder="O que ajuda a aliviar os sintomas?"
-                            class="w-full"
-                        />
+                        <Textarea v-model="form.fatores_melhoram" rows="2" :disabled="!$hasAccessToModule('anamnese')"
+                            placeholder="O que ajuda a aliviar os sintomas?" class="w-full" />
                     </div>
                 </div>
 
@@ -110,12 +76,8 @@
                 <div class="col-12 md:col-6">
                     <div class="field">
                         <label class="block text-500 font-medium mb-2">Fatores que Pioram</label>
-                        <Textarea 
-                            v-model="form.fatores_pioram" 
-                            rows="2" 
-                            placeholder="O que piora os sintomas?"
-                            class="w-full"
-                        />
+                        <Textarea v-model="form.fatores_pioram" rows="2" :disabled="!$hasAccessToModule('anamnese')" placeholder="O que piora os sintomas?"
+                            class="w-full" />
                     </div>
                 </div>
 
@@ -123,12 +85,9 @@
                 <div class="col-12">
                     <div class="field">
                         <label class="block text-500 font-medium mb-2">Impacto na Vida Diária</label>
-                        <Textarea 
-                            v-model="form.impacto_vida_diaria" 
-                            rows="3" 
+                        <Textarea v-model="form.impacto_vida_diaria" rows="3" :disabled="!$hasAccessToModule('anamnese')"
                             placeholder="Como os sintomas afetam sua rotina, trabalho, relacionamentos?"
-                            class="w-full"
-                        />
+                            class="w-full" />
                     </div>
                 </div>
 
@@ -136,12 +95,8 @@
                 <div class="col-12">
                     <div class="field">
                         <label class="block text-500 font-medium mb-2">Tentativas de Tratamento Anteriores</label>
-                        <Textarea 
-                            v-model="form.tentativas_tratamento_anteriores" 
-                            rows="3" 
-                            placeholder="Já buscou ajuda anteriormente? Que tipo de tratamento?"
-                            class="w-full"
-                        />
+                        <Textarea v-model="form.tentativas_tratamento_anteriores" rows="3" :disabled="!$hasAccessToModule('anamnese')"
+                            placeholder="Já buscou ajuda anteriormente? Que tipo de tratamento?" class="w-full" />
                     </div>
                 </div>
 
@@ -149,12 +104,8 @@
                 <div class="col-12">
                     <div class="field">
                         <label class="block text-500 font-medium mb-2">Medicamentos Atuais</label>
-                        <Textarea 
-                            v-model="form.medicamentos_atuais" 
-                            rows="2" 
-                            placeholder="Está tomando algum medicamento atualmente?"
-                            class="w-full"
-                        />
+                        <Textarea v-model="form.medicamentos_atuais" rows="2" :disabled="!$hasAccessToModule('anamnese')"
+                            placeholder="Está tomando algum medicamento atualmente?" class="w-full" />
                     </div>
                 </div>
 
@@ -162,12 +113,8 @@
                 <div class="col-12">
                     <div class="field">
                         <label class="block text-500 font-medium mb-2">Histórico Psiquiátrico</label>
-                        <Textarea 
-                            v-model="form.historico_psiquiatrico" 
-                            rows="3" 
-                            placeholder="Já teve diagnóstico ou tratamento psiquiátrico anterior?"
-                            class="w-full"
-                        />
+                        <Textarea v-model="form.historico_psiquiatrico" rows="3" :disabled="!$hasAccessToModule('anamnese')"
+                            placeholder="Já teve diagnóstico ou tratamento psiquiátrico anterior?" class="w-full" />
                     </div>
                 </div>
 
@@ -175,12 +122,8 @@
                 <div class="col-12">
                     <div class="field">
                         <label class="block text-500 font-medium mb-2">Histórico Médico</label>
-                        <Textarea 
-                            v-model="form.historico_medico" 
-                            rows="3" 
-                            placeholder="Doenças, cirurgias, internações anteriores..."
-                            class="w-full"
-                        />
+                        <Textarea v-model="form.historico_medico" rows="3" :disabled="!$hasAccessToModule('anamnese')"
+                            placeholder="Doenças, cirurgias, internações anteriores..." class="w-full" />
                     </div>
                 </div>
 
@@ -188,12 +131,8 @@
                 <div class="col-12">
                     <div class="field">
                         <label class="block text-500 font-medium mb-2">Histórico Familiar</label>
-                        <Textarea 
-                            v-model="form.historico_familiar" 
-                            rows="3" 
-                            placeholder="Histórico de doenças mentais na família..."
-                            class="w-full"
-                        />
+                        <Textarea v-model="form.historico_familiar" rows="3" :disabled="!$hasAccessToModule('anamnese')"
+                            placeholder="Histórico de doenças mentais na família..." class="w-full" />
                     </div>
                 </div>
 
@@ -201,12 +140,8 @@
                 <div class="col-12">
                     <div class="field">
                         <label class="block text-500 font-medium mb-2">Uso de Substâncias</label>
-                        <Textarea 
-                            v-model="form.substancia_uso" 
-                            rows="2" 
-                            placeholder="Uso de álcool, tabaco, drogas..."
-                            class="w-full"
-                        />
+                        <Textarea v-model="form.substancia_uso" rows="2" :disabled="!$hasAccessToModule('anamnese')" placeholder="Uso de álcool, tabaco, drogas..."
+                            class="w-full" />
                     </div>
                 </div>
 
@@ -214,12 +149,9 @@
                 <div class="col-12">
                     <div class="field">
                         <label class="block text-500 font-medium mb-2">Relacionamentos</label>
-                        <Textarea 
-                            v-model="form.relacionamentos" 
-                            rows="3" 
+                        <Textarea v-model="form.relacionamentos" rows="3" :disabled="!$hasAccessToModule('anamnese')"
                             placeholder="Como estão seus relacionamentos familiares, amorosos, sociais?"
-                            class="w-full"
-                        />
+                            class="w-full" />
                     </div>
                 </div>
 
@@ -227,12 +159,8 @@
                 <div class="col-12">
                     <div class="field">
                         <label class="block text-500 font-medium mb-2">Trabalho/Estudo</label>
-                        <Textarea 
-                            v-model="form.trabalho_estudo" 
-                            rows="2" 
-                            placeholder="Situação profissional e acadêmica atual..."
-                            class="w-full"
-                        />
+                        <Textarea v-model="form.trabalho_estudo" rows="2" :disabled="!$hasAccessToModule('anamnese')"
+                            placeholder="Situação profissional e acadêmica atual..." class="w-full" />
                     </div>
                 </div>
 
@@ -240,12 +168,8 @@
                 <div class="col-12">
                     <div class="field">
                         <label class="block text-500 font-medium mb-2">Atividades de Lazer</label>
-                        <Textarea 
-                            v-model="form.atividades_lazer" 
-                            rows="2" 
-                            placeholder="Hobbies, atividades que gosta de fazer..."
-                            class="w-full"
-                        />
+                        <Textarea v-model="form.atividades_lazer" rows="2" :disabled="!$hasAccessToModule('anamnese')"
+                            placeholder="Hobbies, atividades que gosta de fazer..." class="w-full" />
                     </div>
                 </div>
 
@@ -253,12 +177,8 @@
                 <div class="col-12">
                     <div class="field">
                         <label class="block text-500 font-medium mb-2">Suporte Social</label>
-                        <Textarea 
-                            v-model="form.suporte_social" 
-                            rows="2" 
-                            placeholder="Pessoas que oferecem apoio e suporte..."
-                            class="w-full"
-                        />
+                        <Textarea v-model="form.suporte_social" rows="2" :disabled="!$hasAccessToModule('anamnese')"
+                            placeholder="Pessoas que oferecem apoio e suporte..." class="w-full" />
                     </div>
                 </div>
 
@@ -266,12 +186,8 @@
                 <div class="col-12">
                     <div class="field">
                         <label class="block text-500 font-medium mb-2">Expectativas do Tratamento</label>
-                        <Textarea 
-                            v-model="form.expectativas_tratamento" 
-                            rows="3" 
-                            placeholder="O que espera alcançar com o tratamento psicológico?"
-                            class="w-full"
-                        />
+                        <Textarea v-model="form.expectativas_tratamento" rows="3" :disabled="!$hasAccessToModule('anamnese')"
+                            placeholder="O que espera alcançar com o tratamento psicológico?" class="w-full" />
                     </div>
                 </div>
 
@@ -279,12 +195,8 @@
                 <div class="col-12">
                     <div class="field">
                         <label class="block text-500 font-medium mb-2">Observações Adicionais</label>
-                        <Textarea 
-                            v-model="form.observacoes_adicionais" 
-                            rows="3" 
-                            placeholder="Outras informações relevantes..."
-                            class="w-full"
-                        />
+                        <Textarea v-model="form.observacoes_adicionais" rows="3" :disabled="!$hasAccessToModule('anamnese')"
+                            placeholder="Outras informações relevantes..." class="w-full" />
                     </div>
                 </div>
             </div>
@@ -342,10 +254,13 @@ export default {
         // Não carrega automaticamente - será chamado quando a tab for acessada
     },
     methods: {
+        atualizarPlano() {
+            this.$router.push('/upgrade');
+        },
         async carregarAnamnese() {
             try {
                 const response = await this.$pacientesService.buscarAnamnese(this.pacienteId);
-                
+
                 if (response && response.id) {
                     // Anamnese existe, preencher formulário para edição
                     this.isEditing = true;
@@ -388,7 +303,7 @@ export default {
 
         async salvar() {
             this.loading = true;
-            
+
             try {
                 if (this.isEditing) {
                     // Editar anamnese existente
@@ -428,6 +343,37 @@ export default {
 </script>
 
 <style scoped>
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    text-align: center;
+}
+
+.empty-icon {
+    margin-bottom: 1rem;
+}
+
+.empty-content {
+    max-width: 400px;
+}
+
+.empty-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.empty-description {
+    color: #6b7280;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
 .card {
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);

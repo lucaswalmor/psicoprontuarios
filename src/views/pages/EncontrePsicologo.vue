@@ -1,5 +1,5 @@
 <template>
-    <div class="grid">
+    <div class="grid" v-if="$hasAccessToModule('perfil_publico')">
         <div class="col-12">
             <div class="card">
                 <!-- Cabeçalho -->
@@ -397,11 +397,27 @@
         </div>
     </div>
 
+    <div class="card" v-else>
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="pi pi-exclamation-triangle text-6xl text-gray-400"></i>
+            </div>
+            <div class="empty-content">
+                <h3 class="empty-title">Módulo indisponível</h3>
+                <p class="empty-description">
+                    Este módulo não está disponível para o seu plano.
+                </p>
+                <Button label="Clique aqui para atualizar seu plano" @click="$router.push('/upgrade')" />
+            </div>
+        </div>
+    </div>
+
     <!-- Dialogs -->
     <DialogCriarPerfil 
         :visible="dialogCriarPerfil"
         @update:visible="dialogCriarPerfil = false"
         @perfil-criado="onPerfilCriado"
+        v-if="$hasAccessToModule('perfil_publico')"
     />
 
     <DialogEditarNome 
@@ -409,6 +425,7 @@
         :psicologo="psicologo"
         @update:visible="dialogEditarNome = false"
         @nome-atualizado="onNomeAtualizado"
+        v-if="$hasAccessToModule('perfil_publico')"
     />
 
     <DialogEditarCrp 
@@ -416,12 +433,14 @@
         :psicologo="psicologo"
         @update:visible="dialogEditarCrp = false"
         @crp-atualizado="onCrpAtualizado"
+        v-if="$hasAccessToModule('perfil_publico')"
     />
 
     <DialogEditarFoto 
         :visible="dialogEditarFoto"
         @update:visible="dialogEditarFoto = false"
         @foto-atualizada="onFotoAtualizada"
+        v-if="$hasAccessToModule('perfil_publico')"
     />
 
     <DialogEditarDescricao 
@@ -429,12 +448,14 @@
         :perfil="perfil"
         @update:visible="dialogEditarDescricao = false"
         @descricao-atualizada="onDescricaoAtualizada"
+        v-if="$hasAccessToModule('perfil_publico')"
     />
 
     <DialogEditarVideo 
         :visible="dialogEditarVideo"
         @update:visible="dialogEditarVideo = false"
         @video-atualizado="onVideoAtualizado"
+        v-if="$hasAccessToModule('perfil_publico')"
     />
 
     <DialogEditarEspecialidades 
@@ -442,6 +463,7 @@
         :perfil="perfil"
         @update:visible="dialogEditarEspecialidades = false"
         @especialidades-atualizadas="onEspecialidadesAtualizadas"
+        v-if="$hasAccessToModule('perfil_publico')"
     />
 
     <DialogEditarTemas 
@@ -449,6 +471,7 @@
         :perfil="perfil"
         @update:visible="dialogEditarTemas = false"
         @temas-atualizados="onTemasAtualizados"
+        v-if="$hasAccessToModule('perfil_publico')"
     />
 
         <DialogEditarAtendimento 
@@ -457,6 +480,7 @@
             :campo-edicao="campoEdicaoAtendimento"
             @update:visible="dialogEditarAtendimento = false"
             @atendimento-atualizado="onAtendimentoAtualizado"
+            v-if="$hasAccessToModule('perfil_publico')"
         />
 
     <DialogEditarLocalizacao 
@@ -464,6 +488,7 @@
         :perfil="perfil"
         @update:visible="dialogEditarLocalizacao = false"
         @localizacao-atualizada="onLocalizacaoAtualizada"
+        v-if="$hasAccessToModule('perfil_publico')"
     />
 
     <DialogEditarContato 
@@ -471,6 +496,7 @@
         :perfil="perfil"
         @update:visible="dialogEditarContato = false"
         @contato-atualizado="onContatoAtualizado"
+        v-if="$hasAccessToModule('perfil_publico')"
     />
 
     <DialogEditarRedesSociais 
@@ -478,6 +504,7 @@
         :perfil="perfil"
         @update:visible="dialogEditarRedesSociais = false"
         @redes-atualizadas="onRedesAtualizadas"
+        v-if="$hasAccessToModule('perfil_publico')"
     />
 
     <DialogEditarConvenios 
@@ -485,6 +512,7 @@
         :perfil="perfil"
         @update:visible="dialogEditarConvenios = false"
         @convenios-atualizados="onConveniosAtualizados"
+        v-if="$hasAccessToModule('perfil_publico')"
     />
 
     <DialogEditarIdiomas 
@@ -492,12 +520,14 @@
         :perfil="perfil"
         @update:visible="dialogEditarIdiomas = false"
         @idiomas-atualizados="onIdiomasAtualizados"
+        v-if="$hasAccessToModule('perfil_publico')"
     />
 
     <DialogPreviewPerfil 
         :visible="dialogPreviewPerfil"
         :perfil="perfil"
         @update:visible="dialogPreviewPerfil = false"
+        v-if="$hasAccessToModule('perfil_publico')"
     />
 </template>
 
@@ -581,6 +611,10 @@ export default {
         };
     },
     async mounted() {
+        if (!this.$hasAccessToModule('perfil_publico')) {
+            return;
+        }
+
         await this.carregarDadosUsuario();
         await this.carregarPerfil();
     },

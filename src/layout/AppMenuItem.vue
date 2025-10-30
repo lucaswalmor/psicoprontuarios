@@ -1,71 +1,60 @@
-<script setup>
+<script>
 import { useLayout } from '@/layout/composables/layout';
-import { onBeforeMount, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
 
-const route = useRoute();
-
-const { layoutState, setActiveMenuItem, toggleMenu } = useLayout();
-
-const props = defineProps({
-    item: {
-        type: Object,
-        default: () => ({})
+export default {
+    name: 'AppMenuItem',
+    props: {
+        item: {
+            type: Object,
+            default: () => ({})
+        },
+        index: {
+            type: Number,
+            default: 0
+        },
+        root: {
+            type: Boolean,
+            default: true
+        },
+        parentItemKey: {
+            type: String,
+            default: null
+        }
     },
-    index: {
-        type: Number,
-        default: 0
+    data() {
+        return {
+            layoutState: null,
+            setActiveMenuItem: null,
+            toggleMenu: null,
+            isActiveMenu: false,
+            itemKey: null
+        };
     },
-    root: {
-        type: Boolean,
-        default: true
+    created() {
+        const { layoutState, setActiveMenuItem, toggleMenu } = useLayout();
+        this.layoutState = layoutState;
+        this.setActiveMenuItem = setActiveMenuItem;
+        this.toggleMenu = toggleMenu;
     },
-    parentItemKey: {
-        type: String,
-        default: null
+    beforeMount() {
+        this.itemKey = this.parentItemKey ? this.parentItemKey + '-' + this.index : String(this.index);
+        const activeItem = this.layoutState.activeMenuItem;
+        this.isActiveMenu = activeItem === this.itemKey || (activeItem ? activeItem.startsWith(this.itemKey + '-') : false);
+    },
+    watch: {
+        'layoutState.activeMenuItem'(newVal) {
+            this.isActiveMenu = newVal === this.itemKey || newVal.startsWith(this.itemKey + '-');
+        }
+    },
+    methods: {
+        itemClick(event, item) {
+            this.$router.push(item.to);
+        },
+        checkActiveRoute(item) {
+            return this.$route.path === item.to;
+        }
     }
-});
-
-const isActiveMenu = ref(false);
-const itemKey = ref(null);
-
-onBeforeMount(() => {
-    itemKey.value = props.parentItemKey ? props.parentItemKey + '-' + props.index : String(props.index);
-
-    const activeItem = layoutState.activeMenuItem;
-
-    isActiveMenu.value = activeItem === itemKey.value || activeItem ? activeItem.startsWith(itemKey.value + '-') : false;
-});
-
-watch(
-    () => layoutState.activeMenuItem,
-    (newVal) => {
-        isActiveMenu.value = newVal === itemKey.value || newVal.startsWith(itemKey.value + '-');
-    }
-);
-
-function itemClick(event, item) {
-    if (item.disabled) {
-        event.preventDefault();
-        return;
-    }
-
-    if ((item.to || item.url) && (layoutState.staticMenuMobileActive || layoutState.overlayMenuActive)) {
-        toggleMenu();
-    }
-
-    if (item.command) {
-        item.command({ originalEvent: event, item: item });
-    }
-
-    const foundItemKey = item.items ? (isActiveMenu.value ? props.parentItemKey : itemKey) : itemKey.value;
-
-    setActiveMenuItem(foundItemKey);
-}
-
-function checkActiveRoute(item) {
-    return route.path === item.to;
-}
+};
 </script>
 
 <template>

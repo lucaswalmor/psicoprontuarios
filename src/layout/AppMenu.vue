@@ -44,37 +44,37 @@ export default {
                             label: 'Dashboard', 
                             icon: 'pi pi-fw pi-home', 
                             to: '/dashboard',
-                            requiredFeature: 'dashboard'
+                            requiredFeature: null
                         },
                         {
                             label: 'Gestão Financeira', 
                             icon: 'pi pi-fw pi-wallet', 
                             to: '/financeiro',
-                            requiredFeature: 'gestao_financeira'
+                            requiredFeature: null
                         },
                         {
                             label: 'Pacientes', 
                             icon: 'pi pi-fw pi-user', 
                             to: '/pacientes',
-                            requiredFeature: null // Sempre disponível
+                            requiredFeature: null
                         },
                         {
                             label: 'Agendamentos', 
                             icon: 'pi pi-fw pi-calendar', 
                             to: '/agendamentos',
-                            requiredFeature: 'agendamentos'
+                            requiredFeature: null
                         },
                         {
                             label: 'Encontre Psicólogo', 
                             icon: 'pi pi-fw pi-user-edit', 
-                            to: '/meu-psicologo',
-                            requiredFeature: 'perfil_publico'
+                            to: '/encontre-psicologo',
+                            requiredFeature: null
                         },
                         {
                             label: 'Arquivos', 
                             icon: 'pi pi-fw pi-file-word', 
                             to: '/modelos-arquivos',
-                            requiredFeature: null // Sempre disponível
+                            requiredFeature: null
                         },
                     ]
                 },
@@ -97,29 +97,7 @@ export default {
                 }
             ];
 
-            // Filtrar itens baseado no plano
-            return baseMenu.map(section => ({
-                ...section,
-                items: section.items.filter(item => {
-                    // Plano Vitalício: acesso total
-                    if (this.planStore.isVitalicio) {
-                        return true;
-                    }
-                    
-                    // Sem feature requerida: sempre disponível
-                    if (!item.requiredFeature) {
-                        return true;
-                    }
-                    
-                    // Planos pagos inativos: ocultar módulos premium
-                    if (this.planStore.isPlanoPago && !this.planStore.podeEditarDados) {
-                        return false;
-                    }
-                    
-                    // Verificar se tem acesso ao módulo
-                    return this.planStore.temAcessoModulo(item.requiredFeature);
-                })
-            }));
+            return baseMenu;
         }
     },
     methods: {

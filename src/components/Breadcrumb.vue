@@ -49,12 +49,12 @@ export default {
             const routeNameMapping = {
                 'landing': 'Página Inicial',
                 'login': 'Login',
-                'DashboardGeral': '',
+                'DashboardGeral': 'Geral',
                 'pacientes': 'Pacientes',
                 'prontuarios': 'Prontuários',
                 'FinanceiroLista': 'Lista de Transações',
                 'FinanceiroNovo': 'Nova Transação',
-                'FinanceiroDashboard': 'Dashboard Financeiro',
+                'FinanceiroDashboard': 'Financeiro',
                 'FinanceiroEditar': 'Editar Transação',
                 'Agendamentos': 'Agendamentos',
                 'formlayout': 'Layout de Formulário',
@@ -88,6 +88,7 @@ export default {
                 'Configurações': 'Configurações',
                 'Assinatura': 'Assinatura',
                 'Upgrade': 'Upgrade',
+                'EncontrePsicologo': 'Encontre Psicólogo',
             };
             
             const pathSegments = route.path.split('/').filter(segment => segment);

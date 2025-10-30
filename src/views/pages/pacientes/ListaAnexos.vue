@@ -1,8 +1,8 @@
 <template>
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <Button v-if="!planStore.isPlanPaused" label="Upload de Anexo" icon="pi pi-upload"
-            @click="dialogUploadAnexo = true" :disabled="!planStore.canUploadAnexos"
-            :class="{ 'opacity-50': !planStore.canUploadAnexos }" />
+        <Button v-if="$hasAccessToModule('anexos')" label="Upload de Anexo" icon="pi pi-upload"
+            @click="dialogUploadAnexo = true" :disabled="!$hasAccessToModule('anexos')"
+            :class="{ 'opacity-50': !$hasAccessToModule('anexos') }" />
     </div>
 
     <DataTable :value="anexos" :loading="loading" tableStyle="min-width: 50rem"
@@ -27,7 +27,7 @@
                 <div class="flex gap-2">
                     <Button icon="pi pi-download" class="p-button-text p-button-sm"
                         @click="downloadAnexo(slotProps.data)" v-tooltip.top="'Download'" />
-                    <Button v-if="!planStore.isPlanPaused" icon="pi pi-trash"
+                    <Button v-if="$hasAccessToModule('anexos')" icon="pi pi-trash"
                         class="p-button-text p-button-sm p-button-danger" @click="deletarAnexo(slotProps.data, $event)"
                         v-tooltip.top="'Excluir'" />
                 </div>
@@ -37,16 +37,17 @@
         <template #empty>
             <div class="empty-state">
                 <div class="empty-icon">
-                    <i class="pi pi-file text-6xl text-gray-400"></i>
+                    <i class="pi text-6xl text-gray-400" :class="$hasAccessToModule('anexos') ? 'pi-file' : 'pi-exclamation-triangle'"></i>
                 </div>
                 <div class="empty-content">
-                    <h3 class="empty-title">Nenhum anexo encontrado</h3>
+                    <h3 class="empty-title">Módulo indisponível</h3>
                     <p class="empty-description">
-                        Este paciente ainda não possui arquivos anexados. Clique no botão "Upload de Anexo" para
-                        adicionar o primeiro arquivo.
+                        {{ $tipoPlano() === 1 ? 'Este módulo não está disponível para o seu plano.' : 'Este paciente ainda não possui arquivos anexados. Clique no botão "Upload de Anexo" para adicionar o primeiro arquivo.' }}
                     </p>
-                    <Button v-if="!planStore.isPlanPaused" label="Upload de Anexo" icon="pi pi-upload"
+                    <Button v-if="$hasAccessToModule('anexos')" label="Upload de Anexo" icon="pi pi-upload"
                         @click="dialogUploadAnexo = true" class="mt-3" />
+
+                    <Button v-if="!$hasAccessToModule('anexos')" label="Clique aqui para atualizar seu plano" @click="$router.push('/upgrade')" />
                 </div>
             </div>
         </template>
@@ -154,6 +155,8 @@ export default {
                         });
                         // Emitir evento para o componente pai recarregar os dados
                         this.$emit('anexoDeletado');
+                        // Disparar evento global para atualizar stats/limites
+                        window.dispatchEvent(new CustomEvent('anexo-removido'));
                     } catch (error) {
                         console.error('Erro ao excluir anexo:', error);
                         this.$toast.add({
@@ -182,6 +185,8 @@ export default {
         async onAnexoUploaded() {
             // Emitir evento para o componente pai recarregar os dados
             this.$emit('anexoUploaded');
+            // Disparar evento global para atualizar stats/limites
+            window.dispatchEvent(new CustomEvent('anexo-uploaded'));
         },
 
         async recarregarAssinatura() {
@@ -210,36 +215,6 @@ h1 {
 h2 {
     margin-bottom: 0;
     color: var(--text-color);
-}
-
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem 1rem;
-    text-align: center;
-}
-
-.empty-icon {
-    margin-bottom: 1rem;
-}
-
-.empty-content {
-    max-width: 400px;
-}
-
-.empty-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 0.5rem;
-}
-
-.empty-description {
-    color: #6b7280;
-    line-height: 1.5;
-    margin-bottom: 1rem;
 }
 
 .mt-3 {

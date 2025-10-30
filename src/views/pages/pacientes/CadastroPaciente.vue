@@ -453,6 +453,8 @@ export default {
                     detail: 'Paciente cadastrado com sucesso',
                     life: 3000
                 });
+                // Disparar evento global para atualizar stats/limites
+                window.dispatchEvent(new CustomEvent('paciente-criado'));
 
                 this.$router.push('/pacientes/editar/' + response.paciente);
             } catch (error) {

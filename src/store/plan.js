@@ -62,13 +62,15 @@ export const usePlanStore = defineStore('plan', {
         
         canAddAnexo: (state, getters) => {
             if (!state.stats) return false;
+            const canAdd = !!state.stats.can_add_anexo;
             // Verificação de segurança para evitar erro durante atualização
             if (!getters || !getters.podeEditarDados) {
                 // Se getters não está disponível, usar a lógica direta
-                if (state.planoId === 1 || state.planoId === 4) return state.stats.can_add_anexo;
-                return state.stats.can_add_anexo && state.statusAssinatura === 'ativa';
+                if (state.planoId === 1 || state.planoId === 4) return canAdd;
+                return canAdd && state.statusAssinatura === 'ativa';
             }
-            return state.stats.can_add_anexo && getters.podeEditarDados;
+            console.log('canAddAnexo: ', canAdd && getters.podeEditarDados);
+            return canAdd;
         },
         
         pacientesCount: (state) => state.stats?.pacientes_count || 0,
@@ -96,7 +98,6 @@ export const usePlanStore = defineStore('plan', {
             const statusAssinatura = localStorage.getItem('statusAssinatura');
             const assinaturaAtiva = localStorage.getItem('assinaturaAtiva');
             
-            if (planoId) this.planoId = parseInt(planoId);
             if (planoNome) this.planoNome = planoNome;
             if (modulosPlano) this.modulosPlano = JSON.parse(modulosPlano);
             if (statusAssinatura) this.statusAssinatura = statusAssinatura;
@@ -153,6 +154,7 @@ export const usePlanStore = defineStore('plan', {
             localStorage.setItem('modulosPlano', JSON.stringify(this.modulosPlano));
             localStorage.setItem('statusAssinatura', this.statusAssinatura);
             localStorage.setItem('assinaturaAtiva', this.assinaturaAtiva);
+            localStorage.setItem('stats', JSON.stringify(this.stats));
         },
         
         clearPlanData() {
