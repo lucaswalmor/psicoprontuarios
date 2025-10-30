@@ -111,16 +111,6 @@
 
                                                 <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
                                                     <div class="flex align-items-center gap-3">
-                                                        <i class="pi pi-check-circle text-primary text-xl"></i>
-                                                        <div>
-                                                            <h6 class="m-0 text-800">Status da Assinatura</h6>
-                                                            <small class="text-600">{{ planStore.statusAssinatura || 'Sem assinatura' }}</small>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
-                                                    <div class="flex align-items-center gap-3">
                                                         <i class="pi pi-users text-primary text-xl"></i>
                                                         <div>
                                                             <h6 class="m-0 text-800">Pacientes</h6>
