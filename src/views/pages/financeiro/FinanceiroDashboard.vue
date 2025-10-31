@@ -1,5 +1,5 @@
 <template>
-    <div class="grid" v-if="$hasAccessToModule('financeiro')">
+    <div class="grid" v-if="$hasAccessToModule('gestao_financeira')">
         <div class="col-12">
             <div class="card">
                 <h5 class="text-600">Dashboard Financeiro</h5>
