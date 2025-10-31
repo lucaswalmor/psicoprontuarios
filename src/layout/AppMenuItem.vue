@@ -43,12 +43,21 @@ export default {
     },
     watch: {
         'layoutState.activeMenuItem'(newVal) {
-            this.isActiveMenu = newVal === this.itemKey || newVal.startsWith(this.itemKey + '-');
+            this.isActiveMenu = newVal === this.itemKey || (newVal ? newVal.startsWith(this.itemKey + '-') : false);
         }
     },
     methods: {
         itemClick(event, item) {
-            this.$router.push(item.to);
+            if (item.items) {
+                // Se tem submenu, fazer toggle
+                event.preventDefault();
+                const active = this.layoutState.activeMenuItem === this.itemKey;
+                this.setActiveMenuItem(active ? null : this.itemKey);
+            } else if (item.to) {
+                // Se tem rota, navegar
+                event.preventDefault();
+                this.$router.push(item.to);
+            }
         },
         checkActiveRoute(item) {
             return this.$route.path === item.to;
@@ -60,7 +69,7 @@ export default {
 <template>
     <li :class="{ 'layout-root-menuitem': root, 'active-menuitem': isActiveMenu }">
         <div v-if="root && item.visible !== false" class="layout-menuitem-root-text">{{ item.label }}</div>
-        <a v-if="(!item.to || item.items) && item.visible !== false" :href="item.url" @click="itemClick($event, item, index)" :class="item.class" :target="item.target" tabindex="0">
+        <a v-if="(!item.to || item.items) && item.visible !== false" :href="item.url || (item.items ? '#' : null)" @click="itemClick($event, item, index)" :class="item.class" :target="item.target" tabindex="0">
             <i :class="item.icon" class="layout-menuitem-icon"></i>
             <span class="layout-menuitem-text">{{ item.label }}</span>
             <i class="pi pi-fw pi-angle-down layout-submenu-toggler" v-if="item.items"></i>

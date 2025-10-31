@@ -7,5 +7,10 @@ export default {
     
     tipoPlano() {
         return parseInt(localStorage.getItem('planoId') || '{}');
+    },
+
+    isPlanPaused() {
+        console.log('assinatura_ativa: ', localStorage.getItem('assinatura_ativa'));
+        return localStorage.getItem('assinatura_ativa');
     }
 };

@@ -84,15 +84,19 @@ export default {
                         {
                             label: 'Geral', 
                             icon: 'pi pi-fw pi-cog', 
-                            to: '/configuracoes',
-                            requiredFeature: null // Sempre disponível
+                            items: [
+                                {
+                                    label: 'Configurações', 
+                                    icon: 'pi pi-fw pi-cog', 
+                                    to: '/configuracoes',
+                                },
+                                {
+                                    label: 'FAQ - Dúvidas', 
+                                    icon: 'pi pi-fw pi-question-circle', 
+                                    to: '/faq',
+                                }
+                            ]
                         },
-                        {
-                            label: 'FAQ - Dúvidas', 
-                            icon: 'pi pi-fw pi-question-circle', 
-                            to: '/faq',
-                            requiredFeature: null // Sempre disponível
-                        }
                     ]
                 }
             ];

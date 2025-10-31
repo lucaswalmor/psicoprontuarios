@@ -87,5 +87,6 @@ app.config.globalProperties.$anexosService = services.anexosService;
 app.config.globalProperties.$npsService = services.npsService;
 app.config.globalProperties.$hasAccessToModule = planValidations.hasAccessToModule;
 app.config.globalProperties.$tipoPlano = planValidations.tipoPlano;
+app.config.globalProperties.$isPlanPaused = planValidations.isPlanPaused;
 
 app.mount('#app');

@@ -227,7 +227,11 @@ export function useLayout() {
     };
 
     const setActiveMenuItem = (item) => {
-        layoutState.activeMenuItem = item.value || item;
+        if (item === null || item === undefined) {
+            layoutState.activeMenuItem = null;
+        } else {
+            layoutState.activeMenuItem = item.value || item;
+        }
     };
 
     const toggleDarkMode = () => {

@@ -6,7 +6,7 @@
                     <h5>Transações Financeiras</h5>
                     <div class="flex gap-2">
                         <Button 
-                            v-if="!planStore.isPlanPaused"
+                            v-if="!$isPlanPaused()"
                             label="Nova Transação" 
                             icon="pi pi-plus" 
                             @click="novaTransacao" 
@@ -79,7 +79,7 @@
                     <Column header="Ações" :exportable="false" style="min-width:8rem">
                         <template #body="{ data }">
                             <Button 
-                                v-if="!planStore.isPlanPaused"
+                                v-if="!$isPlanPaused()"
                                 icon="pi pi-pencil" 
                                 rounded 
                                 outlined 
@@ -87,7 +87,7 @@
                                 @click="editarTransacao(data.id)" 
                             />
                             <Button 
-                                v-if="!planStore.isPlanPaused"
+                                v-if="!$isPlanPaused()"
                                 icon="pi pi-trash" 
                                 rounded 
                                 outlined 
@@ -110,7 +110,7 @@
         <template #footer>
             <Button label="Não" icon="pi pi-times" outlined @click="dialogVisible = false" />
             <Button 
-                v-if="!planStore.isPlanPaused"
+                v-if="!$isPlanPaused()"
                 label="Sim" 
                 icon="pi pi-check" 
                 severity="danger" 
@@ -133,8 +133,8 @@ export default {
             filtros: {
                 tipo: 'todos',
                 categoria: '',
-                data_inicial: null,
-                data_final: null,
+                data_inicial: this.getDataInicioFim().dataInicial,
+                data_final: this.getDataInicioFim().dataFinal,
                 page: 1
             },
             tipos: [
@@ -148,6 +148,23 @@ export default {
         await this.carregarTransacoes();
     },
     methods: {
+        getDataInicioFim() {
+            const hoje = new Date();
+            
+            // Definindo o primeiro dia do mês
+            const dataInicial = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+            
+            // Definindo o último dia do mês
+            const dataFinal = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+            
+            // Retornando as duas datas
+            return {
+                dataInicial,
+                dataFinal
+            };
+        },
+
+
         formatarData(data) {
             if (!data) return '-';
             return new Date(data).toLocaleDateString('pt-BR');
