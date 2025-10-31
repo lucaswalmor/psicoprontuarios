@@ -212,9 +212,15 @@ const router = createRouter({
                     component: () => import('@/views/pages/Documentation.vue')
                 },
                 {
-                    path: '/financeiro',
-                    name: 'FinanceiroDashboard',
-                    component: () => import('@/views/pages/financeiro/FinanceiroDashboard.vue'),
+                    path: '/financeiro/receitas',
+                    name: 'FinanceiroReceitas',
+                    component: () => import('@/views/pages/financeiro/FinanceiroLista.vue'),
+                    meta: { requiresPlanCheck: true }
+                },
+                {
+                    path: '/financeiro/despesas',
+                    name: 'FinanceiroDespesas',
+                    component: () => import('@/views/pages/financeiro/FinanceiroLista.vue'),
                     meta: { requiresPlanCheck: true }
                 },
                 {
@@ -232,8 +238,7 @@ const router = createRouter({
                 {
                     path: '/financeiro/lista',
                     name: 'FinanceiroLista',
-                    component: () => import('@/views/pages/financeiro/FinanceiroLista.vue'),
-                    meta: { requiresPlanCheck: true }
+                    redirect: '/financeiro/receitas'
                 },
                 {
                     path: '/agendamentos',

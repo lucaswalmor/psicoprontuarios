@@ -3,7 +3,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="flex justify-content-between align-items-center mb-4">
-                    <h5 class="mb-0">{{ isEditing ? 'Editar Transação' : 'Nova Transação' }}</h5>
+                    <h5 class="mb-0">{{ tituloFormulario }}</h5>
                     <div class="flex gap-2">
                         <Button 
                             type="button" 
@@ -22,22 +22,6 @@
                 
                 <form @submit.prevent="salvar" class="p-fluid">
                     <div class="grid">
-                        <div class="col-12 md:col-6">
-                            <div class="field">
-                                <label for="tipo" class="block text-900 font-medium mb-2">Tipo *</label>
-                                <Dropdown 
-                                    v-model="form.tipo" 
-                                    :options="tipos" 
-                                    optionLabel="label" 
-                                    optionValue="value"
-                                    placeholder="Selecione o tipo"
-                                    class="w-full"
-                                    :class="{ 'p-invalid': errors.tipo }"
-                                />
-                                <small v-if="errors.tipo" class="p-error">{{ errors.tipo }}</small>
-                            </div>
-                        </div>
-                        
                         <div class="col-12 md:col-6">
                             <div class="field">
                                 <div class="flex align-items-center gap-2 mb-2">
@@ -401,10 +385,6 @@ export default {
                 qtd_parcelas: 1,
                 forma_divisao: 'manter'
             },
-            tipos: [
-                { label: 'Receita', value: 'receita' },
-                { label: 'Despesa', value: 'despesa' }
-            ],
             tiposPagamento: [
                 { label: 'À Vista', value: 'avista' },
                 { label: 'À Prazo', value: 'aprazo' }
@@ -422,6 +402,14 @@ export default {
                 ...categoria,
                 nome: categoria.nome
             }));
+        },
+        
+        tituloFormulario() {
+            if (this.isEditing) {
+                return this.form.tipo === 'receita' ? 'Editar Receita' : 'Editar Despesa';
+            } else {
+                return this.form.tipo === 'receita' ? 'Nova Receita' : 'Nova Despesa';
+            }
         }
     },
     watch: {
@@ -447,7 +435,23 @@ export default {
     },
     async mounted() {
         await this.carregarCategorias();
-        if (this.isEditing) {
+        
+        // Se não está editando, definir tipo pela query parameter ou rota
+        if (!this.isEditing) {
+            const tipoParam = this.$route.query.tipo;
+            if (tipoParam === 'receita' || tipoParam === 'despesa') {
+                this.form.tipo = tipoParam;
+            } else {
+                // Fallback: verificar pela URL
+                const path = this.$route.path;
+                if (path.includes('/receitas')) {
+                    this.form.tipo = 'receita';
+                } else if (path.includes('/despesas')) {
+                    this.form.tipo = 'despesa';
+                }
+            }
+        } else {
+            // Ao editar, carregar a transação que já tem o tipo definido
             await this.carregarTransacao(this.$route.params.id);
         }
     },
@@ -470,6 +474,7 @@ export default {
             
             if (!this.form.tipo) {
                 this.errors.tipo = 'Tipo é obrigatório';
+                return false;
             }
             
             if (!this.form.categoria.trim()) {
@@ -567,7 +572,14 @@ export default {
                     });
                 }
                 
-                this.$router.push('/financeiro');
+                // Redirecionar para a lista baseada no tipo
+                if (this.form.tipo === 'receita') {
+                    this.$router.push('/financeiro/receitas');
+                } else if (this.form.tipo === 'despesa') {
+                    this.$router.push('/financeiro/despesas');
+                } else {
+                    this.$router.push('/financeiro/receitas');
+                }
             } catch (error) {
                 console.error('Erro ao salvar:', error);
                 this.$toast.add({
@@ -582,7 +594,14 @@ export default {
         },
         
         cancelar() {
-            this.$router.push('/financeiro');
+            // Retornar para a lista baseada no tipo
+            if (this.form.tipo === 'receita') {
+                this.$router.push('/financeiro/receitas');
+            } else if (this.form.tipo === 'despesa') {
+                this.$router.push('/financeiro/despesas');
+            } else {
+                this.$router.push('/financeiro/receitas');
+            }
         },
         
         atualizarParcelas() {

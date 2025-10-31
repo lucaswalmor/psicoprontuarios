@@ -47,10 +47,22 @@ export default {
                             requiredFeature: null
                         },
                         {
-                            label: 'Gestão Financeira', 
+                            label: 'Financeiro', 
                             icon: 'pi pi-fw pi-wallet', 
-                            to: '/financeiro',
-                            requiredFeature: null
+                            items: [
+                                {
+                                    label: 'Receitas', 
+                                    icon: 'pi pi-fw pi-arrow-up', 
+                                    to: '/financeiro/receitas',
+                                    requiredFeature: null
+                                },
+                                {
+                                    label: 'Despesas', 
+                                    icon: 'pi pi-fw pi-arrow-down', 
+                                    to: '/financeiro/despesas',
+                                    requiredFeature: null
+                                }
+                            ]
                         },
                         {
                             label: 'Pacientes', 

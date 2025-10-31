@@ -1,13 +1,14 @@
 <template>
-    <div class="grid">
-        <div class="col-12">
+    <template v-if="$hasAccessToModule('gestao_financeira')">
+        <div class="grid">
+            <div class="col-12">
             <div class="card">
                 <div class="flex justify-content-between align-items-center mb-4">
-                    <h5>Transações Financeiras</h5>
+                    <h5>{{ tipoDetectado === 'receita' ? 'Receitas' : 'Despesas' }}</h5>
                     <div class="flex gap-2">
                         <Button 
                             v-if="!$isPlanPaused()"
-                            label="Nova Transação" 
+                            :label="tipoDetectado === 'receita' ? 'Nova Receita' : 'Nova Despesa'" 
                             icon="pi pi-plus" 
                             @click="novaTransacao" 
                         />
@@ -16,22 +17,25 @@
 
                 <!-- Filtros -->
                 <div class="grid mb-4">
-                    <div class="col-12 md:col-3">
-                        <label for="tipo" class="block text-900 font-medium mb-2">Tipo</label>
-                        <Dropdown v-model="filtros.tipo" :options="tipos" optionLabel="label" optionValue="value"
-                            placeholder="Todos os tipos" class="w-full" @change="onFiltroChange" />
-                    </div>
-                    <div class="col-12 md:col-3">
+                    <div class="col-12 md:col-4">
                         <label for="categoria" class="block text-900 font-medium mb-2">Categoria</label>
-                        <InputText v-model="filtros.categoria" placeholder="Buscar por categoria" class="w-full"
-                            @input="onFiltroChange" />
+                        <Dropdown 
+                            v-model="filtros.categoria" 
+                            :options="categorias" 
+                            optionLabel="nome" 
+                            optionValue="nome"
+                            placeholder="Todas as categorias" 
+                            class="w-full"
+                            :loading="carregandoCategorias"
+                            @change="onFiltroChange" 
+                        />
                     </div>
-                    <div class="col-12 md:col-3">
+                    <div class="col-12 md:col-4">
                         <label for="data_inicial" class="block text-900 font-medium mb-2">Data Inicial</label>
                         <Calendar v-model="filtros.data_inicial" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa"
                             class="w-full" @date-select="onFiltroChange" />
                     </div>
-                    <div class="col-12 md:col-3">
+                    <div class="col-12 md:col-4">
                         <label for="data_final" class="block text-900 font-medium mb-2">Data Final</label>
                         <Calendar v-model="filtros.data_final" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa"
                             class="w-full" @date-select="onFiltroChange" />
@@ -118,6 +122,22 @@
             />
         </template>
     </Dialog>
+    </template>
+
+    <div class="card" v-else>
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="pi pi-exclamation-triangle text-6xl text-gray-400"></i>
+            </div>
+            <div class="empty-content">
+                <h3 class="empty-title">Módulo indisponível</h3>
+                <p class="empty-description">
+                    Este módulo não está disponível para o seu plano.
+                </p>
+                <Button label="Clique aqui para atualizar seu plano" @click="$router.push('/upgrade')" />
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -130,21 +150,57 @@ export default {
             totalRecords: 0,
             dialogVisible: false,
             transacaoParaExcluir: null,
+            categorias: [],
+            carregandoCategorias: false,
             filtros: {
-                tipo: 'todos',
-                categoria: '',
+                tipo: null,
+                categoria: null,
                 data_inicial: this.getDataInicioFim().dataInicial,
                 data_final: this.getDataInicioFim().dataFinal,
                 page: 1
-            },
-            tipos: [
-                { label: 'Receita', value: 'receita' },
-                { label: 'Despesa', value: 'despesa' },
-                { label: 'Todos', value: 'todos' }
-            ]
+            }
         };
     },
+    computed: {
+        tipoDetectado() {
+            // Detectar tipo pela URL
+            const path = this.$route.path;
+            if (path.includes('/receitas')) {
+                return 'receita';
+            } else if (path.includes('/despesas')) {
+                return 'despesa';
+            }
+            return 'receita'; // default
+        }
+    },
+    watch: {
+        // Observar mudanças na rota para recarregar dados quando alternar entre receitas/despesas
+        '$route.path'() {
+            // Atualizar tipo no filtro quando a rota mudar
+            this.filtros.tipo = this.tipoDetectado;
+            // Resetar página para 1
+            this.filtros.page = 1;
+            // Recarregar transações
+            this.carregarTransacoes();
+        },
+        
+        // Também observar mudanças no tipo detectado como backup
+        tipoDetectado(newVal) {
+            if (this.filtros.tipo !== newVal) {
+                this.filtros.tipo = newVal;
+                this.filtros.page = 1;
+                this.carregarTransacoes();
+            }
+        }
+    },
     async mounted() {
+        // Definir tipo baseado na URL
+        this.filtros.tipo = this.tipoDetectado;
+        
+        // Carregar categorias
+        await this.carregarCategorias();
+        
+        // Carregar transações
         await this.carregarTransacoes();
     },
     methods: {
@@ -181,8 +237,12 @@ export default {
             this.loading = true;
 
             try {
+                // Garantir que o tipo esteja definido
+                const tipo = this.tipoDetectado;
+                
                 const params = {
                     page: this.filtros.page,
+                    tipo: tipo, // Sempre enviar o tipo detectado pela URL
                     ...this.filtros
                 };
 
@@ -192,6 +252,11 @@ export default {
                 }
                 if (this.filtros.data_final) {
                     params.data_final = this.filtros.data_final.toISOString().split('T')[0];
+                }
+
+                // Remover categoria se for null
+                if (!params.categoria) {
+                    delete params.categoria;
                 }
 
                 const response = await this.$financeirosService.buscar(params);
@@ -216,8 +281,23 @@ export default {
             this.carregarTransacoes();
         },
 
+        async carregarCategorias() {
+            this.carregandoCategorias = true;
+            try {
+                const response = await this.$financeirosService.buscarCategorias();
+                if (response.data.success) {
+                    this.categorias = response.data.data;
+                }
+            } catch (error) {
+                console.error('Erro ao carregar categorias:', error);
+            } finally {
+                this.carregandoCategorias = false;
+            }
+        },
+
         novaTransacao() {
-            this.$router.push('/financeiro/novo');
+            const tipo = this.tipoDetectado;
+            this.$router.push(`/financeiro/novo?tipo=${tipo}`);
         },
 
         editarTransacao(id) {
@@ -263,8 +343,8 @@ export default {
 
         limparFiltros() {
             this.filtros = {
-                tipo: 'todos',
-                categoria: '',
+                tipo: this.tipoDetectado,
+                categoria: null,
                 data_inicial: null,
                 data_final: null,
                 page: 1
@@ -285,5 +365,31 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    text-align: center;
+}
+
+.empty-icon {
+    margin-bottom: 1.5rem;
+}
+
+.empty-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.empty-description {
+    font-size: 1rem;
+    color: var(--text-color-secondary);
+    margin-bottom: 1.5rem;
 }
 </style>

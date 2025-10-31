@@ -1,196 +1,184 @@
 <template>
     <div class="grid" v-if="$hasAccessToModule('gestao_financeira')">
         <div class="col-12">
-            <div class="card">
-                <h5 class="text-600">Dashboard Financeiro</h5>
-                
-                <!-- Filtros -->
-                <div class="flex gap-2 mb-4">
-                    <Button label="Filtros" severity="secondary" icon="pi pi-filter" v-if="!hasFiltros"
-                        @click="drawerFilterFinanceiro = true" />
-                    <Button label="Limpar Filtros" severity="danger" @click="limparFiltros" v-else />
-                    <Button label="Atualizar" icon="pi pi-refresh" @click="carregarDados" />
-                    <Button 
-                        v-if="!planStore.isPlanPaused"
-                        label="Nova Transação" 
-                        icon="pi pi-plus" 
-                        @click="$router.push('/financeiro/novo')" 
-                    />
-                    <Button label="Lista de Transações" icon="pi pi-list" @click="$router.push('/financeiro/lista')" />
-                </div>
+            <!-- Filtros -->
+            <div class="flex gap-2 mb-4">
+                <Button label="Filtros" severity="secondary" icon="pi pi-filter" v-if="!hasFiltros"
+                    @click="drawerFilterFinanceiro = true" />
+                <Button label="Limpar Filtros" severity="danger" @click="limparFiltros" v-else />
+            </div>
 
-                <!-- Cards de Resumo -->
-                <div class="grid">
-                    <div class="col-12 md:col-4">
-                        <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
-                            <div class="flex align-items-center justify-content-between">
-                                <div>
-                                    <span class="block text-600 font-medium mb-2">Receitas</span>
-                                    <div class="text-600 font-medium text-xl">R$ {{ formatarValor(dados.mes_atual?.receitas || 0) }}</div>
-                                </div>
-                                <i class="pi pi-arrow-up text-green-500 text-2xl"></i>
+            <!-- Cards de Resumo -->
+            <div class="grid">
+                <div class="col-12 md:col-4">
+                    <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
+                        <div class="flex align-items-center justify-content-between">
+                            <div>
+                                <span class="block text-600 font-medium mb-2">Receitas</span>
+                                <div class="text-600 font-medium text-xl">R$ {{ formatarValor(dados.mes_atual?.receitas || 0) }}</div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-12 md:col-4">
-                        <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
-                            <div class="flex align-items-center justify-content-between">
-                                <div>
-                                    <span class="block text-600 font-medium mb-2">Despesas</span>
-                                    <div class="text-600 font-medium text-xl">R$ {{ formatarValor(dados.mes_atual?.despesas || 0) }}</div>
-                                </div>
-                                <i class="pi pi-arrow-down text-red-400 text-2xl"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 md:col-4">
-                        <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
-                            <div class="flex align-items-center justify-content-between">
-                                <div>
-                                    <span class="block font-medium mb-2" :class="saldoLabelClass">Saldo</span>
-                                    <div class="font-medium text-xl" :class="saldoTextClass">R$ {{ formatarValor(saldo) }}</div>
-                                </div>
-                                <i class="pi pi-wallet text-2xl" :class="saldoIconClass"></i>
-                            </div>
+                            <i class="pi pi-arrow-up text-green-500 text-2xl"></i>
                         </div>
                     </div>
                 </div>
+                <div class="col-12 md:col-4">
+                    <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
+                        <div class="flex align-items-center justify-content-between">
+                            <div>
+                                <span class="block text-600 font-medium mb-2">Despesas</span>
+                                <div class="text-600 font-medium text-xl">R$ {{ formatarValor(dados.mes_atual?.despesas || 0) }}</div>
+                            </div>
+                            <i class="pi pi-arrow-down text-red-400 text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 md:col-4">
+                    <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
+                        <div class="flex align-items-center justify-content-between">
+                            <div>
+                                <span class="block font-medium mb-2" :class="saldoLabelClass">Saldo</span>
+                                <div class="font-medium text-xl" :class="saldoTextClass">R$ {{ formatarValor(saldo) }}</div>
+                            </div>
+                            <i class="pi pi-wallet text-2xl" :class="saldoIconClass"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                <!-- Gráficos -->
-                <div class="grid">
-                    <div class="col-12 md:col-12">
-                        <div class="card">
-                            <h6 class="text-600 mb-3">Fluxo de Caixa</h6>
+            <!-- Gráficos -->
+            <div class="grid">
+                <div class="col-12 md:col-12">
+                    <div class="card">
+                        <h6 class="text-600 mb-3">Fluxo de Caixa</h6>
+                        
+                        <!-- Filtros de Data -->
+                        <div class="grid mb-4">
+                            <div class="col-12 md:col-6">
+                                <div class="flex gap-2">
+                                    <div class="flex-1">
+                                        <label class="block text-600 mb-2">Data Inicial</label>
+                                        <Calendar 
+                                            v-model="filtrosData.data_inicial" 
+                                            dateFormat="dd/mm/yy" 
+                                            placeholder="Data inicial"
+                                            class="w-full"
+                                            @date-select="aplicarFiltrosData"
+                                        />
+                                    </div>
+                                    <div class="flex-1">
+                                        <label class="block text-600 mb-2">Data Final</label>
+                                        <Calendar 
+                                            v-model="filtrosData.data_final" 
+                                            dateFormat="dd/mm/yy" 
+                                            placeholder="Data final"
+                                            class="w-full"
+                                            @date-select="aplicarFiltrosData"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
                             
-                            <!-- Filtros de Data -->
-                            <div class="grid mb-4">
-                                <div class="col-12 md:col-6">
+                            <div class="col-12 md:col-6">
+                                <div class="flex flex-column justify-content-end">
+                                    <label class="block text-600 mb-2">Filtros Rápidos</label>
                                     <div class="flex gap-2">
-                                        <div class="flex-1">
-                                            <label class="block text-600 mb-2">Data Inicial</label>
-                                            <DatePicker 
-                                                v-model="filtrosData.data_inicial" 
-                                                dateFormat="dd/mm/yy" 
-                                                placeholder="Data inicial"
-                                                class="w-full"
-                                                @date-select="aplicarFiltrosData"
-                                            />
-                                        </div>
-                                        <div class="flex-1">
-                                            <label class="block text-600 mb-2">Data Final</label>
-                                            <DatePicker 
-                                                v-model="filtrosData.data_final" 
-                                                dateFormat="dd/mm/yy" 
-                                                placeholder="Data final"
-                                                class="w-full"
-                                                @date-select="aplicarFiltrosData"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="col-12 md:col-6">
-                                    <div class="flex flex-column justify-content-end">
-                                        <label class="block text-600 mb-2">Filtros Rápidos</label>
-                                        <div class="flex gap-2">
-                                            <Button 
-                                                label="DIA" 
-                                                size="small" 
-                                                :severity="filtroAtivo === 'dia' ? 'primary' : 'secondary'"
-                                                @click="aplicarFiltroRapido('dia')"
-                                            />
-                                            <Button 
-                                                label="SEMANA" 
-                                                size="small" 
-                                                :severity="filtroAtivo === 'semana' ? 'primary' : 'secondary'"
-                                                @click="aplicarFiltroRapido('semana')"
-                                            />
-                                            <Button 
-                                                label="MÊS" 
-                                                size="small" 
-                                                :severity="filtroAtivo === 'mes' ? 'primary' : 'secondary'"
-                                                @click="aplicarFiltroRapido('mes')"
-                                            />
-                                            <Button 
-                                                label="TRIMESTRE" 
-                                                size="small" 
-                                                :severity="filtroAtivo === 'trimestre' ? 'primary' : 'secondary'"
-                                                @click="aplicarFiltroRapido('trimestre')"
-                                            />
-                                        </div>
+                                        <Button 
+                                            label="DIA" 
+                                            size="small" 
+                                            :severity="filtroAtivo === 'dia' ? 'primary' : 'secondary'"
+                                            @click="aplicarFiltroRapido('dia')"
+                                        />
+                                        <Button 
+                                            label="SEMANA" 
+                                            size="small" 
+                                            :severity="filtroAtivo === 'semana' ? 'primary' : 'secondary'"
+                                            @click="aplicarFiltroRapido('semana')"
+                                        />
+                                        <Button 
+                                            label="MÊS" 
+                                            size="small" 
+                                            :severity="filtroAtivo === 'mes' ? 'primary' : 'secondary'"
+                                            @click="aplicarFiltroRapido('mes')"
+                                        />
+                                        <Button 
+                                            label="TRIMESTRE" 
+                                            size="small" 
+                                            :severity="filtroAtivo === 'trimestre' ? 'primary' : 'secondary'"
+                                            @click="aplicarFiltroRapido('trimestre')"
+                                        />
                                     </div>
                                 </div>
                             </div>
-                            
-                            <Chart 
-                                type="bar" 
-                                :data="barChartData" 
-                                :options="barChartOptions" 
-                                class="h-[300px]"
-                            />
                         </div>
+                        
+                        <Chart 
+                            type="bar" 
+                            :data="barChartData" 
+                            :options="barChartOptions" 
+                            class="h-[300px]"
+                        />
                     </div>
                 </div>
+            </div>
 
-                <!-- Resumo Anual -->
-                <div class="grid">
-                    <div class="col-12">
-                        <div class="card">
-                            <h6 class="text-600 mb-3">Resumo Anual</h6>
-                            <div class="grid">
-                                <div class="col-12 md:col-4">
-                                    <div class="flex justify-content-between align-items-center p-3 border-bottom-1 border-gray-600">
-                                        <span class="font-medium text-900">Receitas Anuais</span>
-                                        <span class="text-500 font-bold">R$ {{ formatarValor(dados.total_ano?.receitas || 0) }}</span>
-                                    </div>
+            <!-- Resumo Anual -->
+            <div class="grid">
+                <div class="col-12">
+                    <div class="card">
+                        <h6 class="text-600 mb-3">Resumo Anual</h6>
+                        <div class="grid">
+                            <div class="col-12 md:col-4">
+                                <div class="flex justify-content-between align-items-center p-3 border-bottom-1 border-gray-600">
+                                    <span class="font-medium text-900">Receitas Anuais</span>
+                                    <span class="text-500 font-bold">R$ {{ formatarValor(dados.total_ano?.receitas || 0) }}</span>
                                 </div>
-                                <div class="col-12 md:col-4">
-                                    <div class="flex justify-content-between align-items-center p-3 border-bottom-1 border-gray-600">
-                                        <span class="font-medium text-900">Despesas Anuais</span>
-                                        <span class="text-red-400 font-bold">R$ {{ formatarValor(dados.total_ano?.despesas || 0) }}</span>
-                                    </div>
+                            </div>
+                            <div class="col-12 md:col-4">
+                                <div class="flex justify-content-between align-items-center p-3 border-bottom-1 border-gray-600">
+                                    <span class="font-medium text-900">Despesas Anuais</span>
+                                    <span class="text-red-400 font-bold">R$ {{ formatarValor(dados.total_ano?.despesas || 0) }}</span>
                                 </div>
-                                <div class="col-12 md:col-4">
-                                    <div class="flex justify-content-between align-items-center p-3">
-                                        <span class="font-medium text-900">Saldo Anual</span>
-                                        <span class="font-bold" :class="(dados.total_ano?.saldo || 0) >= 0 ? 'text-500' : 'text-red-400'">
-                                            R$ {{ formatarValor(dados.total_ano?.saldo || 0) }}
-                                        </span>
-                                    </div>
+                            </div>
+                            <div class="col-12 md:col-4">
+                                <div class="flex justify-content-between align-items-center p-3">
+                                    <span class="font-medium text-900">Saldo Anual</span>
+                                    <span class="font-bold" :class="(dados.total_ano?.saldo || 0) >= 0 ? 'text-500' : 'text-red-400'">
+                                        R$ {{ formatarValor(dados.total_ano?.saldo || 0) }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Categorias -->
-                <div class="grid">
-                    <div class="col-12 md:col-6">
-                        <div class="card">
-                            <h6 class="text-600 mb-3">Receitas por Categoria</h6>
-                            <div v-if="Object.keys(dados.mes_atual?.categorias_receitas || {}).length > 0">
-                                <div v-for="(valor, categoria) in dados.mes_atual.categorias_receitas" :key="categoria" class="flex justify-content-between align-items-center p-3 border-bottom-1 border-gray-600">
-                                    <span class="font-medium text-900">{{ categoria }}</span>
-                                    <span class="text-500 font-bold">R$ {{ formatarValor(valor) }}</span>
-                                </div>
-                            </div>
-                            <div v-else class="text-center p-4 text-gray-500">
-                                Nenhuma receita registrada
+            <!-- Categorias -->
+            <div class="grid">
+                <div class="col-12 md:col-6">
+                    <div class="card">
+                        <h6 class="text-600 mb-3">Receitas por Categoria</h6>
+                        <div v-if="Object.keys(dados.mes_atual?.categorias_receitas || {}).length > 0">
+                            <div v-for="(valor, categoria) in dados.mes_atual.categorias_receitas" :key="categoria" class="flex justify-content-between align-items-center p-3 border-bottom-1 border-gray-600">
+                                <span class="font-medium text-900">{{ categoria }}</span>
+                                <span class="text-500 font-bold">R$ {{ formatarValor(valor) }}</span>
                             </div>
                         </div>
+                        <div v-else class="text-center p-4 text-gray-500">
+                            Nenhuma receita registrada
+                        </div>
                     </div>
-                    <div class="col-12 md:col-6">
-                        <div class="card">
-                            <h6 class="text-600 mb-3">Despesas por Categoria</h6>
-                            <div v-if="Object.keys(dados.mes_atual?.categorias_despesas || {}).length > 0">
-                                <div v-for="(valor, categoria) in dados.mes_atual.categorias_despesas" :key="categoria" class="flex justify-content-between align-items-center p-3 border-bottom-1 border-gray-600">
-                                    <span class="font-medium text-900">{{ categoria }}</span>
-                                    <span class="text-red-400 font-bold">R$ {{ formatarValor(valor) }}</span>
-                                </div>
+                </div>
+                <div class="col-12 md:col-6">
+                    <div class="card">
+                        <h6 class="text-600 mb-3">Despesas por Categoria</h6>
+                        <div v-if="Object.keys(dados.mes_atual?.categorias_despesas || {}).length > 0">
+                            <div v-for="(valor, categoria) in dados.mes_atual.categorias_despesas" :key="categoria" class="flex justify-content-between align-items-center p-3 border-bottom-1 border-gray-600">
+                                <span class="font-medium text-900">{{ categoria }}</span>
+                                <span class="text-red-400 font-bold">R$ {{ formatarValor(valor) }}</span>
                             </div>
-                            <div v-else class="text-center p-4 text-gray-500">
-                                Nenhuma despesa registrada
-                            </div>
+                        </div>
+                        <div v-else class="text-center p-4 text-gray-500">
+                            Nenhuma despesa registrada
                         </div>
                     </div>
                 </div>
@@ -233,6 +221,12 @@ export default {
     components: {
         DrawerFilterFinanceiro
     },
+    props: {
+        lazy: {
+            type: Boolean,
+            default: false
+        }
+    },
     data() {
         return {
             dados: {
@@ -252,7 +246,8 @@ export default {
                 periodo: {
                     ano: new Date().getFullYear(),
                     mes: new Date().getMonth() + 1
-                }
+                },
+                fluxo_caixa: []
             },
             filtros: {
                 ano: new Date().getFullYear(),
@@ -265,7 +260,8 @@ export default {
             filtroAtivo: 'mes', // dia, semana, mes, trimestre
             drawerFilterFinanceiro: false,
             hasFiltros: false,
-            limparCampos: false
+            limparCampos: false,
+            dadosCarregados: false
         };
     },
     computed: {
@@ -294,34 +290,6 @@ export default {
         },
         saldoIconClass() {
             return this.saldo >= 0 ? 'text-500' : 'text-red-400';
-        },
-        pieChartData() {
-            return {
-                labels: ['Receitas', 'Despesas'],
-                datasets: [{
-                    data: [
-                        this.dados.mes_atual?.receitas || 0,
-                        this.dados.mes_atual?.despesas || 0
-                    ],
-                    backgroundColor: ['#22c55e', '#ef4444'],
-                    borderWidth: 2,
-                    borderColor: '#374151'
-                }]
-            };
-        },
-        pieChartOptions() {
-            return {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000'
-                        }
-                    }
-                }
-            };
         },
         barChartData() {
             // Se temos dados de fluxo de caixa (período específico), usar eles
@@ -448,23 +416,25 @@ export default {
         }
     },
     async mounted() {
-
-        if (!this.$hasAccessToModule('financeiro')) {
-            return;
-        }
-
         // Inicializar o store do tema
         this.themeStore.init();
 
-        // Inicializar filtros de data com o mês atual
-        this.inicializarFiltrosData();
-        
-        // Carregar dados com filtros do mês atual
-        await this.carregarDados({
-            data_inicial: this.formatarDataParaAPI(this.filtrosData.data_inicial),
-            data_final: this.formatarDataParaAPI(this.filtrosData.data_final),
-            tipo_periodo: 'mes'
-        });
+        if (!this.$hasAccessToModule('gestao_financeira')) {
+            return;
+        }
+
+        // Se não for lazy, carregar dados imediatamente
+        if (!this.lazy) {
+            this.inicializarFiltrosData();
+            await this.carregarDados({
+                data_inicial: this.formatarDataParaAPI(this.filtrosData.data_inicial),
+                data_final: this.formatarDataParaAPI(this.filtrosData.data_final),
+                tipo_periodo: 'mes'
+            });
+        } else {
+            // Mesmo em lazy mode, inicializar os filtros para quando for carregado
+            this.inicializarFiltrosData();
+        }
     },
     methods: {
         formatarValor(valor) {
@@ -474,6 +444,11 @@ export default {
             }).format(valor);
         },
         async carregarDados(filtrosAdicionais = {}) {
+            // Se já carregou e é lazy, não carregar novamente
+            if (this.lazy && this.dadosCarregados) {
+                return;
+            }
+
             try {
                 const params = {
                     ano: this.filtros.ano,
@@ -481,13 +456,9 @@ export default {
                     ...filtrosAdicionais
                 };
                 
-                console.log('🔍 Parâmetros enviados para API:', params);
-                
                 const response = await this.$financeirosService.dashboard(params);
                 this.dados = response.data;
-                
-                console.log('📊 Dados recebidos da API:', this.dados);
-                console.log('📈 Fluxo de caixa:', this.dados.fluxo_caixa);
+                this.dadosCarregados = true;
             } catch (error) {
                 console.error('Erro ao carregar dados:', error);
             }
@@ -501,6 +472,7 @@ export default {
             this.hasFiltros = false;
             this.drawerFilterFinanceiro = false;
             this.limparCampos = true;
+            this.inicializarFiltrosData();
             this.carregarDados();
         },
         onUpdateDrawerFilterFinanceiro(event) {
@@ -582,9 +554,36 @@ export default {
 };
 </script>
 
-        <style scoped>
-        .card {
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-        }
-        </style> 
+<style scoped>
+.card {
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    text-align: center;
+}
+
+.empty-icon {
+    margin-bottom: 1.5rem;
+}
+
+.empty-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.empty-description {
+    font-size: 1rem;
+    color: var(--text-color-secondary);
+    margin-bottom: 1.5rem;
+}
+</style>
+

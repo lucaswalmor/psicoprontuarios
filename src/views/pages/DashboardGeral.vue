@@ -2,303 +2,300 @@
     <div class="grid" v-if="$hasAccessToModule('dashboard')">
         <div class="col-12">
             <div class="card">
-                <h5 class="text-500 mb-4">
-                    Dashboard Geral 
-                    <!-- <span v-if="themeStore.theme === 'dark'" class="text-blue-300">(Tema Escuro)</span>
-                    <span v-else class="text-gray-500">(Tema Claro)</span> -->
-                </h5>
-                <!-- Cards de Estatísticas -->
-                <div class="grid">
-                    <!-- Total de Pacientes -->
-                    <div class="col-12" :class="isPlanoProfissional ? 'md:col-3' : 'md:col-4'">
-                        <div class="card cursor-pointer" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''" @click="$router.push('/pacientes')">
-                            <div class="flex align-items-center justify-content-between">
-                                <div>
-                                    <span class="block text-2xl text-500 font-medium mb-2">Total de Pacientes</span>
-                                    <!-- <span class="block text-blue-500 text-2xl font-medium mb-2">Total de Pacientes</span> -->
-                                    <div class="font-medium text-xl text-500">{{ dados.pacientes?.pacientes_total || 0 }}</div>
-                                </div>
-                                <i :class="`pi pi-users text-2xl text-500`"></i>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Sessões do dia -->
-                    <div class="col-12" :class="isPlanoProfissional ? 'md:col-3' : 'md:col-4'">
-                        <div class="card cursor-pointer" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''" @click="$router.push('/agendamentos')">
-                            <div class="flex align-items-center justify-content-between">
-                                <div>
-                                    <span class="block text-2xl text-500 font-medium mb-2">Sessões do dia</span>
-                                    <div class="text-500 font-medium text-xl">{{ dados.prontuarios?.sessoes_do_dia || 0 }}</div>
-                                </div>
-                                <i :class="`pi pi-calendar text-500 text-2xl`"></i>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Prontuários 30 dias -->
-                    <div class="col-12" :class="isPlanoProfissional ? 'md:col-3' : 'md:col-4'">
-                        <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
-                            <div class="flex align-items-center justify-content-between">
-                                <div>
-                                    <span class="text-500 block text-2xl font-medium mb-2">Prontuários (30 dias)</span>
-                                    <div class="text-500 font-medium text-xl">{{ dados.prontuarios?.prontuarios_30_dias || 0 }}</div>
-                                </div>
-                                <i :class="`pi pi-calendar text-500 text-2xl`"></i>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Saldo do Mês -->
-                    <div class="col-12 md:col-3" v-if="isPlanoProfissional">
-                        <div class="card cursor-pointer" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''" @click="$router.push('/financeirodashboard')">
-                            <div class="flex align-items-center justify-content-between">
-                                <div>
-                                    <span class="block font-medium mb-2 text-2xl text-500">Saldo do Mês</span>
-                                    <div class="font-medium text-xl text-500">
-                                        R$ {{ formatarValor(dados.financeiro?.saldo_mes || 0) }}
-                                    </div>
-                                </div>
-                                <i class="pi pi-wallet text-2xl text-500"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <h5 class="text-500 mb-4">Dashboard Geral</h5>
 
-                <!-- Cards Financeiros -->
-                <div class="grid mt-4" v-if="isPlanoProfissional">
-                    <div class="col-12 md:col-4">
-                        <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
-                            <div class="flex flex-column h-full">
-                                <div class="flex align-items-center justify-content-between mb-3">
-                                    <h6 class="text-500 font-bold mb-0 text-lg">Resumo Financeiro do Mês</h6>
-                                    <i class="pi pi-chart-line text-500 text-xl"></i>
-                                </div>
-                                <div class="grid flex-grow-1">
-                                    <div class="col-6">
-                                        <div class="text-center">
-                                            <div class="flex align-items-center justify-content-center mb-2">
-                                                <i class="pi pi-arrow-up text-green-300 text-lg mr-2"></i>
-                                                <span class="text-500 font-semibold text-sm">Receitas</span>
-                                            </div>
-                                            <div class="text-500 font-bold text-xl">
-                                                R$ {{ formatarValor(dados.financeiro?.total_receitas_mes || 0) }}
-                                            </div>
+                <!-- Tabs -->
+                <TabView v-model:activeIndex="activeTabIndex" @tab-change="onTabChange">
+                    <!-- Tab Pacientes -->
+                    <TabPanel header="Pacientes">
+                        <!-- Cards de Estatísticas -->
+                        <div class="grid">
+                            <!-- Total de Pacientes -->
+                            <div class="col-12" :class="isPlanoProfissional ? 'md:col-3' : 'md:col-4'">
+                                <div class="card cursor-pointer"
+                                    :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''"
+                                    @click="$router.push('/pacientes')">
+                                    <div class="flex align-items-center justify-content-between">
+                                        <div>
+                                            <span class="block text-2xl text-500 font-medium mb-2">Total de
+                                                Pacientes</span>
+                                            <!-- <span class="block text-blue-500 text-2xl font-medium mb-2">Total de Pacientes</span> -->
+                                            <div class="font-medium text-xl text-500">{{
+                                                dados.pacientes?.pacientes_total || 0 }}</div>
                                         </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="text-center">
-                                            <div class="flex align-items-center justify-content-center mb-2">
-                                                <i class="pi pi-arrow-down text-red-300 text-lg mr-2"></i>
-                                                <span class="text-500 font-semibold text-sm">Despesas</span>
-                                            </div>
-                                            <div class="text-500 font-bold text-xl">
-                                                R$ {{ formatarValor(dados.financeiro?.total_despesas_mes || 0) }}
-                                            </div>
-                                        </div>
+                                        <i :class="`pi pi-users text-2xl text-500`"></i>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Próxima Sessão -->
-                    <div class="col-12 md:col-4">
-                        <div class="card bg-gradient-to-r from-pink-900 to-indigo-900 border-pink-500">
-                            <div class="flex flex-column h-full">
-                                <div class="flex align-items-center justify-content-between mb-3">
-                                    <h6 class="text-pink-500 font-bold mb-0 text-lg">Próxima Sessão</h6>
-                                    <div class="text-right">
-                                        <div v-if="proximaSessao" class="text-pink-500 font-semibold text-sm">
-                                            {{ formatarData(proximaSessao.data_consulta) }}
-                                        </div>
-                                        <div v-if="proximaSessao" class="text-pink-200 font-medium text-xs">
-                                            {{ formatarHora(proximaSessao.data_consulta) }}
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="flex-grow-1">
-                                    <div v-if="proximaSessao" class="mb-3">
-                                        <div class="flex align-items-center mb-2">
-                                            <i class="pi pi-user text-pink-300 text-lg mr-2"></i>
-                                            <span class="text-500 font-semibold">{{ proximaSessao.nome_paciente }}</span>
-                                        </div>
-                                        <div class="flex align-items-center">
-                                            <i class="pi pi-phone text-pink-300 text-lg mr-2"></i>
-                                            <span class="text-500 font-medium text-sm">{{ proximaSessao.telefone_paciente || 'Telefone não informado' }}</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div v-else class="text-center py-3">
-                                        <i class="pi pi-calendar-times text-pink-300 text-2xl mb-2"></i>
-                                        <div class="text-500 font-medium text-sm">Não há nenhuma sessão agendada para próxima hora</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="mt-auto">
-                                    <Button 
-                                        label="Ver Agenda" 
-                                        icon="pi pi-calendar" 
-                                        size="small"
-                                        class="w-full"
-                                        @click="$router.push('/agendamentos')"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Aniversariantes do Mês -->
-                    <div class="col-12 md:col-4">
-                        <div class="card bg-gradient-to-r from-purple-900 to-blue-900 border-purple-500">
-                            <div class="flex flex-column h-full">
-                                <div class="flex align-items-center justify-content-between mb-3">
-                                    <h6 class="text-purple-500 font-bold mb-0 text-lg">Aniversariantes do Mês</h6>
-                                    <div class="text-right">
-                                        <div class="text-purple-500 font-semibold text-sm">
-                                            {{ dados.pacientes?.aniversariantes_mes?.length || 0 }} pacientes
+                            <!-- Sessões do dia -->
+                            <div class="col-12" :class="isPlanoProfissional ? 'md:col-3' : 'md:col-4'">
+                                <div class="card cursor-pointer"
+                                    :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''"
+                                    @click="$router.push('/agendamentos')">
+                                    <div class="flex align-items-center justify-content-between">
+                                        <div>
+                                            <span class="block text-2xl text-500 font-medium mb-2">Sessões do dia</span>
+                                            <div class="text-500 font-medium text-xl">{{
+                                                dados.prontuarios?.sessoes_do_dia || 0 }}</div>
                                         </div>
-                                        <div class="text-purple-200 font-medium text-xs">
-                                            {{ getNomeMesAtual() }}
-                                        </div>
+                                        <i :class="`pi pi-calendar text-500 text-2xl`"></i>
                                     </div>
                                 </div>
-                                
-                                <div class="flex-grow-1">
-                                    <div v-if="dados.pacientes?.aniversariantes_mes?.length > 0" class="mb-3">
-                                        <div 
-                                            v-for="aniversariante in dados.pacientes.aniversariantes_mes.slice(0, 3)" 
-                                            :key="aniversariante.id"
-                                            class="flex align-items-center mb-2"
-                                        >
-                                            <i class="pi pi-gift text-purple-300 text-lg mr-2"></i>
-                                            <div class="flex-grow-1">
-                                                <span class="text-500 font-semibold text-sm">{{ aniversariante.nome }}</span>
-                                                <div class="text-purple-200 font-medium text-xs">
-                                                    Dia {{ aniversariante.dia_aniversario }}
+                            </div>
+
+                            <!-- Prontuários 30 dias -->
+                            <div class="col-12" :class="isPlanoProfissional ? 'md:col-3' : 'md:col-4'">
+                                <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
+                                    <div class="flex align-items-center justify-content-between">
+                                        <div>
+                                            <span class="text-500 block text-2xl font-medium mb-2">Prontuários (30
+                                                dias)</span>
+                                            <div class="text-500 font-medium text-xl">{{
+                                                dados.prontuarios?.prontuarios_30_dias || 0 }}</div>
+                                        </div>
+                                        <i :class="`pi pi-calendar text-500 text-2xl`"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Saldo do Mês -->
+                            <div class="col-12 md:col-3" v-if="isPlanoProfissional">
+                                <div class="card cursor-pointer"
+                                    :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''"
+                                    @click="$router.push('/financeiro/receitas')">
+                                    <div class="flex align-items-center justify-content-between">
+                                        <div>
+                                            <span class="block font-medium mb-2 text-2xl text-500">Saldo do Mês</span>
+                                            <div class="font-medium text-xl text-500">
+                                                R$ {{ formatarValor(dados.financeiro?.saldo_mes || 0) }}
+                                            </div>
+                                        </div>
+                                        <i class="pi pi-wallet text-2xl text-500"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cards Financeiros -->
+                        <div class="grid mt-4" v-if="isPlanoProfissional">
+                            <div class="col-12 md:col-4">
+                                <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
+                                    <div class="flex flex-column h-full">
+                                        <div class="flex align-items-center justify-content-between mb-3">
+                                            <h6 class="text-500 font-bold mb-0 text-lg">Resumo Financeiro do Mês</h6>
+                                            <i class="pi pi-chart-line text-500 text-xl"></i>
+                                        </div>
+                                        <div class="grid flex-grow-1">
+                                            <div class="col-6">
+                                                <div class="text-center">
+                                                    <div class="flex align-items-center justify-content-center mb-2">
+                                                        <i class="pi pi-arrow-up text-green-300 text-lg mr-2"></i>
+                                                        <span class="text-500 font-semibold text-sm">Receitas</span>
+                                                    </div>
+                                                    <div class="text-500 font-bold text-xl">
+                                                        R$ {{ formatarValor(dados.financeiro?.total_receitas_mes || 0)
+                                                        }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="text-center">
+                                                    <div class="flex align-items-center justify-content-center mb-2">
+                                                        <i class="pi pi-arrow-down text-red-300 text-lg mr-2"></i>
+                                                        <span class="text-500 font-semibold text-sm">Despesas</span>
+                                                    </div>
+                                                    <div class="text-500 font-bold text-xl">
+                                                        R$ {{ formatarValor(dados.financeiro?.total_despesas_mes || 0)
+                                                        }}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div v-if="dados.pacientes.aniversariantes_mes.length > 3" class="text-center">
-                                            <span class="text-purple-200 font-medium text-xs">
-                                                +{{ dados.pacientes.aniversariantes_mes.length - 3 }} mais
-                                            </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Próxima Sessão -->
+                            <div class="col-12 md:col-4">
+                                <div class="card bg-gradient-to-r from-pink-900 to-indigo-900 border-pink-500">
+                                    <div class="flex flex-column h-full">
+                                        <div class="flex align-items-center justify-content-between mb-3">
+                                            <h6 class="text-pink-500 font-bold mb-0 text-lg">Próxima Sessão</h6>
+                                            <div class="text-right">
+                                                <div v-if="proximaSessao" class="text-pink-500 font-semibold text-sm">
+                                                    {{ formatarData(proximaSessao.data_consulta) }}
+                                                </div>
+                                                <div v-if="proximaSessao" class="text-pink-200 font-medium text-xs">
+                                                    {{ formatarHora(proximaSessao.data_consulta) }}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex-grow-1">
+                                            <div v-if="proximaSessao" class="mb-3">
+                                                <div class="flex align-items-center mb-2">
+                                                    <i class="pi pi-user text-pink-300 text-lg mr-2"></i>
+                                                    <span class="text-500 font-semibold">{{ proximaSessao.nome_paciente
+                                                        }}</span>
+                                                </div>
+                                                <div class="flex align-items-center">
+                                                    <i class="pi pi-phone text-pink-300 text-lg mr-2"></i>
+                                                    <span class="text-500 font-medium text-sm">{{
+                                                        proximaSessao.telefone_paciente || 'Telefone não informado'
+                                                        }}</span>
+                                                </div>
+                                            </div>
+
+                                            <div v-else class="text-center py-3">
+                                                <i class="pi pi-calendar-times text-pink-300 text-2xl mb-2"></i>
+                                                <div class="text-500 font-medium text-sm">Não há nenhuma sessão agendada
+                                                    para próxima hora</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-auto">
+                                            <Button label="Ver Agenda" icon="pi pi-calendar" size="small" class="w-full"
+                                                @click="$router.push('/agendamentos')" />
                                         </div>
                                     </div>
-                                    
-                                    <div v-else class="text-center py-3">
-                                        <i class="pi pi-calendar-times text-purple-300 text-2xl mb-2"></i>
-                                        <div class="text-500 font-medium text-sm">Nenhum aniversariante este mês</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="mt-auto">
-                                    <Button 
-                                        label="Ver Pacientes" 
-                                        icon="pi pi-users" 
-                                        size="small"
-                                        class="w-full"
-                                        @click="$router.push('/pacientes')"
-                                    />
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Alertas -->
-                <div class="grid mt-4" v-if="mostrarAlertas && isPlanoProfissional">
-                    <div class="col-12">
-                        <div class="card bg-red-900 border-red-500" v-if="dados.financeiro?.alerta_financeiro">
-                            <div class="flex align-items-center">
-                                <i class="pi pi-exclamation-triangle text-red-500 text-xl mr-3"></i>
-                                <span class="text-red-200">Atenção: Saldo do mês está negativo!</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                            <!-- Aniversariantes do Mês -->
+                            <div class="col-12 md:col-4">
+                                <div class="card bg-gradient-to-r from-purple-900 to-blue-900 border-purple-500">
+                                    <div class="flex flex-column h-full">
+                                        <div class="flex align-items-center justify-content-between mb-3">
+                                            <h6 class="text-purple-500 font-bold mb-0 text-lg">Aniversariantes do Mês
+                                            </h6>
+                                            <div class="text-right">
+                                                <div class="text-purple-500 font-semibold text-sm">
+                                                    {{ dados.pacientes?.aniversariantes_mes?.length || 0 }} pacientes
+                                                </div>
+                                                <div class="text-purple-200 font-medium text-xs">
+                                                    {{ getNomeMesAtual() }}
+                                                </div>
+                                            </div>
+                                        </div>
 
-                <!-- Gráficos -->
-                <div class="grid mt-4">
-                    <!-- Gráfico Barra - Crescimento de Pacientes -->
-                    <div class="col-12">
-                        <div class="card">
-                            <h6 class="text-500 mb-3">Crescimento de Pacientes (6 meses)</h6>
-                            <Chart 
-                                type="bar" 
-                                :data="barChartData" 
-                                :options="barChartOptions"
-                                class="h-[200px]"
-                            />
-                        </div>
-                    </div>
-                </div>
+                                        <div class="flex-grow-1">
+                                            <div v-if="dados.pacientes?.aniversariantes_mes?.length > 0" class="mb-3">
+                                                <div v-for="aniversariante in dados.pacientes.aniversariantes_mes.slice(0, 3)"
+                                                    :key="aniversariante.id" class="flex align-items-center mb-2">
+                                                    <i class="pi pi-gift text-purple-300 text-lg mr-2"></i>
+                                                    <div class="flex-grow-1">
+                                                        <span class="text-500 font-semibold text-sm">{{
+                                                            aniversariante.nome }}</span>
+                                                        <div class="text-purple-200 font-medium text-xs">
+                                                            Dia {{ aniversariante.dia_aniversario }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div v-if="dados.pacientes.aniversariantes_mes.length > 3"
+                                                    class="text-center">
+                                                    <span class="text-purple-200 font-medium text-xs">
+                                                        +{{ dados.pacientes.aniversariantes_mes.length - 3 }} mais
+                                                    </span>
+                                                </div>
+                                            </div>
 
-                <!-- Listagens Rápidas -->
-                <div class="grid mt-4">
-                    <!-- Últimos Pacientes -->
-                    <div class="col-12 md:col-6">
-                        <div class="card">
-                            <h6 class="text-500 mb-3">Últimos Pacientes Cadastrados</h6>
-                            <div v-if="dados.pacientes?.ultimos_pacientes?.length > 0">
-                                <div 
-                                    v-for="paciente in dados.pacientes.ultimos_pacientes" 
-                                    :key="paciente.id"
-                                    class="flex justify-content-between align-items-center p-3 border-bottom-1 border-gray-500"
-                                >
-                                    <div>
-                                        <span class="font-medium text-900">{{ paciente.nome }}</span>
-                                        <div class="text-sm text-gray-500">
-                                            {{ formatarData(paciente.created_at) }}
+                                            <div v-else class="text-center py-3">
+                                                <i class="pi pi-calendar-times text-purple-300 text-2xl mb-2"></i>
+                                                <div class="text-500 font-medium text-sm">Nenhum aniversariante este mês
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-auto">
+                                            <Button label="Ver Pacientes" icon="pi pi-users" size="small" class="w-full"
+                                                @click="$router.push('/pacientes')" />
                                         </div>
                                     </div>
-                                    <Button 
-                                        icon="pi pi-eye" 
-                                        rounded 
-                                        outlined 
-                                        size="small"
-                                        @click="$router.push(`/pacientes/editar/${paciente.id}`)"
-                                    />
                                 </div>
                             </div>
-                            <div v-else class="text-center p-4 text-gray-500">
-                                Nenhum paciente cadastrado
+                        </div>
+
+                        <!-- Alertas -->
+                        <div class="grid mt-4" v-if="mostrarAlertas && isPlanoProfissional">
+                            <div class="col-12">
+                                <div class="card bg-red-900 border-red-500" v-if="dados.financeiro?.alerta_financeiro">
+                                    <div class="flex align-items-center">
+                                        <i class="pi pi-exclamation-triangle text-red-500 text-xl mr-3"></i>
+                                        <span class="text-red-200">Atenção: Saldo do mês está negativo!</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <!-- Últimos Prontuários -->
-                    <div class="col-12 md:col-6">
-                        <div class="card">
-                            <h6 class="text-500 mb-3">Últimos Prontuários Criados</h6>
-                            <div v-if="dados.prontuarios?.ultimos_prontuarios?.length > 0">
-                                <div 
-                                    v-for="prontuario in dados.prontuarios.ultimos_prontuarios" 
-                                    :key="prontuario.id"
-                                    class="flex justify-content-between align-items-center p-3 border-bottom-1 border-gray-500"
-                                >
-                                    <div>
-                                        <span class="font-medium text-900">{{ prontuario.paciente_nome }}</span>
-                                        <div class="text-sm text-gray-500">
-                                            {{ formatarData(prontuario.created_at) }}
+
+                        <!-- Gráficos -->
+                        <div class="grid mt-4">
+                            <!-- Gráfico Barra - Crescimento de Pacientes -->
+                            <div class="col-12">
+                                <div class="card">
+                                    <h6 class="text-500 mb-3">Crescimento de Pacientes (6 meses)</h6>
+                                    <Chart type="bar" :data="barChartData" :options="barChartOptions"
+                                        class="h-[200px]" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Listagens Rápidas -->
+                        <div class="grid mt-4">
+                            <!-- Últimos Pacientes -->
+                            <div class="col-12 md:col-6">
+                                <div class="card">
+                                    <h6 class="text-500 mb-3">Últimos Pacientes Cadastrados</h6>
+                                    <div v-if="dados.pacientes?.ultimos_pacientes?.length > 0">
+                                        <div v-for="paciente in dados.pacientes.ultimos_pacientes" :key="paciente.id"
+                                            class="flex justify-content-between align-items-center p-3 border-bottom-1 border-gray-500">
+                                            <div>
+                                                <span class="font-medium text-900">{{ paciente.nome }}</span>
+                                                <div class="text-sm text-gray-500">
+                                                    {{ formatarData(paciente.created_at) }}
+                                                </div>
+                                            </div>
+                                            <Button icon="pi pi-eye" rounded outlined size="small"
+                                                @click="$router.push(`/pacientes/editar/${paciente.id}`)" />
                                         </div>
                                     </div>
-                                    <Button 
-                                        icon="pi pi-eye" 
-                                        rounded 
-                                        outlined 
-                                        size="small"
-                                        @click="$router.push(`/pacientes/prontuarios/${prontuario.paciente_id}`)"
-                                    />
+                                    <div v-else class="text-center p-4 text-gray-500">
+                                        Nenhum paciente cadastrado
+                                    </div>
                                 </div>
                             </div>
-                            <div v-else class="text-center p-4 text-gray-500">
-                                Nenhum prontuário criado
+
+                            <!-- Últimos Prontuários -->
+                            <div class="col-12 md:col-6">
+                                <div class="card">
+                                    <h6 class="text-500 mb-3">Últimos Prontuários Criados</h6>
+                                    <div v-if="dados.prontuarios?.ultimos_prontuarios?.length > 0">
+                                        <div v-for="prontuario in dados.prontuarios.ultimos_prontuarios"
+                                            :key="prontuario.id"
+                                            class="flex justify-content-between align-items-center p-3 border-bottom-1 border-gray-500">
+                                            <div>
+                                                <span class="font-medium text-900">{{ prontuario.paciente_nome }}</span>
+                                                <div class="text-sm text-gray-500">
+                                                    {{ formatarData(prontuario.created_at) }}
+                                                </div>
+                                            </div>
+                                            <Button icon="pi pi-eye" rounded outlined size="small"
+                                                @click="$router.push(`/pacientes/prontuarios/${prontuario.paciente_id}`)" />
+                                        </div>
+                                    </div>
+                                    <div v-else class="text-center p-4 text-gray-500">
+                                        Nenhum prontuário criado
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </TabPanel>
+
+                    <!-- Tab Financeiro -->
+                    <TabPanel header="Financeiro" v-if="isPlanoProfissional && $hasAccessToModule('gestao_financeira')">
+                        <FinanceiroDashboard :lazy="true" ref="financeiroDashboardRef" />
+                    </TabPanel>
+                </TabView>
             </div>
         </div>
     </div>
@@ -322,11 +319,16 @@
 <script>
 import { usePlanStore } from '@/store/plan';
 import { useThemeStore } from '@/store/theme';
+import FinanceiroDashboard from '@/views/pages/financeiro/FinanceiroDashboard.vue';
 
 export default {
     name: 'DashboardGeral',
+    components: {
+        FinanceiroDashboard
+    },
     data() {
         return {
+            activeTabIndex: 0,
             dados: {
                 pacientes: {
                     pacientes_total: 0,
@@ -349,7 +351,8 @@ export default {
                 // Removido o campo 'plano' daqui pois será acessado via store
             },
             proximaSessao: null,
-            loading: false
+            loading: false,
+            financeiroDashboardRef: null
         };
     },
     computed: {
@@ -357,12 +360,12 @@ export default {
         planStore() {
             return usePlanStore();
         },
-        
+
         // Store do tema como propriedade computada
         themeStore() {
             return useThemeStore();
         },
-        
+
         mostrarAlertas() {
             if (this.isPlanoProfissional) {
                 return this.dados.financeiro?.alerta_financeiro || this.planStore.isPlanPaused;
@@ -373,7 +376,7 @@ export default {
         barChartData() {
             const labels = [];
             const data = [];
-            
+
             // Mapeamento completo de meses em inglês para português brasileiro
             const mesesTraduzidos = {
                 // Meses completos
@@ -428,21 +431,21 @@ export default {
                 'NOV': 'Nov',
                 'DEC': 'Dez'
             };
-            
+
             Object.values(this.dados.pacientes?.crescimento_pacientes || {}).forEach(item => {
                 // Traduz o nome do mês se estiver em inglês
                 let mesOriginal = item.mes;
                 let mesTraduzido = null;
-                
+
                 // Se o formato for "May/2025", extrai apenas o mês
                 if (typeof mesOriginal === 'string' && mesOriginal.includes('/')) {
                     const partes = mesOriginal.split('/');
                     const mesParte = partes[0].trim();
                     const anoParte = partes[1] ? partes[1].trim() : '';
-                    
+
                     // Traduz o mês
                     mesTraduzido = mesesTraduzidos[mesParte];
-                    
+
                     // Se encontrou tradução, reconstrói com o ano
                     if (mesTraduzido && anoParte) {
                         mesTraduzido = `${mesTraduzido}/${anoParte}`;
@@ -455,7 +458,7 @@ export default {
                     // Busca tradução direta
                     mesTraduzido = mesesTraduzidos[mesOriginal];
                 }
-                
+
                 // Se não encontrou tradução, tenta converter número para nome do mês
                 if (!mesTraduzido && typeof mesOriginal === 'number') {
                     const mesesNumericos = [
@@ -464,12 +467,12 @@ export default {
                     ];
                     mesTraduzido = mesesNumericos[mesOriginal - 1] || mesOriginal;
                 }
-                
+
                 // Se ainda não encontrou, usa o original
                 if (!mesTraduzido) {
                     mesTraduzido = mesOriginal;
                 }
-                
+
                 labels.push(mesTraduzido);
                 data.push(item.total);
             });
@@ -523,7 +526,7 @@ export default {
     async mounted() {
         // Inicializar o store do tema
         this.themeStore.init();
-        
+
         if (!this.$hasAccessToModule('dashboard')) {
             return;
         }
@@ -555,11 +558,11 @@ export default {
         },
         async carregarDados() {
             this.loading = true;
-            
+
             try {
                 const response = await this.$dashboardService.buscarDados();
                 this.dados = response.data;
-                
+
                 // Buscar próxima sessão dos dados do dashboard
                 this.proximaSessao = response.data.prontuarios?.proxima_sessao || null;
             } catch (error) {
@@ -572,6 +575,26 @@ export default {
                 });
             } finally {
                 this.loading = false;
+            }
+        },
+
+        async onTabChange(event) {
+            // Quando a tab Financeiro for selecionada (índice 1), carregar dados
+            if (event.index === 1) {
+                await this.$nextTick();
+                const financeiroDashboard = this.$refs.financeiroDashboardRef;
+                if (financeiroDashboard && !financeiroDashboard.dadosCarregados) {
+                    // Inicializar filtros se ainda não foram inicializados
+                    if (!financeiroDashboard.filtrosData.data_inicial || !financeiroDashboard.filtrosData.data_final) {
+                        financeiroDashboard.inicializarFiltrosData();
+                    }
+                    // Carregar dados
+                    await financeiroDashboard.carregarDados({
+                        data_inicial: financeiroDashboard.formatarDataParaAPI(financeiroDashboard.filtrosData.data_inicial),
+                        data_final: financeiroDashboard.formatarDataParaAPI(financeiroDashboard.filtrosData.data_final),
+                        tipo_periodo: financeiroDashboard.filtroAtivo || 'mes'
+                    });
+                }
             }
         }
     }
@@ -590,44 +613,44 @@ export default {
     flex-wrap: wrap;
 }
 
-.grid > .col-12 {
+.grid>.col-12 {
     display: flex;
     flex-direction: column;
 }
 
-.grid > .col-12 > .card {
+.grid>.col-12>.card {
     flex: 1;
     display: flex;
     flex-direction: column;
 }
 
 /* Para os cards da primeira linha (estatísticas) */
-.grid:first-child > .col-12 > .card {
+.grid:first-child>.col-12>.card {
     min-height: 120px;
 }
 
 /* Para os cards da segunda linha (financeiro, próxima sessão e aniversariantes) */
-.grid:nth-child(2) > .col-12 > .card {
+.grid:nth-child(2)>.col-12>.card {
     min-height: 180px;
 }
 
 /* Responsividade para dispositivos móveis */
 @media (max-width: 768px) {
-    .grid > .col-12 > .card {
+    .grid>.col-12>.card {
         min-height: auto;
         margin-bottom: 1rem;
     }
-    
-    .grid:first-child > .col-12 > .card {
+
+    .grid:first-child>.col-12>.card {
         min-height: 100px;
     }
-    
-    .grid:nth-child(2) > .col-12 > .card {
+
+    .grid:nth-child(2)>.col-12>.card {
         min-height: 160px;
     }
-    
+
     /* Garantir que os 3 cards da segunda linha sejam empilhados em mobile */
-    .grid:nth-child(2) > .col-12 {
+    .grid:nth-child(2)>.col-12 {
         margin-bottom: 1rem;
     }
 }
@@ -655,4 +678,4 @@ export default {
     transform: translateY(-2px);
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
-</style> 
+</style>
