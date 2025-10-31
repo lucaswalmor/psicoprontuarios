@@ -241,6 +241,12 @@ const router = createRouter({
                     redirect: '/financeiro/receitas'
                 },
                 {
+                    path: '/agendamentos-old',
+                    name: 'AgendamentosOld',
+                    component: () => import('@/views/pages/AgendamentosOld.vue'),
+                    meta: { requiresPlanCheck: true }
+                },
+                {
                     path: '/agendamentos',
                     name: 'Agendamentos',
                     component: () => import('@/views/pages/Agendamentos.vue'),

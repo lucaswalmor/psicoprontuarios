@@ -70,9 +70,15 @@ export default {
                             to: '/pacientes',
                             requiredFeature: null
                         },
+                        // {
+                        //     label: 'Agendamentos', 
+                        //     icon: 'pi pi-fw pi-calendar', 
+                        //     to: '/agendamentos',
+                        //     requiredFeature: null
+                        // },
                         {
                             label: 'Agendamentos', 
-                            icon: 'pi pi-fw pi-calendar', 
+                            icon: 'pi pi-fw pi-calendar-plus', 
                             to: '/agendamentos',
                             requiredFeature: null
                         },
