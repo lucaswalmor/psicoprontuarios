@@ -171,7 +171,10 @@ export default {
                 
                 let errorMessage = 'Erro ao enviar código. Tente novamente.';
                 
-                if (error.response?.data?.message) {
+                // Verificar se há mensagem de erro do backend
+                if (error.response?.data?.error) {
+                    errorMessage = error.response.data.error;
+                } else if (error.response?.data?.message) {
                     errorMessage = error.response.data.message;
                 }
 
@@ -218,7 +221,10 @@ export default {
                 
                 let errorMessage = 'Código inválido. Tente novamente.';
                 
-                if (error.response?.data?.message) {
+                // Verificar se há mensagem de erro do backend
+                if (error.response?.data?.error) {
+                    errorMessage = error.response.data.error;
+                } else if (error.response?.data?.message) {
                     errorMessage = error.response.data.message;
                 }
 
@@ -277,7 +283,10 @@ export default {
                 
                 let errorMessage = 'Erro ao alterar senha. Tente novamente.';
                 
-                if (error.response?.data?.message) {
+                // Verificar se há mensagem de erro do backend
+                if (error.response?.data?.error) {
+                    errorMessage = error.response.data.error;
+                } else if (error.response?.data?.message) {
                     errorMessage = error.response.data.message;
                 } else if (error.response?.data?.errors) {
                     const errors = error.response.data.errors;
