@@ -299,6 +299,40 @@
                                     </small>
                                 </div>
                             </div>
+
+                            <!-- Número -->
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <IftaLabel>
+                                        <InputText 
+                                            id="numero" 
+                                            v-model="form.numero" 
+                                            class="w-100 h-12 text-lg"
+                                            :class="{ 'p-invalid': errors.numero }"
+                                            @input="clearError('numero')"
+                                        />
+                                        <label for="numero">Número *</label>
+                                    </IftaLabel>
+                                    <small v-if="errors.numero" class="text-red-500 text-sm mt-1 block">{{ errors.numero }}</small>
+                                </div>
+                            </div>
+
+                            <!-- Complemento -->
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <IftaLabel>
+                                        <InputText 
+                                            id="complemento" 
+                                            v-model="form.complemento" 
+                                            class="w-100 h-12 text-lg"
+                                            :class="{ 'p-invalid': errors.complemento }"
+                                            @input="clearError('complemento')"
+                                        />
+                                        <label for="complemento">Complemento</label>
+                                    </IftaLabel>
+                                    <small v-if="errors.complemento" class="text-red-500 text-sm mt-1 block">{{ errors.complemento }}</small>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Etapa 3: Dados de Login -->
@@ -501,6 +535,8 @@ export default {
                 estado: '',
                 rua: '',
                 bairro: '',
+                numero: '',
+                complemento: '',
                 email: '',
                 password: '',
                 password_confirmation: '',
@@ -729,6 +765,9 @@ export default {
                 }
                 if (!this.form.bairro.trim()) {
                     this.errors.bairro = 'Bairro é obrigatório';
+                }
+                if (!this.form.numero.trim()) {
+                    this.errors.numero = 'Número é obrigatório';
                 }
             }
 

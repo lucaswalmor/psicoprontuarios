@@ -197,11 +197,13 @@ export default {
         // Definir tipo baseado na URL
         this.filtros.tipo = this.tipoDetectado;
         
-        // Carregar categorias
-        await this.carregarCategorias();
-        
-        // Carregar transações
-        await this.carregarTransacoes();
+        if (this.$hasAccessToModule('gestao_financeira')) {
+            // Carregar categorias
+            await this.carregarCategorias();
+            
+            // Carregar transações
+            await this.carregarTransacoes();
+        }
     },
     methods: {
         getDataInicioFim() {
