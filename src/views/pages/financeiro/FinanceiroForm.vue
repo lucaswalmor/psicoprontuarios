@@ -121,6 +121,32 @@
                             </div>
                         </div>
                         
+                        <!-- Campo Receita/Despesa Paga -->
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label class="block text-900 font-medium mb-2">
+                                    {{ form.tipo === 'receita' ? 'Receita Paga?' : 'Despesa Paga?' }}
+                                </label>
+                                <div class="flex align-items-center gap-2">
+                                    <ToggleSwitch v-model="form.paga" />
+                                    <span class="text-600">{{ form.paga ? 'Sim' : 'Não' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Campo Data de Pagamento -->
+                        <div class="col-12 md:col-6" v-if="form.paga">
+                            <div class="field">
+                                <label for="data_pagamento" class="block text-900 font-medium mb-2">Data de Pagamento</label>
+                                <InputMask 
+                                    v-model="form.data_pagamento" 
+                                    mask="99/99/9999" 
+                                    placeholder="dd/mm/aaaa"
+                                    class="w-full"
+                                />
+                            </div>
+                        </div>
+                        
                         <!-- Campos de Parcelamento -->
                         <div class="col-12 md:col-6">
                             <div class="field">
@@ -383,7 +409,9 @@ export default {
                 descricao: '',
                 tipo_pagamento: null,
                 qtd_parcelas: 1,
-                forma_divisao: 'manter'
+                forma_divisao: 'manter',
+                paga: false,
+                data_pagamento: null
             },
             tiposPagamento: [
                 { label: 'À Vista', value: 'avista' },
@@ -465,6 +493,8 @@ export default {
             this.form.tipo_pagamento = null;
             this.form.qtd_parcelas = 1;
             this.form.forma_divisao = 'manter';
+            this.form.paga = false;
+            this.form.data_pagamento = null;
             this.errors = {};
             this.parcelas = [];
         },
@@ -513,6 +543,14 @@ export default {
                     this.form.tipo_pagamento = transacao.tipo_pagamento || 'avista';
                     this.form.qtd_parcelas = transacao.qtd_parcelas || 1;
                     this.form.forma_divisao = transacao.forma_divisao || 'manter';
+                    this.form.paga = transacao.paga || false;
+                    // Formatar data_pagamento para o InputMask (dd/mm/yyyy)
+                    if (transacao.data_pagamento) {
+                        const dataPagamento = new Date(transacao.data_pagamento);
+                        this.form.data_pagamento = `${dataPagamento.getDate().toString().padStart(2, '0')}/${(dataPagamento.getMonth() + 1).toString().padStart(2, '0')}/${dataPagamento.getFullYear()}`;
+                    } else {
+                        this.form.data_pagamento = null;
+                    }
                     
                     // Se for uma transação parcelada, carregar todas as parcelas
                     if (transacao.recorrencia_id) {
@@ -543,6 +581,15 @@ export default {
             this.loading = true;
             
             try {
+                // Converter data_pagamento de dd/mm/yyyy para yyyy-mm-dd
+                let dataPagamentoFormatada = null;
+                if (this.form.paga && this.form.data_pagamento) {
+                    const partes = this.form.data_pagamento.split('/');
+                    if (partes.length === 3) {
+                        dataPagamentoFormatada = `${partes[2]}-${partes[1]}-${partes[0]}`;
+                    }
+                }
+                
                 const dados = {
                     tipo: this.form.tipo,
                     tipo_pagamento: this.form.tipo_pagamento,
@@ -551,7 +598,9 @@ export default {
                     categoria: this.form.categoria.trim(),
                     valor: this.form.valor,
                     data: this.form.data.toISOString().split('T')[0],
-                    descricao: this.form.descricao.trim()
+                    descricao: this.form.descricao.trim(),
+                    paga: this.form.paga,
+                    data_pagamento: dataPagamentoFormatada
                 };
                 
                 if (this.isEditing) {

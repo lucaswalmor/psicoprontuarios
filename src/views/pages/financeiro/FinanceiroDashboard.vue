@@ -11,7 +11,7 @@
             <!-- Cards de Resumo -->
             <div class="grid">
                 <div class="col-12 md:col-4">
-                    <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
+                    <div class="card card-clickable" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''" @click="$router.push('/financeiro/receitas')">
                         <div class="flex align-items-center justify-content-between">
                             <div>
                                 <span class="block text-600 font-medium mb-2">Receitas</span>
@@ -22,7 +22,7 @@
                     </div>
                 </div>
                 <div class="col-12 md:col-4">
-                    <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
+                    <div class="card card-clickable" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''" @click="$router.push('/financeiro/despesas')">
                         <div class="flex align-items-center justify-content-between">
                             <div>
                                 <span class="block text-600 font-medium mb-2">Despesas</span>
@@ -277,7 +277,10 @@ export default {
         },
 
         saldo() {
-            return (this.dados.mes_atual?.receitas || 0) - (this.dados.mes_atual?.despesas || 0);
+            // Saldo apenas com o que foi pago (sem previstas)
+            const receitasPagas = this.dados.mes_atual?.receitas_pagas || 0;
+            const despesasPagas = this.dados.mes_atual?.despesas_pagas || 0;
+            return receitasPagas - despesasPagas;
         },
         saldoClass() {
             return this.saldo >= 0 ? 'bg-green-900 border-green-600' : 'bg-red-900 border-red-600';
@@ -295,15 +298,27 @@ export default {
             // Se temos dados de fluxo de caixa (período específico), usar eles
             if (this.dados.fluxo_caixa && this.dados.fluxo_caixa.length > 0) {
                 // Formatar labels para exibição (dd/mm)
+                // Extrair dia e mês diretamente da string para evitar problemas de fuso horário
                 const labels = this.dados.fluxo_caixa.map(item => {
-                    const data = new Date(item.data);
+                    // Formato esperado: "YYYY-MM-DD"
+                    const partes = item.data.split('-');
+                    if (partes.length === 3) {
+                        const dia = partes[2];
+                        const mes = partes[1];
+                        return `${dia}/${mes}`;
+                    }
+                    // Fallback: usar Date se o formato não for o esperado
+                    const data = new Date(item.data + 'T12:00:00'); // Adicionar meio-dia para evitar problemas de fuso
                     return `${data.getDate().toString().padStart(2, '0')}/${(data.getMonth() + 1).toString().padStart(2, '0')}`;
                 });
                 
-                const receitasData = this.dados.fluxo_caixa.map(item => parseFloat(item.receitas || 0));
-                const despesasData = this.dados.fluxo_caixa.map(item => parseFloat(item.despesas || 0));
+                // Separar receitas e despesas por status de pagamento
+                const receitasPagasData = this.dados.fluxo_caixa.map(item => parseFloat(item.receitas_pagas || 0));
+                const receitasPrevistasData = this.dados.fluxo_caixa.map(item => parseFloat(item.receitas_previstas || 0));
+                const despesasPagasData = this.dados.fluxo_caixa.map(item => parseFloat(item.despesas_pagas || 0));
+                const despesasPrevistasData = this.dados.fluxo_caixa.map(item => parseFloat(item.despesas_previstas || 0));
                 
-                // Calcular saldo acumulativo
+                // Calcular saldo acumulativo (apenas com o que foi pago)
                 let saldoAcumulativo = 0;
                 const saldoAcumulativoData = this.dados.fluxo_caixa.map(item => {
                     saldoAcumulativo += parseFloat(item.saldo || 0);
@@ -314,18 +329,34 @@ export default {
                     labels: labels,
                     datasets: [
                         {
-                            label: 'Receitas',
-                            data: receitasData,
-                            backgroundColor: '#22c55e',
-                            borderColor: '#16a34a',
+                            label: 'Receitas Pagas',
+                            data: receitasPagasData,
+                            backgroundColor: '#16a34a', // Verde forte
+                            borderColor: '#15803d',
                             borderWidth: 1,
                             type: 'bar'
                         },
                         {
-                            label: 'Despesas',
-                            data: despesasData,
-                            backgroundColor: '#ef4444',
-                            borderColor: '#dc2626',
+                            label: 'Receitas Previstas',
+                            data: receitasPrevistasData,
+                            backgroundColor: '#86efac', // Verde claro
+                            borderColor: '#4ade80',
+                            borderWidth: 1,
+                            type: 'bar'
+                        },
+                        {
+                            label: 'Despesas Pagas',
+                            data: despesasPagasData,
+                            backgroundColor: '#991b1b', // Vermelho escuro
+                            borderColor: '#7f1d1d',
+                            borderWidth: 1,
+                            type: 'bar'
+                        },
+                        {
+                            label: 'Despesas Previstas',
+                            data: despesasPrevistasData,
+                            backgroundColor: '#fca5a5', // Vermelho claro
+                            borderColor: '#f87171',
                             borderWidth: 1,
                             type: 'bar'
                         },
@@ -344,6 +375,8 @@ export default {
             }
 
             // Se não há filtros de data específicos, mostrar dados mensais do ano
+            // Nota: Para dados anuais, não temos separação de pagas/previstas ainda
+            // Por enquanto, mantemos o formato antigo, mas podemos melhorar depois
             const labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
             const receitasData = [];
             const despesasData = [];
@@ -426,6 +459,8 @@ export default {
         // Se não for lazy, carregar dados imediatamente
         if (!this.lazy) {
             this.inicializarFiltrosData();
+            // Usar $nextTick para garantir que os filtros sejam inicializados antes de carregar os dados
+            await this.$nextTick();
             await this.carregarDados({
                 data_inicial: this.formatarDataParaAPI(this.filtrosData.data_inicial),
                 data_final: this.formatarDataParaAPI(this.filtrosData.data_final),
@@ -444,17 +479,31 @@ export default {
             }).format(valor);
         },
         async carregarDados(filtrosAdicionais = {}) {
-            // Se já carregou e é lazy, não carregar novamente
-            if (this.lazy && this.dadosCarregados) {
-                return;
-            }
-
             try {
-                const params = {
-                    ano: this.filtros.ano,
-                    mes: this.filtros.mes,
-                    ...filtrosAdicionais
-                };
+                // Se há filtros de data específicos, usar apenas eles
+                // Caso contrário, usar os filtros de ano e mês
+                const params = {};
+                
+                // Verificar se há filtros de data específicos
+                const temDataInicial = filtrosAdicionais.data_inicial && 
+                    filtrosAdicionais.data_inicial !== null && 
+                    filtrosAdicionais.data_inicial !== '';
+                const temDataFinal = filtrosAdicionais.data_final && 
+                    filtrosAdicionais.data_final !== null && 
+                    filtrosAdicionais.data_final !== '';
+                
+                if (temDataInicial && temDataFinal) {
+                    // Usar filtros de data específicos
+                    params.data_inicial = filtrosAdicionais.data_inicial;
+                    params.data_final = filtrosAdicionais.data_final;
+                    if (filtrosAdicionais.tipo_periodo) {
+                        params.tipo_periodo = filtrosAdicionais.tipo_periodo;
+                    }
+                } else {
+                    // Usar filtros de ano e mês padrão
+                    params.ano = this.filtros.ano;
+                    params.mes = this.filtros.mes;
+                }
                 
                 const response = await this.$financeirosService.dashboard(params);
                 this.dados = response.data;
@@ -473,7 +522,14 @@ export default {
             this.drawerFilterFinanceiro = false;
             this.limparCampos = true;
             this.inicializarFiltrosData();
-            this.carregarDados();
+            // Usar $nextTick para garantir que os filtros sejam inicializados antes de carregar os dados
+            this.$nextTick(() => {
+                this.carregarDados({
+                    data_inicial: this.formatarDataParaAPI(this.filtrosData.data_inicial),
+                    data_final: this.formatarDataParaAPI(this.filtrosData.data_final),
+                    tipo_periodo: 'mes'
+                });
+            });
         },
         onUpdateDrawerFilterFinanceiro(event) {
             this.drawerFilterFinanceiro = event;
@@ -492,10 +548,13 @@ export default {
         aplicarFiltrosData() {
             if (this.filtrosData.data_inicial && this.filtrosData.data_final) {
                 this.filtroAtivo = 'custom';
-                this.carregarDados({
-                    data_inicial: this.formatarDataParaAPI(this.filtrosData.data_inicial),
-                    data_final: this.formatarDataParaAPI(this.filtrosData.data_final),
-                    tipo_periodo: 'custom'
+                // Usar $nextTick para garantir que as datas sejam atualizadas antes de carregar os dados
+                this.$nextTick(() => {
+                    this.carregarDados({
+                        data_inicial: this.formatarDataParaAPI(this.filtrosData.data_inicial),
+                        data_final: this.formatarDataParaAPI(this.filtrosData.data_final),
+                        tipo_periodo: 'custom'
+                    });
                 });
             }
         },
@@ -503,52 +562,91 @@ export default {
         aplicarFiltroRapido(tipo) {
             this.filtroAtivo = tipo;
             const hoje = new Date();
+            let dataInicial = null;
+            let dataFinal = null;
             
             switch (tipo) {
                 case 'dia':
-                    this.filtrosData.data_inicial = new Date(hoje);
-                    this.filtrosData.data_final = new Date(hoje);
+                    dataInicial = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+                    dataInicial.setHours(0, 0, 0, 0);
+                    dataFinal = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+                    dataFinal.setHours(23, 59, 59, 999);
                     break;
                     
                 case 'semana':
                     const inicioSemana = new Date(hoje);
                     inicioSemana.setDate(hoje.getDate() - hoje.getDay());
+                    inicioSemana.setHours(0, 0, 0, 0);
                     const fimSemana = new Date(inicioSemana);
                     fimSemana.setDate(inicioSemana.getDate() + 6);
+                    fimSemana.setHours(23, 59, 59, 999);
                     
-                    this.filtrosData.data_inicial = inicioSemana;
-                    this.filtrosData.data_final = fimSemana;
+                    dataInicial = inicioSemana;
+                    dataFinal = fimSemana;
                     break;
                     
                 case 'mes':
                     const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+                    primeiroDiaMes.setHours(0, 0, 0, 0);
                     const ultimoDiaMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+                    ultimoDiaMes.setHours(23, 59, 59, 999);
                     
-                    this.filtrosData.data_inicial = primeiroDiaMes;
-                    this.filtrosData.data_final = ultimoDiaMes;
+                    dataInicial = primeiroDiaMes;
+                    dataFinal = ultimoDiaMes;
                     break;
                     
                 case 'trimestre':
                     const trimestreAtual = Math.floor(hoje.getMonth() / 3);
                     const primeiroDiaTrimestre = new Date(hoje.getFullYear(), trimestreAtual * 3, 1);
+                    primeiroDiaTrimestre.setHours(0, 0, 0, 0);
                     const ultimoDiaTrimestre = new Date(hoje.getFullYear(), (trimestreAtual + 1) * 3, 0);
+                    ultimoDiaTrimestre.setHours(23, 59, 59, 999);
                     
-                    this.filtrosData.data_inicial = primeiroDiaTrimestre;
-                    this.filtrosData.data_final = ultimoDiaTrimestre;
+                    dataInicial = primeiroDiaTrimestre;
+                    dataFinal = ultimoDiaTrimestre;
                     break;
             }
             
-            this.carregarDados({
-                data_inicial: this.formatarDataParaAPI(this.filtrosData.data_inicial),
-                data_final: this.formatarDataParaAPI(this.filtrosData.data_final),
+            // Atualizar as datas no objeto reativo
+            this.filtrosData.data_inicial = dataInicial;
+            this.filtrosData.data_final = dataFinal;
+            
+            // Formatar as datas antes de enviar
+            const dataInicialFormatada = this.formatarDataParaAPI(dataInicial);
+            const dataFinalFormatada = this.formatarDataParaAPI(dataFinal);
+            
+            // Aplicar o filtro imediatamente
+            const filtrosParaEnviar = {
+                data_inicial: dataInicialFormatada,
+                data_final: dataFinalFormatada,
                 tipo_periodo: tipo
-            });
+            };
+            
+            this.carregarDados(filtrosParaEnviar);
         },
         
         formatarDataParaAPI(data) {
             if (!data) return null;
+            
+            // Se já é uma string no formato YYYY-MM-DD, retornar diretamente
+            if (typeof data === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(data)) {
+                return data;
+            }
+            
+            // Criar objeto Date e formatar
             const d = new Date(data);
-            return d.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+            
+            // Verificar se a data é válida
+            if (isNaN(d.getTime())) {
+                return null;
+            }
+            
+            // Formatar para YYYY-MM-DD
+            const ano = d.getFullYear();
+            const mes = String(d.getMonth() + 1).padStart(2, '0');
+            const dia = String(d.getDate()).padStart(2, '0');
+            
+            return `${ano}-${mes}-${dia}`;
         }
     }
 };
@@ -558,6 +656,16 @@ export default {
 .card {
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.card-clickable {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.card-clickable:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
 }
 
 .empty-state {
