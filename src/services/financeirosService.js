@@ -6,6 +6,11 @@ const financeirosService = {
         return api.get('/financeiros', { params });
     },
 
+    // Buscar transação por ID
+    buscarPorId(id) {
+        return api.get(`/financeiros/${id}`);
+    },
+
     // Cadastrar nova transação
     cadastrar(data) {
         return api.post('/financeiros', data);

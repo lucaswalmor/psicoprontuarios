@@ -125,7 +125,7 @@
                         <div class="col-12 md:col-6">
                             <div class="field">
                                 <label class="block text-900 font-medium mb-2">
-                                    {{ form.tipo === 'receita' ? 'Receita Paga?' : 'Despesa Paga?' }}
+                                    {{ form.tipo === 'receita' ? 'Receita recebida?' : 'Despesa Paga?' }}
                                 </label>
                                 <div class="flex align-items-center gap-2">
                                     <ToggleSwitch v-model="form.paga" />
@@ -532,9 +532,9 @@ export default {
         
         async carregarTransacao(id) {
             try {
-                const response = await this.$financeirosService.buscar({ id });
-                if (response.data.data && response.data.data.length > 0) {
-                    const transacao = response.data.data[0];
+                const response = await this.$financeirosService.buscarPorId(id);
+                if (response.data) {
+                    const transacao = response.data;
                     this.form.tipo = transacao.tipo;
                     this.form.categoria = transacao.categoria;
                     this.form.valor = transacao.valor;
@@ -559,6 +559,12 @@ export default {
                 }
             } catch (error) {
                 console.error('Erro ao carregar transação:', error);
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: 'Erro ao carregar transação',
+                    life: 3000
+                });
             }
         },
         
