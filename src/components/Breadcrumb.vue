@@ -126,8 +126,17 @@ export default {
                 
                 const label = routeNameMapping[routeName] || routeName.charAt(0).toUpperCase() + routeName.slice(1);
                 
-                // Se não é o último item, adiciona route para navegação
-                if (index < pathSegments.length - 1) {
+                // Tratamento especial para rotas de financeiro
+                // Se estiver em /financeiro/receitas ou /financeiro/despesas,
+                // o item "Financeiro" deve manter a rota atual
+                if (segment === 'financeiro' && (pathSegments[index + 1] === 'receitas' || pathSegments[index + 1] === 'despesas')) {
+                    // Mantém a rota completa (receitas ou despesas) ao invés de apenas /financeiro
+                    items.push({
+                        label: label,
+                        route: currentPath + `/${pathSegments[index + 1]}`
+                    });
+                } else if (index < pathSegments.length - 1) {
+                    // Se não é o último item, adiciona route para navegação
                     items.push({
                         label: label,
                         route: currentPath

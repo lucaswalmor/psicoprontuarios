@@ -98,31 +98,20 @@
                         <div class="col-12 md:col-6">
                             <div class="field">
                                 <label for="data" class="block text-900 font-medium mb-2">Data *</label>
-                                <Calendar 
+                                <DatePicker 
                                     v-model="form.data" 
                                     dateFormat="dd/mm/yy"
                                     placeholder="dd/mm/aaaa"
                                     class="w-full"
                                     :class="{ 'p-invalid': errors.data }"
+                                    fluid
                                 />
                                 <small v-if="errors.data" class="p-error">{{ errors.data }}</small>
                             </div>
                         </div>
                         
-                        <div class="col-12">
-                            <div class="field">
-                                <label for="descricao" class="block text-900 font-medium mb-2">Descrição</label>
-                                <Textarea 
-                                    v-model="form.descricao" 
-                                    rows="3" 
-                                    placeholder="Descreva a transação..."
-                                    class="w-full"
-                                />
-                            </div>
-                        </div>
-                        
                         <!-- Campo Receita/Despesa Paga -->
-                        <div class="col-12 md:col-6">
+                        <div class="col-12 md:col-6 flex gap-5">
                             <div class="field">
                                 <label class="block text-900 font-medium mb-2">
                                     {{ form.tipo === 'receita' ? 'Receita recebida?' : 'Despesa Paga?' }}
@@ -132,17 +121,15 @@
                                     <span class="text-600">{{ form.paga ? 'Sim' : 'Não' }}</span>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <!-- Campo Data de Pagamento -->
-                        <div class="col-12 md:col-6" v-if="form.paga">
-                            <div class="field">
+                            
+                            <div class="field" v-if="form.paga">
                                 <label for="data_pagamento" class="block text-900 font-medium mb-2">Data de Pagamento</label>
-                                <InputMask 
+                                <DatePicker 
                                     v-model="form.data_pagamento" 
-                                    mask="99/99/9999" 
+                                    dateFormat="dd/mm/yy"
                                     placeholder="dd/mm/aaaa"
                                     class="w-full"
+                                    fluid
                                 />
                             </div>
                         </div>
@@ -177,6 +164,18 @@
                                     :class="{ 'p-invalid': errors.qtd_parcelas }"
                                 />
                                 <small v-if="errors.qtd_parcelas" class="p-error">{{ errors.qtd_parcelas }}</small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12">
+                            <div class="field">
+                                <label for="descricao" class="block text-900 font-medium mb-2">Descrição</label>
+                                <Textarea 
+                                    v-model="form.descricao" 
+                                    rows="3" 
+                                    placeholder="Descreva a transação..."
+                                    class="w-full"
+                                />
                             </div>
                         </div>
                     </div>
@@ -373,8 +372,13 @@
 </template>
 
 <script>
+import DatePicker from 'primevue/datepicker';
+
 export default {
     name: 'FinanceiroForm',
+    components: {
+        DatePicker
+    },
     data() {
         return {
             loading: false,
@@ -544,10 +548,9 @@ export default {
                     this.form.qtd_parcelas = transacao.qtd_parcelas || 1;
                     this.form.forma_divisao = transacao.forma_divisao || 'manter';
                     this.form.paga = transacao.paga || false;
-                    // Formatar data_pagamento para o InputMask (dd/mm/yyyy)
+                    // Converter data_pagamento para Date object para o DatePicker
                     if (transacao.data_pagamento) {
-                        const dataPagamento = new Date(transacao.data_pagamento);
-                        this.form.data_pagamento = `${dataPagamento.getDate().toString().padStart(2, '0')}/${(dataPagamento.getMonth() + 1).toString().padStart(2, '0')}/${dataPagamento.getFullYear()}`;
+                        this.form.data_pagamento = new Date(transacao.data_pagamento);
                     } else {
                         this.form.data_pagamento = null;
                     }
@@ -587,12 +590,17 @@ export default {
             this.loading = true;
             
             try {
-                // Converter data_pagamento de dd/mm/yyyy para yyyy-mm-dd
+                // Converter data_pagamento de Date para yyyy-mm-dd
                 let dataPagamentoFormatada = null;
                 if (this.form.paga && this.form.data_pagamento) {
-                    const partes = this.form.data_pagamento.split('/');
-                    if (partes.length === 3) {
-                        dataPagamentoFormatada = `${partes[2]}-${partes[1]}-${partes[0]}`;
+                    if (this.form.data_pagamento instanceof Date) {
+                        dataPagamentoFormatada = this.form.data_pagamento.toISOString().split('T')[0];
+                    } else if (typeof this.form.data_pagamento === 'string') {
+                        // Fallback para string (caso ainda venha como string)
+                        const partes = this.form.data_pagamento.split('/');
+                        if (partes.length === 3) {
+                            dataPagamentoFormatada = `${partes[2]}-${partes[1]}-${partes[0]}`;
+                        }
                     }
                 }
                 

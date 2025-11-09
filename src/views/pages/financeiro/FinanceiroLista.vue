@@ -52,10 +52,18 @@
                         </template>
                     </Column>
 
-                    <Column field="tipo" header="Tipo" sortable>
+                    <Column field="paga" header="Status" sortable>
                         <template #body="{ data }">
-                            <Tag :value="data.tipo === 'receita' ? 'Receita' : 'Despesa'"
-                                :severity="data.tipo === 'receita' ? 'success' : 'danger'" />
+                            <Tag 
+                                v-if="data.tipo === 'receita'"
+                                :value="data.paga ? 'Recebido' : 'Não recebido'"
+                                :severity="data.paga ? 'success' : 'danger'" 
+                            />
+                            <Tag 
+                                v-else
+                                :value="data.paga ? 'Paga' : 'Não paga'"
+                                :severity="data.paga ? 'success' : 'danger'" 
+                            />
                         </template>
                     </Column>
 
