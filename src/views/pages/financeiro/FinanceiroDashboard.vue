@@ -277,10 +277,7 @@ export default {
         },
 
         saldo() {
-            // Saldo apenas com o que foi pago (sem previstas)
-            const receitasPagas = this.dados.mes_atual?.receitas_pagas || 0;
-            const despesasPagas = this.dados.mes_atual?.despesas_pagas || 0;
-            return receitasPagas - despesasPagas;
+            return this.dados.total_ano?.saldo || 0;
         },
         saldoClass() {
             return this.saldo >= 0 ? 'bg-green-900 border-green-600' : 'bg-red-900 border-red-600';
@@ -318,12 +315,9 @@ export default {
                 const despesasPagasData = this.dados.fluxo_caixa.map(item => parseFloat(item.despesas_pagas || 0));
                 const despesasPrevistasData = this.dados.fluxo_caixa.map(item => parseFloat(item.despesas_previstas || 0));
                 
-                // Calcular saldo acumulativo (apenas com o que foi pago)
-                let saldoAcumulativo = 0;
-                const saldoAcumulativoData = this.dados.fluxo_caixa.map(item => {
-                    saldoAcumulativo += parseFloat(item.saldo || 0);
-                    return saldoAcumulativo;
-                });
+                // Usar o saldo acumulativo que vem do backend
+                // O backend já calcula o saldo acumulativo corretamente (receitas_pagas - despesas_pagas) dia a dia
+                const saldoAcumulativoData = this.dados.fluxo_caixa.map(item => parseFloat(item.saldo_acumulativo || 0));
 
                 return {
                     labels: labels,
