@@ -277,7 +277,7 @@ export default {
         },
 
         saldo() {
-            return this.dados.total_ano?.saldo || 0;
+            return this.dados.mes_atual?.saldo || 0;
         },
         saldoClass() {
             return this.saldo >= 0 ? 'bg-green-900 border-green-600' : 'bg-red-900 border-red-600';
