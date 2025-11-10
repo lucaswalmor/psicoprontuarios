@@ -88,6 +88,72 @@
                             </div>
                         </div>
 
+                        <!-- Cards de Estatísticas Detalhadas -->
+                        <div class="grid mt-4">
+                            <!-- Tempo Médio de Tratamento -->
+                            <div class="col-12 md:col-3">
+                                <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
+                                    <div class="flex align-items-center justify-content-between">
+                                        <div>
+                                            <span class="block text-500 text-sm font-medium mb-2">Tempo Médio de Tratamento</span>
+                                            <div class="text-500 font-bold text-xl">
+                                                {{ dados.pacientes?.tempo_medio_tratamento || 0 }} dias
+                                            </div>
+                                        </div>
+                                        <i class="pi pi-clock text-2xl text-500"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Taxa de Conclusão -->
+                            <div class="col-12 md:col-3">
+                                <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
+                                    <div class="flex align-items-center justify-content-between">
+                                        <div>
+                                            <span class="block text-500 text-sm font-medium mb-2">Taxa de Conclusão</span>
+                                            <div class="text-500 font-bold text-xl">
+                                                {{ dados.pacientes?.taxa_conclusao || 0 }}%
+                                            </div>
+                                        </div>
+                                        <i class="pi pi-check-circle text-2xl text-500"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Pacientes com Anamnese -->
+                            <div class="col-12 md:col-3">
+                                <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
+                                    <div class="flex align-items-center justify-content-between">
+                                        <div>
+                                            <span class="block text-500 text-sm font-medium mb-2">Pacientes com Anamnese</span>
+                                            <div class="text-500 font-bold text-xl">
+                                                {{ dados.pacientes?.percentual_anamnese || 0 }}%
+                                            </div>
+                                        </div>
+                                        <i class="pi pi-file text-2xl text-500"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Novos vs Retornados -->
+                            <div class="col-12 md:col-3">
+                                <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
+                                    <div class="flex align-items-center justify-content-between">
+                                        <div>
+                                            <span class="block text-500 text-sm font-medium mb-2">Este Mês</span>
+                                            <div class="text-500 font-medium text-sm">
+                                                Novos: {{ dados.pacientes?.pacientes_novos_mes || 0 }}
+                                            </div>
+                                            <div class="text-500 font-medium text-sm">
+                                                Retornados: {{ dados.pacientes?.pacientes_retornados_mes || 0 }}
+                                            </div>
+                                        </div>
+                                        <i class="pi pi-users text-2xl text-500"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Cards Financeiros -->
                         <div class="grid mt-4" v-if="isPlanoProfissional">
                             <!-- Próxima Sessão -->
@@ -186,6 +252,38 @@
                                                 @click="$router.push('/pacientes')" />
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gráficos de Distribuição -->
+                        <div class="grid mt-4">
+                            <!-- Distribuição por Gênero -->
+                            <div class="col-12 md:col-6">
+                                <div class="card">
+                                    <h6 class="text-500 mb-3">Distribuição por Gênero</h6>
+                                    <Chart type="doughnut" :data="generoChartData" :options="generoChartOptions"
+                                        class="h-[200px]" />
+                                </div>
+                            </div>
+
+                            <!-- Distribuição por Faixa Etária -->
+                            <div class="col-12 md:col-6">
+                                <div class="card">
+                                    <h6 class="text-500 mb-3">Distribuição por Faixa Etária</h6>
+                                    <Chart type="doughnut" :data="faixaEtariaChartData" :options="faixaEtariaChartOptions"
+                                        class="h-[200px]" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gráfico de Evolução de Status -->
+                        <div class="grid mt-4">
+                            <div class="col-12">
+                                <div class="card">
+                                    <h6 class="text-500 mb-3">Evolução de Status (6 meses)</h6>
+                                    <Chart type="line" :data="statusEvolutionChartData" :options="statusEvolutionChartOptions"
+                                        class="h-[300px]" />
                                 </div>
                             </div>
                         </div>
@@ -310,7 +408,16 @@ export default {
                     pacientes_recesso: 0,
                     pacientes_concluidos: 0,
                     ultimos_pacientes: [],
-                    crescimento_pacientes: {}
+                    crescimento_pacientes: {},
+                    evolucao_status: {},
+                    tempo_medio_tratamento: 0,
+                    taxa_conclusao: 0,
+                    pacientes_novos_mes: 0,
+                    pacientes_retornados_mes: 0,
+                    distribuicao_genero: {},
+                    distribuicao_faixa_etaria: {},
+                    pacientes_com_anamnese: 0,
+                    percentual_anamnese: 0
                 },
                 prontuarios: {
                     sessoes_do_dia: 0,
@@ -513,6 +620,173 @@ export default {
         isPlanoProfissional() {
             // Verificar se é usuário vitalício OU se tem plano Profissional
             return this.planStore.isVitalicio || this.planStore.planInfo?.nome === 'Profissional';
+        },
+        generoChartData() {
+            const distribuicao = this.dados.pacientes?.distribuicao_genero || {};
+            const labels = Object.keys(distribuicao);
+            const data = Object.values(distribuicao);
+            
+            return {
+                labels: labels.length > 0 ? labels : ['Sem dados'],
+                datasets: [{
+                    data: data.length > 0 ? data : [0],
+                    backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'],
+                    borderWidth: 0
+                }]
+            };
+        },
+        generoChartOptions() {
+            return {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000',
+                            padding: 15
+                        }
+                    }
+                }
+            };
+        },
+        faixaEtariaChartData() {
+            const distribuicao = this.dados.pacientes?.distribuicao_faixa_etaria || {};
+            const labels = Object.keys(distribuicao);
+            const data = Object.values(distribuicao);
+            
+            return {
+                labels: labels.length > 0 ? labels : ['Sem dados'],
+                datasets: [{
+                    data: data.length > 0 ? data : [0],
+                    backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'],
+                    borderWidth: 0
+                }]
+            };
+        },
+        faixaEtariaChartOptions() {
+            return {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000',
+                            padding: 15
+                        }
+                    }
+                }
+            };
+        },
+        statusEvolutionChartData() {
+            const labels = [];
+            const emAndamentoData = [];
+            const recessoData = [];
+            const concluidosData = [];
+
+            const mesesTraduzidos = {
+                'January': 'Janeiro', 'February': 'Fevereiro', 'March': 'Março', 'April': 'Abril',
+                'May': 'Maio', 'June': 'Junho', 'July': 'Julho', 'August': 'Agosto',
+                'September': 'Setembro', 'October': 'Outubro', 'November': 'Novembro', 'December': 'Dezembro',
+                'Jan': 'Jan', 'Feb': 'Fev', 'Mar': 'Mar', 'Apr': 'Abr',
+                'May': 'Mai', 'Jun': 'Jun', 'Jul': 'Jul', 'Aug': 'Ago',
+                'Sep': 'Set', 'Oct': 'Out', 'Nov': 'Nov', 'Dec': 'Dez'
+            };
+
+            Object.values(this.dados.pacientes?.evolucao_status || {}).forEach(item => {
+                let mesOriginal = item.mes;
+                let mesTraduzido = null;
+
+                if (typeof mesOriginal === 'string' && mesOriginal.includes('/')) {
+                    const partes = mesOriginal.split('/');
+                    const mesParte = partes[0].trim();
+                    const anoParte = partes[1] ? partes[1].trim() : '';
+                    mesTraduzido = mesesTraduzidos[mesParte];
+                    if (mesTraduzido && anoParte) {
+                        mesTraduzido = `${mesTraduzido}/${anoParte}`;
+                    } else if (mesTraduzido) {
+                        mesTraduzido = mesTraduzido;
+                    } else {
+                        mesTraduzido = mesOriginal;
+                    }
+                } else {
+                    mesTraduzido = mesesTraduzidos[mesOriginal] || mesOriginal;
+                }
+
+                labels.push(mesTraduzido);
+                emAndamentoData.push(item.em_andamento || 0);
+                recessoData.push(item.recesso || 0);
+                concluidosData.push(item.concluidos || 0);
+            });
+
+            return {
+                labels: labels.length > 0 ? labels : ['Sem dados'],
+                datasets: [
+                    {
+                        label: 'Em Andamento',
+                        data: emAndamentoData.length > 0 ? emAndamentoData : [0],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Recesso',
+                        data: recessoData.length > 0 ? recessoData : [0],
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Concluídos',
+                        data: concluidosData.length > 0 ? concluidosData : [0],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            };
+        },
+        statusEvolutionChartOptions() {
+            return {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000',
+                            usePointStyle: true,
+                            padding: 15
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: this.themeStore.theme === 'dark' ? '#374151' : '#e5e7eb'
+                        },
+                        ticks: {
+                            color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: this.themeStore.theme === 'dark' ? '#374151' : '#e5e7eb'
+                        },
+                        ticks: {
+                            color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000'
+                        }
+                    }
+                }
+            };
         }
     },
     async mounted() {
