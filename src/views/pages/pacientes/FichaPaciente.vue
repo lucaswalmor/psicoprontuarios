@@ -95,6 +95,7 @@
                 <Tab :value="2">Sessões</Tab>
                 <Tab :value="3">Anexos</Tab>
                 <Tab :value="4">Anamnese</Tab>
+                <Tab :value="5">Evolução</Tab>
             </TabList>
             <TabPanels>
                 <!-- Tab Dados Pessoais -->
@@ -191,6 +192,106 @@
                         :paciente-id="pacienteId"
                     />
                 </TabPanel>
+
+                <!-- Tab Evolução -->
+                <TabPanel :value="5">
+                    <div class="card" v-if="!loadingEvolucao">
+                        <h5 class="text-500 mb-4">Evolução do Paciente</h5>
+
+                        <!-- Cards de Resumo -->
+                        <div class="grid mb-4">
+                            <div class="col-12 md:col-3">
+                                <div class="card bg-blue-50 border-blue-200">
+                                    <div class="flex align-items-center justify-content-between">
+                                        <div>
+                                            <span class="block text-blue-600 font-medium mb-2">Média Atual (Últimas 3)</span>
+                                            <div class="text-blue-900 font-bold text-xl">
+                                                Humor: {{ evolucao?.estatisticas?.media_atual?.humor ? evolucao.estatisticas.media_atual.humor.toFixed(1) : '-' }}
+                                            </div>
+                                        </div>
+                                        <i class="pi pi-chart-line text-blue-400 text-3xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 md:col-3">
+                                <div class="card bg-green-50 border-green-200">
+                                    <div class="flex align-items-center justify-content-between">
+                                        <div>
+                                            <span class="block text-green-600 font-medium mb-2">Tendência</span>
+                                            <div class="text-green-900 font-bold text-xl">
+                                                <i :class="getTendenciaIcon(evolucao?.estatisticas?.tendencia)"></i>
+                                                {{ getTendenciaTexto(evolucao?.estatisticas?.tendencia) }}
+                                            </div>
+                                        </div>
+                                        <i :class="[getTendenciaIcon(evolucao?.estatisticas?.tendencia), getTendenciaColor(evolucao?.estatisticas?.tendencia), 'text-3xl']"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 md:col-3">
+                                <div class="card bg-purple-50 border-purple-200">
+                                    <div class="flex align-items-center justify-content-between">
+                                        <div>
+                                            <span class="block text-purple-600 font-medium mb-2">Baseline</span>
+                                            <div class="text-purple-900 font-bold text-sm">
+                                                {{ evolucao?.estatisticas?.baseline?.data || '-' }}
+                                            </div>
+                                        </div>
+                                        <i class="pi pi-calendar text-purple-400 text-3xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 md:col-3">
+                                <div class="card bg-orange-50 border-orange-200">
+                                    <div class="flex align-items-center justify-content-between">
+                                        <div>
+                                            <span class="block text-orange-600 font-medium mb-2">Melhor Período</span>
+                                            <div class="text-orange-900 font-bold text-sm">
+                                                {{ evolucao?.estatisticas?.melhor_periodo?.data || '-' }}
+                                            </div>
+                                        </div>
+                                        <i class="pi pi-star text-orange-400 text-3xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gráfico de Linha - Evolução Temporal -->
+                        <div class="card mb-4" v-if="evolucao?.metricas?.length > 0">
+                            <h6 class="text-500 mb-3">Evolução Temporal</h6>
+                            <Chart type="line" :data="lineChartData" :options="lineChartOptions" style="height: 300px;" />
+                        </div>
+
+                        <!-- Gráfico de Radar -->
+                        <div class="card mb-4" v-if="evolucao?.metricas?.length > 0">
+                            <h6 class="text-500 mb-3">Comparação Multidimensional</h6>
+                            <Chart type="radar" :data="radarChartData" :options="radarChartOptions" style="height: 300px;" />
+                        </div>
+
+                        <!-- Insights Automáticos -->
+                        <div class="card" v-if="evolucao?.insights?.length > 0">
+                            <h6 class="text-500 mb-3">Insights Automáticos</h6>
+                            <div class="flex flex-column gap-2">
+                                <div v-for="(insight, index) in evolucao.insights" :key="index" 
+                                     class="flex align-items-start gap-2 p-3 border-round"
+                                     :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : 'bg-gray-50'">
+                                    <i class="pi pi-info-circle text-primary mt-1"></i>
+                                    <span class="text-500">{{ insight }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mensagem quando não há dados -->
+                        <div v-if="!evolucao?.metricas?.length" class="text-center p-6">
+                            <i class="pi pi-chart-line text-6xl text-gray-400 mb-3"></i>
+                            <h6 class="text-500 mb-2">Nenhum dado de evolução disponível</h6>
+                            <p class="text-500 text-sm">Adicione métricas nos prontuários para visualizar a evolução do paciente.</p>
+                        </div>
+                    </div>
+                    <div v-else class="text-center p-6">
+                        <i class="pi pi-spin pi-spinner text-4xl text-primary"></i>
+                        <p class="text-500 mt-3">Carregando dados de evolução...</p>
+                    </div>
+                </TabPanel>
             </TabPanels>
         </Tabs>
 
@@ -208,6 +309,7 @@
 
 <script>
 import { usePlanStore } from '@/store/plan';
+import { useThemeStore } from '@/store/theme';
 import ListaSessoesPacientes from './ListaSessoesPacientes.vue';
 import ListaProntuarios from './ListaProntuarios.vue';
 import ListaAnexos from './ListaAnexos.vue';
@@ -232,6 +334,9 @@ export default {
         planStore() {
             return usePlanStore();
         },
+        themeStore() {
+            return useThemeStore();
+        },
         
         // Computed para controle de edição baseado no plano e status da assinatura
         podeEditar() {
@@ -241,6 +346,171 @@ export default {
             }
             // Planos pagos: verificar se pode editar dados
             return this.planStore.podeEditarDados;
+        },
+        
+        // Gráfico de linha - Evolução temporal
+        lineChartData() {
+            if (!this.evolucao?.metricas?.length) {
+                return { labels: [], datasets: [] };
+            }
+
+            const labels = this.evolucao.metricas.map(m => m.data_formatada);
+            const humorData = this.evolucao.metricas.map(m => m.humor).filter(v => v !== null);
+            const progressoData = this.evolucao.metricas.map(m => m.avaliacao_progresso).filter(v => v !== null);
+            const ansiedadeData = this.evolucao.metricas.map(m => m.escala_ansiedade).filter(v => v !== null);
+            const depressaoData = this.evolucao.metricas.map(m => m.escala_depressao).filter(v => v !== null);
+
+            return {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Humor',
+                        data: this.evolucao.metricas.map(m => m.humor),
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: false
+                    },
+                    {
+                        label: 'Progresso',
+                        data: this.evolucao.metricas.map(m => m.avaliacao_progresso),
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: false
+                    },
+                    {
+                        label: 'Ansiedade (GAD-7)',
+                        data: this.evolucao.metricas.map(m => m.escala_ansiedade),
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        tension: 0.4,
+                        fill: false
+                    },
+                    {
+                        label: 'Depressão (PHQ-9)',
+                        data: this.evolucao.metricas.map(m => m.escala_depressao),
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.4,
+                        fill: false
+                    }
+                ]
+            };
+        },
+        lineChartOptions() {
+            const textColor = this.themeStore.theme === 'dark' ? '#ffffff' : '#000000';
+            const textColorSecondary = this.themeStore.theme === 'dark' ? '#9ca3af' : '#6b7280';
+            const gridColor = this.themeStore.theme === 'dark' ? '#374151' : '#e5e7eb';
+
+            return {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: textColor
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: gridColor
+                        },
+                        ticks: {
+                            color: textColorSecondary
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: gridColor
+                        },
+                        ticks: {
+                            color: textColorSecondary
+                        }
+                    }
+                }
+            };
+        },
+        
+        // Gráfico de radar
+        radarChartData() {
+            if (!this.evolucao?.estatisticas?.media_atual) {
+                return { labels: [], datasets: [] };
+            }
+
+            const mediaAtual = this.evolucao.estatisticas.media_atual;
+            const baseline = this.evolucao.estatisticas.baseline;
+
+            return {
+                labels: ['Humor', 'Progresso', 'Ansiedade (invertido)', 'Depressão (invertido)'],
+                datasets: [
+                    {
+                        label: 'Média Atual',
+                        data: [
+                            mediaAtual.humor || 0,
+                            mediaAtual.avaliacao_progresso || 0,
+                            mediaAtual.escala_ansiedade ? (21 - mediaAtual.escala_ansiedade) : 0,
+                            mediaAtual.escala_depressao ? (27 - mediaAtual.escala_depressao) : 0
+                        ],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#3b82f6'
+                    },
+                    ...(baseline && baseline.humor ? [{
+                        label: 'Baseline',
+                        data: [
+                            baseline.humor || 0,
+                            baseline.avaliacao_progresso || 0,
+                            baseline.escala_ansiedade ? (21 - baseline.escala_ansiedade) : 0,
+                            baseline.escala_depressao ? (27 - baseline.escala_depressao) : 0
+                        ],
+                        borderColor: '#9ca3af',
+                        backgroundColor: 'rgba(156, 163, 175, 0.2)',
+                        pointBackgroundColor: '#9ca3af',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#9ca3af'
+                    }] : [])
+                ]
+            };
+        },
+        radarChartOptions() {
+            const textColor = this.themeStore.theme === 'dark' ? '#ffffff' : '#000000';
+            const gridColor = this.themeStore.theme === 'dark' ? '#374151' : '#e5e7eb';
+
+            return {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: textColor
+                        }
+                    }
+                },
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 10,
+                        grid: {
+                            color: gridColor
+                        },
+                        pointLabels: {
+                            color: textColor
+                        },
+                        ticks: {
+                            color: textColor,
+                            backdropColor: 'transparent'
+                        }
+                    }
+                }
+            };
         }
     },
     data() {
@@ -268,7 +538,11 @@ export default {
             dialogAlterarStatus: false,
 
             // Tab ativa
-            activeTab: 0
+            activeTab: 0,
+
+            // Evolução
+            evolucao: null,
+            loadingEvolucao: false
         };
     },
     watch: {
@@ -520,6 +794,9 @@ export default {
                 case 4: // Tab Anamnese
                     this.carregarAnamnese();
                     break;
+                case 5: // Tab Evolução
+                    this.carregarEvolucao();
+                    break;
             }
         },
 
@@ -541,6 +818,10 @@ export default {
             // Recarregar prontuários e estatísticas após salvar
             this.carregarProntuarios();
             this.carregarEstatisticas();
+            // Recarregar evolução se estiver na tab de evolução
+            if (this.activeTab === 5) {
+                this.carregarEvolucao();
+            }
         },
 
         // Callback quando status é alterado
@@ -559,6 +840,50 @@ export default {
             } catch (error) {
                 console.error('❌ Erro ao recarregar assinatura:', error);
             }
+        },
+        
+        // Métodos para Evolução
+        async carregarEvolucao() {
+            if (!this.pacienteId) return;
+            
+            this.loadingEvolucao = true;
+            try {
+                const response = await prontuariosService.buscarEvolucao(this.pacienteId);
+                this.evolucao = response;
+            } catch (error) {
+                console.error('Erro ao carregar evolução:', error);
+                this.evolucao = { metricas: [], estatisticas: null, insights: [] };
+            } finally {
+                this.loadingEvolucao = false;
+            }
+        },
+        
+        getTendenciaIcon(tendencia) {
+            const icons = {
+                'melhorando': 'pi pi-arrow-up',
+                'piorando': 'pi pi-arrow-down',
+                'estavel': 'pi pi-minus',
+                'sem_dados': 'pi pi-info-circle'
+            };
+            return icons[tendencia] || 'pi pi-info-circle';
+        },
+        getTendenciaTexto(tendencia) {
+            const textos = {
+                'melhorando': 'Melhorando',
+                'piorando': 'Piorando',
+                'estavel': 'Estável',
+                'sem_dados': 'Sem dados'
+            };
+            return textos[tendencia] || 'Sem dados';
+        },
+        getTendenciaColor(tendencia) {
+            const colors = {
+                'melhorando': 'text-green-500',
+                'piorando': 'text-red-500',
+                'estavel': 'text-yellow-500',
+                'sem_dados': 'text-gray-500'
+            };
+            return colors[tendencia] || 'text-gray-500';
         }
     }
 };

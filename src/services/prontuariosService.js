@@ -141,6 +141,15 @@ class ProntuariosService {
             throw error;
         }
     }
+
+    async buscarEvolucao(idPaciente) {
+        try {
+            const response = await axios.get(`/paciente/${idPaciente}/evolucao`);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 export default new ProntuariosService(); 
