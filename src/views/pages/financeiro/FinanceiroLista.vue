@@ -5,40 +5,46 @@
             <div class="card">
                 <div class="flex justify-content-between align-items-center mb-4">
                     <h5>{{ tipoDetectado === 'receita' ? 'Receitas' : 'Despesas' }}</h5>
-                    <div class="flex gap-2">
+                    <div class="flex gap-2 align-items-center">
+                        <div class="flex gap-2 align-items-center">
+                            <Button 
+                                label="Filtros" 
+                                severity="secondary" 
+                                icon="pi pi-filter" 
+                                v-if="!hasFiltros"
+                                @click="drawerFilterFinanceiro = true" 
+                            />
+                            <Button 
+                                label="Limpar Filtros" 
+                                severity="danger" 
+                                @click="limparFiltros" 
+                                v-else 
+                            />
+                        </div>
+                        <div class="flex gap-3 align-items-center">
+                            <div class="total-container-header">
+                                <span class="total-label-header">
+                                    {{ tipoDetectado === 'receita' ? 'Recebidas:' : 'Pagas:' }}
+                                </span>
+                                <span 
+                                    class="text-green-600 font-bold total-value-header">
+                                    R$ {{ formatarValor(totalRecebidasPagas) }}
+                                </span>
+                            </div>
+                            <div class="total-container-header">
+                                <span class="total-label-header">Previstas:</span>
+                                <span 
+                                    class="text-red-600 font-bold total-value-header">
+                                    R$ {{ formatarValor(totalPrevistas) }}
+                                </span>
+                            </div>
+                        </div>
                         <Button 
                             v-if="!$isPlanPaused()"
                             :label="tipoDetectado === 'receita' ? 'Nova Receita' : 'Nova Despesa'" 
                             icon="pi pi-plus" 
                             @click="novaTransacao" 
                         />
-                    </div>
-                </div>
-
-                <!-- Filtros -->
-                <div class="grid mb-4">
-                    <div class="col-12 md:col-4">
-                        <label for="categoria" class="block text-900 font-medium mb-2">Categoria</label>
-                        <Dropdown 
-                            v-model="filtros.categoria" 
-                            :options="categorias" 
-                            optionLabel="nome" 
-                            optionValue="nome"
-                            placeholder="Todas as categorias" 
-                            class="w-full"
-                            :loading="carregandoCategorias"
-                            @change="onFiltroChange" 
-                        />
-                    </div>
-                    <div class="col-12 md:col-4">
-                        <label for="data_inicial" class="block text-900 font-medium mb-2">Data Inicial</label>
-                        <Calendar v-model="filtros.data_inicial" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa"
-                            class="w-full" @date-select="onFiltroChange" />
-                    </div>
-                    <div class="col-12 md:col-4">
-                        <label for="data_final" class="block text-900 font-medium mb-2">Data Final</label>
-                        <Calendar v-model="filtros.data_final" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa"
-                            class="w-full" @date-select="onFiltroChange" />
                     </div>
                 </div>
 
@@ -113,6 +119,18 @@
         </div>
     </div>
 
+    <!-- Drawer de Filtros -->
+    <DrawerFilterFinanceiro 
+        :limparCampos="limparCampos" 
+        :visible="drawerFilterFinanceiro"
+        :categorias="categorias"
+        :dataInicial="filtros.data_inicial"
+        :dataFinal="filtros.data_final"
+        @update:visible="onUpdateDrawerFilterFinanceiro" 
+        @filtrarFinanceiro="filtrarFinanceiro" 
+        @limparFiltros="limparFiltrosDrawer"
+    />
+
     <!-- Dialog de Confirmação -->
     <Dialog v-model:visible="dialogVisible" modal header="Confirmar Exclusão" :style="{ width: '450px' }">
         <div class="confirmation-content">
@@ -149,8 +167,13 @@
 </template>
 
 <script>
+import DrawerFilterFinanceiro from '@/components/drawers/DrawerFilterFinanceiro.vue';
+
 export default {
     name: 'FinanceiroLista',
+    components: {
+        DrawerFilterFinanceiro
+    },
     data() {
         return {
             loading: false,
@@ -160,6 +183,9 @@ export default {
             transacaoParaExcluir: null,
             categorias: [],
             carregandoCategorias: false,
+            drawerFilterFinanceiro: false,
+            hasFiltros: false,
+            limparCampos: false,
             filtros: {
                 tipo: null,
                 categoria: null,
@@ -179,6 +205,26 @@ export default {
                 return 'despesa';
             }
             return 'receita'; // default
+        },
+        totalRecebidasPagas() {
+            if (!this.transacoes || this.transacoes.length === 0) {
+                return 0;
+            }
+            return this.transacoes
+                .filter(transacao => transacao.paga === true || transacao.paga === 1)
+                .reduce((total, transacao) => {
+                    return total + (parseFloat(transacao.valor) || 0);
+                }, 0);
+        },
+        totalPrevistas() {
+            if (!this.transacoes || this.transacoes.length === 0) {
+                return 0;
+            }
+            return this.transacoes
+                .filter(transacao => !transacao.paga || transacao.paga === false || transacao.paga === 0)
+                .reduce((total, transacao) => {
+                    return total + (parseFloat(transacao.valor) || 0);
+                }, 0);
         }
     },
     watch: {
@@ -351,15 +397,72 @@ export default {
             this.carregarTransacoes();
         },
 
+        filtrarFinanceiro(filtro) {
+            // Garantir que o tipo seja sempre definido pela página atual
+            this.filtros.tipo = this.tipoDetectado;
+            this.filtros.categoria = filtro.categoria || null;
+            
+            // Manter as datas escolhidas pelo usuário
+            // Se o usuário escolheu uma data, usar ela; caso contrário, manter a atual ou usar padrão
+            if (filtro.data_inicial !== null && filtro.data_inicial !== undefined) {
+                // Converter para Date se for string ou manter se já for Date
+                this.filtros.data_inicial = filtro.data_inicial instanceof Date 
+                    ? filtro.data_inicial 
+                    : new Date(filtro.data_inicial);
+            } else {
+                // Se não foi escolhida uma data, manter a atual ou usar padrão do mês
+                if (!this.filtros.data_inicial) {
+                    this.filtros.data_inicial = this.getDataInicioFim().dataInicial;
+                }
+            }
+            
+            if (filtro.data_final !== null && filtro.data_final !== undefined) {
+                // Converter para Date se for string ou manter se já for Date
+                this.filtros.data_final = filtro.data_final instanceof Date 
+                    ? filtro.data_final 
+                    : new Date(filtro.data_final);
+            } else {
+                // Se não foi escolhida uma data, manter a atual ou usar padrão do mês
+                if (!this.filtros.data_final) {
+                    this.filtros.data_final = this.getDataInicioFim().dataFinal;
+                }
+            }
+            
+            this.filtros.page = 1;
+            // Verificar se há filtros ativos (categoria ou datas diferentes do mês atual)
+            const datasPadrao = this.getDataInicioFim();
+            const dataInicialDiferente = this.filtros.data_inicial && 
+                this.filtros.data_inicial.getTime() !== datasPadrao.dataInicial.getTime();
+            const dataFinalDiferente = this.filtros.data_final && 
+                this.filtros.data_final.getTime() !== datasPadrao.dataFinal.getTime();
+            
+            this.hasFiltros = !!(this.filtros.categoria || dataInicialDiferente || dataFinalDiferente);
+            this.carregarTransacoes();
+        },
+
         limparFiltros() {
             this.filtros = {
                 tipo: this.tipoDetectado,
                 categoria: null,
-                data_inicial: null,
-                data_final: null,
+                data_inicial: this.getDataInicioFim().dataInicial,
+                data_final: this.getDataInicioFim().dataFinal,
                 page: 1
             };
+            this.hasFiltros = false;
+            this.limparCampos = true;
+            // Resetar limparCampos após um pequeno delay para permitir que o drawer detecte
+            setTimeout(() => {
+                this.limparCampos = false;
+            }, 100);
             this.carregarTransacoes();
+        },
+
+        limparFiltrosDrawer() {
+            this.limparFiltros();
+        },
+
+        onUpdateDrawerFilterFinanceiro(event) {
+            this.drawerFilterFinanceiro = event;
         }
     }
 };
@@ -401,5 +504,24 @@ export default {
     font-size: 1rem;
     color: var(--text-color-secondary);
     margin-bottom: 1.5rem;
+}
+
+.total-container-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--surface-ground);
+    border-radius: 8px;
+}
+
+.total-label-header {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.total-value-header {
+    font-size: 1.1rem;
 }
 </style>
