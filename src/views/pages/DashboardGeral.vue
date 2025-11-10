@@ -11,7 +11,7 @@
                         <!-- Cards de Estatísticas -->
                         <div class="grid">
                             <!-- Total de Pacientes -->
-                            <div class="col-12" :class="isPlanoProfissional ? 'md:col-3' : 'md:col-4'">
+                            <div class="col-12 md:col-4">
                                 <div class="card cursor-pointer"
                                     :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''"
                                     @click="$router.push('/pacientes')">
@@ -29,7 +29,7 @@
                             </div>
 
                             <!-- Sessões do dia -->
-                            <div class="col-12" :class="isPlanoProfissional ? 'md:col-3' : 'md:col-4'">
+                            <div class="col-12 md:col-4">
                                 <div class="card cursor-pointer"
                                     :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''"
                                     @click="$router.push('/agendamentos')">
@@ -45,7 +45,7 @@
                             </div>
 
                             <!-- Prontuários 30 dias -->
-                            <div class="col-12" :class="isPlanoProfissional ? 'md:col-3' : 'md:col-4'">
+                            <div class="col-12 md:col-4">
                                 <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
                                     <div class="flex align-items-center justify-content-between">
                                         <div>
@@ -58,20 +58,31 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Saldo do Mês -->
-                            <div class="col-12 md:col-3" v-if="isPlanoProfissional">
-                                <div class="card cursor-pointer"
-                                    :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''"
-                                    @click="$router.push('/financeiro/receitas')">
-                                    <div class="flex align-items-center justify-content-between">
-                                        <div>
-                                            <span class="block font-medium mb-2 text-2xl text-500">Saldo do Mês</span>
-                                            <div class="font-medium text-xl text-500">
-                                                R$ {{ formatarValor(dados.financeiro?.saldo_mes || 0) }}
-                                            </div>
+                        <!-- Card Pacientes por Status -->
+                        <div class="grid mt-4">
+                            <div class="col-12">
+                                <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
+                                    <h6 class="text-500 mb-3">Pacientes por Status</h6>
+                                    <div class="flex align-items-center justify-content-between flex-wrap gap-3">
+                                        <div class="flex align-items-center gap-2">
+                                            <i class="pi pi-circle-fill text-blue-500"></i>
+                                            <span class="text-500 font-medium">Em andamento:</span>
+                                            <span class="text-500 font-bold text-xl">{{ dados.pacientes?.pacientes_em_andamento || 0 }}</span>
                                         </div>
-                                        <i class="pi pi-wallet text-2xl text-500"></i>
+                                        <span class="text-500">|</span>
+                                        <div class="flex align-items-center gap-2">
+                                            <i class="pi pi-circle-fill text-yellow-500"></i>
+                                            <span class="text-500 font-medium">Recesso:</span>
+                                            <span class="text-500 font-bold text-xl">{{ dados.pacientes?.pacientes_recesso || 0 }}</span>
+                                        </div>
+                                        <span class="text-500">|</span>
+                                        <div class="flex align-items-center gap-2">
+                                            <i class="pi pi-circle-fill text-green-500"></i>
+                                            <span class="text-500 font-medium">Concluídos:</span>
+                                            <span class="text-500 font-bold text-xl">{{ dados.pacientes?.pacientes_concluidos || 0 }}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -79,45 +90,8 @@
 
                         <!-- Cards Financeiros -->
                         <div class="grid mt-4" v-if="isPlanoProfissional">
-                            <div class="col-12 md:col-4">
-                                <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
-                                    <div class="flex flex-column h-full">
-                                        <div class="flex align-items-center justify-content-between mb-3">
-                                            <h6 class="text-500 font-bold mb-0 text-lg">Resumo Financeiro do Mês</h6>
-                                            <i class="pi pi-chart-line text-500 text-xl"></i>
-                                        </div>
-                                        <div class="grid flex-grow-1">
-                                            <div class="col-6">
-                                                <div class="text-center">
-                                                    <div class="flex align-items-center justify-content-center mb-2">
-                                                        <i class="pi pi-arrow-up text-green-300 text-lg mr-2"></i>
-                                                        <span class="text-500 font-semibold text-sm">Receitas</span>
-                                                    </div>
-                                                    <div class="text-500 font-bold text-xl">
-                                                        R$ {{ formatarValor(dados.financeiro?.total_receitas_mes || 0)
-                                                        }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="text-center">
-                                                    <div class="flex align-items-center justify-content-center mb-2">
-                                                        <i class="pi pi-arrow-down text-red-300 text-lg mr-2"></i>
-                                                        <span class="text-500 font-semibold text-sm">Despesas</span>
-                                                    </div>
-                                                    <div class="text-500 font-bold text-xl">
-                                                        R$ {{ formatarValor(dados.financeiro?.total_despesas_mes || 0)
-                                                        }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
                             <!-- Próxima Sessão -->
-                            <div class="col-12 md:col-4">
+                            <div class="col-12 md:col-6">
                                 <div class="card bg-gradient-to-r from-pink-900 to-indigo-900 border-pink-500">
                                     <div class="flex flex-column h-full">
                                         <div class="flex align-items-center justify-content-between mb-3">
@@ -163,7 +137,7 @@
                             </div>
 
                             <!-- Aniversariantes do Mês -->
-                            <div class="col-12 md:col-4">
+                            <div class="col-12 md:col-6">
                                 <div class="card bg-gradient-to-r from-purple-900 to-blue-900 border-purple-500">
                                     <div class="flex flex-column h-full">
                                         <div class="flex align-items-center justify-content-between mb-3">
@@ -230,10 +204,10 @@
 
                         <!-- Gráficos -->
                         <div class="grid mt-4">
-                            <!-- Gráfico Barra - Crescimento de Pacientes -->
+                            <!-- Gráfico Barra - Evolução de Pacientes -->
                             <div class="col-12">
                                 <div class="card">
-                                    <h6 class="text-500 mb-3">Crescimento de Pacientes (6 meses)</h6>
+                                    <h6 class="text-500 mb-3">Evolução de Pacientes (6 meses)</h6>
                                     <Chart type="bar" :data="barChartData" :options="barChartOptions"
                                         class="h-[200px]" />
                                 </div>
@@ -332,6 +306,9 @@ export default {
             dados: {
                 pacientes: {
                     pacientes_total: 0,
+                    pacientes_em_andamento: 0,
+                    pacientes_recesso: 0,
+                    pacientes_concluidos: 0,
                     ultimos_pacientes: [],
                     crescimento_pacientes: {}
                 },
@@ -341,10 +318,6 @@ export default {
                     ultimos_prontuarios: []
                 },
                 financeiro: {
-                    total_receitas_mes: 0,
-                    total_despesas_mes: 0,
-                    saldo_mes: 0,
-                    saldo_total: 0,
                     evolucao_financeira: {},
                     alerta_financeiro: false
                 }
@@ -432,6 +405,9 @@ export default {
                 'DEC': 'Dez'
             };
 
+            const novosData = [];
+            const concluidosData = [];
+
             Object.values(this.dados.pacientes?.crescimento_pacientes || {}).forEach(item => {
                 // Traduz o nome do mês se estiver em inglês
                 let mesOriginal = item.mes;
@@ -474,18 +450,28 @@ export default {
                 }
 
                 labels.push(mesTraduzido);
-                data.push(item.total);
+                novosData.push(item.novos || 0);
+                concluidosData.push(item.concluidos || 0);
             });
 
             return {
                 labels: labels,
-                datasets: [{
-                    label: 'Pacientes',
-                    data: data,
-                    backgroundColor: '#3b82f6',
-                    borderColor: '#2563eb',
-                    borderWidth: 1
-                }]
+                datasets: [
+                    {
+                        label: 'Novos Cadastros',
+                        data: novosData,
+                        backgroundColor: '#3b82f6',
+                        borderColor: '#2563eb',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Concluídos',
+                        data: concluidosData,
+                        backgroundColor: '#10b981',
+                        borderColor: '#059669',
+                        borderWidth: 1
+                    }
+                ]
             };
         },
         barChartOptions() {
@@ -494,7 +480,13 @@ export default {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        display: false
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000',
+                            usePointStyle: true,
+                            padding: 15
+                        }
                     }
                 },
                 scales: {
