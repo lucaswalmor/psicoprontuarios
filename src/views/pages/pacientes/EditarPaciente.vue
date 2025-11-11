@@ -10,7 +10,7 @@
                     label="Voltar" 
                     icon="pi pi-arrow-left" 
                     severity="secondary" 
-                    @click="$router.push('/pacientes')"
+                    @click="$router.push(`/pacientes/ficha/${pacienteId}`)"
                     class="p-button-outlined"
                 />
                 <Button 
