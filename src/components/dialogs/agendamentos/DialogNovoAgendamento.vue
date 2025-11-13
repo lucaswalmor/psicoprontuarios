@@ -7,9 +7,9 @@
         @update:visible="onUpdateVisible"
     >
         <div class="grid">
-            <div class="col-12">
+            <div class="col-12" v-if="!paciente">
                 <label for="paciente" class="block text-900 font-medium mb-2">Paciente</label>
-                <Dropdown 
+                <Select 
                     v-model="agendamento.paciente" 
                     :options="pacientes" 
                     optionLabel="nome" 
@@ -17,10 +17,31 @@
                     class="w-full" 
                 />
             </div>
+            <div class="col-12" v-else>
+                <label for="paciente" class="block text-900 font-medium mb-2">Paciente</label>
+                <InputText 
+                    :model-value="paciente.nome || ''" 
+                    disabled 
+                    class="w-full" 
+                    placeholder="Nome do paciente" 
+                />
+            </div>
+
+            <div class="col-12">
+                <label for="data_consulta" class="block text-900 font-medium mb-2">Data da Consulta *</label>
+                <InputMask 
+                    v-model="agendamento.data_consulta" 
+                    mask="99/99/9999" 
+                    placeholder="dd/mm/aaaa" 
+                    class="w-full"
+                    :class="{ 'p-invalid': errors.data_consulta }"
+                />
+                <small v-if="errors.data_consulta" class="p-error">{{ errors.data_consulta }}</small>
+            </div>
 
             <div class="col-12">
                 <label for="hora_consulta" class="block text-900 font-medium mb-2">Hora da Consulta</label>
-                <Dropdown 
+                <Select 
                     v-model="agendamento.hora_consulta" 
                     :options="horasMinutos" 
                     optionLabel="label"
@@ -97,9 +118,13 @@
 
 <script>
 import horasMinutosMixin from '@/mixins/horasMinutosMixin';
+import Select from 'primevue/select';
 
 export default {
     name: 'DialogNovoAgendamento',
+    components: {
+        Select
+    },
     mixins: [horasMinutosMixin],
     props: {
         visible: {
@@ -109,12 +134,21 @@ export default {
         dataSelecionada: {
             type: String,
             default: ''
+        },
+        paciente: {
+            type: Object,
+            default: null
+        },
+        pacienteId: {
+            type: [String, Number],
+            default: null
         }
     },
     data() {
         return {
             isLoading: false,
             pacientes: [],
+            errors: {},
             agendamento: {
                 data_consulta: '',
                 paciente: null,
@@ -127,8 +161,38 @@ export default {
     watch: {
         visible(newVal) {
             if (newVal) {
-                this.carregarPacientes();
-                this.agendamento.data_consulta = this.dataSelecionada;
+                // Se não tiver paciente pré-selecionado, carregar lista de pacientes
+                if (!this.paciente && !this.pacienteId) {
+                    this.carregarPacientes();
+                } else {
+                    // Se tiver paciente pré-selecionado, definir no agendamento
+                    this.definirPacientePreSelecionado();
+                }
+                // Se tiver dataSelecionada, formatar para dd/mm/yyyy
+                if (this.dataSelecionada) {
+                    this.agendamento.data_consulta = this.formatarDataParaInput(this.dataSelecionada);
+                } else {
+                    // Se não tiver, usar data atual
+                    const hoje = new Date();
+                    this.agendamento.data_consulta = this.formatarDataParaInput(hoje.toISOString().split('T')[0]);
+                }
+            }
+        },
+        paciente(newVal) {
+            if (newVal && this.visible) {
+                this.definirPacientePreSelecionado();
+            }
+        },
+        pacienteId(newVal) {
+            if (newVal && this.visible && !this.paciente) {
+                this.carregarPacientePorId(newVal);
+            }
+        },
+        'agendamento.paciente'(newVal) {
+            // Quando um paciente é selecionado no Select, validar o status
+            // limparSelecao = false para não limpar a seleção, apenas mostrar o toast
+            if (newVal && this.visible) {
+                this.validarStatusTratamentoPaciente(newVal, false);
             }
         }
     },
@@ -155,6 +219,51 @@ export default {
             }
         },
         
+        async carregarPacientePorId(pacienteId) {
+            try {
+                const response = await this.$pacientesService.getById(pacienteId);
+                this.agendamento.paciente = response;
+                // Validar status após carregar (limparSelecao = false porque veio de prop pacienteId)
+                this.validarStatusTratamentoPaciente(response, false);
+            } catch (error) {
+                console.error('Erro ao carregar paciente:', error);
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: 'Erro ao carregar dados do paciente',
+                    life: 3000
+                });
+            }
+        },
+        
+        definirPacientePreSelecionado() {
+            // Usar paciente da prop ou buscar por pacienteId
+            if (this.paciente) {
+                this.agendamento.paciente = this.paciente;
+                // Validar status após definir (limparSelecao = false porque veio de prop)
+                this.validarStatusTratamentoPaciente(this.paciente, false);
+            } else if (this.pacienteId) {
+                this.carregarPacientePorId(this.pacienteId);
+            }
+        },
+        
+        validarStatusTratamentoPaciente(pacienteObj, limparSelecao = false) {
+            if (pacienteObj && pacienteObj.status_tratamento === 'Concluído') {
+                this.$toast.add({
+                    severity: 'warn',
+                    summary: 'Atenção',
+                    detail: 'O paciente está com status "Concluído". Altere o status para "Em Tratamento" para executar esta ação.',
+                    life: 5000
+                });
+                // Limpar a seleção do paciente apenas se foi especificado
+                if (limparSelecao && !this.paciente && !this.pacienteId) {
+                    this.agendamento.paciente = null;
+                }
+                return false;
+            }
+            return true;
+        },
+        
         limparFormulario() {
             this.agendamento = {
                 data_consulta: '',
@@ -163,6 +272,7 @@ export default {
                 reagendar_consulta: false,
                 tipo_reagendamento: ''
             };
+            this.errors = {};
         },
         
         async salvarAgendamento() {
@@ -170,12 +280,62 @@ export default {
                 return;
             }
             
+            // Garantir que o paciente tenha o id e status_tratamento
+            let pacienteComId = this.agendamento.paciente;
+            
+            // Se não tiver id, usar pacienteId da prop ou paciente.id
+            if (!pacienteComId || !pacienteComId.id) {
+                const pacienteId = this.pacienteId || (this.paciente && this.paciente.id);
+                if (pacienteId) {
+                    // Se tiver paciente da prop, usar ele (já tem status_tratamento)
+                    const pacienteOrigem = this.paciente || pacienteComId;
+                    pacienteComId = {
+                        ...pacienteOrigem,
+                        id: pacienteId
+                    };
+                }
+            }
+            
+            if (!pacienteComId || !pacienteComId.id) {
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: 'ID do paciente não encontrado',
+                    life: 3000
+                });
+                return;
+            }
+            
+            // Se o paciente selecionado não tiver status_tratamento, buscar do backend
+            if (!pacienteComId.status_tratamento && pacienteComId.id) {
+                try {
+                    const pacienteCompleto = await this.$pacientesService.getById(pacienteComId.id);
+                    pacienteComId.status_tratamento = pacienteCompleto.status_tratamento;
+                } catch (error) {
+                    console.error('Erro ao buscar status do paciente:', error);
+                }
+            }
+            
+            // Validar status do tratamento antes de salvar
+            if (!this.validarStatusTratamentoPaciente(pacienteComId, false)) {
+                return;
+            }
+            
+            // Se o paciente foi limpo pela validação, não prosseguir
+            if (!this.agendamento.paciente) {
+                return;
+            }
+            
             this.isLoading = true;
             
             try {
+                
+                // Converter data de dd/mm/yyyy para Y-m-d
+                const dataFormatada = this.converterDataParaAPI(this.agendamento.data_consulta);
+                
                 const dadosAgendamento = {
-                    data_consulta: this.agendamento.data_consulta,
-                    paciente: this.agendamento.paciente,
+                    data_consulta: dataFormatada,
+                    paciente: pacienteComId,
                     hora_consulta: this.agendamento.hora_consulta,
                     data_notificacao: this.formatarDataNotificacao(this.agendamento.data_consulta),
                     hora_notificacao: "",
@@ -218,14 +378,53 @@ export default {
         },
         
         validarFormulario() {
-            if (!this.agendamento.paciente) {
+            this.errors = {};
+            let valido = true;
+            
+            // Verificar se tem paciente no agendamento ou nas props
+            const temPaciente = this.agendamento.paciente || this.paciente || this.pacienteId;
+            
+            if (!temPaciente) {
                 this.$toast.add({
                     severity: 'warn',
                     summary: 'Atenção',
                     detail: 'Selecione um paciente',
                     life: 3000
                 });
-                return false;
+                valido = false;
+            } else {
+                // Se tem paciente, validar o status antes de continuar
+                const pacienteParaValidar = this.agendamento.paciente || this.paciente;
+                if (pacienteParaValidar && pacienteParaValidar.status_tratamento === 'Concluído') {
+                    // Mostrar toast e impedir o salvamento
+                    this.validarStatusTratamentoPaciente(pacienteParaValidar, false);
+                    valido = false;
+                }
+            }
+            
+            // Validar data
+            if (!this.agendamento.data_consulta || this.agendamento.data_consulta.length < 10) {
+                this.errors.data_consulta = 'Data da consulta é obrigatória';
+                this.$toast.add({
+                    severity: 'warn',
+                    summary: 'Atenção',
+                    detail: 'Informe a data da consulta',
+                    life: 3000
+                });
+                valido = false;
+            } else {
+                // Validar formato da data
+                const dataValida = this.validarData(this.agendamento.data_consulta);
+                if (!dataValida) {
+                    this.errors.data_consulta = 'Data inválida. Use o formato dd/mm/aaaa';
+                    this.$toast.add({
+                        severity: 'warn',
+                        summary: 'Atenção',
+                        detail: 'Data inválida. Use o formato dd/mm/aaaa',
+                        life: 3000
+                    });
+                    valido = false;
+                }
             }
             
             if (!this.agendamento.hora_consulta) {
@@ -235,7 +434,7 @@ export default {
                     detail: 'Selecione um horário',
                     life: 3000
                 });
-                return false;
+                valido = false;
             }
             
             if (this.agendamento.reagendar_consulta && !this.agendamento.tipo_reagendamento) {
@@ -245,6 +444,62 @@ export default {
                     detail: 'Selecione o tipo de reagendamento',
                     life: 3000
                 });
+                valido = false;
+            }
+            
+            return valido;
+        },
+        
+        formatarDataParaInput(data) {
+            // Converter de Y-m-d para dd/mm/yyyy
+            if (!data) return '';
+            if (data.includes('/')) {
+                // Já está no formato dd/mm/yyyy
+                return data;
+            }
+            if (data.includes('-')) {
+                // Formato Y-m-d
+                const [ano, mes, dia] = data.split('-');
+                return `${dia}/${mes}/${ano}`;
+            }
+            // Se for Date object
+            const date = new Date(data);
+            const dia = String(date.getDate()).padStart(2, '0');
+            const mes = String(date.getMonth() + 1).padStart(2, '0');
+            const ano = date.getFullYear();
+            return `${dia}/${mes}/${ano}`;
+        },
+        
+        converterDataParaAPI(data) {
+            // Converter de dd/mm/yyyy para Y-m-d
+            if (!data) return '';
+            if (data.includes('-')) {
+                // Já está no formato Y-m-d
+                return data.split(' ')[0]; // Remove hora se houver
+            }
+            if (data.includes('/')) {
+                const [dia, mes, ano] = data.split('/');
+                return `${ano}-${mes}-${dia}`;
+            }
+            return data;
+        },
+        
+        validarData(data) {
+            if (!data || data.length !== 10) return false;
+            const [dia, mes, ano] = data.split('/');
+            if (!dia || !mes || !ano) return false;
+            const diaNum = parseInt(dia);
+            const mesNum = parseInt(mes);
+            const anoNum = parseInt(ano);
+            
+            if (isNaN(diaNum) || isNaN(mesNum) || isNaN(anoNum)) return false;
+            if (mesNum < 1 || mesNum > 12) return false;
+            if (diaNum < 1 || diaNum > 31) return false;
+            if (anoNum < 1900 || anoNum > 2100) return false;
+            
+            // Validar se a data é válida (ex: 31/02 não existe)
+            const dataObj = new Date(anoNum, mesNum - 1, diaNum);
+            if (dataObj.getDate() !== diaNum || dataObj.getMonth() !== mesNum - 1 || dataObj.getFullYear() !== anoNum) {
                 return false;
             }
             
@@ -253,6 +508,19 @@ export default {
         
         formatarDataNotificacao(data) {
             if (!data) return '';
+            
+            // Se já está no formato dd/mm/yyyy, retornar como está
+            if (data.includes('/')) {
+                return data;
+            }
+            
+            // Se está no formato Y-m-d, converter para dd/mm/yyyy
+            if (data.includes('-')) {
+                const [ano, mes, dia] = data.split('-');
+                return `${dia}/${mes}/${ano}`;
+            }
+            
+            // Se for Date object, converter
             const date = new Date(data);
             const dia = String(date.getDate()).padStart(2, '0');
             const mes = String(date.getMonth() + 1).padStart(2, '0');

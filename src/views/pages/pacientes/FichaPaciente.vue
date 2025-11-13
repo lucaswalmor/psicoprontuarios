@@ -5,7 +5,7 @@
             <div class="flex justify-content-between align-items-start">
                 <div class="flex-grow-1">
                     <h1 class="text-light text-4xl font-bold mb-2">{{ paciente?.nome || 'Carregando...' }}</h1>
-                    <div class="flex align-items-center gap-4 text-blue-100">
+                    <div class="flex align-items-center gap-4 text-blue-100 mb-2">
                         <div v-if="paciente?.data_nascimento" class="flex align-items-center">
                             <i class="pi pi-calendar mr-2"></i>
                             <span>{{ calcularIdade(paciente.data_nascimento) }} anos</span>
@@ -14,17 +14,17 @@
                             <i class="pi pi-envelope mr-2"></i>
                             <span>{{ paciente.email }}</span>
                         </div>
-                        <div class="flex align-items-center">
-                            <i class="pi pi-info-circle mr-2" v-tooltip.top="'Ao clicar no status é possivel alterar o status do tratamento do paciente'"></i>
-                            <Tag :severity="getStatusSeverity(paciente?.status_tratamento)"
-                                :value="paciente?.status_tratamento || 'N/A'" 
-                                class="cursor-pointer"
-                                @click="abrirDialogAlterarStatus"
-                                v-if="podeEditar" />
-                            <Tag :severity="getStatusSeverity(paciente?.status_tratamento)"
-                                :value="paciente?.status_tratamento || 'N/A'" 
-                                v-else />
-                        </div>
+                    </div>
+                    <div class="flex align-items-center gap-2">
+                        <i class="pi pi-pencil text-blue-100" v-if="podeEditar" v-tooltip.top="'Clique para alterar o status do tratamento'"></i>
+                        <Tag :severity="getStatusSeverity(paciente?.status_tratamento)"
+                            :value="paciente?.status_tratamento || 'N/A'" 
+                            class="cursor-pointer"
+                            @click="abrirDialogAlterarStatus"
+                            v-if="podeEditar" />
+                        <Tag :severity="getStatusSeverity(paciente?.status_tratamento)"
+                            :value="paciente?.status_tratamento || 'N/A'" 
+                            v-else />
                     </div>
                 </div>
                 <div class="flex gap-2">
@@ -141,8 +141,21 @@
                     <div class="card">
                         <div class="flex justify-content-between align-items-center mb-4">
                             <h5 class="text-500 mb-0">Lista de Prontuários</h5>
-                            <Button v-if="podeEditar && paciente" label="Novo Prontuário" icon="pi pi-plus"
-                                @click="abrirDialogNovoProntuario" />
+                            <div class="flex gap-2">
+                                <Button 
+                                    v-if="paciente && totalProntuarios > 0" 
+                                    label="Exportar Todos" 
+                                    icon="pi pi-file-export" 
+                                    severity="help"
+                                    @click="exportarTodosProntuarios" 
+                                />
+                                <Button 
+                                    v-if="podeEditar && paciente" 
+                                    label="Novo Prontuário" 
+                                    icon="pi pi-plus"
+                                    @click="abrirDialogNovoProntuario" 
+                                />
+                            </div>
                         </div>
                         <ListaProntuarios 
                             :paciente-id="pacienteId"
@@ -159,7 +172,9 @@
                 <TabPanel :value="2">
                     <ListaSessoesPacientes 
                         ref="listaSessoes"
-                        :paciente-id="pacienteId || ''" 
+                        :paciente-id="pacienteId || ''"
+                        :paciente="paciente"
+                        :status-tratamento="paciente?.status_tratamento"
                         v-if="pacienteId"
                         @agendamento-salvo="onAgendamentoSalvo"
                     />
@@ -179,6 +194,7 @@
                             :anexos="anexos"
                             :loading="loadingAnexos"
                             :paciente="paciente"
+                            :status-tratamento="paciente?.status_tratamento"
                             @anexo-deletado="onAnexoDeletado"
                             @anexo-uploaded="onAnexoUploaded"
                         />
@@ -190,6 +206,7 @@
                     <Anamnese 
                         ref="anamnese"
                         :paciente-id="pacienteId"
+                        :status-tratamento="paciente?.status_tratamento"
                     />
                 </TabPanel>
 
@@ -295,8 +312,13 @@
             </TabPanels>
         </Tabs>
 
-        <DialogNovoProntuario :visible="dialogNovoProntuario" :paciente="paciente || {}"
-            @update:visible="dialogNovoProntuario = false" @salvarProntuario="onProntuarioSalvo" />
+        <DialogNovoProntuario 
+            :visible="dialogNovoProntuario" 
+            :paciente="paciente || {}"
+            :paciente-id="pacienteId"
+            @update:visible="dialogNovoProntuario = false" 
+            @salvarProntuario="onProntuarioSalvo" 
+        />
         
         <DialogAlterarStatus 
             :visible="dialogAlterarStatus" 
@@ -802,9 +824,58 @@ export default {
 
 
 
+        // Validar se pode executar ação (verificar se status é "Concluído")
+        validarStatusTratamento() {
+            if (this.paciente && this.paciente.status_tratamento === 'Concluído') {
+                this.$toast.add({
+                    severity: 'warn',
+                    summary: 'Atenção',
+                    detail: 'O paciente está com status "Concluído". Altere o status para "Em Tratamento" para executar esta ação.',
+                    life: 5000
+                });
+                return false;
+            }
+            return true;
+        },
+
         // Abrir dialog para novo prontuário
         abrirDialogNovoProntuario() {
+            if (!this.validarStatusTratamento()) {
+                return;
+            }
             this.dialogNovoProntuario = true;
+        },
+
+        // Exportar todos os prontuários do paciente
+        async exportarTodosProntuarios() {
+            try {
+                if (!this.pacienteId) {
+                    this.$toast.add({
+                        severity: 'warn',
+                        summary: 'Atenção',
+                        detail: 'Paciente não encontrado',
+                        life: 3000
+                    });
+                    return;
+                }
+
+                await this.$prontuariosService.exportarTodosProntuariosPaciente(this.pacienteId);
+
+                this.$toast.add({
+                    severity: 'success',
+                    summary: 'Sucesso',
+                    detail: 'PDF exportado com sucesso',
+                    life: 3000
+                });
+            } catch (error) {
+                console.error('Erro ao exportar PDF:', error);
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: 'Erro ao exportar PDF',
+                    life: 3000
+                });
+            }
         },
 
         // Abrir dialog para alterar status

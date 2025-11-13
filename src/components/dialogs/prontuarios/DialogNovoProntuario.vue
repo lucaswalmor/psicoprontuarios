@@ -117,6 +117,10 @@ export default {
         paciente: {
             type: Object,
             default: null
+        },
+        pacienteId: {
+            type: [String, Number],
+            default: null
         }
     },
     data() {
@@ -162,18 +166,27 @@ export default {
             }
         },
         salvarProntuario() {
-            if (!this.paciente) {
+            // Usar pacienteId da prop ou do paciente.id
+            const pacienteId = this.pacienteId || (this.paciente && this.paciente.id);
+            
+            if (!pacienteId) {
                 this.$toast.add({
                     severity: "error",
                     summary: "Erro",
-                    detail: "Paciente não encontrado",
+                    detail: "ID do paciente não encontrado",
                     life: 3000,
                 });
                 return;
             }
 
+            // Garantir que o paciente tenha o id para o backend
+            const pacienteComId = {
+                ...this.paciente,
+                id: pacienteId
+            };
+
             const data = {
-                paciente: this.paciente,
+                paciente: pacienteComId,
                 data_prontuario: this.prontuario.data_prontuario,
                 descricao: this.prontuario.descricao,
                 humor: this.prontuario.humor !== null && this.prontuario.humor !== undefined ? this.prontuario.humor : null,

@@ -16,8 +16,16 @@
                 </div>
 
                 <div class="col-12">
-                    <label class="block text-900 font-medium mb-2">Data da Consulta</label>
-                    <InputMask id="basic" :modelValue="agendamento.data_consulta" @update:modelValue="agendamento.data_consulta = $event" mask="99/99/9999" placeholder="00/00/0000" class="w-full" />
+                    <label class="block text-900 font-medium mb-2">Data da Consulta *</label>
+                    <InputMask 
+                        id="basic" 
+                        v-model="agendamento.data_consulta" 
+                        mask="99/99/9999" 
+                        placeholder="dd/mm/aaaa" 
+                        class="w-full"
+                        :class="{ 'p-invalid': errors.data_consulta }"
+                    />
+                    <small v-if="errors.data_consulta" class="p-error">{{ errors.data_consulta }}</small>
                 </div>
 
                 <div class="col-12">
@@ -72,6 +80,7 @@ export default {
             isLoadingExcluir: false,
             isLoadingExcluirTodos: false,
             isLoadingDados: false,
+            errors: {},
             agendamento: {
                 id: '',
                 nome_paciente: '',
@@ -127,11 +136,25 @@ export default {
                 // Atribui diretamente os dados como na V1
                 this.agendamento = { ...this.agendamentoData };
 
-                // Converte a data do formato dd/mm/yyyy para Date object se necessário
-                if (this.agendamento.data_consulta && typeof this.agendamento.data_consulta === 'string') {
-                    const [dia, mes, ano] = this.agendamento.data_consulta.split('/');
-                    // Garante que estamos usando o formato brasileiro (DD/MM/YYYY)
-                    this.agendamento.data_consulta = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
+                // Garantir que a data está no formato dd/mm/yyyy para o InputMask
+                if (this.agendamento.data_consulta) {
+                    if (typeof this.agendamento.data_consulta === 'string') {
+                        // Se já está no formato dd/mm/yyyy, manter
+                        if (this.agendamento.data_consulta.includes('/')) {
+                            // Já está no formato correto
+                        } 
+                        // Se está no formato Y-m-d, converter para dd/mm/yyyy
+                        else if (this.agendamento.data_consulta.includes('-')) {
+                            const [ano, mes, dia] = this.agendamento.data_consulta.split('-');
+                            this.agendamento.data_consulta = `${dia}/${mes}/${ano}`;
+                        }
+                    } else if (this.agendamento.data_consulta instanceof Date) {
+                        // Se for Date object, converter para dd/mm/yyyy
+                        const dia = String(this.agendamento.data_consulta.getDate()).padStart(2, '0');
+                        const mes = String(this.agendamento.data_consulta.getMonth() + 1).padStart(2, '0');
+                        const ano = this.agendamento.data_consulta.getFullYear();
+                        this.agendamento.data_consulta = `${dia}/${mes}/${ano}`;
+                    }
                 }
 
                 // Esconde loading após carregar os dados
@@ -147,6 +170,7 @@ export default {
                 hora_consulta: '',
                 codigo_agendamento: ''
             };
+            this.errors = {};
         },
 
         async salvarAlteracoes() {
@@ -157,8 +181,11 @@ export default {
             this.isLoading = true;
 
             try {
+                // Converter data de dd/mm/yyyy para Y-m-d
+                const dataFormatada = this.formatarDataParaAPI(this.agendamento.data_consulta);
+                
                 const dadosAgendamento = {
-                    data_consulta: this.formatarDataParaAPI(this.agendamento.data_consulta),
+                    data_consulta: dataFormatada,
                     hora_consulta: this.agendamentoData.hora_consulta,
                     data_notificacao: this.formatarDataNotificacao(this.agendamento.data_consulta),
                     hora_notificacao: "",
@@ -257,14 +284,32 @@ export default {
         },
 
         validarFormulario() {
-            if (!this.agendamento.data_consulta) {
+            this.errors = {};
+            let valido = true;
+            
+            // Validar data
+            if (!this.agendamento.data_consulta || this.agendamento.data_consulta.length < 10) {
+                this.errors.data_consulta = 'Data da consulta é obrigatória';
                 this.$toast.add({
                     severity: 'warn',
                     summary: 'Atenção',
-                    detail: 'Selecione uma data',
+                    detail: 'Informe a data da consulta',
                     life: 3000
                 });
-                return false;
+                valido = false;
+            } else {
+                // Validar formato da data
+                const dataValida = this.validarData(this.agendamento.data_consulta);
+                if (!dataValida) {
+                    this.errors.data_consulta = 'Data inválida. Use o formato dd/mm/aaaa';
+                    this.$toast.add({
+                        severity: 'warn',
+                        summary: 'Atenção',
+                        detail: 'Data inválida. Use o formato dd/mm/aaaa',
+                        life: 3000
+                    });
+                    valido = false;
+                }
             }
 
             if (!this.agendamentoData.hora_consulta) {
@@ -274,18 +319,51 @@ export default {
                     detail: 'Selecione um horário',
                     life: 3000
                 });
-                return false;
+                valido = false;
             }
 
+            return valido;
+        },
+        
+        validarData(data) {
+            if (!data || data.length !== 10) return false;
+            const [dia, mes, ano] = data.split('/');
+            if (!dia || !mes || !ano) return false;
+            const diaNum = parseInt(dia);
+            const mesNum = parseInt(mes);
+            const anoNum = parseInt(ano);
+            
+            if (isNaN(diaNum) || isNaN(mesNum) || isNaN(anoNum)) return false;
+            if (mesNum < 1 || mesNum > 12) return false;
+            if (diaNum < 1 || diaNum > 31) return false;
+            if (anoNum < 1900 || anoNum > 2100) return false;
+            
+            // Validar se a data é válida (ex: 31/02 não existe)
+            const dataObj = new Date(anoNum, mesNum - 1, diaNum);
+            if (dataObj.getDate() !== diaNum || dataObj.getMonth() !== mesNum - 1 || dataObj.getFullYear() !== anoNum) {
+                return false;
+            }
+            
             return true;
         },
 
         formatarDataParaAPI(data) {
             if (!data) return '';
             
+            // Se já está no formato Y-m-d, retornar como está
+            if (data.includes('-') && !data.includes('/')) {
+                return data.split(' ')[0]; // Remove hora se houver
+            }
+            
+            // Se está no formato dd/mm/yyyy, converter para Y-m-d
+            if (data.includes('/')) {
+                const [dia, mes, ano] = data.split('/');
+                return `${ano}-${mes}-${dia}`;
+            }
+            
+            // Se for Date object ou outra coisa, tentar converter
             let date;
             if (typeof data === 'string' && data.includes('/')) {
-                // Se for uma string no formato DD/MM/YYYY, converte corretamente
                 const [dia, mes, ano] = data.split('/');
                 date = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
             } else {
@@ -297,6 +375,19 @@ export default {
 
         formatarDataNotificacao(data) {
             if (!data) return '';
+            
+            // Se já está no formato dd/mm/yyyy, retornar como está
+            if (data.includes('/')) {
+                return data;
+            }
+            
+            // Se está no formato Y-m-d, converter para dd/mm/yyyy
+            if (data.includes('-')) {
+                const [ano, mes, dia] = data.split('-');
+                return `${dia}/${mes}/${ano}`;
+            }
+            
+            // Se for Date object, converter
             const date = new Date(data);
             const dia = String(date.getDate()).padStart(2, '0');
             const mes = String(date.getMonth() + 1).padStart(2, '0');

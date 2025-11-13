@@ -1,7 +1,7 @@
 <template>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <Button v-if="$hasAccessToModule('anexos')" label="Upload de Anexo" icon="pi pi-upload"
-            @click="dialogUploadAnexo = true" :disabled="!$hasAccessToModule('anexos')"
+            @click="abrirDialogUploadAnexo" :disabled="!$hasAccessToModule('anexos')"
             :class="{ 'opacity-50': !$hasAccessToModule('anexos') }" />
     </div>
 
@@ -45,7 +45,7 @@
                         {{ $tipoPlano() === 1 ? 'Este módulo não está disponível para o seu plano.' : 'Este paciente ainda não possui arquivos anexados. Clique no botão "Upload de Anexo" para adicionar o primeiro arquivo.' }}
                     </p>
                     <Button v-if="$hasAccessToModule('anexos')" label="Upload de Anexo" icon="pi pi-upload"
-                        @click="dialogUploadAnexo = true" class="mt-3" />
+                        @click="abrirDialogUploadAnexo" class="mt-3" />
 
                     <Button v-if="!$hasAccessToModule('anexos')" label="Clique aqui para atualizar seu plano" @click="$router.push('/upgrade')" />
                 </div>
@@ -84,6 +84,10 @@ export default {
         paciente: {
             type: Object,
             default: null
+        },
+        statusTratamento: {
+            type: String,
+            default: null
         }
     },
     computed: {
@@ -98,6 +102,26 @@ export default {
     },
 
     methods: {
+        validarStatusTratamento() {
+            if (this.statusTratamento === 'Concluído') {
+                this.$toast.add({
+                    severity: 'warn',
+                    summary: 'Atenção',
+                    detail: 'O paciente está com status "Concluído". Altere o status para "Em Tratamento" para executar esta ação.',
+                    life: 5000
+                });
+                return false;
+            }
+            return true;
+        },
+        
+        abrirDialogUploadAnexo() {
+            if (!this.validarStatusTratamento()) {
+                return;
+            }
+            this.dialogUploadAnexo = true;
+        },
+        
         getFileIcon(tipo) {
             const icons = {
                 'pdf': 'pi pi-file-pdf',

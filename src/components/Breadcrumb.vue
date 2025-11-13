@@ -2,12 +2,16 @@
     <div class="w-full col-md-12 mb-4">
         <Breadcrumb :home="home" :model="items">
             <template #item="{ item, props }">
-                <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
+                <router-link v-if="item.route && !item.useBack" v-slot="{ href, navigate }" :to="item.route" custom>
                     <a :href="href" v-bind="props.action" @click="navigate">
                         <span :class="[item.icon, 'text-color']" />
                         <span class="text-primary font-semibold">{{ item.label }}</span>
                     </a>
                 </router-link>
+                <a v-else-if="item.useBack" v-bind="props.action" @click="goBack" style="cursor: pointer;">
+                    <span :class="[item.icon, 'text-color']" />
+                    <span class="text-primary font-semibold">{{ item.label }}</span>
+                </a>
                 <a v-else :href="item.url" :target="item.target" v-bind="props.action">
                     <span class="text-surface-700 dark:text-surface-0">{{ item.label }}</span>
                 </a>
@@ -127,14 +131,36 @@ export default {
                 const label = routeNameMapping[routeName] || routeName.charAt(0).toUpperCase() + routeName.slice(1);
                 
                 // Tratamento especial para rotas de financeiro
-                // Se estiver em /financeiro/receitas ou /financeiro/despesas,
-                // o item "Financeiro" deve manter a rota atual
-                if (segment === 'financeiro' && (pathSegments[index + 1] === 'receitas' || pathSegments[index + 1] === 'despesas')) {
-                    // Mantém a rota completa (receitas ou despesas) ao invés de apenas /financeiro
-                    items.push({
-                        label: label,
-                        route: currentPath + `/${pathSegments[index + 1]}`
-                    });
+                if (segment === 'financeiro') {
+                    const nextSegment = pathSegments[index + 1];
+                    
+                    // Se estiver em /financeiro/receitas ou /financeiro/despesas
+                    if (nextSegment === 'receitas' || nextSegment === 'despesas') {
+                        // Mantém a rota completa (receitas ou despesas) ao invés de apenas /financeiro
+                        items.push({
+                            label: label,
+                            route: currentPath + `/${nextSegment}`
+                        });
+                    }
+                    // Se estiver em /financeiro/novo ou /financeiro/editar/:id
+                    else if (nextSegment === 'novo' || nextSegment === 'editar') {
+                        // Usar router.back() para voltar à tela anterior
+                        items.push({
+                            label: label,
+                            useBack: true
+                        });
+                    }
+                    // Caso padrão (não deveria acontecer, mas por segurança)
+                    else if (index < pathSegments.length - 1) {
+                        items.push({
+                            label: label,
+                            route: currentPath
+                        });
+                    } else {
+                        items.push({
+                            label: label
+                        });
+                    }
                 } else if (index < pathSegments.length - 1) {
                     // Se não é o último item, adiciona route para navegação
                     items.push({
@@ -150,6 +176,11 @@ export default {
             });
             
             this.items = items;
+        },
+        
+        goBack() {
+            // Voltar para a tela anterior
+            this.$router.go(-1);
         }
     }
 }

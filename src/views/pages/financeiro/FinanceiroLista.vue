@@ -4,54 +4,69 @@
             <div class="col-12">
             <div class="card">
                 <div class="flex justify-content-between align-items-center mb-4">
-                    <h5>{{ tipoDetectado === 'receita' ? 'Receitas' : 'Despesas' }}</h5>
+                    <div class="flex gap-3 align-items-center">
+                        <h5 class="mb-0 mr-4">{{ tipoDetectado === 'receita' ? 'Receitas' : 'Despesas' }}</h5>
+                        <div class="total-container-header">
+                            <span class="total-label-header">
+                                {{ tipoDetectado === 'receita' ? 'Recebidas:' : 'Pagas:' }}
+                            </span>
+                            <span 
+                                class="text-green-600 font-bold total-value-header">
+                                R$ {{ formatarValor(totalRecebidasPagas) }}
+                            </span>
+                        </div>
+                        <div class="total-container-header">
+                            <span class="total-label-header">Previstas:</span>
+                            <span 
+                                class="text-red-600 font-bold total-value-header">
+                                R$ {{ formatarValor(totalPrevistas) }}
+                            </span>
+                        </div>
+                    </div>
                     <div class="flex gap-2 align-items-center">
-                        <div class="flex gap-2 align-items-center">
-                            <Button 
-                                label="Filtros" 
-                                severity="secondary" 
-                                icon="pi pi-filter" 
-                                v-if="!hasFiltros"
-                                @click="drawerFilterFinanceiro = true" 
-                            />
-                            <Button 
-                                label="Limpar Filtros" 
-                                severity="danger" 
-                                @click="limparFiltros" 
-                                v-else 
-                            />
-                        </div>
-                        <div class="flex gap-3 align-items-center">
-                            <div class="total-container-header">
-                                <span class="total-label-header">
-                                    {{ tipoDetectado === 'receita' ? 'Recebidas:' : 'Pagas:' }}
-                                </span>
-                                <span 
-                                    class="text-green-600 font-bold total-value-header">
-                                    R$ {{ formatarValor(totalRecebidasPagas) }}
-                                </span>
-                            </div>
-                            <div class="total-container-header">
-                                <span class="total-label-header">Previstas:</span>
-                                <span 
-                                    class="text-red-600 font-bold total-value-header">
-                                    R$ {{ formatarValor(totalPrevistas) }}
-                                </span>
-                            </div>
-                        </div>
+                        <Button 
+                            v-if="!$isPlanPaused() && selectedTransacoes && selectedTransacoes.length > 0"
+                            :label="tipoDetectado === 'receita' ? 'Receber Todas' : 'Pagar Todas'" 
+                            icon="pi pi-check-circle" 
+                            severity="success"
+                            @click="confirmarPagamentoLote" 
+                        />
                         <Button 
                             v-if="!$isPlanPaused()"
                             :label="tipoDetectado === 'receita' ? 'Nova Receita' : 'Nova Despesa'" 
                             icon="pi pi-plus" 
                             @click="novaTransacao" 
                         />
+                        <Button 
+                            label="Filtros" 
+                            severity="secondary" 
+                            icon="pi pi-filter" 
+                            v-if="!hasFiltros"
+                            @click="drawerFilterFinanceiro = true" 
+                        />
+                        <Button 
+                            label="Limpar Filtros" 
+                            severity="danger" 
+                            @click="limparFiltros" 
+                            v-else 
+                        />
                     </div>
                 </div>
 
                 <!-- Tabela -->
-                <DataTable :value="transacoes" :loading="loading" :paginator="true" :rows="10"
-                    :rowsPerPageOptions="[10, 20, 50]" :totalRecords="totalRecords" :lazy="true" @page="onPageChange"
+                <DataTable 
+                    v-model:selection="selectedTransacoes"
+                    :value="transacoes" 
+                    :loading="loading" 
+                    :paginator="true" 
+                    :rows="10"
+                    :rowsPerPageOptions="[10, 20, 50]" 
+                    :totalRecords="totalRecords" 
+                    :lazy="true" 
+                    @page="onPageChange"
+                    dataKey="id"
                     class="p-datatable-sm">
+                    <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
                     <Column field="data" header="Data" sortable>
                         <template #body="{ data }">
                             {{ formatarData(data.data) }}
@@ -131,7 +146,7 @@
         @limparFiltros="limparFiltrosDrawer"
     />
 
-    <!-- Dialog de Confirmação -->
+    <!-- Dialog de Confirmação de Exclusão -->
     <Dialog v-model:visible="dialogVisible" modal header="Confirmar Exclusão" :style="{ width: '450px' }">
         <div class="confirmation-content">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
@@ -145,6 +160,27 @@
                 icon="pi pi-check" 
                 severity="danger" 
                 @click="excluirTransacao" 
+            />
+        </template>
+    </Dialog>
+
+    <!-- Dialog de Confirmação de Pagamento em Lote -->
+    <Dialog v-model:visible="dialogPagamentoLoteVisible" modal header="Confirmar Quitação em Lote" :style="{ width: '450px' }">
+        <div class="confirmation-content">
+            <i class="pi pi-question-circle mr-3" style="font-size: 2rem" />
+            <span>
+                Tem certeza que deseja quitar {{ selectedTransacoes.length }} 
+                {{ selectedTransacoes.length === 1 ? 'transação' : 'transações' }} em lote?
+            </span>
+        </div>
+        <template #footer>
+            <Button label="Não" icon="pi pi-times" outlined @click="dialogPagamentoLoteVisible = false" />
+            <Button 
+                v-if="!$isPlanPaused()"
+                :label="tipoDetectado === 'receita' ? 'Receber Todas' : 'Pagar Todas'" 
+                icon="pi pi-check" 
+                severity="success" 
+                @click="pagarEmLote" 
             />
         </template>
     </Dialog>
@@ -179,7 +215,9 @@ export default {
             loading: false,
             transacoes: [],
             totalRecords: 0,
+            selectedTransacoes: [],
             dialogVisible: false,
+            dialogPagamentoLoteVisible: false,
             transacaoParaExcluir: null,
             categorias: [],
             carregandoCategorias: false,
@@ -244,6 +282,43 @@ export default {
                 this.filtros.tipo = newVal;
                 this.filtros.page = 1;
                 this.carregarTransacoes();
+            }
+        },
+
+        // Validar seleção de transações - não permitir selecionar transações já pagas
+        selectedTransacoes(newSelection, oldSelection) {
+            if (!newSelection || newSelection.length === 0) {
+                return;
+            }
+
+            // Verificar se alguma transação selecionada já está paga
+            const transacoesPagas = newSelection.filter(transacao => {
+                return transacao.paga === true || transacao.paga === 1;
+            });
+
+            if (transacoesPagas.length > 0) {
+                // Remover transações pagas da seleção
+                const transacoesNaoPagas = newSelection.filter(transacao => {
+                    return !(transacao.paga === true || transacao.paga === 1);
+                });
+
+                // Atualizar seleção removendo as pagas
+                this.$nextTick(() => {
+                    this.selectedTransacoes = transacoesNaoPagas;
+                });
+
+                // Mostrar toast de aviso
+                const tipoTexto = this.tipoDetectado === 'receita' ? 'recebida' : 'paga';
+                const mensagem = transacoesPagas.length === 1 
+                    ? `Esta transação já está ${tipoTexto}`
+                    : `Estas transações já estão ${tipoTexto === 'paga' ? 'pagas' : 'recebidas'}`;
+                
+                this.$toast.add({
+                    severity: 'warn',
+                    summary: 'Atenção',
+                    detail: mensagem,
+                    life: 4000
+                });
             }
         }
     },
@@ -319,6 +394,8 @@ export default {
 
                 this.transacoes = response.data.data;
                 this.totalRecords = response.data.pagination.total;
+                // Limpar seleção ao recarregar
+                this.selectedTransacoes = [];
             } catch (error) {
                 console.error('Erro ao carregar transações:', error);
                 this.$toast.add({
@@ -334,6 +411,7 @@ export default {
 
         onPageChange(event) {
             this.filtros.page = event.page + 1;
+            this.selectedTransacoes = []; // Limpar seleção ao mudar de página
             this.carregarTransacoes();
         },
 
@@ -463,6 +541,43 @@ export default {
 
         onUpdateDrawerFilterFinanceiro(event) {
             this.drawerFilterFinanceiro = event;
+        },
+
+        confirmarPagamentoLote() {
+            if (!this.selectedTransacoes || this.selectedTransacoes.length === 0) {
+                return;
+            }
+            this.dialogPagamentoLoteVisible = true;
+        },
+
+        async pagarEmLote() {
+            if (!this.selectedTransacoes || this.selectedTransacoes.length === 0) {
+                return;
+            }
+
+            try {
+                const ids = this.selectedTransacoes.map(t => t.id);
+                await this.$financeirosService.pagarEmLote(ids);
+
+                this.$toast.add({
+                    severity: 'success',
+                    summary: 'Sucesso',
+                    detail: `${this.selectedTransacoes.length} ${this.selectedTransacoes.length === 1 ? 'transação quitada' : 'transações quitadas'} com sucesso`,
+                    life: 3000
+                });
+
+                this.dialogPagamentoLoteVisible = false;
+                this.selectedTransacoes = [];
+                this.carregarTransacoes();
+            } catch (error) {
+                console.error('Erro ao quitar transações em lote:', error);
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: 'Erro ao quitar transações em lote',
+                    life: 3000
+                });
+            }
         }
     }
 };

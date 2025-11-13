@@ -51,6 +51,11 @@ const financeirosService = {
     // Excluir categoria
     excluirCategoria(id) {
         return api.delete(`/categoria-financeiro/${id}`);
+    },
+
+    // Pagar/Receber transações em lote
+    pagarEmLote(ids) {
+        return api.post('/financeiros/pagar-lote', { ids });
     }
 };
 

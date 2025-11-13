@@ -213,6 +213,10 @@ export default {
         pacienteId: {
             type: [String, Number],
             required: true
+        },
+        statusTratamento: {
+            type: String,
+            default: null
         }
     },
     data() {
@@ -301,7 +305,24 @@ export default {
             }
         },
 
+        validarStatusTratamento() {
+            if (this.statusTratamento === 'Concluído') {
+                this.$toast.add({
+                    severity: 'warn',
+                    summary: 'Atenção',
+                    detail: 'O paciente está com status "Concluído". Altere o status para "Em Tratamento" para executar esta ação.',
+                    life: 5000
+                });
+                return false;
+            }
+            return true;
+        },
+
         async salvar() {
+            if (!this.validarStatusTratamento()) {
+                return;
+            }
+            
             this.loading = true;
 
             try {

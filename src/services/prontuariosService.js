@@ -17,7 +17,14 @@ class ProntuariosService {
 
     async create(prontuarioData) {
         try {
-            const response = await axios.post(`/prontuario/paciente/${prontuarioData.paciente.id}`, prontuarioData);
+            // Usar paciente.id ou paciente_id se disponível
+            const pacienteId = prontuarioData.paciente?.id || prontuarioData.paciente_id;
+            
+            if (!pacienteId) {
+                throw new Error('ID do paciente não encontrado nos dados do prontuário');
+            }
+            
+            const response = await axios.post(`/prontuario/paciente/${pacienteId}`, prontuarioData);
             return response.data;
         } catch (error) {
             throw error;

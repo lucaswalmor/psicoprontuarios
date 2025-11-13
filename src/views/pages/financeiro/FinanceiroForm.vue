@@ -97,7 +97,7 @@
                         
                         <div class="col-12 md:col-6">
                             <div class="field">
-                                <label for="data" class="block text-900 font-medium mb-2">Data *</label>
+                                <label for="data" class="block text-900 font-medium mb-2">Data de lançamento *</label>
                                 <DatePicker 
                                     v-model="form.data" 
                                     dateFormat="dd/mm/yy"
@@ -445,6 +445,12 @@ export default {
         }
     },
     watch: {
+        '$route.params.id'(newId, oldId) {
+            // Se a rota mudou para modo de edição (novo ID), carregar a transação
+            if (newId && newId !== oldId) {
+                this.carregarTransacao(newId);
+            }
+        },
         'form.qtd_parcelas'(newVal, oldVal) {
             if (newVal > 1 && this.form.tipo_pagamento === 'aprazo' && this.form.valor && this.form.data) {
                 this.showDialogDivisao = true;
@@ -625,23 +631,50 @@ export default {
                         detail: 'Transação atualizada com sucesso',
                         life: 3000
                     });
+                    // Não redirecionar, apenas atualizar a tela
+                    await this.carregarTransacao(this.$route.params.id);
                 } else {
-                    await this.$financeirosService.cadastrar(dados);
+                    const response = await this.$financeirosService.cadastrar(dados);
                     this.$toast.add({
                         severity: 'success',
                         summary: 'Sucesso',
                         detail: 'Transação cadastrada com sucesso',
                         life: 3000
                     });
-                }
-                
-                // Redirecionar para a lista baseada no tipo
-                if (this.form.tipo === 'receita') {
-                    this.$router.push('/financeiro/receitas');
-                } else if (this.form.tipo === 'despesa') {
-                    this.$router.push('/financeiro/despesas');
-                } else {
-                    this.$router.push('/financeiro/receitas');
+                    
+                    // Pegar o ID da transação criada
+                    let transacaoId = null;
+                    if (response.data && response.data.data) {
+                        // Se for transação única (à vista)
+                        if (response.data.data.id) {
+                            transacaoId = response.data.data.id;
+                        } 
+                        // Se for transação parcelada (à prazo), pegar o ID da primeira parcela
+                        else if (Array.isArray(response.data.data) && response.data.data.length > 0) {
+                            transacaoId = response.data.data[0].id;
+                        }
+                    }
+                    
+                    // Se conseguiu pegar o ID, transformar em modo de edição
+                    if (transacaoId) {
+                        // Atualizar a rota para modo de edição sem recarregar a página
+                        this.$router.replace({
+                            path: `/financeiro/editar/${transacaoId}`,
+                            query: this.$route.query
+                        }).then(() => {
+                            // Carregar os dados da transação criada
+                            this.carregarTransacao(transacaoId);
+                        });
+                    } else {
+                        // Fallback: se não conseguir pegar o ID, redirecionar para lista
+                        if (this.form.tipo === 'receita') {
+                            this.$router.push('/financeiro/receitas');
+                        } else if (this.form.tipo === 'despesa') {
+                            this.$router.push('/financeiro/despesas');
+                        } else {
+                            this.$router.push('/financeiro/receitas');
+                        }
+                    }
                 }
             } catch (error) {
                 console.error('Erro ao salvar:', error);

@@ -47,10 +47,16 @@
             </Column>
             <Column header="Ações">
                 <template #body="slotProps">
-                    <Button v-if="!planStore.isPlanPaused" icon="pi pi-trash" 
-                        class="p-button-text p-button-sm p-button-danger" 
-                        @click="excluirAgendamento(slotProps.data, $event)"
-                        v-tooltip.top="'Excluir'" />
+                    <div class="flex gap-2">
+                        <Button v-if="!planStore.isPlanPaused" icon="pi pi-pencil" 
+                            class="p-button-text p-button-sm" 
+                            @click="editarAgendamento(slotProps.data)"
+                            v-tooltip.top="'Editar'" />
+                        <Button v-if="!planStore.isPlanPaused" icon="pi pi-trash" 
+                            class="p-button-text p-button-sm p-button-danger" 
+                            @click="excluirAgendamento(slotProps.data, $event)"
+                            v-tooltip.top="'Excluir'" />
+                    </div>
                 </template>
             </Column>
             
@@ -76,7 +82,17 @@
         <DialogNovoAgendamento 
             v-model:visible="dialogNovaSessao"
             :dataSelecionada="dataAtual"
+            :paciente-id="pacienteId"
+            :paciente="paciente"
             @agendamentoSalvo="onAgendamentoSalvo"
+        />
+        
+        <!-- Dialog Editar Sessão -->
+        <DialogEditarAgendamento 
+            v-model:visible="dialogEditarSessao"
+            :agendamento-data="agendamentoSelecionado"
+            @agendamentoAtualizado="onAgendamentoAtualizado"
+            @agendamentoExcluido="onAgendamentoExcluido"
         />
     </div>
 </template>
@@ -84,16 +100,26 @@
 <script>
 import { usePlanStore } from '@/store/plan';
 import DialogNovoAgendamento from '@/components/dialogs/agendamentos/DialogNovoAgendamento.vue';
+import DialogEditarAgendamento from '@/components/dialogs/agendamentos/DialogEditarAgendamento.vue';
 
 export default {
     name: 'ListaSessoesPacientes',
     components: {
-        DialogNovoAgendamento
+        DialogNovoAgendamento,
+        DialogEditarAgendamento
     },
     props: {
         pacienteId: {
             type: [String, Number],
             required: true
+        },
+        paciente: {
+            type: Object,
+            default: null
+        },
+        statusTratamento: {
+            type: String,
+            default: null
         }
     },
     computed: {
@@ -119,6 +145,8 @@ export default {
             currentPage: 1,
             perPage: 10,
             dialogNovaSessao: false,
+            dialogEditarSessao: false,
+            agendamentoSelecionado: null,
             mesAtual: new Date().getMonth(),
             anoAtual: new Date().getFullYear()
         };
@@ -197,12 +225,65 @@ export default {
             });
         },
         
+        validarStatusTratamento() {
+            if (this.statusTratamento === 'Concluído') {
+                this.$toast.add({
+                    severity: 'warn',
+                    summary: 'Atenção',
+                    detail: 'O paciente está com status "Concluído". Altere o status para "Em Tratamento" para executar esta ação.',
+                    life: 5000
+                });
+                return false;
+            }
+            return true;
+        },
+        
         abrirDialogNovaSessao() {
+            if (!this.validarStatusTratamento()) {
+                return;
+            }
             this.dialogNovaSessao = true;
+        },
+        
+        editarAgendamento(agendamento) {
+            // Formatar os dados do agendamento para o dialog
+            // O dialog espera data_consulta no formato dd/mm/yyyy e hora_consulta no formato H:i
+            // Converter data_consulta de Y-m-d para dd/mm/yyyy
+            let dataFormatada = agendamento.data_consulta;
+            if (agendamento.data_consulta && agendamento.data_consulta.includes('-')) {
+                const [ano, mes, dia] = agendamento.data_consulta.split('-');
+                dataFormatada = `${dia}/${mes}/${ano}`;
+            }
+            
+            this.agendamentoSelecionado = {
+                id: agendamento.id,
+                nome_paciente: agendamento.nome_paciente,
+                data_consulta: dataFormatada, // Formato dd/mm/yyyy
+                hora_consulta: agendamento.hora_consulta, // Já vem no formato H:i
+                codigo_agendamento: agendamento.codigo_agendamento,
+                publicId: agendamento.publicId
+            };
+            this.dialogEditarSessao = true;
         },
         
         onAgendamentoSalvo() {
             this.dialogNovaSessao = false;
+            this.carregarAgendamentos();
+            // Emitir evento para o componente pai recarregar estatísticas
+            this.$emit('agendamento-salvo');
+        },
+        
+        onAgendamentoAtualizado() {
+            this.dialogEditarSessao = false;
+            this.agendamentoSelecionado = null;
+            this.carregarAgendamentos();
+            // Emitir evento para o componente pai recarregar estatísticas
+            this.$emit('agendamento-salvo');
+        },
+        
+        onAgendamentoExcluido() {
+            this.dialogEditarSessao = false;
+            this.agendamentoSelecionado = null;
             this.carregarAgendamentos();
             // Emitir evento para o componente pai recarregar estatísticas
             this.$emit('agendamento-salvo');
