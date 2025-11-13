@@ -10,7 +10,7 @@
             <div class="col-12 agendamentos-layout">
                 <div class="grid">
                     <!-- Coluna Esquerda: Calendário -->
-                    <div class="col-12 md:col-4">
+                    <div class="col-12 md:col-3">
                         <div class="calendar-wrapper">
                             <DatePicker 
                                 v-model="dataSelecionada" 
@@ -22,7 +22,7 @@
                     </div>
 
                     <!-- Coluna Direita: Lista de Agendamentos -->
-                    <div class="col-12 md:col-8">
+                    <div class="col-12 md:col-9">
                         <div class="card agendamentos-card">
                             <div class="flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
                                 <h6 class="text-900 font-semibold mb-0">
