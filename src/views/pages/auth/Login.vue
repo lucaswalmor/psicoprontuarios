@@ -53,6 +53,18 @@
                             @success="handleGoogleLogin"
                             @error="handleGoogleError"
                         />
+
+                        <!-- Link para cadastro -->
+                        <div class="flex justify-center items-center mt-6">
+                            <span class="text-surface-600 dark:text-surface-400 mr-2">
+                                Não tem uma conta?
+                            </span>
+                            <span 
+                                class="font-medium no-underline cursor-pointer text-primary hover:text-primary-600 transition-colors"
+                                @click="goToRegister">
+                                Cadastre-se
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -199,6 +211,10 @@ export default {
 
         goToChangePassword() {
             this.$router.push('/change-password');
+        },
+
+        goToRegister() {
+            this.$router.push('/cadastro');
         },
 
         async handleGoogleLogin(credential) {
