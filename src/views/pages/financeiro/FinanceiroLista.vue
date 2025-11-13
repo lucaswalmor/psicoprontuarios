@@ -273,7 +273,10 @@ export default {
             // Resetar página para 1
             this.filtros.page = 1;
             // Recarregar transações
-            this.carregarTransacoes();
+                
+            if (this.$hasAccessToModule('gestao_financeira')) {
+                this.carregarTransacoes();
+            }
         },
         
         // Também observar mudanças no tipo detectado como backup
@@ -281,7 +284,10 @@ export default {
             if (this.filtros.tipo !== newVal) {
                 this.filtros.tipo = newVal;
                 this.filtros.page = 1;
-                this.carregarTransacoes();
+
+                if (this.$hasAccessToModule('gestao_financeira')) {
+                    this.carregarTransacoes();
+                }
             }
         },
 
@@ -325,11 +331,10 @@ export default {
     async mounted() {
         // Definir tipo baseado na URL
         this.filtros.tipo = this.tipoDetectado;
-        
+
         if (this.$hasAccessToModule('gestao_financeira')) {
             // Carregar categorias
             await this.carregarCategorias();
-            
             // Carregar transações
             await this.carregarTransacoes();
         }

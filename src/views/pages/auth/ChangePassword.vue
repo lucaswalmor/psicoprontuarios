@@ -101,11 +101,17 @@
             </div>
         </div>
     </div>
+    <Toast />
 </template>
 
 <script>
+import Toast from 'primevue/toast';
+
 export default {
     name: 'ChangePassword',
+    components: {
+        Toast
+    },
     data() {
         return {
             currentStep: 1,
@@ -167,15 +173,33 @@ export default {
                 this.currentStep = 2;
                 
             } catch (error) {
-                console.error('Erro ao enviar código:', error);
-                
                 let errorMessage = 'Erro ao enviar código. Tente novamente.';
                 
                 // Verificar se há mensagem de erro do backend
-                if (error.response?.data?.error) {
-                    errorMessage = error.response.data.error;
-                } else if (error.response?.data?.message) {
-                    errorMessage = error.response.data.message;
+                // O backend retorna: { "error": "Usuário não encontrado com este email" }
+                if (error.response) {
+                    const responseData = error.response.data;
+                    
+                    if (responseData) {
+                        // Verificar se é um objeto com propriedade 'error'
+                        if (responseData.error) {
+                            errorMessage = responseData.error;
+                        } 
+                        // Verificar se é um objeto com propriedade 'message'
+                        else if (responseData.message) {
+                            errorMessage = responseData.message;
+                        } 
+                        // Verificar se é uma string direta
+                        else if (typeof responseData === 'string') {
+                            errorMessage = responseData;
+                        }
+                        // Verificar se há erros de validação
+                        else if (responseData.errors && Array.isArray(responseData.errors)) {
+                            errorMessage = responseData.errors[0];
+                        }
+                    }
+                } else if (error.message) {
+                    errorMessage = error.message;
                 }
 
                 this.$toast.add({
