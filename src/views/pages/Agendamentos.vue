@@ -153,7 +153,7 @@ export default {
             dialogEditarAgendamento: false,
             agendamentoSelecionado: {},
             feriados: [],
-            mesVisualizado: hoje.getMonth() + 1, // 1-12
+            mesVisualizado: hoje.getMonth(), // 0-indexed (0-11) para corresponder ao event.month
             anoVisualizado: hoje.getFullYear()
         };
     },
@@ -220,11 +220,14 @@ export default {
             const feriadosAtualizados = this.obterFeriadosBrasileiros(this.anoVisualizado);
             
             return feriadosAtualizados.filter(feriado => {
-                const feriadoDate = new Date(feriado.data);
-                const feriadoMes = feriadoDate.getMonth() + 1;
+                // Parsear data corretamente evitando problemas de timezone
+                const [anoStr, mesStr, diaStr] = feriado.data.split('-');
+                const feriadoDate = new Date(parseInt(anoStr), parseInt(mesStr) - 1, parseInt(diaStr));
+                const feriadoMes = feriadoDate.getMonth(); // 0-indexed (0-11)
                 const feriadoAno = feriadoDate.getFullYear();
                 
                 // Feriados fixos (mesmo mês, qualquer ano) ou feriados móveis do ano específico
+                // mesVisualizado já está 0-indexed (0-11) conforme event.month
                 if (feriado.fixo) {
                     return feriadoMes === this.mesVisualizado;
                 } else {
@@ -232,8 +235,11 @@ export default {
                     return feriadoMes === this.mesVisualizado && feriadoAno === this.anoVisualizado;
                 }
             }).sort((a, b) => {
-                const dataA = new Date(a.data);
-                const dataB = new Date(b.data);
+                // Parsear datas corretamente para ordenação
+                const [anoA, mesA, diaA] = a.data.split('-');
+                const [anoB, mesB, diaB] = b.data.split('-');
+                const dataA = new Date(parseInt(anoA), parseInt(mesA) - 1, parseInt(diaA));
+                const dataB = new Date(parseInt(anoB), parseInt(mesB) - 1, parseInt(diaB));
                 return dataA.getDate() - dataB.getDate();
             });
         }
@@ -527,12 +533,16 @@ export default {
         },
         
         formatarDiaFeriado(dataStr) {
-            const date = new Date(dataStr);
+            // Parsear data corretamente evitando problemas de timezone
+            const [ano, mes, dia] = dataStr.split('-');
+            const date = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
             return String(date.getDate()).padStart(2, '0');
         },
         
         formatarMesFeriado(dataStr) {
-            const date = new Date(dataStr);
+            // Parsear data corretamente evitando problemas de timezone
+            const [ano, mes, dia] = dataStr.split('-');
+            const date = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
             const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
             return meses[date.getMonth()];
         }
