@@ -320,8 +320,6 @@ export default {
         
         onMonthChange(event) {
             if (event && event.month !== undefined && event.year !== undefined) {
-                // event.month é 0-indexed (0 = janeiro, 10 = novembro)
-                // Converter para 1-indexed (1-12) para usar no filtro
                 this.mesVisualizado = event.month;
                 this.anoVisualizado = event.year;
             }
@@ -529,12 +527,16 @@ export default {
         },
         
         formatarDiaFeriado(dataStr) {
+            // Adicionar 1 dia para corrigir problema de fuso horário
             const date = new Date(dataStr);
+            date.setDate(date.getDate() + 1);
             return String(date.getDate()).padStart(2, '0');
         },
         
         formatarMesFeriado(dataStr) {
+            // Adicionar 1 dia para corrigir problema de fuso horário
             const date = new Date(dataStr);
+            date.setDate(date.getDate() + 1);
             const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
             return meses[date.getMonth()];
         }
