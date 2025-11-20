@@ -14,8 +14,8 @@
             />
         </div>
 
-        <DataTable :value="pacientes" :loading="loading" tableStyle="min-width: 50rem" paginator :rows="perPage"
-            :totalRecords="totalRecords" :lazy="true" @page="onPageChange"
+        <DataTable :value="pacientes" :loading="loading" tableStyle="min-width: 50rem; cursor: pointer;" rowHover paginator :rows="perPage"
+            :totalRecords="totalRecords" :lazy="true" @page="onPageChange" @row-click="$router.push(`/pacientes/ficha/${$event.data.id}`)"
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink">
             <Column field="nome" header="Nome" sortable></Column>
             <Column field="telefone" header="Telefone"></Column>
