@@ -10,7 +10,7 @@
             <div class="col-12 agendamentos-layout">
                 <div class="grid">
                     <!-- Coluna Esquerda: Calendário -->
-                    <div class="col-12 md:col-3">
+                    <div class="col-12 md:col-4">
                         <div class="calendar-wrapper">
                             <DatePicker 
                                 v-model="dataSelecionada" 
@@ -23,7 +23,7 @@
                     </div>
 
                     <!-- Coluna Direita: Lista de Agendamentos -->
-                    <div class="col-12 md:col-9">
+                    <div class="col-12 md:col-8">
                         <div class="card agendamentos-card">
                             <div class="flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
                                 <h6 class="text-900 font-semibold mb-0">
@@ -549,33 +549,43 @@ export default {
     display: flex;
     justify-content: center;
     padding: 0;
-    min-height: 600px;
+    min-height: 400px;
+    max-height: 600px;
 }
 
 /* Customização do DatePicker - aumentar tamanho dos números e altura */
 :deep(.custom-datepicker .p-datepicker) {
-    min-height: 600px;
+    min-height: 400px;
+    max-height: 600px;
     width: 100%;
+    height: auto;
 }
 
 :deep(.custom-datepicker .p-datepicker-calendar) {
-    height: 100%;
+    height: auto;
+    width: 100%;
+}
+
+:deep(.custom-datepicker .p-datepicker-table) {
+    width: 100%;
+    table-layout: fixed;
 }
 
 :deep(.custom-datepicker .p-datepicker-table td) {
-    padding: 0.5rem;
-    height: 3.5rem;
-    min-height: 5.5rem;
+    padding: 0.4rem;
+    height: auto;
+    min-height: 3rem;
+    max-height: 4rem;
 }
 
 :deep(.custom-datepicker .p-datepicker-calendar td span) {
     width: 100%;
     height: 100%;
-    min-height: 2.75rem;
+    min-height: 3rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.45rem;
+    font-size: 1.2rem;
     font-weight: 600;
 }
 
@@ -586,20 +596,20 @@ export default {
 
 :deep(.custom-datepicker .p-datepicker-weekday-cell) {
     text-align: center;
-    font-size: 1.5rem;
+    font-size: 1.1rem;
     font-weight: 600;
     color: var(--text-color);
-    padding: 0.5rem;
+    padding: 0.4rem;
     border-radius: 0.5rem;
     background-color: var(--surface-card);
 }
 
 :deep(.custom-datepicker .p-datepicker-title) {
     text-align: center;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 600;
     color: var(--text-color);
-    padding: 0.5rem;
+    padding: 0.4rem;
     border-radius: 0.5rem;
     background-color: var(--surface-card);
 }
@@ -805,50 +815,72 @@ export default {
 
 /* Responsividade */
 /* Telas médias (tablets) */
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
+    .calendar-wrapper {
+        min-height: 350px;
+        max-height: 500px;
+    }
+    
+    :deep(.custom-datepicker .p-datepicker) {
+        min-height: 350px;
+        max-height: 500px;
+    }
+    
     :deep(.custom-datepicker .p-datepicker-table td) {
-        padding: 0.4rem;
-        height: 3rem;
-        min-height: 4rem;
+        padding: 0.3rem;
+        min-height: 2.5rem;
+        max-height: 3rem;
     }
     
     :deep(.custom-datepicker .p-datepicker-calendar td span) {
-        min-height: 2.25rem;
-        font-size: 1.2rem;
+        min-height: 1.75rem;
+        max-height: 2rem;
+        font-size: 1rem;
     }
     
     :deep(.custom-datepicker .p-datepicker-weekday-cell) {
-        font-size: 1.2rem;
-        padding: 0.4rem;
+        font-size: 0.95rem;
+        padding: 0.3rem;
     }
     
     :deep(.custom-datepicker .p-datepicker-title) {
-        font-size: 1.2rem;
-        padding: 0.4rem;
+        font-size: 1rem;
+        padding: 0.3rem;
     }
 }
 
 /* Telas pequenas (tablets pequenos) */
-@media (max-width: 900px) {
+@media (max-width: 992px) {
+    .calendar-wrapper {
+        min-height: 300px;
+        max-height: 450px;
+    }
+    
+    :deep(.custom-datepicker .p-datepicker) {
+        min-height: 300px;
+        max-height: 450px;
+    }
+    
     :deep(.custom-datepicker .p-datepicker-table td) {
-        padding: 0.35rem;
-        height: 2.5rem;
-        min-height: 3.5rem;
+        padding: 0.25rem;
+        min-height: 2rem;
+        max-height: 2.5rem;
     }
     
     :deep(.custom-datepicker .p-datepicker-calendar td span) {
-        min-height: 2rem;
-        font-size: 1.1rem;
+        min-height: 1.5rem;
+        max-height: 1.75rem;
+        font-size: 0.9rem;
     }
     
     :deep(.custom-datepicker .p-datepicker-weekday-cell) {
-        font-size: 1.1rem;
-        padding: 0.35rem;
+        font-size: 0.85rem;
+        padding: 0.25rem;
     }
     
     :deep(.custom-datepicker .p-datepicker-title) {
-        font-size: 1.1rem;
-        padding: 0.35rem;
+        font-size: 0.9rem;
+        padding: 0.25rem;
     }
 }
 
@@ -857,33 +889,36 @@ export default {
     .calendar-wrapper {
         padding: 0;
         margin-bottom: 1rem;
-        min-height: auto;
+        min-height: 280px;
+        max-height: 400px;
     }
     
     :deep(.custom-datepicker .p-datepicker) {
-        min-height: auto;
+        min-height: 280px;
+        max-height: 400px;
         width: 100%;
     }
     
     :deep(.custom-datepicker .p-datepicker-table td) {
-        padding: 0.3rem;
-        height: 2rem;
-        min-height: 2.5rem;
+        padding: 0.2rem;
+        min-height: 1.75rem;
+        max-height: 2rem;
     }
     
     :deep(.custom-datepicker .p-datepicker-calendar td span) {
-        min-height: 1.75rem;
-        font-size: 1rem;
+        min-height: 1.25rem;
+        max-height: 1.5rem;
+        font-size: 0.8rem;
     }
     
     :deep(.custom-datepicker .p-datepicker-weekday-cell) {
-        font-size: 1rem;
-        padding: 0.3rem;
+        font-size: 0.75rem;
+        padding: 0.2rem;
     }
     
     :deep(.custom-datepicker .p-datepicker-title) {
-        font-size: 1rem;
-        padding: 0.3rem;
+        font-size: 0.85rem;
+        padding: 0.2rem;
     }
     
     .agendamento-card {
@@ -914,25 +949,35 @@ export default {
 
 /* Telas extra pequenas */
 @media (max-width: 480px) {
+    .calendar-wrapper {
+        min-height: 250px;
+        max-height: 350px;
+    }
+    
+    :deep(.custom-datepicker .p-datepicker) {
+        min-height: 250px;
+        max-height: 350px;
+    }
+    
     :deep(.custom-datepicker .p-datepicker-table td) {
-        padding: 0.25rem;
-        height: 1.75rem;
-        min-height: 2rem;
+        padding: 0.15rem;
+        min-height: 1.5rem;
+        max-height: 1.75rem;
     }
     
     :deep(.custom-datepicker .p-datepicker-calendar td span) {
-        min-height: 1.5rem;
-        font-size: 0.9rem;
+        min-height: 2.5rem;
+        font-size: 0.7rem;
     }
     
     :deep(.custom-datepicker .p-datepicker-weekday-cell) {
-        font-size: 0.9rem;
-        padding: 0.25rem;
+        font-size: 0.7rem;
+        padding: 0.15rem;
     }
     
     :deep(.custom-datepicker .p-datepicker-title) {
-        font-size: 0.9rem;
-        padding: 0.25rem;
+        font-size: 0.75rem;
+        padding: 0.15rem;
     }
 }
 </style>
