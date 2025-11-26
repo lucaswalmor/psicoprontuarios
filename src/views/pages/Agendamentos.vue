@@ -9,8 +9,8 @@
         <template v-else>
             <div class="col-12 agendamentos-layout">
                 <div class="grid">
-                    <!-- Coluna Esquerda: Calendário -->
-                    <div class="col-12 md:col-4">
+                    <!-- Coluna Esquerda: Calendário e Feriados -->
+                    <div class="col-12 md:col-4 left-column">
                         <div class="calendar-wrapper">
                             <DatePicker 
                                 v-model="dataSelecionada" 
@@ -19,6 +19,45 @@
                                 @update:modelValue="onDataSelecionada"
                                 @month-change="onMonthChange($event)"
                             />
+                        </div>
+                        
+                        <!-- Seção de Feriados - Abaixo do calendário em desktop -->
+                        <div class="feriados-wrapper-desktop">
+                            <div class="feriados-card">
+                                <div class="feriados-header">
+                                    <i class="pi pi-calendar-check text-primary"></i>
+                                    <h6 class="feriados-title">Feriados do Mês</h6>
+                                </div>
+                                
+                                <div v-if="feriadosDoMes.length === 0" class="feriados-empty">
+                                    <i class="pi pi-info-circle text-400"></i>
+                                    <span class="text-500 text-sm">Nenhum feriado neste mês</span>
+                                </div>
+                                
+                                <div v-else class="feriados-list">
+                                    <div 
+                                        v-for="feriado in feriadosDoMes" 
+                                        :key="feriado.data"
+                                        class="feriado-item"
+                                        :class="{ 'feriado-facultativo': feriado.tipo === 'facultativo' }"
+                                    >
+                                        <div class="feriado-date">
+                                            <span class="feriado-dia">{{ formatarDiaFeriado(feriado.data) }}</span>
+                                            <span class="feriado-mes">{{ formatarMesFeriado(feriado.data) }}</span>
+                                        </div>
+                                        <div class="feriado-content">
+                                            <div class="feriado-nome">{{ feriado.nome }}</div>
+                                            <div class="feriado-tipo">
+                                                <Tag 
+                                                    :value="feriado.tipo === 'nacional' ? 'Nacional' : 'Facultativo'"
+                                                    :severity="feriado.tipo === 'nacional' ? 'success' : 'info'"
+                                                    size="small"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -68,40 +107,40 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <!-- Seção de Feriados - Abaixo de tudo -->
-                    <div class="col-12">
-                        <div class="feriados-card">
-                            <div class="feriados-header">
-                                <i class="pi pi-calendar-check text-primary"></i>
-                                <h6 class="feriados-title">Feriados do Mês</h6>
-                            </div>
-                            
-                            <div v-if="feriadosDoMes.length === 0" class="feriados-empty">
-                                <i class="pi pi-info-circle text-400"></i>
-                                <span class="text-500 text-sm">Nenhum feriado neste mês</span>
-                            </div>
-                            
-                            <div v-else class="feriados-list">
-                                <div 
-                                    v-for="feriado in feriadosDoMes" 
-                                    :key="feriado.data"
-                                    class="feriado-item"
-                                    :class="{ 'feriado-facultativo': feriado.tipo === 'facultativo' }"
-                                >
-                                    <div class="feriado-date">
-                                        <span class="feriado-dia">{{ formatarDiaFeriado(feriado.data) }}</span>
-                                        <span class="feriado-mes">{{ formatarMesFeriado(feriado.data) }}</span>
-                                    </div>
-                                    <div class="feriado-content">
-                                        <div class="feriado-nome">{{ feriado.nome }}</div>
-                                        <div class="feriado-tipo">
-                                            <Tag 
-                                                :value="feriado.tipo === 'nacional' ? 'Nacional' : 'Facultativo'"
-                                                :severity="feriado.tipo === 'nacional' ? 'success' : 'info'"
-                                                size="small"
-                                            />
+                        
+                        <!-- Seção de Feriados - Abaixo da lista em mobile -->
+                        <div class="feriados-wrapper-mobile">
+                            <div class="feriados-card">
+                                <div class="feriados-header">
+                                    <i class="pi pi-calendar-check text-primary"></i>
+                                    <h6 class="feriados-title">Feriados do Mês</h6>
+                                </div>
+                                
+                                <div v-if="feriadosDoMes.length === 0" class="feriados-empty">
+                                    <i class="pi pi-info-circle text-400"></i>
+                                    <span class="text-500 text-sm">Nenhum feriado neste mês</span>
+                                </div>
+                                
+                                <div v-else class="feriados-list">
+                                    <div 
+                                        v-for="feriado in feriadosDoMes" 
+                                        :key="feriado.data"
+                                        class="feriado-item"
+                                        :class="{ 'feriado-facultativo': feriado.tipo === 'facultativo' }"
+                                    >
+                                        <div class="feriado-date">
+                                            <span class="feriado-dia">{{ formatarDiaFeriado(feriado.data) }}</span>
+                                            <span class="feriado-mes">{{ formatarMesFeriado(feriado.data) }}</span>
+                                        </div>
+                                        <div class="feriado-content">
+                                            <div class="feriado-nome">{{ feriado.nome }}</div>
+                                            <div class="feriado-tipo">
+                                                <Tag 
+                                                    :value="feriado.tipo === 'nacional' ? 'Nacional' : 'Facultativo'"
+                                                    :severity="feriado.tipo === 'nacional' ? 'success' : 'info'"
+                                                    size="small"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -545,12 +584,27 @@ export default {
     min-height: 600px;
 }
 
+.left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
 .calendar-wrapper {
     display: flex;
     justify-content: center;
     padding: 0;
     min-height: 400px;
     max-height: 600px;
+}
+
+.feriados-wrapper-desktop {
+    display: none;
+}
+
+.feriados-wrapper-mobile {
+    display: block;
+    margin-top: 1rem;
 }
 
 /* Customização do DatePicker - aumentar tamanho dos números e altura */
@@ -814,6 +868,17 @@ export default {
 }
 
 /* Responsividade */
+/* Desktop - mostrar feriados na coluna esquerda */
+@media (min-width: 768px) {
+    .feriados-wrapper-desktop {
+        display: block;
+    }
+    
+    .feriados-wrapper-mobile {
+        display: none;
+    }
+}
+
 /* Telas médias (tablets) */
 @media (max-width: 1200px) {
     .calendar-wrapper {
