@@ -298,14 +298,10 @@ export default {
             return agendamentos.map(agendamento => {
                 const date = agendamento.date || '';
                 
-                // O backend retorna apenas a data no formato YYYY-MM-DD (sem hora)
-                // Não há horário disponível no formato retornado pelo método buscar()
-                // Se precisar do horário, seria necessário buscar detalhes de cada agendamento
-                
                 return {
                     title: agendamento.title || 'Agendamento',
                     date: date.split('T')[0].split(' ')[0], // Apenas a data YYYY-MM-DD
-                    time: '', // Não disponível no formato atual do backend
+                    time: agendamento.time || '', // Horário da consulta
                     publicId: agendamento.publicId
                 };
             });
@@ -808,10 +804,86 @@ export default {
 }
 
 /* Responsividade */
+/* Telas médias (tablets) */
+@media (max-width: 1024px) {
+    :deep(.custom-datepicker .p-datepicker-table td) {
+        padding: 0.4rem;
+        height: 3rem;
+        min-height: 4rem;
+    }
+    
+    :deep(.custom-datepicker .p-datepicker-calendar td span) {
+        min-height: 2.25rem;
+        font-size: 1.2rem;
+    }
+    
+    :deep(.custom-datepicker .p-datepicker-weekday-cell) {
+        font-size: 1.2rem;
+        padding: 0.4rem;
+    }
+    
+    :deep(.custom-datepicker .p-datepicker-title) {
+        font-size: 1.2rem;
+        padding: 0.4rem;
+    }
+}
+
+/* Telas pequenas (tablets pequenos) */
+@media (max-width: 900px) {
+    :deep(.custom-datepicker .p-datepicker-table td) {
+        padding: 0.35rem;
+        height: 2.5rem;
+        min-height: 3.5rem;
+    }
+    
+    :deep(.custom-datepicker .p-datepicker-calendar td span) {
+        min-height: 2rem;
+        font-size: 1.1rem;
+    }
+    
+    :deep(.custom-datepicker .p-datepicker-weekday-cell) {
+        font-size: 1.1rem;
+        padding: 0.35rem;
+    }
+    
+    :deep(.custom-datepicker .p-datepicker-title) {
+        font-size: 1.1rem;
+        padding: 0.35rem;
+    }
+}
+
+/* Telas muito pequenas (mobile) */
 @media (max-width: 768px) {
     .calendar-wrapper {
         padding: 0;
         margin-bottom: 1rem;
+        min-height: auto;
+    }
+    
+    :deep(.custom-datepicker .p-datepicker) {
+        min-height: auto;
+        width: 100%;
+    }
+    
+    :deep(.custom-datepicker .p-datepicker-table td) {
+        padding: 0.3rem;
+        height: 2rem;
+        min-height: 2.5rem;
+    }
+    
+    :deep(.custom-datepicker .p-datepicker-calendar td span) {
+        min-height: 1.75rem;
+        font-size: 1rem;
+    }
+    
+    :deep(.custom-datepicker .p-datepicker-weekday-cell) {
+        font-size: 1rem;
+        padding: 0.3rem;
+    }
+    
+    :deep(.custom-datepicker .p-datepicker-title) {
+        font-size: 1rem;
+        padding: 0.3rem;
     }
     
     .agendamento-card {
@@ -837,6 +909,30 @@ export default {
     
     .feriado-nome {
         font-size: 0.9rem;
+    }
+}
+
+/* Telas extra pequenas */
+@media (max-width: 480px) {
+    :deep(.custom-datepicker .p-datepicker-table td) {
+        padding: 0.25rem;
+        height: 1.75rem;
+        min-height: 2rem;
+    }
+    
+    :deep(.custom-datepicker .p-datepicker-calendar td span) {
+        min-height: 1.5rem;
+        font-size: 0.9rem;
+    }
+    
+    :deep(.custom-datepicker .p-datepicker-weekday-cell) {
+        font-size: 0.9rem;
+        padding: 0.25rem;
+    }
+    
+    :deep(.custom-datepicker .p-datepicker-title) {
+        font-size: 0.9rem;
+        padding: 0.25rem;
     }
 }
 </style>
