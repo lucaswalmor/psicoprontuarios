@@ -193,6 +193,14 @@ export default {
         
         formatarData(data) {
             if (!data) return '-';
+            // Se a data vem no formato YYYY-MM-DD, criar a data manualmente para evitar problemas de timezone
+            if (data.includes('-') && data.length === 10) {
+                const [ano, mes, dia] = data.split('-');
+                // Criar data no timezone local (mes - 1 porque Date usa 0-11 para meses)
+                const dataLocal = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
+                return dataLocal.toLocaleDateString('pt-BR');
+            }
+            // Se já estiver em outro formato, usar normalmente
             return new Date(data).toLocaleDateString('pt-BR');
         },
         
