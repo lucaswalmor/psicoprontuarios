@@ -30,6 +30,9 @@ class AuthService {
                 if (response.data.usuario.assinatura_ativa !== undefined) {
                     localStorage.setItem('assinaturaAtiva', response.data.usuario.assinatura_ativa);
                 }
+                if (response.data.menu) {
+                    localStorage.setItem('menu', JSON.stringify(response.data.menu));
+                }
                 
                 // Manter compatibilidade com dados antigos (será removido posteriormente)
                 if (response.data.usuario.assinatura) {
@@ -63,6 +66,7 @@ class AuthService {
             localStorage.removeItem('modulosPlano');
             localStorage.removeItem('statusAssinatura');
             localStorage.removeItem('assinaturaAtiva');
+            localStorage.removeItem('menu');
             // Limpar dados antigos (compatibilidade)
             localStorage.removeItem('userAssinatura');
             localStorage.removeItem('usuarioVitalicio');
@@ -79,6 +83,7 @@ class AuthService {
             localStorage.removeItem('modulosPlano');
             localStorage.removeItem('statusAssinatura');
             localStorage.removeItem('assinaturaAtiva');
+            localStorage.removeItem('menu');
             localStorage.removeItem('userAssinatura');
             localStorage.removeItem('usuarioVitalicio');
             localStorage.removeItem('temAssinaturaAtiva');
@@ -203,6 +208,9 @@ class AuthService {
                 }
                 if (response.data.usuario.assinatura_ativa !== undefined) {
                     localStorage.setItem('assinaturaAtiva', response.data.usuario.assinatura_ativa);
+                }
+                if (response.data.menu) {
+                    localStorage.setItem('menu', JSON.stringify(response.data.menu));
                 }
                 
                 // Manter compatibilidade com dados antigos (será removido posteriormente)

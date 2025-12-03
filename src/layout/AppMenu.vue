@@ -2,6 +2,7 @@
 import { usePlanStore } from '@/store/plan';
 import { useLayout } from '@/layout/composables/layout';
 import AppMenuItem from './AppMenuItem.vue';
+import api from '@/utils/axios';
 
 export default {
     name: 'AppMenu',
@@ -10,7 +11,8 @@ export default {
     },
     data() {
         return {
-            layoutComposable: null
+            layoutComposable: null,
+            menuData: []
         };
     },
     computed: {
@@ -36,90 +38,13 @@ export default {
         
         // Modelo do menu filtrado baseado no plano
         model() {
-            const baseMenu = [
-                {
-                    label: 'Home',
-                    items: [
-                        {
-                            label: 'Dashboard', 
-                            icon: 'pi pi-fw pi-home', 
-                            to: '/dashboard',
-                            requiredFeature: null
-                        },
-                        {
-                            label: 'Financeiro', 
-                            icon: 'pi pi-fw pi-wallet', 
-                            items: [
-                                {
-                                    label: 'Receitas', 
-                                    icon: 'pi pi-fw pi-arrow-up', 
-                                    to: '/financeiro/receitas',
-                                    requiredFeature: null
-                                },
-                                {
-                                    label: 'Despesas', 
-                                    icon: 'pi pi-fw pi-arrow-down', 
-                                    to: '/financeiro/despesas',
-                                    requiredFeature: null
-                                }
-                            ]
-                        },
-                        {
-                            label: 'Pacientes', 
-                            icon: 'pi pi-fw pi-user', 
-                            to: '/pacientes',
-                            requiredFeature: null
-                        },
-                        // {
-                        //     label: 'Agendamentos', 
-                        //     icon: 'pi pi-fw pi-calendar', 
-                        //     to: '/agendamentos',
-                        //     requiredFeature: null
-                        // },
-                        {
-                            label: 'Agendamentos', 
-                            icon: 'pi pi-fw pi-calendar-plus', 
-                            to: '/agendamentos',
-                            requiredFeature: null
-                        },
-                        {
-                            label: 'Encontre Psicólogo', 
-                            icon: 'pi pi-fw pi-user-edit', 
-                            to: '/encontre-psicologo',
-                            requiredFeature: null
-                        },
-                        {
-                            label: 'Arquivos', 
-                            icon: 'pi pi-fw pi-file-word', 
-                            to: '/modelos-arquivos',
-                            requiredFeature: null
-                        },
-                    ]
-                },
-                {
-                    label: 'Configurações',
-                    items: [
-                        {
-                            label: 'Geral', 
-                            icon: 'pi pi-fw pi-cog', 
-                            items: [
-                                {
-                                    label: 'Configurações', 
-                                    icon: 'pi pi-fw pi-cog', 
-                                    to: '/configuracoes',
-                                },
-                                {
-                                    label: 'FAQ - Dúvidas', 
-                                    icon: 'pi pi-fw pi-question-circle', 
-                                    to: '/faq',
-                                }
-                            ]
-                        },
-                    ]
-                }
-            ];
+            // Se não tem menu carregado, retornar array vazio
+            if (!this.menuData || this.menuData.length === 0) {
+                return [];
+            }
 
-            return baseMenu;
+            // Filtrar menu baseado em requiredFeature
+            return this.filterMenuByFeatures(this.menuData);
         }
     },
     methods: {
@@ -138,6 +63,65 @@ export default {
             } catch (error) {
                 console.error('Erro ao carregar informações do plano:', error);
             }
+        },
+        
+        // Carregar menu do localStorage ou buscar do servidor
+        async loadMenu() {
+            try {
+                // Tentar carregar do localStorage primeiro
+                const menuFromStorage = localStorage.getItem('menu');
+                if (menuFromStorage) {
+                    this.menuData = JSON.parse(menuFromStorage);
+                    return;
+                }
+                
+                // Se não tem no localStorage, buscar do servidor
+                // Isso só acontece se o usuário não fez login recente
+                if (this.planStore.planoId) {
+                    await this.fetchMenuFromServer();
+                }
+            } catch (error) {
+                console.error('Erro ao carregar menu:', error);
+                this.menuData = [];
+            }
+        },
+        
+        // Buscar menu do servidor
+        async fetchMenuFromServer() {
+            try {
+                const response = await api.get('/menu');
+                if (response.data && response.data.menu) {
+                    this.menuData = response.data.menu;
+                    localStorage.setItem('menu', JSON.stringify(response.data.menu));
+                }
+            } catch (error) {
+                console.error('Erro ao buscar menu do servidor:', error);
+                this.menuData = [];
+            }
+        },
+        
+        // Filtrar menu baseado em requiredFeature
+        filterMenuByFeatures(menuItems) {
+            return menuItems.map(item => {
+                // Se o item tem requiredFeature, verificar se o plano tem acesso
+                if (item.requiredFeature && !this.planStore.temAcessoModulo(item.requiredFeature)) {
+                    return null; // Não mostrar item
+                }
+                
+                // Se tem subitens, filtrar recursivamente
+                if (item.items && item.items.length > 0) {
+                    const filteredItems = this.filterMenuByFeatures(item.items).filter(i => i !== null);
+                    if (filteredItems.length === 0) {
+                        return null; // Se não tem subitens visíveis, não mostrar o pai
+                    }
+                    return {
+                        ...item,
+                        items: filteredItems
+                    };
+                }
+                
+                return item;
+            }).filter(item => item !== null);
         },
         
         goToUpgrade() {
@@ -173,15 +157,27 @@ export default {
         // Carregar informações do plano
         await this.loadPlanInfo();
         
+        // Carregar menu
+        await this.loadMenu();
+        
         // Escutar mudanças de plano em tempo real
         window.addEventListener('plan-updated', async () => {
             await this.loadPlanInfo();
+            await this.loadMenu(); // Recarregar menu quando plano mudar
+        });
+        
+        // Escutar atualização de menu
+        window.addEventListener('menu-updated', (event) => {
+            if (event.detail) {
+                this.menuData = event.detail;
+            }
         });
     },
 
     beforeUnmount() {
-        // Remover listener ao desmontar
+        // Remover listeners ao desmontar
         window.removeEventListener('plan-updated', this.loadPlanInfo);
+        window.removeEventListener('menu-updated', this.loadMenu);
     }
 };
 </script>

@@ -318,6 +318,9 @@ export default {
                     dadosUsuario
                 );
 
+                // Recarregar menu após upgrade
+                await atualizarMenuAposUpgrade();
+
                 // Marcar pagamento como sucesso e armazenar nome do plano
                 pagamentoSucesso.value = true;
                 planoContratado.value = selectedPlan.value.nome;
@@ -330,6 +333,23 @@ export default {
                     detail: error.message || 'Erro ao processar pagamento. Tente novamente.',
                     life: 5000
                 });
+            }
+        };
+
+        // Atualizar menu após upgrade
+        const atualizarMenuAposUpgrade = async () => {
+            try {
+                const api = (await import('@/utils/axios')).default;
+                const response = await api.get('/menu');
+                if (response.data && response.data.menu) {
+                    localStorage.setItem('menu', JSON.stringify(response.data.menu));
+                    // Disparar evento para atualizar menu no AppMenu
+                    window.dispatchEvent(new CustomEvent('menu-updated', { 
+                        detail: response.data.menu 
+                    }));
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar menu após upgrade:', error);
             }
         };
 
@@ -366,6 +386,7 @@ export default {
             handleStepChange,
             processarPagamento,
             irParaDashboard,
+            atualizarMenuAposUpgrade,
             loading: asaas.loading
         };
     }
