@@ -364,7 +364,7 @@
                     </TabPanel>
 
                     <!-- Tab Financeiro -->
-                    <TabPanel header="Financeiro" v-if="isPlanoProfissional && $hasAccessToModule('gestao_financeira')">
+                    <TabPanel header="Financeiro" v-if="$hasAccessToModule('gestao_financeira')">
                         <FinanceiroDashboard :lazy="true" ref="financeiroDashboardRef" />
                     </TabPanel>
                 </TabView>
