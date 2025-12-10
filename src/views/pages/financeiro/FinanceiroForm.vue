@@ -80,14 +80,13 @@
                         <div class="col-12 md:col-6">
                             <div class="field">
                                 <label for="valor" class="block text-900 font-medium mb-2">Valor *</label>
-                                <InputText 
+                                <money3 
                                     id="valor"
-                                    v-model.lazy="form.valorString" 
-                                    v-money3="moneyConfig"
-                                    placeholder="0,00"
-                                    class="w-full"
+                                    v-model="form.valorNumerico"
+                                    v-bind="moneyConfig"
+                                    class="w-full p-inputtext"
                                     :class="{ 'p-invalid': errors.valor }"
-                                    fluid
+                                    placeholder="0,00"
                                 />
                                 <small v-if="errors.valor" class="p-error">{{ errors.valor }}</small>
                             </div>
@@ -224,7 +223,7 @@
         :style="{ width: '400px' }"
     >
         <div class="flex flex-column gap-3">
-            <p class="text-900">Como deseja dividir o valor de <strong>{{ form.valorString || 'R$ 0,00' }}</strong> em <strong>{{ form.qtd_parcelas }} parcelas</strong>?</p>
+            <p class="text-900">Como deseja dividir o valor de <strong>R$ {{ formatarValor(form.valorNumerico) }}</strong> em <strong>{{ form.qtd_parcelas }} parcelas</strong>?</p>
             
             <div class="flex flex-column gap-2">
                 <div class="flex align-items-center">
@@ -234,7 +233,7 @@
                         value="manter" 
                     />
                     <label for="manter" class="ml-2">
-                        <strong>Manter valor</strong> - Cada parcela terá {{ form.valorString || 'R$ 0,00' }}
+                        <strong>Manter valor</strong> - Cada parcela terá R$ {{ formatarValor(form.valorNumerico) }}
                     </label>
                 </div>
                 
@@ -371,11 +370,13 @@
 
 <script>
 import DatePicker from 'primevue/datepicker';
+import { Money3Component } from 'v-money3';
 
 export default {
     name: 'FinanceiroForm',
     components: {
-        DatePicker
+        DatePicker,
+        money3: Money3Component
     },
     data() {
         return {
@@ -406,7 +407,7 @@ export default {
             form: {
                 tipo: null,
                 categoria: '',
-                valorString: '',
+                valorNumerico: 0,
                 data: null,
                 descricao: '',
                 tipo_pagamento: null,
@@ -428,7 +429,8 @@ export default {
                 allowBlank: false,
                 minimumNumberOfCharacters: 0,
                 shouldRound: true,
-                focusOnRight: false
+                focusOnRight: false,
+                masked: false
             },
             tiposPagamento: [
                 { label: 'À Vista', value: 'avista' },
@@ -470,7 +472,7 @@ export default {
             }
             this.atualizarParcelas();
         },
-        'form.valorString'() {
+        'form.valorNumerico'() {
             this.atualizarParcelas();
         },
         'form.tipo_pagamento'() {
@@ -510,7 +512,7 @@ export default {
         limparForm() {
             this.form.tipo = null;
             this.form.categoria = '';
-            this.form.valorString = '';
+            this.form.valorNumerico = 0;
             this.form.data = null;
             this.form.descricao = '';
             this.form.tipo_pagamento = null;
@@ -523,12 +525,8 @@ export default {
         },
         
         getValorNumerico() {
-            if (!this.form.valorString) return 0;
-            const valorLimpo = this.form.valorString
-                .replace(/R\$\s?/g, '')
-                .replace(/\./g, '')
-                .replace(',', '.');
-            return parseFloat(valorLimpo) || 0;
+            // Com o componente money3, o valor já vem como número
+            return this.form.valorNumerico || 0;
         },
         
         validarForm() {
@@ -583,11 +581,14 @@ export default {
                 this.form.tipo = transacao.tipo;
                 this.form.categoria = transacao.categoria;
                 
-                // v-money3 trabalha com string, então formatamos o valor
+                // Converter valor para número (pode vir como string do backend)
                 if (transacao.valor) {
-                    this.form.valorString = this.formatarValorParaMoney3(transacao.valor);
+                    const valorNumerico = typeof transacao.valor === 'string' 
+                        ? parseFloat(transacao.valor.replace(',', '.')) 
+                        : parseFloat(transacao.valor);
+                    this.form.valorNumerico = isNaN(valorNumerico) ? 0 : valorNumerico;
                 } else {
-                    this.form.valorString = '';
+                    this.form.valorNumerico = 0;
                 }
                 
                 this.form.data = new Date(transacao.data);
@@ -696,8 +697,15 @@ export default {
                         detail: 'Transação atualizada com sucesso',
                         life: 3000
                     });
-                    // Não redirecionar, apenas atualizar a tela
-                    await this.carregarTransacao(this.$route.params.id);
+                    
+                    // Redirecionar para a listagem baseada no tipo
+                    if (this.form.tipo === 'receita') {
+                        this.$router.push('/financeiro/receitas');
+                    } else if (this.form.tipo === 'despesa') {
+                        this.$router.push('/financeiro/despesas');
+                    } else {
+                        this.$router.push('/financeiro/receitas');
+                    }
                 } else {
                     await this.$financeirosService.cadastrar(dados);
                     this.$toast.add({
@@ -774,15 +782,6 @@ export default {
                     });
                 }
             }
-        },
-        
-        formatarValorParaMoney3(valor) {
-            if (!valor && valor !== 0) return '';
-            // Converter para número caso seja string
-            const valorNumerico = typeof valor === 'string' ? parseFloat(valor) : valor;
-            // Verificar se é um número válido
-            if (isNaN(valorNumerico)) return '';
-            return valorNumerico.toFixed(2).replace('.', ',');
         },
         
         confirmarDivisao() {
