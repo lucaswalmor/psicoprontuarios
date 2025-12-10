@@ -159,14 +159,12 @@
                     </div>
                     <div class="col-12 md:col-6">
                         <label for="data_inicio_tratamento" class="text-600 mb-2 block">Início do Tratamento</label>
-                        <Calendar 
+                        <InputMask 
                             id="data_inicio_tratamento" 
                             v-model="paciente.data_inicio_tratamento" 
-                            dateFormat="dd/mm/yy"
                             placeholder="dd/mm/aaaa"
-                            :manualInput="false"
-                            showIcon
                             class="w-full"
+                            mask="99/99/9999"
                         />
                     </div>
                     <div class="col-12 md:col-6">

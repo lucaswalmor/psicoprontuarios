@@ -2,22 +2,18 @@
     <div class="upgrade-stepper">
         <div class="stepper-container">
             <div 
-                v-for="(step, index) in steps" 
+                v-for="step in steps" 
                 :key="step.id"
                 class="step-item"
                 :class="{ 
                     'active': currentStep === step.id,
                     'completed': currentStep > step.id,
-                    'clickable': step.id < currentStep
+                    'clickable': canClickStep(step.id)
                 }"
-                @click="step.id < currentStep ? $emit('step-change', step.id) : null"
+                @click="handleStepClick(step.id)"
             >
-                <div class="step-icon">
-                    <i :class="step.icon"></i>
-                </div>
                 <div class="step-content">
                     <h4 class="step-title">{{ step.title }}</h4>
-                    <div class="step-line" v-if="index < steps.length - 1"></div>
                 </div>
             </div>
         </div>
@@ -35,9 +31,31 @@ export default {
         steps: {
             type: Array,
             required: true
+        },
+        selectedPlan: {
+            type: Object,
+            default: null
         }
     },
-    emits: ['step-change']
+    emits: ['step-change'],
+    methods: {
+        canClickStep(stepId) {
+            // Pode clicar para voltar (step anterior)
+            if (stepId < this.currentStep) {
+                return true;
+            }
+            // Pode clicar para avançar se estiver no step 1 e tiver plano selecionado
+            if (stepId === 2 && this.currentStep === 1 && this.selectedPlan) {
+                return true;
+            }
+            return false;
+        },
+        handleStepClick(stepId) {
+            if (this.canClickStep(stepId)) {
+                this.$emit('step-change', stepId);
+            }
+        }
+    }
 };
 </script>
 
@@ -64,91 +82,46 @@ export default {
     max-width: 200px;
 }
 
-.step-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: var(--surface-card);
-    border: 3px solid var(--surface-border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1rem;
-    transition: all 0.3s ease;
-    position: relative;
-    z-index: 2;
-}
-
-.step-icon i {
-    font-size: 1.5rem;
-    color: var(--text-color-secondary);
-    transition: color 0.3s ease;
-}
-
 .step-content {
     text-align: center;
     position: relative;
     width: 100%;
+    padding: 1rem 0;
 }
 
 .step-title {
     margin: 0;
-    font-size: 0.875rem;
+    font-size: 1rem;
     font-weight: 600;
     color: var(--text-color-secondary);
     transition: color 0.3s ease;
-}
-
-.step-line {
-    position: absolute;
-    top: 30px;
-    left: 50%;
-    width: 100%;
-    height: 2px;
-    background: var(--surface-border);
-    transform: translateX(-50%);
-    z-index: 1;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    background: var(--surface-card);
+    border: 2px solid var(--surface-border);
+    transition: all 0.3s ease;
 }
 
 /* Estados dos steps */
-.step-item.active .step-icon {
-    background: var(--primary-color);
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(var(--primary-color-rgb), 0.2);
-}
-
-.step-item.active .step-icon i {
-    color: white;
-}
-
 .step-item.active .step-title {
     color: var(--primary-color);
     font-weight: 700;
-}
-
-.step-item.completed .step-icon {
-    background: var(--primary-color);
     border-color: var(--primary-color);
-}
-
-.step-item.completed .step-icon i {
-    color: white;
+    background: rgba(var(--primary-color-rgb), 0.1);
 }
 
 .step-item.completed .step-title {
     color: var(--primary-color);
-}
-
-.step-item.completed .step-line {
-    background: var(--primary-color);
+    border-color: var(--primary-color);
 }
 
 .step-item.clickable {
     cursor: pointer;
 }
 
-.step-item.clickable:hover .step-icon {
-    transform: scale(1.05);
+.step-item.clickable:hover .step-title {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Responsive */
@@ -163,17 +136,8 @@ export default {
         width: 100%;
     }
     
-    .step-line {
-        display: none;
-    }
-    
-    .step-icon {
-        width: 50px;
-        height: 50px;
-    }
-    
-    .step-icon i {
-        font-size: 1.25rem;
+    .step-title {
+        width: 100%;
     }
 }
 </style> 

@@ -1,29 +1,44 @@
 <template>
-    <Card class="mb-5">
-        <template #content>
-            <div>
-                <!-- Cabeçalho com plano atual -->
-                <div class="current-plan-header">
-                    <div class="container">
-                        <div class="plan-info">
-                            <h1>Upgrade de Plano</h1>
-                            <div class="current-plan-badge" :class="currentPlanClass">
-                                <i class="pi pi-crown"></i>
-                                <span class="text-800">Você está no plano {{ currentPlanName }}</span>
-                            </div>
+    <div class="upgrade-page-container mb-4">
+        <div class="upgrade-layout-grid">
+            <!-- Card Esquerda -->
+            <div class="left-card">
+                <div class="card-content-left">
+                    <!-- Header -->
+                    <div class="plan-info-left">
+                        <h1>Upgrade de Plano</h1>
+                        <div class="current-plan-badge-left" :class="currentPlanClass">
+                            <i class="pi pi-crown"></i>
+                            <span>Você está no plano {{ currentPlanName }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Mensagem de Trial (apenas no step 2) -->
+                    <div class="trial-notice-left">
+                        <i class="pi pi-gift"></i>
+                        <div class="trial-content-left">
+                            <h4>🎉 7 dias gratuitos para teste!</h4>
+                            <p>Você terá acesso completo ao plano por 7 dias sem cobrança. Após esse período, a cobrança será automática. Pode cancelar a qualquer momento dentro dos 7 dias.</p>
+                        </div>
+                    </div>
+
+                    <!-- Resumo do Plano (apenas no step 2) -->
+                    <div v-if="currentStep === 2 && selectedPlan && !pagamentoSucesso" class="plan-summary-left">
+                        <div class="summary-item-left">
+                            <span class="label">Plano Atual:</span>
+                            <span class="value">{{ currentPlanName }}</span>
+                        </div>
+                        <div class="summary-item-left">
+                            <span class="label">Novo Plano:</span>
+                            <span class="value">{{ selectedPlan?.nome }}</span>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="container">
-                    <!-- Stepper de progresso (oculto quando pagamentoSucesso) -->
-                    <UpgradeStepper 
-                        v-if="!pagamentoSucesso"
-                        :current-step="currentStep" 
-                        :steps="steps"
-                        @step-change="handleStepChange"
-                    />
-
+            <!-- Card Direita (maior) -->
+            <div class="right-card">
+                <div class="card-content-right">
                     <!-- Mensagem de sucesso após pagamento -->
                     <div v-if="pagamentoSucesso" class="sucesso-container">
                         <SucessoPagamento 
@@ -32,10 +47,18 @@
                         />
                     </div>
 
-                    <!-- Conteúdo baseado no step atual (oculto quando pagamentoSucesso) -->
-                    <div v-else class="upgrade-content4">
+                    <!-- Conteúdo principal (oculto quando pagamentoSucesso) -->
+                    <div v-else>
+                        <!-- Stepper de progresso -->
+                        <UpgradeStepper 
+                            :current-step="currentStep" 
+                            :steps="steps"
+                            :selected-plan="selectedPlan"
+                            @step-change="handleStepChange"
+                        />
+
                         <!-- Step 1: Escolha do plano -->
-                        <div v-if="currentStep === 1" class="step-content pt-6">
+                        <div v-if="currentStep === 1" class="step-content">
                             <h2>Escolha seu novo plano</h2>
                             <p class="step-description">
                                 Selecione o plano que melhor atende às suas necessidades
@@ -51,99 +74,22 @@
                                     @select="selectPlan"
                                 />
                             </div>
-
-                            <div class="step-actions">
-                                <Button 
-                                    label="Continuar" 
-                                    :disabled="!selectedPlan"
-                                    @click="nextStep"
-                                    class="p-button-primary"
-                                />
-                            </div>
                         </div>
 
-                        <!-- Step 2: Confirmação -->
+                        <!-- Step 2: Pagamento -->
                         <div v-if="currentStep === 2" class="step-content">
-                            <h2>Confirme sua escolha</h2>
-                            <p class="step-description">
-                                Revise os detalhes do seu upgrade
-                            </p>
-
-                            <!-- Aviso sobre período gratuito -->
-                            <div class="trial-notice">
-                                <i class="pi pi-gift"></i>
-                                <div class="trial-content">
-                                    <h4>🎉 7 dias gratuitos para teste!</h4>
-                                    <p>Você terá acesso completo ao plano por 7 dias sem cobrança. Após esse período, a cobrança será automática. Pode cancelar a qualquer momento dentro dos 7 dias.</p>
-                                </div>
-                            </div>
-
-                            <div class="confirmation-card">
-                                <div class="plan-summary">
-                                    <h3>Resumo do Upgrade</h3>
-                                    <div class="summary-item">
-                                        <span class="label">Plano Atual:</span>
-                                        <span class="value">{{ currentPlanName }}</span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="label">Novo Plano:</span>
-                                        <span class="value">{{ selectedPlan?.nome }}</span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="label">Valor:</span>
-                                        <span class="value price">{{ selectedPlan?.preco }}</span>
-                                    </div>
-                                </div>
-
-                                <div class="plan-features">
-                                    <h4>Recursos incluídos:</h4>
-                                    <ul>
-                                        <li v-for="feature in selectedPlan?.features" :key="feature">
-                                            <i class="pi pi-check"></i>
-                                            {{ feature }}
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div class="step-actions">
-                                <Button 
-                                    label="Voltar" 
-                                    @click="previousStep"
-                                    class="p-button-secondary"
-                                />
-                                <Button 
-                                    label="Prosseguir para Pagamento" 
-                                    @click="nextStep"
-                                    class="p-button-primary"
-                                />
-                            </div>
-                        </div>
-
-                        <!-- Step 3: Pagamento -->
-                        <div v-if="currentStep === 3" class="step-content">
-                            <h2>Pagamento</h2>
+                            <h2>Finalizar Pagamento</h2>
                             <p class="step-description">
                                 Complete o pagamento para ativar seu novo plano
                             </p>
 
-                            <div class="payment-section">
-                                <!-- Resumo do Plano -->
-                                <div class="plan-summary-card mb-4">
-                                    <div class="flex justify-content-between align-items-center p-4 rounded">
-                                        <div>
-                                            <h3 class="m-0 font-semibold">{{ selectedPlan?.nome }}</h3>
-                                            <p class="m-0 text-600 text-sm">{{ selectedPlan?.descricao }}</p>
-                                        </div>
-                                        <span class="text-2xl font-bold text-primary">{{ selectedPlan?.preco }}</span>
-                                    </div>
+                            <div class="payment-form-container">
+                                <div class="payment-form-card">
+                                    <CartaoAsaas
+                                        :loading="loading"
+                                        @submit="processarPagamento"
+                                    />
                                 </div>
-
-                                <!-- Formulário de Cartão -->
-                                <CartaoAsaas
-                                    :loading="loading"
-                                    @submit="processarPagamento"
-                                />
                             </div>
 
                             <div class="step-actions">
@@ -155,17 +101,17 @@
                                 />
                             </div>
                         </div>
-                    </div>
 
-                    <!-- FAQ Section (oculto quando pagamentoSucesso) -->
-                    <div v-if="!pagamentoSucesso" class="faq-section mb-5">
-                        <h3>Perguntas Frequentes</h3>
-                        <FaqModal />
+                        <!-- FAQ Section -->
+                        <div class="faq-section">
+                            <h3>Perguntas Frequentes</h3>
+                            <FaqModal />
+                        </div>
                     </div>
                 </div>
             </div>
-        </template>
-    </Card>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -201,9 +147,8 @@ export default {
         const planoContratado = ref(null);
         
         const steps = [
-            { id: 1, title: 'Escolha do Plano', icon: 'pi pi-list' },
-            { id: 2, title: 'Confirmação', icon: 'pi pi-check-circle' },
-            { id: 3, title: 'Pagamento', icon: 'pi pi-credit-card' }
+            { id: 1, title: 'Escolha do Plano' },
+            { id: 2, title: 'Pagamento' }
         ];
 
         // Computed properties
@@ -286,6 +231,10 @@ export default {
         // Methods
         const selectPlan = (plan) => {
             selectedPlan.value = plan;
+            // Ir automaticamente para a próxima etapa ao selecionar um plano
+            if (currentStep.value === 1) {
+                nextStep();
+            }
         };
 
         const nextStep = () => {
@@ -394,46 +343,135 @@ export default {
 </script>
 
 <style scoped>
-.current-plan-header {
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-600));
-    color: white;
-    padding: 2rem 0;
+
+
+.upgrade-layout-grid {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 1.5rem;
+    margin: 0 auto;
+}
+
+/* Card Esquerda */
+.left-card {
+    background: var(--surface-card);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--surface-border);
+    height: fit-content;
+    position: sticky;
+    top: 1.5rem;
+}
+
+.card-content-left {
+    padding: 2rem;
+}
+
+.plan-info-left {
+    text-align: center;
     margin-bottom: 2rem;
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1rem;
+.plan-info-left h1 {
+    margin: 0 0 1rem 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.current-plan-badge-left {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-600));
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.current-plan-badge-left i {
+    color: #ffd700;
+}
+
+.trial-notice-left {
+    background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
+    border: 2px solid #4caf50;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.1);
+}
+
+.trial-notice-left i {
+    color: #4caf50;
+    font-size: 1.5rem;
+    margin-top: 0.25rem;
+    flex-shrink: 0;
+}
+
+.trial-content-left h4 {
+    margin: 0 0 0.5rem 0;
+    color: #2e7d32;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.trial-content-left p {
+    margin: 0;
+    color: #388e3c;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.plan-summary-left {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--surface-border);
+}
+
+.summary-item-left {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--surface-border);
+}
+
+.summary-item-left:last-child {
+    border-bottom: none;
+}
+
+.summary-item-left .label {
+    font-weight: 600;
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+.summary-item-left .value {
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+/* Card Direita */
+.right-card {
+    background: var(--surface-card);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--surface-border);
+}
+
+.card-content-right {
+    padding: 2rem;
 }
 
 .sucesso-container {
     padding: 2rem 0;
-}
-
-.plan-info {
-    text-align: center;
-}
-
-.plan-info h1 {
-    margin: 0 0 1rem 0;
-    font-size: 2.5rem;
-    font-weight: 700;
-}
-
-.current-plan-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 0.75rem 1.5rem;
-    border-radius: 50px;
-    font-weight: 600;
-    backdrop-filter: blur(10px);
-}
-
-.current-plan-badge i {
-    color: #ffd700;
 }
 
 .upgrade-content {
@@ -448,13 +486,14 @@ export default {
 .step-content h2 {
     text-align: center;
     margin-bottom: 0.5rem;
+    margin-top: 1rem;
     color: var(--text-color);
 }
 
 .step-description {
     text-align: center;
     color: var(--text-color-secondary);
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 .plans-grid {
@@ -462,7 +501,7 @@ export default {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
     margin-bottom: 2rem;
-    padding-top: 1rem;
+    margin-top: 1rem;
     position: relative;
 }
 
@@ -539,6 +578,22 @@ export default {
     color: var(--primary-color);
 }
 
+.payment-form-container {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0;
+}
+
+.payment-form-card {
+    background: var(--surface-card);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--surface-border);
+    max-width: 600px;
+    width: 100%;
+}
+
 .payment-section {
     max-width: 600px;
     margin: 0 auto;
@@ -554,46 +609,43 @@ export default {
     color: var(--text-color);
 }
 
-.trial-notice {
-    background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
-    border: 2px solid #4caf50;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.1);
-}
-
-.trial-notice i {
-    color: #4caf50;
-    font-size: 1.5rem;
-    margin-top: 0.25rem;
-}
-
-.trial-content h4 {
-    margin: 0 0 0.5rem 0;
-    color: #2e7d32;
-    font-size: 1.1rem;
-    font-weight: 700;
-}
-
-.trial-content p {
-    margin: 0;
-    color: #388e3c;
-    font-size: 0.95rem;
-    line-height: 1.5;
-}
 
 /* Responsive */
+@media (max-width: 1024px) {
+    .upgrade-layout-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .left-card {
+        position: relative;
+        top: 0;
+    }
+}
+
 @media (max-width: 768px) {
-    .plan-info h1 {
-        font-size: 2rem;
+    .upgrade-page-container {
+        padding: 1rem;
+    }
+    
+    .card-content-left,
+    .card-content-right {
+        padding: 1.5rem;
+    }
+    
+    .plan-info-left h1 {
+        font-size: 1.5rem;
     }
     
     .plans-grid {
         grid-template-columns: 1fr;
+    }
+    
+    .payment-form-container {
+        margin: 1.5rem 0;
+    }
+    
+    .payment-form-card {
+        padding: 1.5rem;
     }
     
     .step-actions {
@@ -601,14 +653,18 @@ export default {
         align-items: center;
     }
     
-    .trial-notice {
+    .trial-notice-left {
         flex-direction: column;
         text-align: center;
         gap: 0.75rem;
     }
     
-    .trial-notice i {
+    .trial-notice-left i {
         margin-top: 0;
+    }
+    
+    .plan-price-large {
+        font-size: 2rem;
     }
 }
 </style> 

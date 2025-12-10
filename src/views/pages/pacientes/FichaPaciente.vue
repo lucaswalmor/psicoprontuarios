@@ -577,7 +577,19 @@ export default {
         await this.carregarDados();
         // Carregar estatísticas imediatamente
         await this.carregarEstatisticas();
-        this.activeTab = 0;
+        
+        // Verificar se há query param para definir a tab ativa
+        const tabParam = this.$route.query.tab;
+        if (tabParam !== undefined) {
+            const tabIndex = parseInt(tabParam);
+            if (!isNaN(tabIndex) && tabIndex >= 0 && tabIndex <= 5) {
+                this.activeTab = tabIndex;
+            } else {
+                this.activeTab = 0;
+            }
+        } else {
+            this.activeTab = 0;
+        }
     },
     methods: {
         async carregarDados() {

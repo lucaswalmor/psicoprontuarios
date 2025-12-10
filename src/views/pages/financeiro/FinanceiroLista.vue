@@ -59,7 +59,7 @@
                     :value="transacoes" 
                     :loading="loading" 
                     :paginator="true" 
-                    :rows="10"
+                    v-model:rows="rowsPerPage"
                     :rowsPerPageOptions="[10, 20, 50]" 
                     :totalRecords="totalRecords" 
                     :lazy="true" 
@@ -224,6 +224,9 @@ export default {
             drawerFilterFinanceiro: false,
             hasFiltros: false,
             limparCampos: false,
+            rowsPerPage: 10,
+            totalRecebidasPagas: 0,
+            totalPrevistas: 0,
             filtros: {
                 tipo: null,
                 categoria: null,
@@ -244,34 +247,15 @@ export default {
             }
             return 'receita'; // default
         },
-        totalRecebidasPagas() {
-            if (!this.transacoes || this.transacoes.length === 0) {
-                return 0;
-            }
-            return this.transacoes
-                .filter(transacao => transacao.paga === true || transacao.paga === 1)
-                .reduce((total, transacao) => {
-                    return total + (parseFloat(transacao.valor) || 0);
-                }, 0);
-        },
-        totalPrevistas() {
-            if (!this.transacoes || this.transacoes.length === 0) {
-                return 0;
-            }
-            return this.transacoes
-                .filter(transacao => !transacao.paga || transacao.paga === false || transacao.paga === 0)
-                .reduce((total, transacao) => {
-                    return total + (parseFloat(transacao.valor) || 0);
-                }, 0);
-        }
     },
     watch: {
         // Observar mudanças na rota para recarregar dados quando alternar entre receitas/despesas
         '$route.path'() {
             // Atualizar tipo no filtro quando a rota mudar
             this.filtros.tipo = this.tipoDetectado;
-            // Resetar página para 1
+            // Resetar página para 1 e rows para padrão
             this.filtros.page = 1;
+            this.rowsPerPage = 10;
             // Recarregar transações
                 
             if (this.$hasAccessToModule('gestao_financeira')) {
@@ -284,6 +268,7 @@ export default {
             if (this.filtros.tipo !== newVal) {
                 this.filtros.tipo = newVal;
                 this.filtros.page = 1;
+                this.rowsPerPage = 10;
 
                 if (this.$hasAccessToModule('gestao_financeira')) {
                     this.carregarTransacoes();
@@ -378,6 +363,7 @@ export default {
                 
                 const params = {
                     page: this.filtros.page,
+                    per_page: this.rowsPerPage,
                     tipo: tipo, // Sempre enviar o tipo detectado pela URL
                     ...this.filtros
                 };
@@ -399,6 +385,17 @@ export default {
 
                 this.transacoes = response.data.data;
                 this.totalRecords = response.data.pagination.total;
+                
+                // Atualizar totais vindos do backend (calculados sobre TODAS as transações do período)
+                if (response.data.totais) {
+                    this.totalRecebidasPagas = response.data.totais.total_recebidas_pagas || 0;
+                    this.totalPrevistas = response.data.totais.total_previstas || 0;
+                } else {
+                    // Fallback caso o backend não retorne os totais
+                    this.totalRecebidasPagas = 0;
+                    this.totalPrevistas = 0;
+                }
+                
                 // Limpar seleção ao recarregar
                 this.selectedTransacoes = [];
             } catch (error) {
@@ -416,6 +413,10 @@ export default {
 
         onPageChange(event) {
             this.filtros.page = event.page + 1;
+            // Atualizar rowsPerPage se mudou
+            if (event.rows !== this.rowsPerPage) {
+                this.rowsPerPage = event.rows;
+            }
             this.selectedTransacoes = []; // Limpar seleção ao mudar de página
             this.carregarTransacoes();
         },
@@ -531,6 +532,7 @@ export default {
                 data_final: this.getDataInicioFim().dataFinal,
                 page: 1
             };
+            this.rowsPerPage = 10; // Resetar para o padrão
             this.hasFiltros = false;
             this.limparCampos = true;
             // Resetar limparCampos após um pequeno delay para permitir que o drawer detecte

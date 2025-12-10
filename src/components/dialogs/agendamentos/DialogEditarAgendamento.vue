@@ -12,7 +12,7 @@
             <div class="col-12" v-else>
                 <div class="col-12">
                     <label class="block text-900 font-medium mb-2">Paciente</label>
-                    <InputText :modelValue="agendamentoData.nome_paciente" @update:modelValue="agendamentoData.nome_paciente = $event" class="w-full" readonly />
+                    <InputText v-model="agendamento.nome_paciente" class="w-full" readonly />
                 </div>
 
                 <div class="col-12">
@@ -30,7 +30,7 @@
 
                 <div class="col-12">
                     <label class="block text-900 font-medium mb-2">Hora da Consulta</label>
-                    <Dropdown :modelValue="agendamentoData.hora_consulta" @update:modelValue="agendamentoData.hora_consulta = $event" :options="horasMinutos" optionLabel="label"
+                    <Dropdown v-model="agendamento.hora_consulta" :options="horasMinutos" optionLabel="label"
                         optionValue="value" placeholder="Selecione o horário" class="w-full" />
                 </div>
             </div>
@@ -186,7 +186,7 @@ export default {
                 
                 const dadosAgendamento = {
                     data_consulta: dataFormatada,
-                    hora_consulta: this.agendamentoData.hora_consulta,
+                    hora_consulta: this.agendamento.hora_consulta,
                     data_notificacao: this.formatarDataNotificacao(this.agendamento.data_consulta),
                     hora_notificacao: "",
                     financeiro: {
@@ -200,7 +200,7 @@ export default {
                     enviar_notificacoes_para: "psicologo"
                 };
 
-                await this.$agendamentosService.update(this.agendamentoData.id, dadosAgendamento);
+                await this.$agendamentosService.update(this.agendamento.id, dadosAgendamento);
 
                 this.$toast.add({
                     severity: 'success',
@@ -229,7 +229,7 @@ export default {
             this.isLoadingExcluir = true;
 
             try {
-                await this.$agendamentosService.delete(this.agendamentoData.id);
+                await this.$agendamentosService.delete(this.agendamento.id);
 
                 this.$toast.add({
                     severity: 'success',
@@ -258,7 +258,7 @@ export default {
             this.isLoadingExcluirTodos = true;
 
             try {
-                await this.$agendamentosService.deleteAllByPatient(this.agendamentoData.codigo_agendamento);
+                await this.$agendamentosService.deleteAllByPatient(this.agendamento.codigo_agendamento);
 
                 this.$toast.add({
                     severity: 'success',
@@ -312,7 +312,7 @@ export default {
                 }
             }
 
-            if (!this.agendamentoData.hora_consulta) {
+            if (!this.agendamento.hora_consulta) {
                 this.$toast.add({
                     severity: 'warn',
                     summary: 'Atenção',

@@ -14,6 +14,7 @@ import { loadThemeConfig, applyThemeConfig } from '@/utils/themeStorage';
 import '/node_modules/primeflex/primeflex.css';
 import services from '@/services';
 import vAcesso from '@/directives/vAcesso';
+import money from 'v-money3';
 
 // Carregar configurações iniciais do localStorage
 const loadInitialConfig = () => {
@@ -73,6 +74,7 @@ app.use(PrimeVue, {
 app.use(ToastService);
 app.use(ConfirmationService);
 app.use(vAcesso);
+app.use(money);
 
 // Configurar services globalmente
 app.config.globalProperties.$pacientesService = services.pacientesService;

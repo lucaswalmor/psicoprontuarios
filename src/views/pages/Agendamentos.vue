@@ -357,6 +357,12 @@ export default {
             if (event && event.month !== undefined && event.year !== undefined) {
                 this.mesVisualizado = event.month;
                 this.anoVisualizado = event.year;
+                
+                // Atualizar marcações após mudança de mês
+                // Usar setTimeout para garantir que o DOM foi atualizado pelo PrimeVue
+                setTimeout(() => {
+                    this.marcarDatasComAgendamento();
+                }, 100);
             }
         },
         
@@ -376,9 +382,11 @@ export default {
                 if (cells.length === 0) return;
                 
                 const datasComAgendamento = this.datasComAgendamento;
-                const currentDate = this.dataSelecionada instanceof Date ? this.dataSelecionada : new Date(this.dataSelecionada);
-                const currentYear = currentDate.getFullYear();
-                const currentMonth = currentDate.getMonth(); // 0-indexed
+                
+                // Usar o mês e ano visualizados (não a data selecionada) para marcar corretamente
+                // mesVisualizado já está no formato 1-12, então subtrair 1 para usar como índice (0-11)
+                const currentYear = this.anoVisualizado || new Date().getFullYear();
+                const currentMonth = (this.mesVisualizado || new Date().getMonth() + 1) - 1; // Converter para 0-indexed
                 
                 cells.forEach(cell => {
                     const span = cell.querySelector('span');
@@ -411,13 +419,22 @@ export default {
             const calendarElement = document.querySelector('.custom-datepicker .p-datepicker');
             if (!calendarElement) return;
             
-            const observer = new MutationObserver(() => {
-                this.marcarDatasComAgendamento();
-            });
+            // Debounce para evitar muitas chamadas
+            let timeoutId = null;
+            const debouncedMark = () => {
+                if (timeoutId) clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => {
+                    this.marcarDatasComAgendamento();
+                }, 150);
+            };
+            
+            const observer = new MutationObserver(debouncedMark);
             
             observer.observe(calendarElement, {
                 childList: true,
-                subtree: true
+                subtree: true,
+                attributes: true,
+                attributeFilter: ['class']
             });
             
             // Guardar referência do observer para limpar quando componente for desmontado

@@ -80,16 +80,14 @@
                         <div class="col-12 md:col-6">
                             <div class="field">
                                 <label for="valor" class="block text-900 font-medium mb-2">Valor *</label>
-                                <InputNumber 
-                                    v-model="form.valor" 
-                                    mode="currency" 
-                                    currency="BRL" 
-                                    locale="pt-BR"
+                                <InputText 
+                                    id="valor"
+                                    v-model.lazy="form.valorString" 
+                                    v-money3="moneyConfig"
                                     placeholder="0,00"
                                     class="w-full"
                                     :class="{ 'p-invalid': errors.valor }"
-                                    :minFractionDigits="2"
-                                    :maxFractionDigits="2"
+                                    fluid
                                 />
                                 <small v-if="errors.valor" class="p-error">{{ errors.valor }}</small>
                             </div>
@@ -146,7 +144,7 @@
                                     placeholder="Selecione o tipo de pagamento"
                                     class="w-full"
                                     :class="{ 'p-invalid': errors.tipo_pagamento }"
-                                    :disabled="!form.data || !form.valor"
+                                    :disabled="!form.data || !getValorNumerico()"
                                 />
                                 <small v-if="errors.tipo_pagamento" class="p-error">{{ errors.tipo_pagamento }}</small>
                             </div>
@@ -226,7 +224,7 @@
         :style="{ width: '400px' }"
     >
         <div class="flex flex-column gap-3">
-            <p class="text-900">Como deseja dividir o valor de <strong>R$ {{ formatarValor(form.valor) }}</strong> em <strong>{{ form.qtd_parcelas }} parcelas</strong>?</p>
+            <p class="text-900">Como deseja dividir o valor de <strong>{{ form.valorString || 'R$ 0,00' }}</strong> em <strong>{{ form.qtd_parcelas }} parcelas</strong>?</p>
             
             <div class="flex flex-column gap-2">
                 <div class="flex align-items-center">
@@ -236,7 +234,7 @@
                         value="manter" 
                     />
                     <label for="manter" class="ml-2">
-                        <strong>Manter valor</strong> - Cada parcela terá R$ {{ formatarValor(form.valor) }}
+                        <strong>Manter valor</strong> - Cada parcela terá {{ form.valorString || 'R$ 0,00' }}
                     </label>
                 </div>
                 
@@ -247,7 +245,7 @@
                         value="dividir" 
                     />
                     <label for="dividir" class="ml-2">
-                        <strong>Dividir valor</strong> - Cada parcela terá R$ {{ formatarValor(form.valor / form.qtd_parcelas) }}
+                        <strong>Dividir valor</strong> - Cada parcela terá R$ {{ formatarValor(getValorNumerico() / form.qtd_parcelas) }}
                     </label>
                 </div>
             </div>
@@ -408,7 +406,7 @@ export default {
             form: {
                 tipo: null,
                 categoria: '',
-                valor: null,
+                valorString: '',
                 data: null,
                 descricao: '',
                 tipo_pagamento: null,
@@ -416,6 +414,21 @@ export default {
                 forma_divisao: 'manter',
                 paga: false,
                 data_pagamento: null
+            },
+            moneyConfig: {
+                prefix: 'R$ ',
+                suffix: '',
+                thousands: '.',
+                decimal: ',',
+                precision: 2,
+                disableNegative: false,
+                disabled: false,
+                min: null,
+                max: null,
+                allowBlank: false,
+                minimumNumberOfCharacters: 0,
+                shouldRound: true,
+                focusOnRight: false
             },
             tiposPagamento: [
                 { label: 'À Vista', value: 'avista' },
@@ -452,12 +465,12 @@ export default {
             }
         },
         'form.qtd_parcelas'(newVal, oldVal) {
-            if (newVal > 1 && this.form.tipo_pagamento === 'aprazo' && this.form.valor && this.form.data) {
+            if (newVal > 1 && this.form.tipo_pagamento === 'aprazo' && this.getValorNumerico() && this.form.data) {
                 this.showDialogDivisao = true;
             }
             this.atualizarParcelas();
         },
-        'form.valor'() {
+        'form.valorString'() {
             this.atualizarParcelas();
         },
         'form.tipo_pagamento'() {
@@ -497,7 +510,7 @@ export default {
         limparForm() {
             this.form.tipo = null;
             this.form.categoria = '';
-            this.form.valor = null;
+            this.form.valorString = '';
             this.form.data = null;
             this.form.descricao = '';
             this.form.tipo_pagamento = null;
@@ -507,6 +520,15 @@ export default {
             this.form.data_pagamento = null;
             this.errors = {};
             this.parcelas = [];
+        },
+        
+        getValorNumerico() {
+            if (!this.form.valorString) return 0;
+            const valorLimpo = this.form.valorString
+                .replace(/R\$\s?/g, '')
+                .replace(/\./g, '')
+                .replace(',', '.');
+            return parseFloat(valorLimpo) || 0;
         },
         
         validarForm() {
@@ -521,7 +543,8 @@ export default {
                 this.errors.categoria = 'Categoria é obrigatória';
             }
             
-            if (!this.form.valor || this.form.valor <= 0) {
+            const valorNumerico = this.getValorNumerico();
+            if (!valorNumerico || valorNumerico <= 0) {
                 this.errors.valor = 'Valor deve ser maior que zero';
             }
             
@@ -543,35 +566,66 @@ export default {
         async carregarTransacao(id) {
             try {
                 const response = await this.$financeirosService.buscarPorId(id);
-                if (response.data) {
-                    const transacao = response.data;
-                    this.form.tipo = transacao.tipo;
-                    this.form.categoria = transacao.categoria;
-                    this.form.valor = transacao.valor;
-                    this.form.data = new Date(transacao.data);
-                    this.form.descricao = transacao.descricao || '';
-                    this.form.tipo_pagamento = transacao.tipo_pagamento || 'avista';
-                    this.form.qtd_parcelas = transacao.qtd_parcelas || 1;
-                    this.form.forma_divisao = transacao.forma_divisao || 'manter';
-                    this.form.paga = transacao.paga || false;
-                    // Converter data_pagamento para Date object para o DatePicker
-                    if (transacao.data_pagamento) {
-                        this.form.data_pagamento = new Date(transacao.data_pagamento);
-                    } else {
-                        this.form.data_pagamento = null;
-                    }
-                    
-                    // Se for uma transação parcelada, carregar todas as parcelas
-                    if (transacao.recorrencia_id) {
+                
+                // Verificar se a resposta foi bem-sucedida
+                if (!response || !response.data) {
+                    throw new Error('Resposta inválida do servidor');
+                }
+                
+                const transacao = response.data;
+                
+                // Verificar se a transação foi encontrada
+                if (!transacao || !transacao.id) {
+                    throw new Error('Transação não encontrada');
+                }
+                
+                // Carregar dados da transação
+                this.form.tipo = transacao.tipo;
+                this.form.categoria = transacao.categoria;
+                
+                // v-money3 trabalha com string, então formatamos o valor
+                if (transacao.valor) {
+                    this.form.valorString = this.formatarValorParaMoney3(transacao.valor);
+                } else {
+                    this.form.valorString = '';
+                }
+                
+                this.form.data = new Date(transacao.data);
+                this.form.descricao = transacao.descricao || '';
+                this.form.tipo_pagamento = transacao.tipo_pagamento || 'avista';
+                this.form.qtd_parcelas = transacao.qtd_parcelas || 1;
+                this.form.forma_divisao = transacao.forma_divisao || 'manter';
+                this.form.paga = transacao.paga || false;
+                
+                // Converter data_pagamento para Date object para o DatePicker
+                if (transacao.data_pagamento) {
+                    this.form.data_pagamento = new Date(transacao.data_pagamento);
+                } else {
+                    this.form.data_pagamento = null;
+                }
+                
+                // Se for uma transação parcelada, carregar todas as parcelas
+                // Fazer isso de forma independente para não afetar o carregamento principal
+                if (transacao.recorrencia_id) {
+                    try {
                         await this.carregarParcelas(transacao.recorrencia_id);
+                    } catch (parcelasError) {
+                        // Erro ao carregar parcelas não deve impedir a edição
+                        console.warn('Erro ao carregar parcelas (não crítico):', parcelasError);
                     }
                 }
             } catch (error) {
                 console.error('Erro ao carregar transação:', error);
+                
+                // Verificar se é um erro 404 (não encontrado)
+                const errorMessage = error.response?.status === 404 
+                    ? 'Transação não encontrada'
+                    : error.response?.data?.message || error.message || 'Erro ao carregar transação';
+                
                 this.$toast.add({
                     severity: 'error',
                     summary: 'Erro',
-                    detail: 'Erro ao carregar transação',
+                    detail: errorMessage,
                     life: 3000
                 });
             }
@@ -579,12 +633,23 @@ export default {
         
         async carregarParcelas(recorrenciaId) {
             try {
+                if (!recorrenciaId) {
+                    console.warn('recorrencia_id não fornecido para carregar parcelas');
+                    return;
+                }
+                
                 const response = await this.$financeirosService.buscar({ recorrencia_id: recorrenciaId });
-                if (response.data.data) {
+                
+                if (response && response.data && response.data.data && Array.isArray(response.data.data)) {
                     this.parcelas = response.data.data.sort((a, b) => a.nro_parcela - b.nro_parcela);
+                } else {
+                    // Se não houver parcelas, inicializar como array vazio
+                    this.parcelas = [];
                 }
             } catch (error) {
-                console.error('Erro ao carregar parcelas:', error);
+                // Erro ao carregar parcelas não deve impedir a edição
+                console.warn('Erro ao carregar parcelas (não crítico):', error);
+                this.parcelas = [];
             }
         },
         
@@ -616,7 +681,7 @@ export default {
                     qtd_parcelas: this.form.qtd_parcelas,
                     forma_divisao: this.form.forma_divisao,
                     categoria: this.form.categoria.trim(),
-                    valor: this.form.valor,
+                    valor: this.getValorNumerico(),
                     data: this.form.data.toISOString().split('T')[0],
                     descricao: this.form.descricao.trim(),
                     paga: this.form.paga,
@@ -634,7 +699,7 @@ export default {
                     // Não redirecionar, apenas atualizar a tela
                     await this.carregarTransacao(this.$route.params.id);
                 } else {
-                    const response = await this.$financeirosService.cadastrar(dados);
+                    await this.$financeirosService.cadastrar(dados);
                     this.$toast.add({
                         severity: 'success',
                         summary: 'Sucesso',
@@ -642,38 +707,13 @@ export default {
                         life: 3000
                     });
                     
-                    // Pegar o ID da transação criada
-                    let transacaoId = null;
-                    if (response.data && response.data.data) {
-                        // Se for transação única (à vista)
-                        if (response.data.data.id) {
-                            transacaoId = response.data.data.id;
-                        } 
-                        // Se for transação parcelada (à prazo), pegar o ID da primeira parcela
-                        else if (Array.isArray(response.data.data) && response.data.data.length > 0) {
-                            transacaoId = response.data.data[0].id;
-                        }
-                    }
-                    
-                    // Se conseguiu pegar o ID, transformar em modo de edição
-                    if (transacaoId) {
-                        // Atualizar a rota para modo de edição sem recarregar a página
-                        this.$router.replace({
-                            path: `/financeiro/editar/${transacaoId}`,
-                            query: this.$route.query
-                        }).then(() => {
-                            // Carregar os dados da transação criada
-                            this.carregarTransacao(transacaoId);
-                        });
+                    // Redirecionar para a listagem baseada no tipo
+                    if (this.form.tipo === 'receita') {
+                        this.$router.push('/financeiro/receitas');
+                    } else if (this.form.tipo === 'despesa') {
+                        this.$router.push('/financeiro/despesas');
                     } else {
-                        // Fallback: se não conseguir pegar o ID, redirecionar para lista
-                        if (this.form.tipo === 'receita') {
-                            this.$router.push('/financeiro/receitas');
-                        } else if (this.form.tipo === 'despesa') {
-                            this.$router.push('/financeiro/despesas');
-                        } else {
-                            this.$router.push('/financeiro/receitas');
-                        }
+                        this.$router.push('/financeiro/receitas');
                     }
                 }
             } catch (error) {
@@ -701,7 +741,8 @@ export default {
         },
         
         atualizarParcelas() {
-            if (!this.form.data || !this.form.valor || !this.form.tipo_pagamento) {
+            const valorNumerico = this.getValorNumerico();
+            if (!this.form.data || !valorNumerico || !this.form.tipo_pagamento) {
                 this.parcelas = [];
                 return;
             }
@@ -710,7 +751,7 @@ export default {
                 this.parcelas = [{
                     nro_parcela: 1,
                     data: this.form.data,
-                    valor: this.form.valor
+                    valor: valorNumerico
                 }];
                 return;
             }
@@ -719,8 +760,8 @@ export default {
                 this.parcelas = [];
                 const dataInicial = new Date(this.form.data);
                 const valorParcela = this.form.forma_divisao === 'dividir' 
-                    ? this.form.valor / this.form.qtd_parcelas 
-                    : this.form.valor;
+                    ? valorNumerico / this.form.qtd_parcelas 
+                    : valorNumerico;
                 
                 for (let i = 1; i <= this.form.qtd_parcelas; i++) {
                     const dataParcela = new Date(dataInicial);
@@ -733,6 +774,15 @@ export default {
                     });
                 }
             }
+        },
+        
+        formatarValorParaMoney3(valor) {
+            if (!valor && valor !== 0) return '';
+            // Converter para número caso seja string
+            const valorNumerico = typeof valor === 'string' ? parseFloat(valor) : valor;
+            // Verificar se é um número válido
+            if (isNaN(valorNumerico)) return '';
+            return valorNumerico.toFixed(2).replace('.', ',');
         },
         
         confirmarDivisao() {

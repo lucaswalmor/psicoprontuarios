@@ -9,7 +9,7 @@ import { defineConfig } from 'vite';
 export default defineConfig({
     optimizeDeps: {
         noDiscovery: true,
-        include: ['quill', 'quill-delta'],
+        include: ['quill', 'quill-delta', '@primeuix/styles/drawer'],
         exclude: ['@quilljs/quill']
     },
     plugins: [
@@ -21,7 +21,8 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url))
-        }
+        },
+        conditions: ['import', 'module', 'browser', 'default']
     },
     define: {
         global: 'globalThis'
