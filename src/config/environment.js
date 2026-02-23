@@ -34,7 +34,7 @@ export const getApiUrl = () => {
                          window.location.hostname === 'localhost' || 
                          window.location.hostname === '127.0.0.1';
     
-    return isDevelopment ? config.apiUrls.production : config.apiUrls.production;
+    return isDevelopment ? config.apiUrls.development : config.apiUrls.production;
 };
 
 export default config;
