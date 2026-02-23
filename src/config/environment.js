@@ -5,9 +5,9 @@ export const config = {
     // URLs da API para diferentes ambientes
     apiUrls: {
         development: 'http://127.0.0.1:8000/api',
-        // production: 'https://psicoprontuarios-v2.lksoftware.com.br/public/api/',
-        productionV1: 'https://psicoprontuarios.lksoftware.com.br/public/api/',
-        production: 'https://api.psicoprontuarios.com.br/api/'
+        production: 'https://psicoprontuarios-v2.lksoftware.com.br/public/api/',
+        // productionV1: 'https://psicoprontuarios.lksoftware.com.br/public/api/',
+        // production: 'https://api.psicoprontuarios.com.br/api/'
     },
     
     // Configurações do Google OAuth
@@ -34,7 +34,7 @@ export const getApiUrl = () => {
                          window.location.hostname === 'localhost' || 
                          window.location.hostname === '127.0.0.1';
     
-    return isDevelopment ? config.apiUrls.development : config.apiUrls.productionV1;
+    return isDevelopment ? config.apiUrls.production : config.apiUrls.production;
 };
 
 export default config;
