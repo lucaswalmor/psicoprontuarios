@@ -115,12 +115,6 @@ const router = createRouter({
                     meta: { requiresPlanCheck: false }
                 },
                 {
-                    path: '/encontre-psicologo',
-                    name: 'EncontrePsicologo',
-                    component: () => import('@/views/pages/EncontrePsicologo.vue'),
-                    meta: { requiresPlanCheck: true }
-                },
-                {
                     path: '/uikit/formlayout',
                     name: 'formlayout',
                     component: () => import('@/views/uikit/FormLayout.vue')

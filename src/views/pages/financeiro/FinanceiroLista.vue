@@ -1,7 +1,7 @@
+
 <template>
-    <template v-if="$hasAccessToModule('gestao_financeira')">
-        <div class="grid">
-            <div class="col-12">
+    <div class="grid">
+        <div class="col-12">
             <div class="card">
                 <div class="flex justify-content-between align-items-center mb-4">
                     <div class="flex gap-3 align-items-center">
@@ -10,61 +10,33 @@
                             <span class="total-label-header">
                                 {{ tipoDetectado === 'receita' ? 'Recebidas:' : 'Pagas:' }}
                             </span>
-                            <span 
-                                class="text-green-600 font-bold total-value-header">
+                            <span class="text-green-600 font-bold total-value-header">
                                 R$ {{ formatarValor(totalRecebidasPagas) }}
                             </span>
                         </div>
                         <div class="total-container-header">
                             <span class="total-label-header">Previstas:</span>
-                            <span 
-                                class="text-red-600 font-bold total-value-header">
+                            <span class="text-red-600 font-bold total-value-header">
                                 R$ {{ formatarValor(totalPrevistas) }}
                             </span>
                         </div>
                     </div>
                     <div class="flex gap-2 align-items-center">
-                        <Button 
-                            v-if="!$isPlanPaused() && selectedTransacoes && selectedTransacoes.length > 0"
-                            :label="tipoDetectado === 'receita' ? 'Receber Todas' : 'Pagar Todas'" 
-                            icon="pi pi-check-circle" 
-                            severity="success"
-                            @click="confirmarPagamentoLote" 
-                        />
-                        <Button 
-                            v-if="!$isPlanPaused()"
-                            :label="tipoDetectado === 'receita' ? 'Nova Receita' : 'Nova Despesa'" 
-                            icon="pi pi-plus" 
-                            @click="novaTransacao" 
-                        />
-                        <Button 
-                            label="Filtros" 
-                            severity="secondary" 
-                            icon="pi pi-filter" 
-                            v-if="!hasFiltros"
-                            @click="drawerFilterFinanceiro = true" 
-                        />
-                        <Button 
-                            label="Limpar Filtros" 
-                            severity="danger" 
-                            @click="limparFiltros" 
-                            v-else 
-                        />
+                        <Button v-if="selectedTransacoes && selectedTransacoes.length > 0"
+                            :label="tipoDetectado === 'receita' ? 'Receber Todas' : 'Pagar Todas'"
+                            icon="pi pi-check-circle" severity="success" @click="confirmarPagamentoLote" />
+                        <Button :label="tipoDetectado === 'receita' ? 'Nova Receita' : 'Nova Despesa'"
+                            icon="pi pi-plus" @click="novaTransacao" />
+                        <Button label="Filtros" severity="secondary" icon="pi pi-filter" v-if="!hasFiltros"
+                            @click="drawerFilterFinanceiro = true" />
+                        <Button label="Limpar Filtros" severity="danger" @click="limparFiltros" v-else />
                     </div>
                 </div>
 
                 <!-- Tabela -->
-                <DataTable 
-                    v-model:selection="selectedTransacoes"
-                    :value="transacoes" 
-                    :loading="loading" 
-                    :paginator="true" 
-                    v-model:rows="rowsPerPage"
-                    :rowsPerPageOptions="[10, 20, 50]" 
-                    :totalRecords="totalRecords" 
-                    :lazy="true" 
-                    @page="onPageChange"
-                    dataKey="id"
+                <DataTable v-model:selection="selectedTransacoes" :value="transacoes" :loading="loading"
+                    :paginator="true" v-model:rows="rowsPerPage" :rowsPerPageOptions="[10, 20, 50]"
+                    :totalRecords="totalRecords" :lazy="true" @page="onPageChange" dataKey="id"
                     class="p-datatable-sm">
                     <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
                     <Column field="data" header="Data" sortable>
@@ -75,16 +47,10 @@
 
                     <Column field="paga" header="Status" sortable>
                         <template #body="{ data }">
-                            <Tag 
-                                v-if="data.tipo === 'receita'"
-                                :value="data.paga ? 'Recebido' : 'Não recebido'"
-                                :severity="data.paga ? 'success' : 'danger'" 
-                            />
-                            <Tag 
-                                v-else
-                                :value="data.paga ? 'Paga' : 'Não paga'"
-                                :severity="data.paga ? 'success' : 'danger'" 
-                            />
+                            <Tag v-if="data.tipo === 'receita'" :value="data.paga ? 'Recebido' : 'Não recebido'"
+                                :severity="data.paga ? 'success' : 'danger'" />
+                            <Tag v-else :value="data.paga ? 'Paga' : 'Não paga'"
+                                :severity="data.paga ? 'success' : 'danger'" />
                         </template>
                     </Column>
 
@@ -111,40 +77,37 @@
 
                     <Column header="Ações" :exportable="false" style="min-width:8rem">
                         <template #body="{ data }">
-                            <Button 
-                                v-if="!$isPlanPaused()"
-                                icon="pi pi-pencil" 
-                                rounded 
-                                outlined 
-                                class="mr-2"
-                                @click="editarTransacao(data.id)" 
-                            />
-                            <Button 
-                                v-if="!$isPlanPaused()"
-                                icon="pi pi-trash" 
-                                rounded 
-                                outlined 
-                                severity="danger"
-                                @click="confirmarExclusao(data)" 
-                            />
+                            <Button icon="pi pi-pencil" rounded outlined class="mr-2"
+                                @click="editarTransacao(data.id)" />
+                            <Button icon="pi pi-trash" rounded outlined severity="danger"
+                                @click="confirmarExclusao(data)" />
                         </template>
                     </Column>
+
+                    <template #empty>
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="pi pi-inbox text-4xl text-gray-400"></i>
+                            </div>
+                            <div class="empty-content">
+                                <h3 class="empty-title">Nenhuma transação encontrada</h3>
+                                <p class="empty-description">
+                                    Você ainda não cadastrou {{ tipoDetectado === 'receita' ? 'nenhuma receita' : 'nenhuma despesa' }}.
+                                    Clique em <strong>{{ tipoDetectado === 'receita' ? 'Nova Receita' : 'Nova Despesa' }}</strong> para começar.
+                                </p>
+                            </div>
+                        </div>
+                    </template>
                 </DataTable>
             </div>
         </div>
     </div>
 
     <!-- Drawer de Filtros -->
-    <DrawerFilterFinanceiro 
-        :limparCampos="limparCampos" 
-        :visible="drawerFilterFinanceiro"
-        :categorias="categorias"
-        :dataInicial="filtros.data_inicial"
-        :dataFinal="filtros.data_final"
-        @update:visible="onUpdateDrawerFilterFinanceiro" 
-        @filtrarFinanceiro="filtrarFinanceiro" 
-        @limparFiltros="limparFiltrosDrawer"
-    />
+    <DrawerFilterFinanceiro :limparCampos="limparCampos" :visible="drawerFilterFinanceiro" :categorias="categorias"
+        :dataInicial="filtros.data_inicial" :dataFinal="filtros.data_final"
+        @update:visible="onUpdateDrawerFilterFinanceiro" @filtrarFinanceiro="filtrarFinanceiro"
+        @limparFiltros="limparFiltrosDrawer" />
 
     <!-- Dialog de Confirmação de Exclusão -->
     <Dialog v-model:visible="dialogVisible" modal header="Confirmar Exclusão" :style="{ width: '450px' }">
@@ -154,61 +117,45 @@
         </div>
         <template #footer>
             <Button label="Não" icon="pi pi-times" outlined @click="dialogVisible = false" />
-            <Button 
-                v-if="!$isPlanPaused()"
-                label="Sim" 
-                icon="pi pi-check" 
-                severity="danger" 
-                @click="excluirTransacao" 
-            />
+            <Button label="Sim" icon="pi pi-check" severity="danger"
+                @click="excluirTransacao" />
         </template>
     </Dialog>
 
     <!-- Dialog de Confirmação de Pagamento em Lote -->
-    <Dialog v-model:visible="dialogPagamentoLoteVisible" modal header="Confirmar Quitação em Lote" :style="{ width: '450px' }">
+    <Dialog v-model:visible="dialogPagamentoLoteVisible" modal header="Confirmar Quitação em Lote"
+        :style="{ width: '450px' }">
         <div class="confirmation-content">
             <i class="pi pi-question-circle mr-3" style="font-size: 2rem" />
             <span>
-                Tem certeza que deseja quitar {{ selectedTransacoes.length }} 
+                Tem certeza que deseja quitar {{ selectedTransacoes.length }}
                 {{ selectedTransacoes.length === 1 ? 'transação' : 'transações' }} em lote?
             </span>
         </div>
         <template #footer>
             <Button label="Não" icon="pi pi-times" outlined @click="dialogPagamentoLoteVisible = false" />
-            <Button 
-                v-if="!$isPlanPaused()"
-                :label="tipoDetectado === 'receita' ? 'Receber Todas' : 'Pagar Todas'" 
-                icon="pi pi-check" 
-                severity="success" 
-                @click="pagarEmLote" 
-            />
+            <Button :label="tipoDetectado === 'receita' ? 'Receber Todas' : 'Pagar Todas'"
+                icon="pi pi-check" severity="success" @click="pagarEmLote" />
         </template>
     </Dialog>
-    </template>
-
-    <div class="card" v-else>
-        <div class="empty-state">
-            <div class="empty-icon">
-                <i class="pi pi-exclamation-triangle text-6xl text-gray-400"></i>
-            </div>
-            <div class="empty-content">
-                <h3 class="empty-title">Módulo indisponível</h3>
-                <p class="empty-description">
-                    Este módulo não está disponível para o seu plano.
-                </p>
-                <Button label="Clique aqui para atualizar seu plano" @click="$router.push('/upgrade')" />
-            </div>
-        </div>
-    </div>
 </template>
 
 <script>
 import DrawerFilterFinanceiro from '@/components/drawers/DrawerFilterFinanceiro.vue';
-
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Button from 'primevue/button';
+import Tag from 'primevue/tag';
+import Dialog from 'primevue/dialog';
 export default {
     name: 'FinanceiroLista',
     components: {
-        DrawerFilterFinanceiro
+        DrawerFilterFinanceiro,
+        DataTable,
+        Column,
+        Button,
+        Tag,
+        Dialog,
     },
     data() {
         return {
@@ -257,12 +204,9 @@ export default {
             this.filtros.page = 1;
             this.rowsPerPage = 10;
             // Recarregar transações
-                
-            if (this.$hasAccessToModule('gestao_financeira')) {
-                this.carregarTransacoes();
-            }
+            this.carregarTransacoes();
         },
-        
+
         // Também observar mudanças no tipo detectado como backup
         tipoDetectado(newVal) {
             if (this.filtros.tipo !== newVal) {
@@ -270,9 +214,7 @@ export default {
                 this.filtros.page = 1;
                 this.rowsPerPage = 10;
 
-                if (this.$hasAccessToModule('gestao_financeira')) {
-                    this.carregarTransacoes();
-                }
+                this.carregarTransacoes();
             }
         },
 
@@ -300,10 +242,10 @@ export default {
 
                 // Mostrar toast de aviso
                 const tipoTexto = this.tipoDetectado === 'receita' ? 'recebida' : 'paga';
-                const mensagem = transacoesPagas.length === 1 
+                const mensagem = transacoesPagas.length === 1
                     ? `Esta transação já está ${tipoTexto}`
                     : `Estas transações já estão ${tipoTexto === 'paga' ? 'pagas' : 'recebidas'}`;
-                
+
                 this.$toast.add({
                     severity: 'warn',
                     summary: 'Atenção',
@@ -317,23 +259,20 @@ export default {
         // Definir tipo baseado na URL
         this.filtros.tipo = this.tipoDetectado;
 
-        if (this.$hasAccessToModule('gestao_financeira')) {
-            // Carregar categorias
-            await this.carregarCategorias();
-            // Carregar transações
-            await this.carregarTransacoes();
-        }
+        // Carregar categorias e transações sempre; não há mais bloqueio por módulo
+        await this.carregarCategorias();
+        await this.carregarTransacoes();
     },
     methods: {
         getDataInicioFim() {
             const hoje = new Date();
-            
+
             // Definindo o primeiro dia do mês
             const dataInicial = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-            
+
             // Definindo o último dia do mês
             const dataFinal = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
-            
+
             // Retornando as duas datas
             return {
                 dataInicial,
@@ -360,7 +299,7 @@ export default {
             try {
                 // Garantir que o tipo esteja definido
                 const tipo = this.tipoDetectado;
-                
+
                 const params = {
                     page: this.filtros.page,
                     per_page: this.rowsPerPage,
@@ -385,7 +324,7 @@ export default {
 
                 this.transacoes = response.data.data;
                 this.totalRecords = response.data.pagination.total;
-                
+
                 // Atualizar totais vindos do backend (calculados sobre TODAS as transações do período)
                 if (response.data.totais) {
                     this.totalRecebidasPagas = response.data.totais.total_recebidas_pagas || 0;
@@ -395,7 +334,7 @@ export default {
                     this.totalRecebidasPagas = 0;
                     this.totalPrevistas = 0;
                 }
-                
+
                 // Limpar seleção ao recarregar
                 this.selectedTransacoes = [];
             } catch (error) {
@@ -485,13 +424,13 @@ export default {
             // Garantir que o tipo seja sempre definido pela página atual
             this.filtros.tipo = this.tipoDetectado;
             this.filtros.categoria = filtro.categoria || null;
-            
+
             // Manter as datas escolhidas pelo usuário
             // Se o usuário escolheu uma data, usar ela; caso contrário, manter a atual ou usar padrão
             if (filtro.data_inicial !== null && filtro.data_inicial !== undefined) {
                 // Converter para Date se for string ou manter se já for Date
-                this.filtros.data_inicial = filtro.data_inicial instanceof Date 
-                    ? filtro.data_inicial 
+                this.filtros.data_inicial = filtro.data_inicial instanceof Date
+                    ? filtro.data_inicial
                     : new Date(filtro.data_inicial);
             } else {
                 // Se não foi escolhida uma data, manter a atual ou usar padrão do mês
@@ -499,11 +438,11 @@ export default {
                     this.filtros.data_inicial = this.getDataInicioFim().dataInicial;
                 }
             }
-            
+
             if (filtro.data_final !== null && filtro.data_final !== undefined) {
                 // Converter para Date se for string ou manter se já for Date
-                this.filtros.data_final = filtro.data_final instanceof Date 
-                    ? filtro.data_final 
+                this.filtros.data_final = filtro.data_final instanceof Date
+                    ? filtro.data_final
                     : new Date(filtro.data_final);
             } else {
                 // Se não foi escolhida uma data, manter a atual ou usar padrão do mês
@@ -511,15 +450,15 @@ export default {
                     this.filtros.data_final = this.getDataInicioFim().dataFinal;
                 }
             }
-            
+
             this.filtros.page = 1;
             // Verificar se há filtros ativos (categoria ou datas diferentes do mês atual)
             const datasPadrao = this.getDataInicioFim();
-            const dataInicialDiferente = this.filtros.data_inicial && 
+            const dataInicialDiferente = this.filtros.data_inicial &&
                 this.filtros.data_inicial.getTime() !== datasPadrao.dataInicial.getTime();
-            const dataFinalDiferente = this.filtros.data_final && 
+            const dataFinalDiferente = this.filtros.data_final &&
                 this.filtros.data_final.getTime() !== datasPadrao.dataFinal.getTime();
-            
+
             this.hasFiltros = !!(this.filtros.categoria || dataInicialDiferente || dataFinalDiferente);
             this.carregarTransacoes();
         },

@@ -78,23 +78,10 @@ api.interceptors.response.use(
             return response;
         }
         
-        // Verificar status de pagamento após login bem-sucedido
-        if (response.config.url?.includes('/login') && response.status === 200) {
-            setTimeout(async () => {
-                try {
-                    const statusResp = await api.get('/assinatura/verificar-status');
-                    if (statusResp.data.tem_pendencia) {
-                        // Emitir evento global
-                        window.dispatchEvent(new CustomEvent('payment-pending', { 
-                            detail: statusResp.data 
-                        }));
-                    }
-                } catch (err) {
-                    console.error('Erro ao verificar status pagamento:', err);
-                }
-            }, 1000);
-        }
-        
+        // Verificação de status de pagamento desativada temporariamente:
+        // o sistema de planos/assinaturas foi removido e todas as funcionalidades
+        // estão liberadas, então não há mais necessidade de checar pendências aqui.
+
         return response;
     },
     (error) => {

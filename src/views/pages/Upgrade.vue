@@ -253,36 +253,13 @@ export default {
             currentStep.value = step;
         };
 
-        const processarPagamento = async (dadosFormulario) => {
-            try {
-                // Enviar apenas CPF e telefone (name e email vêm automaticamente do usuário autenticado no backend)
-                const dadosUsuario = {
-                    cpf: dadosFormulario.usuario.cpf,
-                    phone: dadosFormulario.usuario.phone
-                };
-
-                await asaas.criarCheckout(
-                    selectedPlan.value.id,
-                    dadosFormulario.cartao,
-                    dadosUsuario
-                );
-
-                // Recarregar menu após upgrade
-                await atualizarMenuAposUpgrade();
-
-                // Marcar pagamento como sucesso e armazenar nome do plano
-                pagamentoSucesso.value = true;
-                planoContratado.value = selectedPlan.value.nome;
-
-            } catch (error) {
-                console.error('Erro ao processar pagamento:', error);
-                toast.add({
-                    severity: 'error',
-                    summary: 'Erro',
-                    detail: error.message || 'Erro ao processar pagamento. Tente novamente.',
-                    life: 5000
-                });
-            }
+        const processarPagamento = async () => {
+            toast.add({
+                severity: 'info',
+                summary: 'Em breve',
+                detail: 'O sistema de planos e pagamentos está temporariamente desativado. Todas as funcionalidades já estão liberadas.',
+                life: 5000
+            });
         };
 
         // Atualizar menu após upgrade

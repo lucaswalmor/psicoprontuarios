@@ -93,7 +93,6 @@ export default {
                 'Configurações': 'Configurações',
                 'Assinatura': 'Assinatura',
                 'Upgrade': 'Upgrade',
-                'EncontrePsicologo': 'Encontre Psicólogo',
             };
             
             const pathSegments = route.path.split('/').filter(segment => segment);

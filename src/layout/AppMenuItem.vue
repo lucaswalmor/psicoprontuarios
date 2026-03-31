@@ -48,6 +48,7 @@ export default {
     },
     methods: {
         itemClick(event, item) {
+            console.log('[AppMenuItem] click em item:', item, 'itemKey:', this.itemKey);
             if (item.items) {
                 // Se tem submenu, fazer toggle
                 event.preventDefault();
@@ -56,11 +57,14 @@ export default {
             } else if (item.to) {
                 // Se tem rota, navegar
                 event.preventDefault();
+                console.log('[AppMenuItem] navegando para:', item.to);
                 this.$router.push(item.to);
             }
         },
         checkActiveRoute(item) {
-            return this.$route.path === item.to;
+            const isActive = this.$route.path === item.to;
+            // console.log('[AppMenuItem] checkActiveRoute', item.to, '=>', isActive);
+            return isActive;
         }
     }
 };

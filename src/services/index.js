@@ -8,8 +8,6 @@ import userService from './userService';
 import planService from './planService';
 import leadsService from './leadsService';
 import anexosService from './anexosService';
-import perfilPublicoService from './perfilPublicoService';
-import marketplaceService from './marketplaceService';
 import npsService from './npsService';
 import mercadoPagoService from './mercadoPagoService';
 import asaasService from './asaasService';
@@ -25,8 +23,6 @@ export {
     planService,
     leadsService,
     anexosService,
-    perfilPublicoService,
-    marketplaceService,
     npsService,
     mercadoPagoService,
     asaasService
@@ -44,8 +40,6 @@ export default {
     planService,
     leadsService,
     anexosService,
-    perfilPublicoService,
-    marketplaceService,
     npsService,
     mercadoPagoService,
     asaasService

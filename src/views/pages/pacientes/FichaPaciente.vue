@@ -763,10 +763,6 @@ export default {
 
         // Métodos para Anexos
         async carregarAnexos() {
-            if (!this.$hasAccessToModule('anexos')) {
-                return;
-            }
-
             this.loadingAnexos = true;
             try {
                 const response = await anexosService.listar(this.pacienteId);
@@ -795,10 +791,6 @@ export default {
 
         // Métodos para Anamnese
         async carregarAnamnese() {
-            if (!this.$hasAccessToModule('anamnese')) {
-                return;
-            }
-
             // Emitir evento para o componente filho recarregar os dados
             this.$refs.anamnese?.carregarAnamnese();
         },

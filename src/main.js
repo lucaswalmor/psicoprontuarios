@@ -2,7 +2,6 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 import pinia from './store';
-import planValidations from '@/utils/planValidations';
 
 import Aura from '@primeuix/themes/aura';
 import PrimeVue from 'primevue/config';
@@ -13,7 +12,6 @@ import '@/assets/styles.scss';
 import { loadThemeConfig, applyThemeConfig } from '@/utils/themeStorage';
 import '/node_modules/primeflex/primeflex.css';
 import services from '@/services';
-import vAcesso from '@/directives/vAcesso';
 import money from 'v-money3';
 
 // Carregar configurações iniciais do localStorage
@@ -73,7 +71,6 @@ app.use(PrimeVue, {
 });
 app.use(ToastService);
 app.use(ConfirmationService);
-app.use(vAcesso);
 app.use(money);
 
 // Configurar services globalmente
@@ -87,8 +84,5 @@ app.config.globalProperties.$userService = services.userService;
 app.config.globalProperties.$leadsService = services.leadsService;
 app.config.globalProperties.$anexosService = services.anexosService;
 app.config.globalProperties.$npsService = services.npsService;
-app.config.globalProperties.$hasAccessToModule = planValidations.hasAccessToModule;
-app.config.globalProperties.$tipoPlano = planValidations.tipoPlano;
-app.config.globalProperties.$isPlanPaused = planValidations.isPlanPaused;
 
 app.mount('#app');

@@ -1,5 +1,5 @@
 <template>
-    <div class="grid" v-if="$hasAccessToModule('dashboard')">
+    <div class="grid">
         <div class="col-12">
             <div class="card">
                 <h5 class="text-500 mb-4">Dashboard Geral</h5>
@@ -364,25 +364,10 @@
                     </TabPanel>
 
                     <!-- Tab Financeiro -->
-                    <TabPanel header="Financeiro" v-if="$hasAccessToModule('gestao_financeira')">
+                    <TabPanel header="Financeiro">
                         <FinanceiroDashboard :lazy="true" ref="financeiroDashboardRef" />
                     </TabPanel>
                 </TabView>
-            </div>
-        </div>
-    </div>
-
-    <div class="card" v-else>
-        <div class="empty-state">
-            <div class="empty-icon">
-                <i class="pi pi-exclamation-triangle text-6xl text-gray-400"></i>
-            </div>
-            <div class="empty-content">
-                <h3 class="empty-title">Módulo indisponível</h3>
-                <p class="empty-description">
-                    Este módulo não está disponível para o seu plano.
-                </p>
-                <Button label="Clique aqui para atualizar seu plano" @click="$router.push('/upgrade')" />
             </div>
         </div>
     </div>
@@ -792,12 +777,6 @@ export default {
     async mounted() {
         // Inicializar o store do tema
         this.themeStore.init();
-
-        if (!this.$hasAccessToModule('dashboard')) {
-            return;
-        }
-
-        // Depois carregar dados do dashboard
         await this.carregarDados();
     },
     methods: {

@@ -15,25 +15,10 @@
                     </div>
                 </div>
 
-                <!-- Aviso quando limite de anexos atingido -->
-                <div v-else-if="!$hasAccessToModule('anexos')"
-                    class="p-3 border-round surface-100 border-red-200 bg-red-50">
-                    <div class="flex align-items-center gap-2">
-                        <i class="pi pi-exclamation-triangle text-red-500"></i>
-                        <span class="text-sm text-red-700">
-                            Limite de anexos atingido.
-                            <span v-if="planStore.anexosLimite !== -1">
-                                Você usou {{ planStore.anexosCount }} de {{ planStore.anexosLimite }} anexos.
-                            </span>
-                            Faça upgrade do seu plano para mais anexos.
-                        </span>
-                    </div>
-                </div>
-
                 <FileUpload v-model="arquivosSelecionados" :multiple="true" :auto="false"
                     accept=".pdf,.jpg,.jpeg,.png,.gif,.xlsx,.xls,.doc,.docx" :maxFileSize="10485760"
                     chooseLabel="Escolher Arquivos" cancelLabel="Cancelar" :showCancelButton="false"
-                    :showUploadButton="false" :disabled="isPlanPaused || !$hasAccessToModule('anexos')"
+                    :showUploadButton="false" :disabled="isPlanPaused"
                     @select="onFileSelect" class="w-full">
                     <template #empty>
                         <div class="flex flex-column align-items-center p-4">
@@ -96,7 +81,7 @@
             <div class="flex justify-content-end gap-2">
                 <Button label="Cancelar" severity="secondary" outlined @click="onHide" :disabled="loading" />
                 <Button label="Upload de Todos" @click="fazerUploadMultiplo" :loading="loading"
-                    :disabled="!arquivosSelecionados || arquivosSelecionados.length === 0 || isPlanPaused || !$hasAccessToModule('anexos')" />
+                    :disabled="!arquivosSelecionados || arquivosSelecionados.length === 0 || isPlanPaused" />
             </div>
         </template>
     </Dialog>

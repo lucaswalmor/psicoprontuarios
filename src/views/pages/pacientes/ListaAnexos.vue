@@ -1,8 +1,7 @@
 <template>
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <Button v-if="$hasAccessToModule('anexos')" label="Upload de Anexo" icon="pi pi-upload"
-            @click="abrirDialogUploadAnexo" :disabled="!$hasAccessToModule('anexos')"
-            :class="{ 'opacity-50': !$hasAccessToModule('anexos') }" />
+        <Button label="Upload de Anexo" icon="pi pi-upload"
+            @click="abrirDialogUploadAnexo" />
     </div>
 
     <DataTable :value="anexos" :loading="loading" tableStyle="min-width: 50rem"
@@ -27,7 +26,7 @@
                 <div class="flex gap-2">
                     <Button icon="pi pi-download" class="p-button-text p-button-sm"
                         @click="downloadAnexo(slotProps.data)" v-tooltip.top="'Download'" />
-                    <Button v-if="$hasAccessToModule('anexos')" icon="pi pi-trash"
+                    <Button icon="pi pi-trash"
                         class="p-button-text p-button-sm p-button-danger" @click="deletarAnexo(slotProps.data, $event)"
                         v-tooltip.top="'Excluir'" />
                 </div>
@@ -37,17 +36,16 @@
         <template #empty>
             <div class="empty-state">
                 <div class="empty-icon">
-                    <i class="pi text-6xl text-gray-400" :class="$hasAccessToModule('anexos') ? 'pi-file' : 'pi-exclamation-triangle'"></i>
+                    <i class="pi pi-file text-6xl text-gray-400"></i>
                 </div>
                 <div class="empty-content">
-                    <h3 class="empty-title">Módulo indisponível</h3>
+                    <h3 class="empty-title">Nenhum anexo encontrado</h3>
                     <p class="empty-description">
-                        {{ $tipoPlano() === 1 ? 'Este módulo não está disponível para o seu plano.' : 'Este paciente ainda não possui arquivos anexados. Clique no botão "Upload de Anexo" para adicionar o primeiro arquivo.' }}
+                        Este paciente ainda não possui arquivos anexados. Clique no botão
+                        <strong>"Upload de Anexo"</strong> para adicionar o primeiro arquivo.
                     </p>
-                    <Button v-if="$hasAccessToModule('anexos')" label="Upload de Anexo" icon="pi pi-upload"
+                    <Button label="Upload de Anexo" icon="pi pi-upload"
                         @click="abrirDialogUploadAnexo" class="mt-3" />
-
-                    <Button v-if="!$hasAccessToModule('anexos')" label="Clique aqui para atualizar seu plano" @click="$router.push('/upgrade')" />
                 </div>
             </div>
         </template>
@@ -61,7 +59,6 @@
 
 <script>
 import DialogUploadAnexo from '@/components/dialogs/anexos/DialogUploadAnexo.vue';
-import { usePlanStore } from '@/store/plan';
 
 export default {
     name: 'ListaAnexos',
@@ -88,11 +85,6 @@ export default {
         statusTratamento: {
             type: String,
             default: null
-        }
-    },
-    computed: {
-        planStore() {
-            return usePlanStore();
         }
     },
     data() {

@@ -1,194 +1,127 @@
 <script>
-import { usePlanStore } from '@/store/plan';
 import { useLayout } from '@/layout/composables/layout';
-import AppMenuItem from './AppMenuItem.vue';
-import api from '@/utils/axios';
+import PanelMenu from 'primevue/panelmenu';
 
 export default {
     name: 'AppMenu',
     components: {
-        AppMenuItem
+        PanelMenu
     },
     data() {
         return {
             layoutComposable: null,
-            menuData: []
+            // Modelo estático do menu para o PanelMenu
+            menuData: [
+                {
+                    label: 'Dashboard',
+                    icon: 'pi pi-home',
+                    to: '/dashboard'
+                },
+                {
+                    label: 'Pacientes',
+                    icon: 'pi pi-users',
+                    to: '/pacientes'
+                },
+                {
+                    label: 'Agendamentos',
+                    icon: 'pi pi-calendar',
+                    to: '/agendamentos'
+                },
+                {
+                    label: 'Financeiro',
+                    icon: 'pi pi-wallet',
+                    items: [
+                        { label: 'Receitas', icon: 'pi pi-arrow-down-right', to: '/financeiro/receitas' },
+                        { label: 'Despesas', icon: 'pi pi-arrow-up-right', to: '/financeiro/despesas' }
+                    ]
+                },
+                {
+                    label: 'Configurações',
+                    icon: 'pi pi-cog',
+                    to: '/configuracoes'
+                }
+            ]
         };
     },
     computed: {
-        planStore() {
-            return usePlanStore();
-        },
-
-        // Computed para verificar se deve mostrar o botão de upgrade
-        shouldShowUpgradeButton() {
-            // Mostrar para planos Gratuito e Essencial
-            return this.planStore.isGratuito || (this.planStore.planoId === 2);
-        },
-        
-        // Computed para detectar se é layout mobile
-        isMobileLayout() {
-            return this.layoutComposable?.layoutState.staticMenuMobileActive || window.innerWidth <= 991;
-        },
-        
         // Computed para tema escuro
         isDarkTheme() {
             return this.layoutComposable?.isDarkTheme;
         },
-        
-        // Modelo do menu filtrado baseado no plano
-        model() {
-            // Se não tem menu carregado, retornar array vazio
-            if (!this.menuData || this.menuData.length === 0) {
-                return [];
-            }
 
-            // Filtrar menu baseado em requiredFeature
-            return this.filterMenuByFeatures(this.menuData);
+        // Upgrade desativado enquanto planos não existem
+        shouldShowUpgradeButton() {
+            return false;
         }
     },
     methods: {
-        // Carregar informações do plano
-        async loadPlanInfo() {
-            try {
-                // Se não tem dados no store, carregar do localStorage ou servidor
-                if (!this.planStore.hasPlanData) {
-                    this.planStore.loadFromStorage();
-                    
-                    // Se ainda não tem dados, buscar do servidor
-                    if (!this.planStore.hasPlanData) {
-                        await this.planStore.fetchModulosAcesso();
-                    }
-                }
-            } catch (error) {
-                console.error('Erro ao carregar informações do plano:', error);
-            }
-        },
-        
-        // Carregar menu do localStorage ou buscar do servidor
-        async loadMenu() {
-            try {
-                // Tentar carregar do localStorage primeiro
-                const menuFromStorage = localStorage.getItem('menu');
-                if (menuFromStorage) {
-                    this.menuData = JSON.parse(menuFromStorage);
-                    return;
-                }
-                
-                // Se não tem no localStorage, buscar do servidor
-                // Isso só acontece se o usuário não fez login recente
-                if (this.planStore.planoId) {
-                    await this.fetchMenuFromServer();
-                }
-            } catch (error) {
-                console.error('Erro ao carregar menu:', error);
-                this.menuData = [];
-            }
-        },
-        
-        // Buscar menu do servidor
-        async fetchMenuFromServer() {
-            try {
-                const response = await api.get('/menu');
-                if (response.data && response.data.menu) {
-                    this.menuData = response.data.menu;
-                    localStorage.setItem('menu', JSON.stringify(response.data.menu));
-                }
-            } catch (error) {
-                console.error('Erro ao buscar menu do servidor:', error);
-                this.menuData = [];
-            }
-        },
-        
-        // Filtrar menu baseado em requiredFeature
-        filterMenuByFeatures(menuItems) {
-            return menuItems.map(item => {
-                // Se o item tem requiredFeature, verificar se o plano tem acesso
-                if (item.requiredFeature && !this.planStore.temAcessoModulo(item.requiredFeature)) {
-                    return null; // Não mostrar item
-                }
-                
-                // Se tem subitens, filtrar recursivamente
-                if (item.items && item.items.length > 0) {
-                    const filteredItems = this.filterMenuByFeatures(item.items).filter(i => i !== null);
-                    if (filteredItems.length === 0) {
-                        return null; // Se não tem subitens visíveis, não mostrar o pai
-                    }
-                    return {
-                        ...item,
-                        items: filteredItems
-                    };
-                }
-                
-                return item;
-            }).filter(item => item !== null);
-        },
-        
         goToUpgrade() {
             this.$router.push('/upgrade');
         },
-        
+
         goToProfile() {
             this.$router.push('/perfil');
         },
-        
+
         logout() {
-            // Usar o mesmo padrão do AppTopbar
             if (window.$authService) {
                 window.$authService.logout();
                 this.$router.push('/login');
             } else {
-                // Fallback: limpar sessionStorage e redirecionar
                 sessionStorage.clear();
                 this.$router.push('/login');
             }
         },
-        
+
         toggleDarkMode() {
             if (this.layoutComposable) {
                 this.layoutComposable.toggleDarkMode();
             }
         }
     },
-    async mounted() {
-        // Inicializar composables (planStore é computed, não precisa ser atribuído)
+    mounted() {
         this.layoutComposable = useLayout();
-        
-        // Carregar informações do plano
-        await this.loadPlanInfo();
-        
-        // Carregar menu
-        await this.loadMenu();
-        
-        // Escutar mudanças de plano em tempo real
-        window.addEventListener('plan-updated', async () => {
-            await this.loadPlanInfo();
-            await this.loadMenu(); // Recarregar menu quando plano mudar
-        });
-        
-        // Escutar atualização de menu
-        window.addEventListener('menu-updated', (event) => {
-            if (event.detail) {
-                this.menuData = event.detail;
-            }
-        });
-    },
-
-    beforeUnmount() {
-        // Remover listeners ao desmontar
-        window.removeEventListener('plan-updated', this.loadPlanInfo);
-        window.removeEventListener('menu-updated', this.loadMenu);
     }
 };
 </script>
 
 <template>
     <ul class="layout-menu">
-        <template v-for="(item, i) in model" :key="item">
-            <app-menu-item v-if="!item.separator" :item="item" :index="i"></app-menu-item>
-            <li v-if="item.separator" class="menu-separator"></li>
-        </template>
-                
+        <li>
+            <PanelMenu :model="menuData">
+                <template #item="{ item }">
+                    <!-- Navegação por rota -->
+                    <router-link
+                        v-if="item.to"
+                        v-slot="{ href, navigate, isActive }"
+                        :to="item.to"
+                        custom
+                    >
+                        <a
+                            :href="href"
+                            @click="navigate"
+                            class="flex align-items-center px-3 py-2 w-full"
+                            :class="{ 'active-route': isActive }"
+                        >
+                            <i :class="['layout-menuitem-icon', item.icon]" class="mr-2" />
+                            <span class="layout-menuitem-text">{{ item.label }}</span>
+                        </a>
+                    </router-link>
+
+                    <!-- Títulos / itens sem rota (ex: grupos) -->
+                    <a
+                        v-else
+                        href="#"
+                        class="flex align-items-center px-3 py-2 w-full"
+                        @click.prevent
+                    >
+                        <i v-if="item.icon" :class="['layout-menuitem-icon', item.icon]" class="mr-2" />
+                        <span class="layout-menuitem-text">{{ item.label }}</span>
+                    </a>
+                </template>
+            </PanelMenu>
+        </li>
+
         <!-- Botões do Topbar no Drawer (Mobile) -->
         <li class="mobile-topbar-actions">
             <!-- Botão de Upgrade -->
@@ -196,19 +129,19 @@ export default {
                 <i class="pi pi-star-fill"></i>
                 <span>Faça o upgrade do seu plano</span>
             </button>
-            
+
             <!-- Botão de Tema -->
             <button type="button" class="mobile-action-button" @click="toggleDarkMode">
                 <i :class="['pi', { 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"></i>
                 <span>{{ isDarkTheme ? 'Modo Claro' : 'Modo Escuro' }}</span>
             </button>
-            
+
             <!-- Botão de Perfil -->
             <button type="button" class="mobile-action-button" @click="goToProfile">
                 <i class="pi pi-user"></i>
                 <span>Meu Perfil</span>
             </button>
-            
+
             <!-- Botão de Logout -->
             <button type="button" class="mobile-action-button" @click="logout">
                 <i class="pi pi-sign-out"></i>
