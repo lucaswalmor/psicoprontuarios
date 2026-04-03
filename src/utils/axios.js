@@ -29,10 +29,10 @@ api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
         
-        // Lista de rotas públicas que não precisam de token
+        // Rotas que não enviam Bearer (login, cadastro, reset de senha).
+        // Logout NÃO entra aqui: POST /logout exige auth:sanctum no Laravel.
         const publicRoutes = [
             '/login',
-            '/logout',
             '/user/send-reset-code',
             '/user/verify-reset-code',
             '/user/reset-password',

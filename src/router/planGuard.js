@@ -13,7 +13,6 @@ function getRequiredModule(path) {
         '/prontuarios/novo',
         '/prontuarios/editar',
         '/upgrade',
-        '/assinatura',
         '/configuracoes',
         '/checkout/sucesso',
         '/checkout/cancelado'

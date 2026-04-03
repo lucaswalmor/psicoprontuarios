@@ -120,13 +120,20 @@ export default {
             this.errorMessage = ''; // Limpar mensagens de erro anteriores
             
             try {
-                const response = await this.$authService.login({ 
+                const response = await this.$authService.entrar({ 
                     email: this.email, 
                     password: this.password, 
                     telefone: this.telefone 
                 });
                 
-                console.log('response', response);
+                if (response.status === 'inativo') {
+                    if (response.user && response.user.nome) {
+                        localStorage.setItem('userName', response.user.nome);
+                        this.userName = response.user.nome;
+                    }
+                    this.$router.push('/pagamento');
+                    return;
+                }
                 // Salvar nome do usuário no localStorage
                 if (response.user && response.user.nome) {
                     localStorage.setItem('userName', response.user.nome);
@@ -135,6 +142,12 @@ export default {
                 // Se cadastro não está completo, redirecionar para completar cadastro
                 if (response.cadastroCompleto === false || response.cadastro_completo === false || response.user?.cadastro_completo === false) {
                     this.$router.push('/completar-cadastro');
+                    return;
+                }
+
+                // Ainda sem assinatura: fluxo de plano + cartão + trial (não é o mesmo que /pagamento, que é bloqueio por inadimplência/pausa)
+                if (this.precisaContratarPlano(response.user)) {
+                    this.$router.push('/upgrade');
                     return;
                 }
                 
@@ -176,6 +189,13 @@ export default {
             }
         },
 
+        precisaContratarPlano(usuario) {
+            if (!usuario || usuario.usuario_vitalicio) {
+                return false;
+            }
+            return usuario.status_assinatura === 'sem_assinatura';
+        },
+
         async redirectBasedOnPlan() {
             try {
                 const planStore = usePlanStore();
@@ -192,7 +212,7 @@ export default {
                 if (planInfo?.nome === 'Vitalício') {
                     // Usuários vitalícios vão para dashboard
                     redirectRoute = '/dashboard';
-                } else if (this.planStore?.podeAcessarModulo?.('dashboard')) {
+                } else if (planStore?.podeAcessarModulo?.('dashboard')) {
                     // Se tem dashboard, vai para dashboard
                     redirectRoute = '/dashboard';
                 } else {
@@ -222,7 +242,7 @@ export default {
             this.errorMessage = '';
             
             try {
-                const response = await this.$authService.googleLogin(credential);
+                const response = await this.$authService.entrarComGoogle(credential);
                 
                 // Salvar nome do usuário no localStorage
                 if (response.user && response.user.nome) {
@@ -233,10 +253,10 @@ export default {
                 // Verificar se é um novo usuário ou se o cadastro não está completo
                 // Se for novo usuário, o backend já criou a conta, só precisa completar cadastro
                 if (response.is_new_user === true || response.cadastroCompleto === false || response.cadastro_completo === false) {
-                    // Redirecionar para completar cadastro
                     this.$router.push('/completar-cadastro');
+                } else if (this.precisaContratarPlano(response.user)) {
+                    this.$router.push('/upgrade');
                 } else {
-                    // Buscar informações do plano e redirecionar
                     await this.redirectBasedOnPlan();
                 }
                 

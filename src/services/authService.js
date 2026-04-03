@@ -1,104 +1,195 @@
 import api from '@/utils/axios';
+import { usePlanStore } from '@/store/plan';
+
+function sincronizarAssinaturaNoPlanStore() {
+    try {
+        const planStore = usePlanStore();
+        const raw = localStorage.getItem('userAssinatura');
+        planStore.setAssinatura(raw ? JSON.parse(raw) : null);
+    } catch {
+        /* pinia pode não estar pronto em testes */
+    }
+}
 
 class AuthService {
-    // Login do usuário
-    async login(credentials) {
-        try {
-            const response = await api.post('/login', credentials);
-            if (response.data.usuario.token) {
-                localStorage.setItem('token', response.data.usuario.token);
-                sessionStorage.setItem("usuario", JSON.stringify(response.data.usuario));
-                sessionStorage.setItem('sessionTime', 1800)
-                sessionStorage.setItem('isAutenticated', true)
-                
-                // Limpar flag de NPS para validar novamente
-                sessionStorage.removeItem('nps_respondido')
-                
-                // Salvar dados do plano no localStorage (nova estrutura)
-                if (response.data.usuario.plano_id) {
-                    localStorage.setItem('planoId', response.data.usuario.plano_id);
-                }
-                if (response.data.usuario.plano_nome) {
-                    localStorage.setItem('planoNome', response.data.usuario.plano_nome);
-                }
-                if (response.data.usuario.modulos_plano) {
-                    localStorage.setItem('modulosPlano', JSON.stringify(response.data.usuario.modulos_plano));
-                }
-                if (response.data.usuario.status_assinatura) {
-                    localStorage.setItem('statusAssinatura', response.data.usuario.status_assinatura);
-                }
-                if (response.data.usuario.assinatura_ativa !== undefined) {
-                    localStorage.setItem('assinaturaAtiva', response.data.usuario.assinatura_ativa);
-                }
-                if (response.data.menu) {
-                    localStorage.setItem('menu', JSON.stringify(response.data.menu));
-                }
-                
-                // Manter compatibilidade com dados antigos (será removido posteriormente)
-                if (response.data.usuario.assinatura) {
-                    localStorage.setItem('userAssinatura', JSON.stringify(response.data.usuario.assinatura));
-                }
-                if (response.data.usuario.usuario_vitalicio !== undefined) {
-                    localStorage.setItem('usuarioVitalicio', response.data.usuario.usuario_vitalicio);
-                }
-                if (response.data.usuario.tem_assinatura_ativa !== undefined) {
-                    localStorage.setItem('temAssinaturaAtiva', response.data.usuario.tem_assinatura_ativa);
-                }
+    persistirSessaoInativa(data, usuarioToken) {
+        const u = data.usuario;
+        if (usuarioToken || u?.token) {
+            localStorage.setItem('token', usuarioToken || u.token);
+        }
+        const prev = JSON.parse(sessionStorage.getItem('usuario') || '{}');
+        sessionStorage.setItem('usuario', JSON.stringify({ ...prev, ...u }));
+        sessionStorage.setItem('sessionTime', '1800');
+        sessionStorage.setItem('isAutenticated', 'true');
+        sessionStorage.removeItem('nps_respondido');
+
+        localStorage.setItem('userAtivo', 'false');
+        localStorage.setItem('motivoBloqueio', data.motivo || 'pagamento_atrasado');
+
+        if (data.assinatura) {
+            localStorage.setItem('userAssinatura', JSON.stringify(data.assinatura));
+        } else {
+            localStorage.removeItem('userAssinatura');
+        }
+        sincronizarAssinaturaNoPlanStore();
+
+        if (u.status_assinatura) {
+            localStorage.setItem('statusAssinatura', u.status_assinatura);
+        }
+        if (u.assinatura_ativa !== undefined) {
+            localStorage.setItem('assinaturaAtiva', String(u.assinatura_ativa));
+        }
+    }
+
+    persistirSessaoAtiva(usuario, extra = {}) {
+        if (usuario.token) {
+            localStorage.setItem('token', usuario.token);
+        }
+        sessionStorage.setItem('usuario', JSON.stringify(usuario));
+        sessionStorage.setItem('sessionTime', '1800');
+        sessionStorage.setItem('isAutenticated', 'true');
+        sessionStorage.removeItem('nps_respondido');
+
+        localStorage.setItem('userAtivo', 'true');
+        localStorage.removeItem('motivoBloqueio');
+
+        if (usuario.plano_id) {
+            localStorage.setItem('planoId', String(usuario.plano_id));
+        }
+        if (usuario.plano_nome) {
+            localStorage.setItem('planoNome', usuario.plano_nome);
+        }
+        if (usuario.modulos_plano) {
+            localStorage.setItem('modulosPlano', JSON.stringify(usuario.modulos_plano));
+        }
+        if (usuario.status_assinatura) {
+            localStorage.setItem('statusAssinatura', usuario.status_assinatura);
+        }
+        if (usuario.assinatura_ativa !== undefined) {
+            localStorage.setItem('assinaturaAtiva', String(usuario.assinatura_ativa));
+        }
+        if (extra.menu) {
+            localStorage.setItem('menu', JSON.stringify(extra.menu));
+        }
+
+        if (usuario.assinatura) {
+            localStorage.setItem('userAssinatura', JSON.stringify(usuario.assinatura));
+        }
+        sincronizarAssinaturaNoPlanStore();
+        if (usuario.usuario_vitalicio !== undefined) {
+            localStorage.setItem('usuarioVitalicio', String(usuario.usuario_vitalicio));
+        }
+        if (usuario.tem_assinatura_ativa !== undefined) {
+            localStorage.setItem('temAssinaturaAtiva', String(usuario.tem_assinatura_ativa));
+        }
+    }
+
+    aplicarRespostaUsuario(data) {
+        if (!data) return;
+
+        if (data.status === 'inativo') {
+            this.persistirSessaoInativa(data, null);
+            return;
+        }
+
+        if (data.usuario) {
+            localStorage.setItem('userAtivo', 'true');
+            localStorage.removeItem('motivoBloqueio');
+
+            const u = data.usuario;
+            if (u.status_assinatura) {
+                localStorage.setItem('statusAssinatura', u.status_assinatura);
             }
+            if (u.assinatura_ativa !== undefined) {
+                localStorage.setItem('assinaturaAtiva', String(u.assinatura_ativa));
+            }
+            if (u.assinatura) {
+                localStorage.setItem('userAssinatura', JSON.stringify(u.assinatura));
+            } else {
+                localStorage.removeItem('userAssinatura');
+            }
+            sincronizarAssinaturaNoPlanStore();
+            if (u.usuario_vitalicio !== undefined) {
+                localStorage.setItem('usuarioVitalicio', String(u.usuario_vitalicio));
+            }
+            const prev = JSON.parse(sessionStorage.getItem('usuario') || '{}');
+            sessionStorage.setItem('usuario', JSON.stringify({ ...prev, ...u }));
+        }
+    }
+
+    marcarComoInativo(motivo = 'assinatura_pausada') {
+        localStorage.setItem('userAtivo', 'false');
+        localStorage.setItem('motivoBloqueio', motivo);
+    }
+
+    marcarComoAtivoLocal() {
+        localStorage.setItem('userAtivo', 'true');
+        localStorage.removeItem('motivoBloqueio');
+    }
+
+    async sincronizarSessaoComApi() {
+        const response = await api.get('/user');
+        this.aplicarRespostaUsuario(response.data);
+        return response.data;
+    }
+
+    async entrar(credenciais) {
+        try {
+            const response = await api.post('/login', credenciais);
+            const body = response.data;
+
+            if (body.status === 'inativo' && body.usuario?.token) {
+                this.persistirSessaoInativa(body, body.usuario.token);
+                return {
+                    ...body,
+                    user: body.usuario,
+                    cadastroCompleto: body.usuario?.cadastro_completo
+                };
+            }
+
+            if (body.usuario?.token) {
+                this.persistirSessaoAtiva(body.usuario, { menu: body.menu });
+            }
+
             return {
-                ...response.data,
-                user: response.data.usuario,
-                cadastroCompleto: response.data.cadastro_completo
+                ...body,
+                user: body.usuario,
+                cadastroCompleto: body.cadastro_completo
             };
         } catch (error) {
             throw error;
         }
     }
 
-    // Logout do usuário
-    async logout() {
+    async sair() {
         try {
             await api.post('/logout');
-            localStorage.removeItem('token');
-            // Limpar dados da nova estrutura
-            localStorage.removeItem('planoId');
-            localStorage.removeItem('planoNome');
-            localStorage.removeItem('modulosPlano');
-            localStorage.removeItem('statusAssinatura');
-            localStorage.removeItem('assinaturaAtiva');
-            localStorage.removeItem('menu');
-            // Limpar dados antigos (compatibilidade)
-            localStorage.removeItem('userAssinatura');
-            localStorage.removeItem('usuarioVitalicio');
-            localStorage.removeItem('temAssinaturaAtiva');
-            sessionStorage.removeItem('usuario');
-            sessionStorage.removeItem('sessionTime');
-            sessionStorage.removeItem('isAutenticated');
-            sessionStorage.removeItem('nps_respondido');
         } catch (error) {
-            // Mesmo se der erro, remove o token local
-            localStorage.removeItem('token');
-            localStorage.removeItem('planoId');
-            localStorage.removeItem('planoNome');
-            localStorage.removeItem('modulosPlano');
-            localStorage.removeItem('statusAssinatura');
-            localStorage.removeItem('assinaturaAtiva');
-            localStorage.removeItem('menu');
-            localStorage.removeItem('userAssinatura');
-            localStorage.removeItem('usuarioVitalicio');
-            localStorage.removeItem('temAssinaturaAtiva');
-            sessionStorage.removeItem('usuario');
-            sessionStorage.removeItem('sessionTime');
-            sessionStorage.removeItem('isAutenticated');
-            sessionStorage.removeItem('nps_respondido');
-            throw error;
+            // segue limpando local
         }
+        localStorage.removeItem('token');
+        localStorage.removeItem('planoId');
+        localStorage.removeItem('planoNome');
+        localStorage.removeItem('modulosPlano');
+        localStorage.removeItem('statusAssinatura');
+        localStorage.removeItem('assinaturaAtiva');
+        localStorage.removeItem('menu');
+        localStorage.removeItem('userAssinatura');
+        localStorage.removeItem('usuarioVitalicio');
+        localStorage.removeItem('temAssinaturaAtiva');
+        localStorage.removeItem('userAtivo');
+        localStorage.removeItem('motivoBloqueio');
+        sessionStorage.removeItem('usuario');
+        sessionStorage.removeItem('sessionTime');
+        sessionStorage.removeItem('isAutenticated');
+        sessionStorage.removeItem('nps_respondido');
+        sincronizarAssinaturaNoPlanStore();
     }
 
-    // Verificar se o usuário está autenticado
-    async checkAuth() {
+    async verificarAutenticacao() {
         try {
             const response = await api.get('/user');
+            this.aplicarRespostaUsuario(response.data);
             return response.data;
         } catch (error) {
             localStorage.removeItem('token');
@@ -106,18 +197,17 @@ class AuthService {
         }
     }
 
-    // Validar token (método para login automático)
-    async validateToken() {
+    async validarToken() {
         try {
             const response = await api.get('/user');
+            this.aplicarRespostaUsuario(response.data);
             return response.data;
         } catch (error) {
             throw error;
         }
     }
 
-    // Renovar token
-    async refreshToken() {
+    async renovarToken() {
         try {
             const response = await api.post('/token/refresh');
             if (response.data.token) {
@@ -129,123 +219,62 @@ class AuthService {
         }
     }
 
-    // Verificar se há token no localStorage
-    isAuthenticated() {
+    estaAutenticado() {
         return !!localStorage.getItem('token');
     }
 
-    // Obter token atual
-    getToken() {
+    obterToken() {
         return localStorage.getItem('token');
     }
 
-    // Enviar código de reset de senha
-    async sendResetCode(data) {
-        try {
-            const response = await api.post('/user/send-reset-code', data);
-            return response.data;
-        } catch (error) {
-            throw error;
-        }
+    contaEstaInativa() {
+        return localStorage.getItem('userAtivo') === 'false';
     }
 
-    // Verificar código de reset
-    async verifyResetCode(data) {
-        try {
-            const response = await api.post('/user/verify-reset-code', data);
-            return response.data;
-        } catch (error) {
-            throw error;
-        }
+    obterMotivoBloqueio() {
+        return localStorage.getItem('motivoBloqueio') || '';
     }
 
-    // Resetar senha com código
-    async resetPassword(data) {
-        try {
-            const response = await api.post('/user/reset-password', data);
-            return response.data;
-        } catch (error) {
-            throw error;
-        }
+    async enviarCodigoRecuperacao(data) {
+        const response = await api.post('/user/send-reset-code', data);
+        return response.data;
     }
 
-    // Alterar senha do usuário (método antigo mantido para compatibilidade)
-    async changePassword(passwordData) {
-        try {
-            const response = await api.post('/user/change-password', passwordData);
-            return response.data;
-        } catch (error) {
-            throw error;
-        }
+    async verificarCodigoRecuperacao(data) {
+        const response = await api.post('/user/verify-reset-code', data);
+        return response.data;
     }
 
-    // Login com Google
-    async googleLogin(credential) {
-        try {
-            const response = await api.post('/auth/google', { token: credential });
-            
-            if (response.data.usuario.token) {
-                localStorage.setItem('token', response.data.usuario.token);
-                sessionStorage.setItem("usuario", JSON.stringify(response.data.usuario));
-                sessionStorage.setItem('sessionTime', 1800);
-                sessionStorage.setItem('isAutenticated', true);
-                
-                // Limpar flag de NPS para validar novamente
-                sessionStorage.removeItem('nps_respondido')
-                
-                // Salvar dados do plano no localStorage (nova estrutura)
-                if (response.data.usuario.plano_id) {
-                    localStorage.setItem('planoId', response.data.usuario.plano_id);
-                }
-                if (response.data.usuario.plano_nome) {
-                    localStorage.setItem('planoNome', response.data.usuario.plano_nome);
-                }
-                if (response.data.usuario.modulos_plano) {
-                    localStorage.setItem('modulosPlano', JSON.stringify(response.data.usuario.modulos_plano));
-                }
-                if (response.data.usuario.status_assinatura) {
-                    localStorage.setItem('statusAssinatura', response.data.usuario.status_assinatura);
-                }
-                if (response.data.usuario.assinatura_ativa !== undefined) {
-                    localStorage.setItem('assinaturaAtiva', response.data.usuario.assinatura_ativa);
-                }
-                if (response.data.menu) {
-                    localStorage.setItem('menu', JSON.stringify(response.data.menu));
-                }
-                
-                // Manter compatibilidade com dados antigos (será removido posteriormente)
-                if (response.data.usuario.assinatura) {
-                    localStorage.setItem('userAssinatura', JSON.stringify(response.data.usuario.assinatura));
-                }
-                if (response.data.usuario.usuario_vitalicio !== undefined) {
-                    localStorage.setItem('usuarioVitalicio', response.data.usuario.usuario_vitalicio);
-                }
-                if (response.data.usuario.tem_assinatura_ativa !== undefined) {
-                    localStorage.setItem('temAssinaturaAtiva', response.data.usuario.tem_assinatura_ativa);
-                }
-            }
-            
-            return {
-                ...response.data,
-                user: response.data.usuario,
-                cadastroCompleto: response.data.cadastro_completo,
-                is_new_user: response.data.is_new_user,
-                cadastro_completo: response.data.cadastro_completo // Manter compatibilidade
-            };
-        } catch (error) {
-            throw error;
-        }
+    async redefinirSenha(data) {
+        const response = await api.post('/user/reset-password', data);
+        return response.data;
     }
 
-    // Completar cadastro (para usuários sociais)
+    async alterarSenha(dadosSenha) {
+        const response = await api.post('/user/change-password', dadosSenha);
+        return response.data;
+    }
+
+    async entrarComGoogle(credential) {
+        const response = await api.post('/auth/google', { token: credential });
+
+        if (response.data.usuario?.token) {
+            this.persistirSessaoAtiva(response.data.usuario, { menu: response.data.menu });
+        }
+
+        return {
+            ...response.data,
+            user: response.data.usuario,
+            cadastroCompleto: response.data.cadastro_completo,
+            is_new_user: response.data.is_new_user,
+            cadastro_completo: response.data.cadastro_completo
+        };
+    }
+
     async completarCadastro(dados) {
-        try {
-            const response = await api.put('/user/completar-cadastro', dados);
-            return response.data;
-        } catch (error) {
-            throw error;
-        }
+        const response = await api.put('/user/completar-cadastro', dados);
+        return response.data;
     }
 }
 
-export default new AuthService(); 
+export default new AuthService();

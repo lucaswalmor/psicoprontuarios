@@ -12,6 +12,7 @@ import '@/assets/styles.scss';
 import { loadThemeConfig, applyThemeConfig } from '@/utils/themeStorage';
 import '/node_modules/primeflex/primeflex.css';
 import services from '@/services';
+import authService from '@/services/authService';
 import money from 'v-money3';
 
 // Carregar configurações iniciais do localStorage
@@ -85,4 +86,13 @@ app.config.globalProperties.$leadsService = services.leadsService;
 app.config.globalProperties.$anexosService = services.anexosService;
 app.config.globalProperties.$npsService = services.npsService;
 
-app.mount('#app');
+(async () => {
+    if (localStorage.getItem('token')) {
+        try {
+            await authService.sincronizarSessaoComApi();
+        } catch (e) {
+            console.warn('Não foi possível sincronizar a sessão com o servidor.');
+        }
+    }
+    app.mount('#app');
+})();

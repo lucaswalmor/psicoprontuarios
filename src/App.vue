@@ -1,3 +1,8 @@
+<template>
+    <router-view />
+    <LoadingGlobal />
+</template>
+
 <script setup>
 import { onMounted, nextTick } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
@@ -47,10 +52,5 @@ onMounted(async () => {
     }
 });
 </script>
-
-<template>
-    <router-view />
-    <LoadingGlobal />
-</template>
 
 <style scoped></style>

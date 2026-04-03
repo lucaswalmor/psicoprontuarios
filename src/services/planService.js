@@ -25,6 +25,15 @@ class PlanService {
         }
     }
 
+    /** Catálogo público de planos ativos (tabela `planos`) — `GET /planos` */
+    async listarPlanosPublicos() {
+        const response = await api.get('/planos');
+        const body = response.data;
+        if (Array.isArray(body?.planos)) return body.planos;
+        if (Array.isArray(body)) return body;
+        return [];
+    }
+
     // === MÉTODOS STRIPE ===
 
     // Criar checkout session para assinatura

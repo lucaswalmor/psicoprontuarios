@@ -1,5 +1,5 @@
 <template>
-    <div class="upgrade-page-container mb-4">
+    <div class="container p-4 mb-4">
         <div class="upgrade-layout-grid">
             <!-- Card Esquerda -->
             <div class="left-card">
@@ -64,13 +64,20 @@
                                 Selecione o plano que melhor atende às suas necessidades
                             </p>
                             
-                            <div class="plans-grid">
+                            <div v-if="loadingPlanos" class="plans-loading text-center py-5">
+                                <i class="pi pi-spin pi-spinner text-4xl text-primary"></i>
+                                <p class="mt-3 mb-0 text-color-secondary">Carregando planos…</p>
+                            </div>
+                            <Message v-else-if="erroPlanos" severity="error" :closable="false" class="mb-3">
+                                {{ erroPlanos }}
+                            </Message>
+                            <div v-else class="plans-grid">
                                 <PlanoCard
                                     v-for="plan in availablePlans"
                                     :key="plan.id"
                                     :plan="plan"
                                     :is-selected="selectedPlan?.id === plan.id"
-                                    :is-current="plan.nome === currentPlanName"
+                                    :is-current="isPlanoAtual(plan)"
                                     @select="selectPlan"
                                 />
                             </div>
@@ -120,6 +127,8 @@ import { useRouter } from 'vue-router';
 import { usePlanStore } from '@/store/plan';
 import { useAsaas } from '@/composables/useAsaas';
 import { useToast } from 'primevue/usetoast';
+import Message from 'primevue/message';
+import planService from '@/services/planService';
 import UpgradeStepper from '@/components/upgrade/UpgradeStepper.vue';
 import PlanoCard from '@/components/upgrade/PlanoCard.vue';
 import FaqModal from '@/components/upgrade/FaqModal.vue';
@@ -133,7 +142,8 @@ export default {
         PlanoCard,
         FaqModal,
         CartaoAsaas,
-        SucessoPagamento
+        SucessoPagamento,
+        Message
     },
     setup() {
         const router = useRouter();
@@ -145,88 +155,87 @@ export default {
         const selectedPlan = ref(null);
         const pagamentoSucesso = ref(false);
         const planoContratado = ref(null);
-        
+        const planosList = ref([]);
+        const loadingPlanos = ref(false);
+        const erroPlanos = ref(null);
+
         const steps = [
             { id: 1, title: 'Escolha do Plano' },
             { id: 2, title: 'Pagamento' }
         ];
 
-        // Computed properties
-        const currentPlanName = computed(() => {
-            return planStore.planoNome || 'Gratuito';
-        });
+        function mapearPlanoApi(p, index) {
+            const precoNum = Number(p.preco);
+            const precoOk = Number.isFinite(precoNum);
+            const slug = String(p.slug || '').toLowerCase();
+            const nomeLower = String(p.nome || '').toLowerCase();
+            const vitalicio = slug === 'vitalicio' || nomeLower.includes('vitalício') || nomeLower.includes('vitalicio');
+            const precoStr = precoOk
+                ? (vitalicio ? `R$ ${precoNum.toFixed(2).replace('.', ',')} (pagamento único)` : `R$ ${precoNum.toFixed(2).replace('.', ',')}/mês`)
+                : 'Consulte valores';
+            const features = [];
+            if (p.trial_dias > 0) {
+                features.push(`${p.trial_dias} dia${p.trial_dias > 1 ? 's' : ''} de trial gratuito`);
+            }
+            if (p.descricao && String(p.descricao).trim()) {
+                const partes = String(p.descricao).split(/\.\s+|\n+/).map((s) => s.trim()).filter(Boolean);
+                features.push(...partes);
+            }
+            if (!features.length) {
+                features.push('Acesso às funcionalidades do sistema');
+            }
+            return {
+                id: p.id,
+                nome: p.nome,
+                preco: precoStr,
+                descricao: p.descricao || '',
+                features: features.slice(0, 12),
+                popular: index === 0
+            };
+        }
+
+        async function carregarPlanos() {
+            loadingPlanos.value = true;
+            erroPlanos.value = null;
+            try {
+                const raw = await planService.listarPlanosPublicos();
+                const arr = Array.isArray(raw) ? raw : [];
+                planosList.value = arr.map((p, i) => mapearPlanoApi(p, i));
+            } catch (e) {
+                console.error('Erro ao carregar planos:', e);
+                erroPlanos.value = 'Não foi possível carregar os planos. Tente atualizar a página.';
+                planosList.value = [];
+            } finally {
+                loadingPlanos.value = false;
+            }
+        }
+
+        const currentPlanName = computed(() => planStore.planoNome || 'Livre');
 
         const currentPlanClass = computed(() => {
-            const plan = currentPlanName.value.toLowerCase();
+            const plan = currentPlanName.value.toLowerCase().replace(/\s+/g, '-');
             return `plan-${plan}`;
         });
 
-                const availablePlans = computed(() => {
-            const currentPlan = currentPlanName.value;
-
-            if (currentPlan === 'Gratuito') {
-                return [
-                    {
-                        id: 2, // ID do plano Essencial no banco
-                        nome: 'Essencial',
-                        preco: 'R$ 29,90/mês',
-                        descricao: 'Perfeito para psicólogos em crescimento',
-                        features: [
-                            'Até 15 pacientes',
-                            'Agendamentos',
-                            'Até 200 anexos',
-                            'Prontuários PDF',
-                            'Dashboard',
-                            'Backup Automático',
-                            'Suporte por email',
-                            'Prontuários ilimitados'
-                        ],
-                        popular: true
-                    },
-                    {
-                        id: 3, // ID do plano Profissional no banco
-                        nome: 'Profissional',
-                        preco: 'R$ 59,90/mês',
-                        descricao: 'Solução completa para profissionais estabelecidos',
-                        features: [
-                            'Até 30 pacientes',
-                            'Agendamentos',
-                            'Anexos ilimitados',
-                            'Prontuários PDF',
-                            'Dashboard',
-                            'Gestão Financeira',
-                            'Backup Automático',
-                            'Suporte completo',
-                            'Prontuários ilimitados'
-                        ],
-                        popular: false
-                    }
-                ];
-            } else if (currentPlan === 'Essencial') {
-                return [
-                    {
-                        id: 3, // ID do plano Profissional no banco
-                        nome: 'Profissional',
-                        preco: 'R$ 59,90/mês',
-                        descricao: 'Solução completa para profissionais estabelecidos',
-                        features: [
-                            'Até 30 pacientes',
-                            'Agendamentos',
-                            'Anexos ilimitados',
-                            'Prontuários PDF',
-                            'Dashboard',
-                            'Gestão Financeira',
-                            'Backup Automático',
-                            'Suporte completo',
-                            'Prontuários ilimitados'
-                        ],
-                        popular: false
-                    }
-                ];
-            }
-            
-            return [];
+        const availablePlans = computed(() => {
+            const list = planosList.value;
+            if (!list.length) return [];
+            const stat = planStore.statusAssinatura || localStorage.getItem('statusAssinatura') || '';
+            if (stat === 'sem_assinatura') return list;
+            const pidRaw = localStorage.getItem('planoId');
+            if (pidRaw == null || pidRaw === '') return list;
+            const pid = parseInt(pidRaw, 10);
+            if (Number.isNaN(pid)) return list;
+            return list.filter((pl) => Number(pl.id) !== pid);
         });
+
+        const isPlanoAtual = (plan) => {
+            if (plan.nome === currentPlanName.value) return true;
+            const pidRaw = localStorage.getItem('planoId');
+            if (pidRaw == null || pidRaw === '') return false;
+            const pid = parseInt(pidRaw, 10);
+            return !Number.isNaN(pid) && Number(plan.id) === pid;
+        };
 
         // Methods
         const selectPlan = (plan) => {
@@ -253,29 +262,43 @@ export default {
             currentStep.value = step;
         };
 
-        const processarPagamento = async () => {
-            toast.add({
-                severity: 'info',
-                summary: 'Em breve',
-                detail: 'O sistema de planos e pagamentos está temporariamente desativado. Todas as funcionalidades já estão liberadas.',
-                life: 5000
-            });
-        };
-
-        // Atualizar menu após upgrade
-        const atualizarMenuAposUpgrade = async () => {
+        const processarPagamento = async (payload) => {
+            if (!selectedPlan.value?.id) {
+                toast.add({
+                    severity: 'warn',
+                    summary: 'Plano',
+                    detail: 'Selecione um plano antes de pagar.',
+                    life: 4000
+                });
+                return;
+            }
+            if (!payload?.cartao) {
+                toast.add({ severity: 'warn', summary: 'Cartão', detail: 'Dados do cartão incompletos.', life: 4000 });
+                return;
+            }
             try {
-                const api = (await import('@/utils/axios')).default;
-                const response = await api.get('/menu');
-                if (response.data && response.data.menu) {
-                    localStorage.setItem('menu', JSON.stringify(response.data.menu));
-                    // Disparar evento para atualizar menu no AppMenu
-                    window.dispatchEvent(new CustomEvent('menu-updated', { 
-                        detail: response.data.menu 
-                    }));
+                await asaas.criarCheckout(selectedPlan.value.id, payload.cartao);
+                planoContratado.value = selectedPlan.value.nome;
+                pagamentoSucesso.value = true;
+                toast.add({
+                    severity: 'success',
+                    summary: 'Assinatura',
+                    detail: 'Plano ativado com sucesso.',
+                    life: 5000
+                });
+            } catch (e) {
+                const body = e?.response?.data;
+                let msg = body?.message || e?.message || 'Não foi possível processar o pagamento.';
+                if (typeof body?.errors === 'object' && body.errors) {
+                    const first = Object.values(body.errors).flat()[0];
+                    if (first) msg = first;
                 }
-            } catch (error) {
-                console.error('Erro ao atualizar menu após upgrade:', error);
+                toast.add({
+                    severity: 'error',
+                    summary: 'Pagamento',
+                    detail: String(msg),
+                    life: 8000
+                });
             }
         };
 
@@ -286,13 +309,9 @@ export default {
 
         // Lifecycle
         onMounted(async () => {
-            // Carregar informações do plano se não estiverem carregadas
-            if (!planStore.hasPlanData) {
-                await planStore.fetchPlanInfo();
-            }
-            
-            // Verificar se o usuário pode fazer upgrade
-            if (currentPlanName.value === 'Profissional' || currentPlanName.value === 'Vitalício') {
+            await carregarPlanos();
+            const nome = currentPlanName.value.toLowerCase();
+            if (nome === 'profissional' || nome === 'vitalício' || nome === 'vitalicio') {
                 router.push('/dashboard');
             }
         });
@@ -306,13 +325,15 @@ export default {
             currentPlanName,
             currentPlanClass,
             availablePlans,
+            loadingPlanos,
+            erroPlanos,
+            isPlanoAtual,
             selectPlan,
             nextStep,
             previousStep,
             handleStepChange,
             processarPagamento,
             irParaDashboard,
-            atualizarMenuAposUpgrade,
             loading: asaas.loading
         };
     }

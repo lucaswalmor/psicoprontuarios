@@ -23,110 +23,7 @@
                         <!-- Aba do Plano -->
                         <TabPanel value="0">
                             <div class="p-4">
-                                <!-- Alerta de Pagamento Recusado -->
-                                <Message v-if="statusPagamento?.tem_pendencia" severity="error" :closable="false" class="mb-4">
-                                    <div class="">
-                                        <div class="flex flex-column gap-2">
-                                            <strong>Pagamento Recusado</strong>
-                                            <p class="mt-2 mb-0">
-                                                Seu último pagamento não foi aprovado. Atualize seu cartão para continuar aproveitando o plano 
-                                                <strong>{{ statusPagamento.assinatura.plano }}</strong>.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </Message>
-
-                                <!-- Seção do Plano Atual -->
-                                <div class="surface-card p-4 border-round mb-4">
-                                    <div class="flex align-items-center justify-content-between mb-3">
-                                        <h6 class="m-0">Plano Atual</h6>
-                                        <Tag :value="getPlanName()" :severity="getPlanSeverity()" />
-                                    </div>
-
-                                    <div class="grid">
-                                        <div class="col-12 md:col-6">
-                                            <div class="flex flex-column gap-2">
-                                                <div class="flex align-items-center gap-2">
-                                                    <i class="pi pi-users text-primary"></i>
-                                                    <span class="text-800 font-bold">Pacientes:</span>
-                                                    <span class="text-500">{{ planStore.pacientesCount }} / {{ planStore.limitePacientes
-                                                        }}</span>
-                                                </div>
-                                                <div class="flex align-items-center gap-2">
-                                                    <i class="pi pi-paperclip text-primary"></i>
-                                                    <span class="text-800 font-bold">Anexos:</span>
-                                                    <span class="text-500">
-                                                        {{ planStore.anexosCount }} /
-                                                        {{ planStore.anexosLimite === -1 ? 'Ilimitado' : planStore.anexosLimite }}
-                                                    </span>
-                                                </div>
-                                                <div class="flex align-items-center gap-2">
-                                                    <i class="pi pi-dollar text-primary"></i>
-                                                    <span class="text-800 font-bold">Valor Mensal:</span>
-                                                    <span class="text-500">{{ getPlanPrice() }}</span>
-                                                </div>
-                                                <div class="flex align-items-center gap-2">
-                                                    <i class="pi pi-check-circle text-green-500"></i>
-                                                    <span class="text-800 font-bold">Status:</span>
-                                                    <Tag :value="getStatusText()" :severity="getStatusSeverity()" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Ações do Plano -->
-                                <div class="grid">
-                                    <div class="col-12 md:col-6">
-                                        <div class="surface-card p-4 border-round">
-                                            <h6 class="mb-3">Geral</h6>
-
-                                            <!-- Botão de Renovar Assinatura (quando pagamento falhou) -->
-                                            <Button v-if="shouldShowRenewButton" 
-                                                label="Renovar Assinatura" 
-                                                icon="pi pi-refresh"
-                                                @click="renovarAssinatura"
-                                                severity="danger"
-                                                class="w-full mb-3"
-                                            />
-
-                                            <!-- Botão de Upgrade -->
-                                            <Button v-if="shouldShowUpgradeButton" 
-                                                label="Fazer Upgrade do Plano" 
-                                                icon="pi pi-star"
-                                                class="w-full mb-3" 
-                                                @click="goToUpgrade" />
-
-                                            <!-- Botão de Pausar/Reativar -->
-                                            <Button v-if="planStore.assinatura?.stripe_subscription_id"
-                                                :label="isPlanPaused ? 'Reativar Plano' : 'Pausar Plano'"
-                                                :icon="isPlanPaused ? 'pi pi-play' : 'pi pi-pause'"
-                                                :severity="isPlanPaused ? 'success' : 'warning'" class="w-full"
-                                                @click="togglePlanStatus" />
-
-                                            <small class="text-600 block mt-2">
-                                                {{ isPlanPaused ?
-                                                    'Reative seu plano para voltar a ter acesso completo ao sistema.' :
-                                                    'Pause seu plano temporariamente. Você manterá acesso limitado.' }}
-                                            </small>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-12 md:col-6">
-                                        <div class="surface-card p-4 border-round">
-                                            <h6 class="mb-3 text-800 font-bold">Recursos Disponíveis</h6>
-                                            <div class="flex flex-column gap-2">
-                                                <div v-for="feature in availableFeatures" :key="feature.key"
-                                                    class="flex align-items-center gap-2">
-                                                    <i
-                                                        :class="['pi', feature.icon, feature.available ? 'text-green-500' : 'text-gray-400']"></i>
-                                                    <span :class="feature.available ? 'text-green-600' : 'text-gray-400'" class="text-800 font-bold">{{
-                                                        feature.label }}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <ConfiguracaoPlanoTab v-if="activeTab === '0'" />
                             </div>
                         </TabPanel>
 
@@ -302,71 +199,6 @@
         </div>
     </div>
 
-    <!-- Dialog de Confirmação para Pausar Plano -->
-    <Dialog :visible="showPauseDialog" @update:visible="showPauseDialog = $event" modal header="Confirmar Pausa do Plano" :style="{ width: '500px' }">
-        <div class="flex flex-column gap-3">
-            <div class="flex align-items-center gap-2">
-                <i class="pi pi-exclamation-triangle text-orange-500 text-xl"></i>
-                <span class="font-medium">Tem certeza que deseja pausar seu plano?</span>
-            </div>
-
-            <div class="surface-100 p-3 border-round">
-                <h6 class="mb-2">O que acontecerá ao pausar o plano:</h6>
-                <ul class="m-0 pl-3 text-500">
-                    <li class="text-800 font-bold">Você manterá acesso ao sistema</li>
-                    <li class="text-800 font-bold">Poderá visualizar e baixar prontuários existentes</li>
-                    <li class="text-800 font-bold">Poderá baixar anexos já enviados</li>
-                    <li class="text-800 font-bold">Não poderá cadastrar novos pacientes</li>
-                    <li class="text-800 font-bold">Não poderá fazer novos uploads de anexos</li>
-                    <li class="text-800 font-bold">Não terá acesso a agendamentos e gestão financeira</li>
-                    <li class="text-800 font-bold">Não serão geradas novas cobranças</li>
-                </ul>
-            </div>
-
-            <div class="surface-100 p-3 border-round">
-                <h6 class="mb-2">Para reativar:</h6>
-                <p class="m-0 text-sm">Acesse esta tela novamente e clique em "Reativar Plano"</p>
-            </div>
-        </div>
-
-        <template #footer>
-            <div class="flex justify-content-end gap-2">
-                <Button label="Cancelar" severity="secondary" outlined @click="showPauseDialog = false" />
-                <Button label="Confirmar Pausa" severity="warning" @click="confirmPausePlan" :loading="loading" />
-            </div>
-        </template>
-    </Dialog>
-
-    <!-- Dialog de Confirmação para Reativar Plano -->
-    <Dialog :visible="showReactivateDialog" @update:visible="showReactivateDialog = $event" modal header="Confirmar Reativação do Plano"
-        :style="{ width: '500px' }">
-        <div class="flex flex-column gap-3">
-            <div class="flex align-items-center gap-2">
-                <i class="pi pi-check-circle text-green-500 text-xl"></i>
-                <span class="font-medium">Reativar Plano</span>
-            </div>
-
-            <div class="surface-100 p-3 border-round">
-                <h6 class="mb-2">Ao reativar seu plano:</h6>
-                <ul class="m-0 pl-3">
-                    <li>Você terá acesso completo ao sistema</li>
-                    <li>Poderá cadastrar novos pacientes</li>
-                    <li>Poderá fazer uploads de anexos</li>
-                    <li>Terá acesso a agendamentos e gestão financeira</li>
-                    <li>As cobranças mensais serão retomadas</li>
-                </ul>
-            </div>
-        </div>
-
-        <template #footer>
-            <div class="flex justify-content-end gap-2">
-                <Button label="Cancelar" severity="secondary" outlined @click="showReactivateDialog = false" />
-                <Button label="Confirmar Reativação" severity="success" @click="confirmReactivatePlan"
-                    :loading="loading" />
-            </div>
-        </template>
-    </Dialog>
-
     <!-- Modal de Alteração de Senha -->
     <DialogChangePassword 
         v-model:visible="showChangePasswordModal"
@@ -375,11 +207,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onActivated, onUnmounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted, onActivated, onUnmounted } from 'vue';
 import { usePlanStore } from '@/store/plan';
 import { useToast } from 'primevue/usetoast';
 import DialogChangePassword from '@/components/dialogs/configuracoes/DialogChangePassword.vue';
+import ConfiguracaoPlanoTab from '@/views/pages/configuracoes/ConfiguracaoPlanoTab.vue';
 import Tabs from 'primevue/tabs';
 import TabList from 'primevue/tablist';
 import Tab from 'primevue/tab';
@@ -387,19 +219,12 @@ import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
 import Checkbox from 'primevue/checkbox';
 import api from '@/utils/axios';
-import { planService } from '@/services';
 
-const router = useRouter();
 const planStore = usePlanStore();
 const toast = useToast();
 
-// Estados reativos
-const showPauseDialog = ref(false);
-const showReactivateDialog = ref(false);
 const showChangePasswordModal = ref(false);
-const loading = ref(false);
 const activeTab = ref('0');
-const statusPagamento = ref(null);
 
 // Configurações de notificação
 const loadingNotificacoes = ref(false);
@@ -411,122 +236,6 @@ const configNotificacoes = ref({
     notificacoes_consultas_pacientes_whatsapp: true,
     notificacoes_consultas_pacientes_email: true
 });
-
-// Computed properties
-const shouldShowUpgradeButton = computed(() => {
-    if (planStore.isVitalicio) return false;
-    if (!planStore.temAssinaturaAtiva) return true;
-    const currentPlan = localStorage.getItem('planoNome');
-    if (currentPlan) {
-        return currentPlan === 'Gratuito' || currentPlan === 'Essencial';
-    }
-    return true;
-});
-
-const shouldShowRenewButton = computed(() => {
-    // Mostrar botão de renovar quando:
-    // 1. Assinatura existe
-    // 2. Status é 'past_due' (pagamento falhou) ou 'unpaid' (não pago)
-    // 3. Não está pausada
-    return planStore.assinatura?.stripe_subscription_id && 
-           ['past_due', 'unpaid'].includes(planStore.assinatura?.status) &&
-           !isPlanPaused.value;
-});
-
-const isPlanPaused = computed(() => {
-    return planStore.assinatura?.status === 'pausada';
-});
-
-const availableFeatures = computed(() => {
-    const modules = JSON.parse(localStorage.getItem('modulosPlano') || 'null') || {};
-    return [
-        {
-            key: 'pacientes',
-            label: 'Pacientes',
-            icon: 'pi-users',
-            available: true
-        },
-        {
-            key: 'prontuarios',
-            label: 'Prontuários',
-            icon: 'pi-file',
-            available: true
-        },
-        {
-            key: 'dashboard',
-            label: 'Dashboard',
-            icon: 'pi-home',
-            available: !!modules.dashboard
-        },
-        {
-            key: 'gestao_financeira',
-            label: 'Gestão Financeira',
-            icon: 'pi-wallet',
-            available: !!modules.gestao_financeira
-        },
-        {
-            key: 'agendamentos',
-            label: 'Agendamentos',
-            icon: 'pi-calendar',
-            available: !!modules.agendamentos
-        },
-        {
-            key: 'prontuarios_pdf',
-            label: 'Exportar Prontuários PDF',
-            icon: 'pi-file-pdf',
-            available: !!modules.prontuarios_pdf
-        },
-        {
-            key: 'anexos',
-            label: `Anexos (${planStore.anexosLimite === -1 ? 'Ilimitado' : planStore.anexosLimite})`,
-            icon: 'pi-paperclip',
-            available: !!modules.arquivos
-        },
-        {
-            key: 'backup_automatico',
-            label: 'Backup Automático',
-            icon: 'pi-cloud',
-            available: !!modules.backup_automatico
-        },
-        {
-            key: 'perfil_publico',
-            label: 'Perfil Público',
-            icon: 'pi-id-card',
-            available: !!modules.perfil_publico
-        }
-    ];
-});
-
-const getPlanName = () => {
-    return localStorage.getItem('planoNome') || 'Carregando...';
-};
-
-const getPlanPrice = () => {
-    const plan = (localStorage.getItem('planoNome') || '').toLowerCase();
-    switch (plan) {
-        case 'gratuito':
-            return 'R$ 0,00';
-        case 'essencial':
-            return 'R$ 29,90';
-        case 'profissional':
-            return 'R$ 69,90';
-        case 'vitalício':
-            return 'R$ 0,00';
-    }
-};
-
-const getPlanSeverity = () => {
-    const planName = localStorage.getItem('planoNome');
-    if (planName === 'Vitalício' || planName === 'Vitalicio') return 'success';
-    if (planName === 'Profissional') return 'info';
-    if (planName === 'Essencial') return 'warning';
-    return 'secondary';
-};
-
-const getStatusText = () => {
-    if (isPlanPaused.value) return 'Pausado';
-    return 'Ativo';
-};
 
 // Métodos para configurações de notificação
 const carregarConfiguracoesNotificacao = async () => {
@@ -598,106 +307,6 @@ const resetarNotificacoes = async () => {
     }
 };
 
-const getStatusSeverity = () => {
-    return isPlanPaused.value ? 'warning' : 'success';
-};
-
-const getPaymentMethod = () => {
-    return 'N/A';
-};
-
-const goToUpgrade = () => {
-    router.push('/upgrade');
-};
-
-const renovarAssinatura = async () => {
-    try {
-        // Usar a API específica para renovação
-        const response = await api.post('/assinaturas/renovar');
-        
-        if (response.data.checkout_url) {
-            // Redirecionar para Stripe Checkout
-            window.location.href = response.data.checkout_url;
-        } else {
-            throw new Error('URL de checkout não recebida');
-        }
-
-    } catch (error) {
-        console.error('Erro ao renovar assinatura:', error);
-        const errorMessage = error.response?.data?.error || 'Erro ao renovar assinatura. Tente novamente.';
-        toast.add({
-            severity: 'error',
-            summary: 'Erro',
-            detail: errorMessage,
-            life: 3000
-        });
-    }
-};
-
-const verificarStatusPagamento = async () => {
-    try {
-        const response = await planService.verificarStatusPagamento();
-        statusPagamento.value = response;
-        
-        if (response.tem_pendencia) {
-            toast.add({
-                severity: 'warn',
-                summary: 'Atenção',
-                detail: 'Há um problema com seu pagamento. Atualize seu cartão.',
-                life: 10000
-            });
-        }
-    } catch (error) {
-        console.error('Erro ao verificar status:', error);
-    }
-};
-
-const togglePlanStatus = () => {
-    if (isPlanPaused.value) {
-        showReactivateDialog.value = true;
-    } else {
-        showPauseDialog.value = true;
-    }
-};
-
-const confirmPausePlan = async () => {
-    try {
-        loading.value = true;
-
-        const response = await api.post('/assinaturas/pause');
-
-        toast.add({
-            severity: 'success',
-            summary: 'Sucesso',
-            detail: 'Plano pausado com sucesso',
-            life: 3000
-        });
-
-        // Atualizar dados no localStorage (base da nossa lógica simplificada)
-        if (response.data?.assinatura) {
-            localStorage.setItem('userAssinatura', JSON.stringify(response.data.assinatura));
-            localStorage.setItem('statusAssinatura', response.data.assinatura.status);
-            localStorage.setItem('temAssinaturaAtiva', response.data.assinatura.permiteAcesso());
-            
-            // Atualizar o store para reatividade
-            planStore.assinatura = response.data.assinatura;
-        }
-        
-        showPauseDialog.value = false;
-    } catch (error) {
-        console.error('Erro ao pausar plano:', error);
-        const errorMessage = error.response?.data?.error || error.response?.data?.message || error.message || 'Erro ao pausar plano';
-        toast.add({
-            severity: 'error',
-            summary: 'Erro',
-            detail: errorMessage,
-            life: 3000
-        });
-    } finally {
-        loading.value = false;
-    }
-};
-
 const handlePasswordChangeSuccess = () => {
     toast.add({
         severity: 'success',
@@ -707,56 +316,9 @@ const handlePasswordChangeSuccess = () => {
     });
 };
 
-const confirmReactivatePlan = async () => {
-    try {
-        loading.value = true;
-
-        const response = await api.post('/assinaturas/resume');
-
-        toast.add({
-            severity: 'success',
-            summary: 'Sucesso',
-            detail: 'Plano reativado com sucesso',
-            life: 3000
-        });
-
-        // Atualizar dados no localStorage (base da nossa lógica simplificada)
-        if (response.data?.assinatura) {
-            localStorage.setItem('userAssinatura', JSON.stringify(response.data.assinatura));
-            localStorage.setItem('statusAssinatura', response.data.assinatura.status);
-            localStorage.setItem('temAssinaturaAtiva', response.data.assinatura.permiteAcesso());
-            
-            // Atualizar o store para reatividade
-            planStore.assinatura = response.data.assinatura;
-        }
-        
-        showReactivateDialog.value = false;
-    } catch (error) {
-        console.error('Erro ao reativar plano:', error);
-        const errorMessage = error.response?.data?.error || error.response?.data?.message || error.message || 'Erro ao reativar plano';
-        toast.add({
-            severity: 'error',
-            summary: 'Erro',
-            detail: errorMessage,
-            life: 3000
-        });
-    } finally {
-        loading.value = false;
-    }
-};
-
 // Carregar dados na montagem
 onMounted(async () => {
-    // Carregar dados básicos se necessário
-    if (!planStore.hasPlanData) {
-        await planStore.fetchPlanInfo();
-    }
-    
-    // Carregar configurações de notificação
     await carregarConfiguracoesNotificacao();
-    
-    // Verificar status de pagamento
-    await verificarStatusPagamento();
 
     // Atualizar stats quando eventos de criação/alteração ocorrerem em outras telas
     const handleStatsUpdate = async () => {

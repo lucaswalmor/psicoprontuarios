@@ -644,7 +644,7 @@ export default {
             this.error = '';
             
             try {
-                const response = await this.$authService.googleLogin(credential);
+                const response = await this.$authService.entrarComGoogle(credential);
                 
                 // Verificar se é um novo usuário ou usuário existente
                 if (response.is_new_user === false) {

@@ -1,6 +1,6 @@
 import AppLayout from '@/layout/AppLayout.vue';
 import { createRouter, createWebHistory } from 'vue-router';
-import { setupPlanGuard } from './planGuard';
+import { setupAuthInactiveGuard } from './authInactiveGuard';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -30,6 +30,17 @@ const router = createRouter({
             name: 'completar-cadastro',
             component: () => import('@/views/pages/CompletarCadastro.vue'),
             meta: { requiresAuth: true }
+        },
+        {
+            path: '/upgrade',
+            component: () => import('@/layout/PrimeiraAssinaturaLayout.vue'),
+            children: [
+                {
+                    path: '',
+                    name: 'Upgrade',
+                    component: () => import('@/views/pages/Upgrade.vue')
+                }
+            ]
         },
         {
             path: '/politica-privacidade',
@@ -247,16 +258,14 @@ const router = createRouter({
                     meta: { requiresPlanCheck: true }
                 },
                 {
-                    path: '/upgrade',
-                    name: 'Upgrade',
-                    component: () => import('@/views/pages/Upgrade.vue'),
-                    meta: { requiresPlanCheck: true }
+                    path: '/assinatura',
+                    redirect: { path: '/configuracoes' }
                 },
                 {
-                    path: '/assinatura',
-                    name: 'ConfiguracoesAssinatura',
-                    component: () => import('@/views/pages/ConfiguracoesAssinatura.vue'),
-                    meta: { requiresAuth: true }
+                    path: '/pagamento',
+                    name: 'PagamentoBloqueio',
+                    component: () => import('@/views/pages/PagamentoBloqueio.vue'),
+                    meta: { allowsInactive: true }
                 },
                 {
                     path: '/modelos-arquivos',
@@ -289,7 +298,6 @@ const router = createRouter({
     ]
 });
 
-// Configurar o guard de plano
-// setupPlanGuard(router);
+setupAuthInactiveGuard(router);
 
 export default router;

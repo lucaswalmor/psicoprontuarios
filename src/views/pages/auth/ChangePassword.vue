@@ -161,7 +161,7 @@ export default {
 
             this.isLoading = true;
             try {
-                await this.$authService.sendResetCode({ email: this.email });
+                await this.$authService.enviarCodigoRecuperacao({ email: this.email });
                 
                 this.$toast.add({
                     severity: 'success',
@@ -226,7 +226,7 @@ export default {
 
             this.isLoading = true;
             try {
-                await this.$authService.verifyResetCode({ 
+                await this.$authService.verificarCodigoRecuperacao({ 
                     email: this.email, 
                     code: this.otpCode 
                 });
@@ -276,7 +276,7 @@ export default {
 
             this.isLoading = true;
             try {
-                await this.$authService.resetPassword({
+                await this.$authService.redefinirSenha({
                     email: this.email,
                     code: this.otpCode,
                     new_password: this.newPassword,

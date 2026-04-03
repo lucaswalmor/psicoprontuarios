@@ -146,7 +146,7 @@ export default {
             this.$router.push('/perfil');
         },
         logout() {
-            this.$authService.logout();
+            this.$authService.sair();
             this.$router.push('/login');
         }
     },

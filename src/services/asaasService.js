@@ -1,103 +1,62 @@
 import api from '@/utils/axios';
 
+/** Resposta Laravel JsonResource: { data: { ... } } */
+function extrairRecurso(body) {
+    if (!body) return null;
+    if (body.data && typeof body.data === 'object' && body.data.id !== undefined) {
+        return body.data;
+    }
+    if (body.id !== undefined) {
+        return body;
+    }
+    return body.data ?? body;
+}
+
 /**
- * Service para integração com Asaas
- * API endpoints para tokenização de cartão e criação de assinaturas
+ * Assinaturas via API Laravel (Asaas no backend)
  */
 class AsaasService {
-    /**
-     * Tokenizar cartão de crédito
-     */
-    async tokenizarCartao(dados) {
-        try {
-            const response = await api.post('/assinaturas/asaas/tokenizar', dados);
-            return response.data;
-        } catch (error) {
-            console.error('Erro ao tokenizar cartão:', error);
-            throw error;
-        }
-    }
-
-    /**
-     * Criar ou buscar cliente na Asaas
-     */
-    async criarOuBuscarCliente(dadosCliente) {
-        try {
-            const response = await api.post('/assinaturas/asaas/cliente', dadosCliente);
-            return response.data;
-        } catch (error) {
-            console.error('Erro ao criar/buscar cliente:', error);
-            throw error;
-        }
-    }
-
-    /**
-     * Criar assinatura com cartão tokenizado
-     */
-    async criarAssinatura(dados) {
-        try {
-            const response = await api.post('/assinaturas/asaas/criar', dados);
-            return response.data;
-        } catch (error) {
-            console.error('Erro ao criar assinatura:', error);
-            throw error;
-        }
-    }
-
-    /**
-     * Obter assinatura ativa
-     */
-    async getAssinaturaAtiva() {
-        try {
-            const response = await api.get('/assinaturas/asaas/ativa');
-            return response.data;
-        } catch (error) {
-            console.error('Erro ao obter assinatura ativa:', error);
-            throw error;
-        }
-    }
-
-    /**
-     * Pausar assinatura
-     */
     async pausarAssinatura() {
-        try {
-            const response = await api.post('/assinaturas/asaas/pausar');
-            return response.data;
-        } catch (error) {
-            console.error('Erro ao pausar assinatura:', error);
-            throw error;
-        }
+        const response = await api.post('/assinatura/pausar');
+        return { ...response.data, assinatura: extrairRecurso(response.data) };
     }
 
-    /**
-     * Reativar assinatura
-     */
     async reativarAssinatura() {
-        try {
-            const response = await api.post('/assinaturas/asaas/reativar');
-            return response.data;
-        } catch (error) {
-            console.error('Erro ao reativar assinatura:', error);
-            throw error;
-        }
+        const response = await api.post('/assinatura/reativar');
+        return { ...response.data, assinatura: extrairRecurso(response.data) };
     }
 
-    /**
-     * Cancelar assinatura
-     */
     async cancelarAssinatura(motivo = null) {
-        try {
-            const response = await api.post('/assinaturas/asaas/cancelar', {
-                motivo_cancelamento: motivo
-            });
-            return response.data;
-        } catch (error) {
-            console.error('Erro ao cancelar assinatura:', error);
-            throw error;
-        }
+        const response = await api.post('/assinatura/cancelar', motivo != null ? { motivo_cancelamento: motivo } : {});
+        return { ...response.data, assinatura: extrairRecurso(response.data) };
+    }
+
+    async atualizarCartao(cartao) {
+        const response = await api.post('/assinatura/atualizar-cartao', {
+            cartao: {
+                holder_name: cartao.holder_name,
+                number: cartao.number,
+                expiry_month: cartao.expiry_month,
+                expiry_year: cartao.expiry_year,
+                ccv: cartao.ccv
+            }
+        });
+        return response.data;
+    }
+
+    async iniciarAssinatura(planoId, cartao) {
+        const response = await api.post('/assinatura/iniciar', {
+            plano_id: planoId,
+            cartao: {
+                holder_name: cartao.holder_name,
+                number: cartao.number,
+                expiry_month: cartao.expiry_month,
+                expiry_year: cartao.expiry_year,
+                ccv: cartao.ccv
+            }
+        });
+        return { ...response.data, assinatura: extrairRecurso(response.data) };
     }
 }
 
 export default new AsaasService();
-

@@ -331,17 +331,21 @@ export default {
     },
     async mounted() {
         // Verificar se o usuário está autenticado
-        if (!this.$authService.isAuthenticated()) {
+        if (!this.$authService.estaAutenticado()) {
             this.$router.push('/login');
             return;
         }
 
         // Verificar se o usuário realmente precisa completar o cadastro
         try {
-            const userData = await this.$authService.validateToken();
-            // Se o usuário já tem cadastro completo, redirecionar
+            const userData = await this.$authService.validarToken();
+            if (userData.status === 'inativo') {
+                this.$router.push('/pagamento');
+                return;
+            }
+            // Se o usuário já tem cadastro completo, ir para upgrade (sem plano) ou dashboard
             if (userData.usuario && userData.usuario.cadastro_completo) {
-                this.$router.push('/dashboard');
+                this.$router.push(this.rotaAposCadastroOk(userData.usuario));
             }
         } catch (error) {
             console.error('Erro ao validar token:', error);
@@ -349,6 +353,12 @@ export default {
         }
     },
     methods: {
+        rotaAposCadastroOk(usuario) {
+            if (usuario && !usuario.usuario_vitalicio && usuario.status_assinatura === 'sem_assinatura') {
+                return '/upgrade';
+            }
+            return '/dashboard';
+        },
         validateForm() {
             this.errors = {};
 
@@ -491,9 +501,16 @@ export default {
                     life: 3000
                 });
 
-                // Redirecionar para dashboard após um breve delay
-                setTimeout(() => {
-                    this.$router.push('/dashboard');
+                setTimeout(async () => {
+                    try {
+                        const userData = await this.$authService.validarToken();
+                        const destino = userData.usuario
+                            ? this.rotaAposCadastroOk(userData.usuario)
+                            : '/dashboard';
+                        this.$router.push(destino);
+                    } catch {
+                        this.$router.push('/upgrade');
+                    }
                 }, 1500);
 
             } catch (err) {

@@ -65,7 +65,7 @@ export default {
 
         logout() {
             if (window.$authService) {
-                window.$authService.logout();
+                window.$authService.sair();
                 this.$router.push('/login');
             } else {
                 sessionStorage.clear();
