@@ -9,7 +9,6 @@ import planService from './planService';
 import leadsService from './leadsService';
 import anexosService from './anexosService';
 import npsService from './npsService';
-import mercadoPagoService from './mercadoPagoService';
 import asaasService from './asaasService';
 import assinaturaService from './assinaturaService';
 
@@ -25,12 +24,10 @@ export {
     leadsService,
     anexosService,
     npsService,
-    mercadoPagoService,
     asaasService,
     assinaturaService
 };
 
-// Exportar como objeto para uso global
 export default {
     pacientesService,
     prontuariosService,
@@ -43,7 +40,6 @@ export default {
     leadsService,
     anexosService,
     npsService,
-    mercadoPagoService,
     asaasService,
     assinaturaService
-}; 
+};

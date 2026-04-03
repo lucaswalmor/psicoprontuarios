@@ -109,15 +109,6 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
-                                                    <div class="flex align-items-center gap-3">
-                                                        <i class="pi pi-users text-primary text-xl"></i>
-                                                        <div>
-                                                            <h6 class="m-0 text-800">Pacientes</h6>
-                                                            <small class="text-600">{{ planStore.pacientesCount }} / {{ planStore.limitePacientes === -1 ? 'Ilimitado' : planStore.limitePacientes }}</small>
-                                                        </div>
-                                                    </div>
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -216,17 +207,7 @@ export default {
             showChangePasswordModal: false,
         };
     },
-    computed: {
-        hasProfessionalPlan() {
-            return this.planStore.isVitalicio || this.planStore.planoId === 3;
-        }
-    },
     async mounted() {
-        // Carregar dados do plano primeiro
-        if (!this.planStore.hasPlanData) {
-            await this.planStore.fetchModulosAcesso();
-        }
-        
         await this.loadUserProfile();
         
         // Verificar parâmetros da URL após carregar os dados

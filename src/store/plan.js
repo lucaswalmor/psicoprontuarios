@@ -9,44 +9,36 @@ function assinaturaFromStorage() {
     }
 }
 
+function readMetaFromLocalStorage() {
+    return {
+        planoId: parseInt(localStorage.getItem('planoId') || '0', 10) || 0,
+        planoNome: localStorage.getItem('planoNome') || '—',
+        statusAssinatura: localStorage.getItem('statusAssinatura') || 'sem_assinatura',
+        usuarioVitalicio: localStorage.getItem('usuarioVitalicio') === 'true'
+    };
+}
+
 export const usePlanStore = defineStore('plan', {
     state: () => ({
-        planoId: 4,
-        planoNome: 'Livre',
-        modulosPlano: {
-            limite_pacientes: -1,
-            limite_anexos: -1,
-            agendamentos: true,
-            prontuarios_pdf: true,
-            dashboard: true,
-            gestao_financeira: true,
-            perfil_publico: true,
-            suporte_email: true,
-            suporte_whatsapp: true,
-            arquivos: true,
-            anamnese: true,
-            anexos: true
-        },
-        statusAssinatura: 'sem_assinatura',
-        assinaturaAtiva: true,
+        ...readMetaFromLocalStorage(),
         assinatura: assinaturaFromStorage(),
         stats: {
             pacientes_count: 0,
-            anexos_count: 0,
-            can_add_paciente: true,
-            can_add_anexo: true
+            anexos_count: 0
         },
         loading: false,
         error: null
     }),
 
     getters: {
-        isVitalicio: () => true,
+        isVitalicio: (state) => state.usuarioVitalicio === true,
         isGratuito: () => false,
-        isPlanoPago: () => false,
-        temAssinaturaAtiva: () => true,
+        temAssinaturaAtiva: (state) => state.statusAssinatura !== 'sem_assinatura',
+        planInfo: (state) => ({
+            id: state.planoId,
+            nome: state.planoNome
+        }),
         podeEditarDados: () => true,
-        temAcessoModulo: () => () => true,
         canAddPaciente: () => true,
         canAddAnexo: () => true,
         pacientesCount: (state) => state.stats?.pacientes_count || 0,
@@ -55,14 +47,18 @@ export const usePlanStore = defineStore('plan', {
         limiteAnexos: () => -1,
         isPlanPaused: (state) => state.assinatura?.status === 'pausada',
         hasPlanData: () => true,
-        diasRestantes: () => null,
-        planInfo: (state) => ({
-            nome: state.planoNome,
-            id: state.planoId
-        })
+        diasRestantes: () => null
     },
 
     actions: {
+        /** Chamar após login / GET user para refletir localStorage no Pinia */
+        sincronizarMetaDoLocalStorage() {
+            const m = readMetaFromLocalStorage();
+            this.planoId = m.planoId;
+            this.planoNome = m.planoNome;
+            this.statusAssinatura = m.statusAssinatura;
+            this.usuarioVitalicio = m.usuarioVitalicio;
+        },
         setAssinatura(assinatura) {
             this.assinatura = assinatura;
             if (assinatura) {
@@ -71,18 +67,14 @@ export const usePlanStore = defineStore('plan', {
                 localStorage.removeItem('userAssinatura');
             }
         },
-        loadFromStorage() {},
-        async fetchModulosAcesso() {},
-        atualizarDados() {},
-        saveToStorage() {},
-        clearPlanData() {},
-        loadPlanFromStorage() {},
-        async fetchPlanInfo() {},
         async carregarAssinatura() {
             const { default: authService } = await import('@/services/authService');
             await authService.sincronizarSessaoComApi();
             this.assinatura = assinaturaFromStorage();
+            this.sincronizarMetaDoLocalStorage();
         },
-        async atualizarStats() {}
+        async atualizarStats() {
+            /* Reservado para métricas futuras */
+        }
     }
 });

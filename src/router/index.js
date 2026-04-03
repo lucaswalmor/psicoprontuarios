@@ -111,19 +111,16 @@ const router = createRouter({
                     path: '/configuracoes',
                     name: 'Configuracoes',
                     component: () => import('@/views/pages/Configuracoes.vue'),
-                    meta: { requiresPlanCheck: false }
                 },
                 {
                     path: '/faq',
                     name: 'Faq',
                     component: () => import('@/views/pages/Faq.vue'),
-                    meta: { requiresPlanCheck: false }
                 },
                 {
                     path: '/perfil',
                     name: 'Perfil',
                     component: () => import('@/views/pages/Perfil.vue'),
-                    meta: { requiresPlanCheck: false }
                 },
                 {
                     path: '/uikit/formlayout',
@@ -220,25 +217,21 @@ const router = createRouter({
                     path: '/financeiro/receitas',
                     name: 'FinanceiroReceitas',
                     component: () => import('@/views/pages/financeiro/FinanceiroLista.vue'),
-                    meta: { requiresPlanCheck: true }
                 },
                 {
                     path: '/financeiro/despesas',
                     name: 'FinanceiroDespesas',
                     component: () => import('@/views/pages/financeiro/FinanceiroLista.vue'),
-                    meta: { requiresPlanCheck: true }
                 },
                 {
                     path: '/financeiro/novo',
                     name: 'FinanceiroNovo',
                     component: () => import('@/views/pages/financeiro/FinanceiroForm.vue'),
-                    meta: { requiresPlanCheck: true }
                 },
                 {
                     path: '/financeiro/editar/:id',
                     name: 'FinanceiroEditar',
                     component: () => import('@/views/pages/financeiro/FinanceiroForm.vue'),
-                    meta: { requiresPlanCheck: true }
                 },
                 {
                     path: '/financeiro/lista',
@@ -249,13 +242,11 @@ const router = createRouter({
                     path: '/agendamentos-old',
                     name: 'AgendamentosOld',
                     component: () => import('@/views/pages/AgendamentosOld.vue'),
-                    meta: { requiresPlanCheck: true }
                 },
                 {
                     path: '/agendamentos',
                     name: 'Agendamentos',
                     component: () => import('@/views/pages/Agendamentos.vue'),
-                    meta: { requiresPlanCheck: true }
                 },
                 {
                     path: '/assinatura',
@@ -271,7 +262,6 @@ const router = createRouter({
                     path: '/modelos-arquivos',
                     name: 'ModelosArquivos',
                     component: () => import('@/views/pages/ModelosArquivos.vue'),
-                    meta: { requiresPlanCheck: false }
                 }
             ]
         },

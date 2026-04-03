@@ -73,7 +73,6 @@
 </template>
 
 <script>
-import { usePlanStore } from '@/store/plan';
 import logo from '@/assets/img/no-bg.webp';
 import GoogleSignInButton from '@/components/GoogleSignInButton.vue';
 
@@ -196,37 +195,8 @@ export default {
             return usuario.status_assinatura === 'sem_assinatura';
         },
 
-        async redirectBasedOnPlan() {
-            try {
-                const planStore = usePlanStore();
-                
-                // Buscar informações do plano via Pinia
-                await planStore.fetchPlanInfo();
-                
-                // Usar dados do store para determinar rota
-                const planInfo = planStore.planInfo;
-                
-                // Determinar rota baseada no plano
-                let redirectRoute = '/pacientes'; // Rota padrão
-                
-                if (planInfo?.nome === 'Vitalício') {
-                    // Usuários vitalícios vão para dashboard
-                    redirectRoute = '/dashboard';
-                } else if (planStore?.podeAcessarModulo?.('dashboard')) {
-                    // Se tem dashboard, vai para dashboard
-                    redirectRoute = '/dashboard';
-                } else {
-                    // Caso contrário, vai para pacientes (sempre disponível)
-                    redirectRoute = '/pacientes';
-                }
-                
-                this.$router.push(redirectRoute);
-                
-            } catch (error) {
-                console.error('Erro ao determinar rota de redirecionamento:', error);
-                // Em caso de erro, vai para pacientes
-                this.$router.push('/pacientes');
-            }
+        redirectBasedOnPlan() {
+            this.$router.push('/dashboard');
         },
 
         goToChangePassword() {

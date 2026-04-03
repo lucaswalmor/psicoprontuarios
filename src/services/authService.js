@@ -6,6 +6,7 @@ function sincronizarAssinaturaNoPlanStore() {
         const planStore = usePlanStore();
         const raw = localStorage.getItem('userAssinatura');
         planStore.setAssinatura(raw ? JSON.parse(raw) : null);
+        planStore.sincronizarMetaDoLocalStorage();
     } catch {
         /* pinia pode não estar pronto em testes */
     }
@@ -59,9 +60,6 @@ class AuthService {
         if (usuario.plano_nome) {
             localStorage.setItem('planoNome', usuario.plano_nome);
         }
-        if (usuario.modulos_plano) {
-            localStorage.setItem('modulosPlano', JSON.stringify(usuario.modulos_plano));
-        }
         if (usuario.status_assinatura) {
             localStorage.setItem('statusAssinatura', usuario.status_assinatura);
         }
@@ -97,11 +95,20 @@ class AuthService {
             localStorage.removeItem('motivoBloqueio');
 
             const u = data.usuario;
+            if (u.plano_id) {
+                localStorage.setItem('planoId', String(u.plano_id));
+            }
+            if (u.plano_nome) {
+                localStorage.setItem('planoNome', u.plano_nome);
+            }
             if (u.status_assinatura) {
                 localStorage.setItem('statusAssinatura', u.status_assinatura);
             }
             if (u.assinatura_ativa !== undefined) {
                 localStorage.setItem('assinaturaAtiva', String(u.assinatura_ativa));
+            }
+            if (u.usuario_vitalicio !== undefined) {
+                localStorage.setItem('usuarioVitalicio', String(u.usuario_vitalicio));
             }
             if (u.assinatura) {
                 localStorage.setItem('userAssinatura', JSON.stringify(u.assinatura));
@@ -109,9 +116,6 @@ class AuthService {
                 localStorage.removeItem('userAssinatura');
             }
             sincronizarAssinaturaNoPlanStore();
-            if (u.usuario_vitalicio !== undefined) {
-                localStorage.setItem('usuarioVitalicio', String(u.usuario_vitalicio));
-            }
             const prev = JSON.parse(sessionStorage.getItem('usuario') || '{}');
             sessionStorage.setItem('usuario', JSON.stringify({ ...prev, ...u }));
         }
