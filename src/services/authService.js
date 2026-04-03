@@ -261,17 +261,26 @@ class AuthService {
 
     async entrarComGoogle(credential) {
         const response = await api.post('/auth/google', { token: credential });
+        const body = response.data;
 
-        if (response.data.usuario?.token) {
-            this.persistirSessaoAtiva(response.data.usuario, { menu: response.data.menu });
+        if (body.status === 'inativo' && body.usuario?.token) {
+            this.persistirSessaoInativa(body, body.usuario.token);
+            return {
+                ...body,
+                user: body.usuario,
+                cadastroCompleto: body.usuario?.cadastro_completo,
+            };
+        }
+
+        if (body.usuario?.token) {
+            this.persistirSessaoAtiva(body.usuario, {});
         }
 
         return {
-            ...response.data,
-            user: response.data.usuario,
-            cadastroCompleto: response.data.cadastro_completo,
-            is_new_user: response.data.is_new_user,
-            cadastro_completo: response.data.cadastro_completo
+            ...body,
+            user: body.usuario,
+            cadastroCompleto: body.cadastro_completo,
+            is_new_user: body.is_new_user,
         };
     }
 

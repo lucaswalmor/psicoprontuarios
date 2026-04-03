@@ -213,29 +213,40 @@ export default {
             
             try {
                 const response = await this.$authService.entrarComGoogle(credential);
-                
-                // Salvar nome do usuário no localStorage
+
+                if (response.status === 'inativo') {
+                    if (response.user && response.user.nome) {
+                        localStorage.setItem('userName', response.user.nome);
+                        this.userName = response.user.nome;
+                    }
+                    this.$router.push('/pagamento');
+                    return;
+                }
+
                 if (response.user && response.user.nome) {
                     localStorage.setItem('userName', response.user.nome);
                     this.userName = response.user.nome;
                 }
-                
-                // Verificar se é um novo usuário ou se o cadastro não está completo
-                // Se for novo usuário, o backend já criou a conta, só precisa completar cadastro
-                if (response.is_new_user === true || response.cadastroCompleto === false || response.cadastro_completo === false) {
+
+                if (response.cadastroCompleto === false || response.cadastro_completo === false || response.user?.cadastro_completo === false) {
                     this.$router.push('/completar-cadastro');
-                } else if (this.precisaContratarPlano(response.user)) {
-                    this.$router.push('/upgrade');
-                } else {
-                    await this.redirectBasedOnPlan();
+                    return;
                 }
+
+                if (this.precisaContratarPlano(response.user)) {
+                    this.$router.push('/upgrade');
+                    return;
+                }
+
+                await this.redirectBasedOnPlan();
                 
             } catch (err) {
                 console.log(err);
-                
-                // Exibir mensagem de erro apropriada
+
                 if (err.response) {
-                    if (err.response.status === 401) {
+                    if (err.response.status === 400) {
+                        this.errorMessage = err.response.data.error || 'Não foi possível entrar com Google. Tente novamente.';
+                    } else if (err.response.status === 401) {
                         this.errorMessage = 'Erro na autenticação com Google. Tente novamente.';
                     } else if (err.response.status === 422) {
                         this.errorMessage = 'Dados inválidos. Verifique as informações fornecidas.';

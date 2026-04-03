@@ -639,40 +639,47 @@ export default {
             return formData;
         },
 
+        precisaContratarPlano(usuario) {
+            if (!usuario || usuario.usuario_vitalicio) {
+                return false;
+            }
+            return usuario.status_assinatura === 'sem_assinatura';
+        },
+
         async handleGoogleSignUp(credential) {
             this.loading = true;
             this.error = '';
-            
+
             try {
                 const response = await this.$authService.entrarComGoogle(credential);
-                
-                // Verificar se é um novo usuário ou usuário existente
+
+                if (response.status === 'inativo') {
+                    this.$router.push('/pagamento');
+                    return;
+                }
+
                 if (response.is_new_user === false) {
-                    // Usuário já existente - mostrar dialog informando
-                    // Salvar dados no sessionStorage
-                    sessionStorage.setItem('usuario', JSON.stringify(response.usuario));
-                    localStorage.setItem('token', response.usuario.token);
-                    sessionStorage.setItem('sessionTime', 1800);
-                    sessionStorage.setItem('isAutenticated', true);
-                    
-                    // Mostrar dialog de conta já cadastrada
+                    if (response.cadastroCompleto === false || response.cadastro_completo === false || response.user?.cadastro_completo === false) {
+                        this.$router.push('/completar-cadastro');
+                        return;
+                    }
+                    if (this.precisaContratarPlano(response.user)) {
+                        this.$router.push('/upgrade');
+                        return;
+                    }
                     this.showExistingUserDialog = true;
                     return;
                 }
-                
-                // Se é novo usuário, verificar se cadastro está completo
-                if (response.cadastroCompleto === false) {
-                    // Redirecionar para completar cadastro
+
+                if (response.cadastroCompleto === false || response.cadastro_completo === false || response.user?.cadastro_completo === false) {
                     this.$router.push('/completar-cadastro');
                 } else {
-                    // Se cadastro completo, mostrar dialog de sucesso e redirecionar
                     this.showSuccessDialog = true;
                     this.startCountdown();
                 }
-                
             } catch (err) {
                 console.error('Erro no cadastro Google:', err);
-                
+
                 if (err.response?.data?.error) {
                     this.error = err.response.data.error;
                 } else {
