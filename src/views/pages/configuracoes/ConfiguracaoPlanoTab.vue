@@ -6,8 +6,19 @@
         </div>
 
         <template v-else>
-            <!-- Sem assinatura -->
-            <div v-if="!assinatura" class="empty-state surface-card border-round-xl p-5 text-center">
+            <!-- Vitalício: sem registro de assinatura na Asaas -->
+            <div v-if="ehUsuarioVitalicioSemAssinatura" class="empty-state surface-card border-round-xl p-5 text-center">
+                <div class="empty-icon empty-icon--vitalicio mb-4">
+                    <i class="pi pi-verified"></i>
+                </div>
+                <h3 class="mt-0 mb-2 text-900">Conta vitalícia</h3>
+                <p class="text-600 mb-0 line-height-3 m-0">
+                    Seu acesso ao PsicoProntuários é <strong>permanente</strong>, sem assinatura recorrente ou cobrança via Asaas nesta conta.
+                </p>
+            </div>
+
+            <!-- Sem assinatura (não vitalício) -->
+            <div v-else-if="!assinatura" class="empty-state surface-card border-round-xl p-5 text-center">
                 <div class="empty-icon mb-4">
                     <i class="pi pi-sparkles"></i>
                 </div>
@@ -259,6 +270,9 @@ export default {
         };
     },
     computed: {
+        ehUsuarioVitalicioSemAssinatura() {
+            return this.planStore.isVitalicio && !this.assinatura;
+        },
         nomePlano() {
             return this.assinatura?.plano?.nome || 'Plano';
         },
@@ -315,6 +329,7 @@ export default {
     methods: {
         async carregar() {
             this.loading = true;
+            this.planStore.sincronizarMetaDoLocalStorage();
             try {
                 const data = await assinaturaService.getPainel();
                 this.assinatura = data.assinatura || null;
@@ -470,6 +485,14 @@ export default {
 .empty-icon i {
     font-size: 2rem;
     color: var(--primary-color);
+}
+
+.empty-icon--vitalicio {
+    background: rgba(34, 197, 94, 0.12);
+}
+
+.empty-icon--vitalicio i {
+    color: var(--green-600, #16a34a);
 }
 
 .info-card {
