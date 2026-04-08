@@ -157,7 +157,7 @@ export default {
         },
         
         async sendToN8N(messageData) {
-            const webhookUrl = 'https://n8n-n8n.ibn4qt.easypanel.host/webhook/e374a8b0-a383-4a08-9646-68a46eed8010/chat';
+            const webhookUrl = 'https://petgre-n8n-petgre.irkqjy.easypanel.host/webhook/psico-bot-webhook/chat';
             
             const response = await fetch(webhookUrl, {
                 method: 'POST',
