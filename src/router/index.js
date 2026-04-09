@@ -113,6 +113,12 @@ const router = createRouter({
                     component: () => import('@/views/pages/Configuracoes.vue'),
                 },
                 {
+                    path: '/notificacoes/datas-comemorativas',
+                    name: 'DatasComemorativas',
+                    component: () => import('@/views/notificacoes/DatasComemorativas.vue'),
+                    meta: { requiresAuth: true }
+                },
+                {
                     path: '/faq',
                     name: 'Faq',
                     component: () => import('@/views/pages/Faq.vue'),

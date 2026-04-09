@@ -18,6 +18,10 @@
                             <i class="pi pi-whatsapp mr-2"></i>
                             WhatsApp
                         </Tab>
+                        <Tab value="3">
+                            <i class="pi pi-bell mr-2"></i>
+                            Notificações
+                        </Tab>
                     </TabList>
                     <TabPanels>
                         <TabPanel value="0">
@@ -91,6 +95,51 @@
                                 <EvolutionConfig v-if="activeTab === '2'" />
                             </div>
                         </TabPanel>
+
+                        <TabPanel value="3">
+                            <div class="p-4">
+                                <div class="row">
+                                    <div class="col-12 mb-4">
+                                        <h5>Central de Notificações</h5>
+                                        <p class="text-muted">Configure mensagens automáticas enviadas via WhatsApp para seus pacientes.</p>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="card h-100">
+                                            <div class="card-body text-center">
+                                                <div class="fs-1 mb-2">🎉</div>
+                                                <h6 class="card-title">Datas Comemorativas</h6>
+                                                <p class="card-text text-muted small">
+                                                    Configure mensagens automáticas para datas especiais como Natal, Dia das Mães e muito mais.
+                                                </p>
+                                                <Button
+                                                    label="Configurar"
+                                                    icon="pi pi-cog"
+                                                    @click="$router.push('/notificacoes/datas-comemorativas')"
+                                                    :disabled="!evolutionConectado"
+                                                />
+                                                <p v-if="!evolutionConectado" class="text-danger small mt-2">
+                                                    ⚠️ Configure o WhatsApp primeiro para habilitar notificações.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="card h-100 opacity-50">
+                                            <div class="card-body text-center">
+                                                <div class="fs-1 mb-2">🎂</div>
+                                                <h6 class="card-title">Aniversariantes</h6>
+                                                <p class="card-text text-muted small">
+                                                    Em breve: envie mensagens automáticas no aniversário de cada paciente.
+                                                </p>
+                                                <Button label="Em Breve" icon="pi pi-lock" disabled />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </TabPanel>
                     </TabPanels>
                 </Tabs>
             </div>
@@ -108,6 +157,7 @@ import { usePlanStore } from '@/store/plan';
 import DialogChangePassword from '@/components/dialogs/configuracoes/DialogChangePassword.vue';
 import EvolutionConfig from '@/components/evolution/EvolutionConfig.vue';
 import ConfiguracaoPlanoTab from '@/views/pages/configuracoes/ConfiguracaoPlanoTab.vue';
+import api from '@/utils/axios';
 import Button from 'primevue/button';
 import Tab from 'primevue/tab';
 import TabList from 'primevue/tablist';
@@ -134,12 +184,15 @@ export default {
             showChangePasswordModal: false,
             planStore: null,
             handleStatsUpdate: null,
+            evolutionConectado: false,
         };
     },
     created() {
         this.planStore = usePlanStore();
     },
     mounted() {
+        this.verificarStatusEvolution();
+
         this.handleStatsUpdate = async () => {
             await this.planStore.atualizarStats();
         };
@@ -160,6 +213,14 @@ export default {
         await this.planStore.atualizarStats();
     },
     methods: {
+        async verificarStatusEvolution() {
+            try {
+                const response = await api.get('/evolution/instancia/status');
+                this.evolutionConectado = response?.data?.status === 'connected';
+            } catch (error) {
+                this.evolutionConectado = false;
+            }
+        },
         handlePasswordChangeSuccess() {
             this.$toast.add({
                 severity: 'success',
