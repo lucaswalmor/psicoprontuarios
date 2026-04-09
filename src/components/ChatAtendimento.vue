@@ -9,39 +9,53 @@
         <!-- Janela de Chat -->
         <div v-if="isOpen" class="chat-window">
             <div class="chat-header">
-                <h6 class="text-white">💬 F.A.Q</h6>
-                <button @click="toggleChat" class="close-btn">×</button>
+                <div class="chat-header-info">
+                    <div class="chat-avatar">
+                        <i class="pi pi-comments"></i>
+                    </div>
+                    <div class="chat-header-text">
+                        <h6>Assistente PsicoProntuarios</h6>
+                        <small>Online agora</small>
+                    </div>
+                </div>
+                <button @click="toggleChat" class="close-btn" aria-label="Fechar chat">
+                    <i class="pi pi-times"></i>
+                </button>
             </div>
-            
+
             <div class="chat-body">
                 <div class="messages" ref="messagesContainer">
                     <div v-for="message in messages" :key="message.id" class="message" :class="{ 'user': message.isUser }">
-                        <div class="message-content" v-html="formatMessage(message.text)"></div>
+                        <div class="message-bubble">
+                            <div class="message-content" v-html="formatMessage(message.text)"></div>
+                        </div>
                         <div class="message-time text-500">{{ formatTime(message.timestamp) }}</div>
                     </div>
-                    
+
                     <!-- Indicador de digitando -->
                     <div v-if="isTyping" class="message typing-message">
-                        <div class="message-content typing-content">
+                        <div class="message-bubble typing-bubble">
+                            <div class="message-content typing-content">
                             <div class="typing-indicator">
                                 <span class="dot"></span>
                                 <span class="dot"></span>
                                 <span class="dot"></span>
                             </div>
                             <span class="typing-text">Digitando...</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="chat-input">
-                    <input 
-                        v-model="newMessage" 
+                    <input
+                        v-model="newMessage"
                         @keyup.enter="sendMessage"
                         placeholder="Digite sua mensagem..."
                         :disabled="isTyping"
                     />
                     <button @click="sendMessage" :disabled="!newMessage.trim() || isTyping">
-                        📤
+                        <i class="pi pi-send"></i>
                     </button>
                 </div>
             </div>
@@ -278,30 +292,30 @@ export default {
 <style scoped>
 .chat-atendimento {
     position: fixed !important;
-    bottom: 20px !important;
-    right: 20px !important;
+    bottom: 1rem !important;
+    right: 1rem !important;
     z-index: 9999 !important;
 }
 
 .chat-button {
-    width: 60px !important;
-    height: 60px !important;
-    background: #3b82f6 !important;
+    width: 3.6rem !important;
+    height: 3.6rem !important;
+    background: linear-gradient(135deg, #2563eb, #3b82f6 55%, #60a5fa) !important;
     border-radius: 50% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    box-shadow: 0 10px 28px rgba(37, 99, 235, 0.35) !important;
     transition: all 0.3s ease !important;
     position: relative !important;
     color: white !important;
-    font-size: 24px !important;
+    font-size: 1.35rem !important;
 }
 
 .chat-button:hover {
-    transform: scale(1.1) !important;
-    background: #2563eb !important;
+    transform: translateY(-2px) scale(1.03) !important;
+    box-shadow: 0 14px 30px rgba(37, 99, 235, 0.42) !important;
 }
 
 /* Efeito de balançando */
@@ -343,88 +357,147 @@ export default {
 
 .badge {
     position: absolute !important;
-    top: -5px !important;
-    right: -5px !important;
+    top: -0.25rem !important;
+    right: -0.25rem !important;
     background: #ef4444 !important;
     color: white !important;
     border-radius: 50% !important;
-    width: 20px !important;
-    height: 20px !important;
+    width: 1.25rem !important;
+    height: 1.25rem !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    font-size: 12px !important;
+    font-size: 0.7rem !important;
     font-weight: bold !important;
+    border: 2px solid #fff !important;
 }
 
 .chat-window {
     position: absolute !important;
-    bottom: 70px !important;
+    bottom: 4.4rem !important;
     right: 0 !important;
-    width: 350px !important;
-    height: 500px !important;
-    background: white !important;
-    border-radius: 12px !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
+    width: min(380px, calc(100vw - 1.5rem)) !important;
+    height: min(620px, calc(100vh - 7rem)) !important;
+    background: #ffffff !important;
+    border-radius: 1.25rem !important;
+    border: 1px solid rgba(226, 232, 240, 0.85) !important;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.22) !important;
     display: flex !important;
     flex-direction: column !important;
     overflow: hidden !important;
+    animation: chat-fade-in 0.2s ease-out;
+}
+
+@keyframes chat-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .chat-header {
-    background: #3b82f6 !important;
+    background: linear-gradient(120deg, #1d4ed8, #2563eb, #3b82f6) !important;
     color: white !important;
-    padding: 1rem !important;
+    padding: 0.9rem 1rem !important;
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
 }
 
-.chat-header h6 {
+.chat-header-info {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.65rem !important;
+}
+
+.chat-avatar {
+    width: 2rem !important;
+    height: 2rem !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 0.95rem !important;
+}
+
+.chat-header-text h6 {
     margin: 0 !important;
-    font-size: 16px !important;
+    font-size: 0.93rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.01em;
+}
+
+.chat-header-text small {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.3rem !important;
+    font-size: 0.72rem !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.chat-header-text small::before {
+    content: '';
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: #86efac;
 }
 
 .close-btn {
-    background: none !important;
+    width: 1.9rem !important;
+    height: 1.9rem !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.16) !important;
     border: none !important;
     color: white !important;
-    font-size: 20px !important;
+    font-size: 0.95rem !important;
     cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+}
+
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.24) !important;
+    transform: scale(1.05) !important;
 }
 
 .chat-body {
     flex: 1 !important;
     display: flex !important;
     flex-direction: column !important;
+    background:
+        radial-gradient(circle at top right, rgba(219, 234, 254, 0.6), transparent 38%),
+        radial-gradient(circle at bottom left, rgba(224, 242, 254, 0.5), transparent 35%),
+        #f8fafc !important;
 }
 
 .messages {
     flex: 1 !important;
-    padding: 1rem !important;
+    padding: 0.9rem !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 0.5rem !important;
-    max-height: 400px !important;
+    gap: 0.7rem !important;
     scrollbar-width: thin !important;
-    scrollbar-color: #cbd5e0 #f7fafc !important;
+    scrollbar-color: #cbd5e0 transparent !important;
 }
 
 /* Estilização da scrollbar para WebKit (Chrome, Safari, Edge) */
 .messages::-webkit-scrollbar {
-    width: 6px !important;
-}
-
-.messages::-webkit-scrollbar-track {
-    background: #f7fafc !important;
-    border-radius: 3px !important;
+    width: 5px !important;
 }
 
 .messages::-webkit-scrollbar-thumb {
     background: #cbd5e0 !important;
-    border-radius: 3px !important;
+    border-radius: 999px !important;
 }
 
 .messages::-webkit-scrollbar-thumb:hover {
@@ -433,36 +506,57 @@ export default {
 
 .message {
     display: flex !important;
-    margin-bottom: 0.5rem !important;
-    gap: 0.5rem !important;
+    flex-direction: column !important;
+    gap: 0.25rem !important;
 }
 
 .message.user {
-    justify-content: flex-end !important;
+    align-items: flex-end !important;
+}
+
+.message-bubble {
+    max-width: 85% !important;
+    padding: 0.68rem 0.78rem !important;
+    border-radius: 1rem !important;
+    border-top-left-radius: 0.4rem !important;
+    background: #ffffff !important;
+    border: 1px solid #dbeafe !important;
+    box-shadow: 0 6px 14px rgba(148, 163, 184, 0.15) !important;
 }
 
 .message-content {
-    max-width: 80% !important;
-    padding: 0.75rem !important;
-    border-radius: 12px !important;
-    background: #f3f4f6 !important;
-    color: #374151 !important;
+    color: #334155 !important;
+    font-size: 0.9rem !important;
+    line-height: 1.45 !important;
+    word-break: break-word !important;
+}
+
+.message.user .message-bubble {
+    border-top-left-radius: 1rem !important;
+    border-top-right-radius: 0.4rem !important;
+    background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
+    border-color: #3b82f6 !important;
 }
 
 .message.user .message-content {
-    background: #3b82f6 !important;
+    color: #374151 !important;
     color: white !important;
 }
 
 .message-time {
-    font-size: 0.75rem !important;
-    margin-top: 0.25rem !important;
+    font-size: 0.68rem !important;
+    color: #64748b !important;
+    padding: 0 0.2rem !important;
+}
+
+.message.user .message-time {
+    text-align: right !important;
 }
 
 /* Estilização das mensagens formatadas */
 .message-content p {
-    margin: 0.5rem 0 !important;
-    line-height: 1.5 !important;
+    margin: 0.35rem 0 !important;
+    line-height: 1.45 !important;
 }
 
 .message-content p:first-child {
@@ -486,19 +580,19 @@ export default {
 .message-content .list-item {
     display: flex !important;
     align-items: flex-start !important;
-    margin: 0.25rem 0 !important;
-    padding-left: 0.5rem !important;
+    margin: 0.2rem 0 !important;
+    padding-left: 0.35rem !important;
 }
 
 .message-content .list-number {
     font-weight: 600 !important;
-    color: #3b82f6 !important;
+    color: inherit !important;
     margin-right: 0.5rem !important;
     min-width: 1.5rem !important;
 }
 
 .message-content .list-bullet {
-    color: #3b82f6 !important;
+    color: inherit !important;
     margin-right: 0.5rem !important;
     font-weight: bold !important;
 }
@@ -509,32 +603,46 @@ export default {
 }
 
 .chat-input {
-    padding: 1rem !important;
-    border-top: 1px solid #e5e7eb !important;
-    background: white !important;
+    padding: 0.8rem !important;
+    border-top: 1px solid #e2e8f0 !important;
+    background: #ffffff !important;
     display: flex !important;
     gap: 0.5rem !important;
+    align-items: center !important;
 }
 
 .chat-input input {
     flex: 1 !important;
-    padding: 0.5rem !important;
-    border: 1px solid #d1d5db !important;
-    border-radius: 6px !important;
+    padding: 0.62rem 0.78rem !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 0.75rem !important;
     outline: none !important;
+    font-size: 0.9rem !important;
+    transition: all 0.2s ease !important;
 }
 
 .chat-input input:focus {
     border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.16) !important;
 }
 
 .chat-input button {
-    padding: 0.5rem 1rem !important;
-    background: #3b82f6 !important;
+    width: 2.3rem !important;
+    height: 2.3rem !important;
+    background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
     color: white !important;
     border: none !important;
-    border-radius: 6px !important;
+    border-radius: 0.75rem !important;
     cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+}
+
+.chat-input button:hover:not(:disabled) {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 14px rgba(59, 130, 246, 0.3) !important;
 }
 
 .chat-input button:disabled {
@@ -544,15 +652,30 @@ export default {
 
 /* Responsividade */
 @media (max-width: 768px) {
-    .chat-window {
-        width: calc(100vw - 40px) !important;
-        height: calc(100vh - 120px) !important;
-        bottom: 80px !important;
-        right: 20px !important;
+    .chat-atendimento {
+        right: 0.75rem !important;
+        bottom: 0.75rem !important;
     }
-    
-    .messages {
-        max-height: calc(100vh - 200px) !important;
+
+    .chat-window {
+        width: calc(100vw - 1.5rem) !important;
+        max-width: 420px !important;
+        height: calc(100vh - 7.5rem) !important;
+        bottom: 4.2rem !important;
+        right: 0 !important;
+        border-radius: 1rem !important;
+    }
+
+    .message-bubble {
+        max-width: 90% !important;
+    }
+
+    .chat-header-text h6 {
+        font-size: 0.88rem !important;
+    }
+
+    .chat-header-text small {
+        font-size: 0.68rem !important;
     }
 }
 
@@ -560,17 +683,22 @@ export default {
 .typing-indicator {
   display: flex;
   align-items: center;
-  gap: 5px;
-  height: 20px;
+  gap: 4px;
+  height: 18px;
 }
 
 /* Pontos */
 .typing-indicator .dot {
-  width: 8px;
-  height: 8px;
-  background-color: #555;
+  width: 7px;
+  height: 7px;
+  background-color: #64748b;
   border-radius: 50%;
   animation: typing 1s infinite;
+}
+
+.typing-text {
+  font-size: 0.78rem;
+  color: #64748b;
 }
 
 /* Animação dos pontos */
