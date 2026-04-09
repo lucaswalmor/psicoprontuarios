@@ -1,38 +1,11 @@
 <script setup>
-import { computed } from 'vue';
-import { useRouter } from 'vue-router';
 import { useLayout } from '@/layout/composables/layout';
-import { usePlanStore } from '@/store/plan';
 import { useThemeStore } from '@/store/theme';
 import AppConfigurator from './AppConfigurator.vue';
 import logo from '@/assets/img/no-bg.webp';
 
-const router = useRouter();
-const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
-const planStore = usePlanStore();
+const { toggleMenu, toggleDarkMode } = useLayout();
 const themeStore = useThemeStore();
-
-// Computed para verificar se deve mostrar o botão de upgrade
-const shouldShowUpgradeButton = computed(() => {
-    // Verificar se é usuário vitalício
-    if (planStore.isVitalicio) return false;
-    
-    // Verificar se tem assinatura ativa
-    if (!planStore.temAssinaturaAtiva) return true;
-    
-    // Se tem assinatura, verificar o plano
-    const assinatura = JSON.parse(localStorage.getItem('userAssinatura') || 'null');
-    if (assinatura && assinatura.plano) {
-        const currentPlan = assinatura.plano.nome;
-        return currentPlan === 'Gratuito' || currentPlan === 'Essencial';
-    }
-    
-    return true; // Se não tem dados, mostrar botão de upgrade
-});
-
-const goToUpgrade = () => {
-    router.push('/upgrade');
-};
 
 // Função para alternar o tema
 const toggleTheme = () => {
@@ -91,13 +64,6 @@ window.addEventListener('storage', (event) => {
         </div>
 
         <div class="layout-topbar-actions">
-            <!-- Botão de Upgrade de Plano -->
-            <button v-if="shouldShowUpgradeButton" type="button" class="upgrade-button d-flex align-items-center hidden-mobile"
-                @click="goToUpgrade" title="Faça o upgrade do seu plano">
-                <i class="pi pi-star-fill"></i>
-                <span class="upgrade-text">Faça o upgrade do seu plano</span>
-            </button>
-
             <div class="layout-config-menu hidden-mobile">
                 <button type="button" class="layout-topbar-action" @click="toggleTheme">
                     <i :class="['pi', { 'pi-moon': themeStore.isDarkTheme, 'pi-sun': !themeStore.isDarkTheme }]"></i>
@@ -157,37 +123,7 @@ export default {
 </script>
 
 <style scoped>
-.upgrade-button {
-    background: linear-gradient(135deg, #ff6b6b, #ff8e53);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 16px;
-    margin-right: 12px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
-}
-
-.upgrade-button:hover {
-    box-shadow: 0 6px 16px rgba(255, 107, 107, 0.4);
-}
-
-.upgrade-text {
-    margin-left: 6px;
-    font-size: 0.875rem;
-}
-
 @media (max-width: 768px) {
-    .upgrade-text {
-        display: none;
-    }
-
-    .upgrade-button {
-        padding: 8px;
-        margin-right: 8px;
-    }
-    
     /* Ocultar botões em mobile */
     .hidden-mobile {
         display: none !important;
