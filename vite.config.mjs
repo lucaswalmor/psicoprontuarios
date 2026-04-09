@@ -7,6 +7,14 @@ import { defineConfig } from 'vite';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+    css: {
+        preprocessorOptions: {
+            scss: {
+                // Evita Deprecation Warning [legacy-js-api] do Dart Sass (API antiga).
+                api: 'modern',
+            },
+        },
+    },
     optimizeDeps: {
         noDiscovery: true,
         include: ['quill', 'quill-delta', '@primeuix/styles/drawer'],

@@ -3,8 +3,8 @@
     <div class="grid">
         <div class="col-12">
             <div class="card">
-                <div class="flex justify-content-between align-items-center mb-4">
-                    <div class="flex gap-3 align-items-center">
+                <div class="financeiro-header financeiro-header-desktop mb-4">
+                    <div class="financeiro-header-info">
                         <h5 class="mb-0 mr-4">{{ tipoDetectado === 'receita' ? 'Receitas' : 'Despesas' }}</h5>
                         <div class="total-container-header">
                             <span class="total-label-header">
@@ -21,7 +21,39 @@
                             </span>
                         </div>
                     </div>
-                    <div class="flex gap-2 align-items-center">
+                    <div class="financeiro-header-actions">
+                        <Button v-if="selectedTransacoes && selectedTransacoes.length > 0"
+                            :label="tipoDetectado === 'receita' ? 'Receber Todas' : 'Pagar Todas'"
+                            icon="pi pi-check-circle" severity="success" @click="confirmarPagamentoLote" />
+                        <Button :label="tipoDetectado === 'receita' ? 'Nova Receita' : 'Nova Despesa'"
+                            icon="pi pi-plus" @click="novaTransacao" />
+                        <Button label="Filtros" severity="secondary" icon="pi pi-filter" v-if="!hasFiltros"
+                            @click="drawerFilterFinanceiro = true" />
+                        <Button label="Limpar Filtros" severity="danger" @click="limparFiltros" v-else />
+                    </div>
+                </div>
+
+                <div class="financeiro-header-mobile mb-4">
+                    <h5 class="mb-0">{{ tipoDetectado === 'receita' ? 'Receitas' : 'Despesas' }}</h5>
+
+                    <div class="financeiro-header-mobile-totais">
+                        <div class="total-container-header">
+                            <span class="total-label-header">
+                                {{ tipoDetectado === 'receita' ? 'Recebidas:' : 'Pagas:' }}
+                            </span>
+                            <span class="text-green-600 font-bold total-value-header">
+                                R$ {{ formatarValor(totalRecebidasPagas) }}
+                            </span>
+                        </div>
+                        <div class="total-container-header">
+                            <span class="total-label-header">Previstas:</span>
+                            <span class="text-red-600 font-bold total-value-header">
+                                R$ {{ formatarValor(totalPrevistas) }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="financeiro-header-mobile-actions">
                         <Button v-if="selectedTransacoes && selectedTransacoes.length > 0"
                             :label="tipoDetectado === 'receita' ? 'Receber Todas' : 'Pagar Todas'"
                             icon="pi pi-check-circle" severity="success" @click="confirmarPagamentoLote" />
@@ -584,5 +616,69 @@ export default {
 
 .total-value-header {
     font-size: 1.1rem;
+}
+
+.financeiro-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.financeiro-header-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.financeiro-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.financeiro-header-mobile {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .financeiro-header-desktop {
+        display: none;
+    }
+
+    .financeiro-header-mobile {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .financeiro-header-mobile-totais {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .financeiro-header-mobile-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .financeiro-header-mobile-actions :deep(.p-button) {
+        width: 100%;
+    }
+
+    .total-container-header {
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .total-label-header,
+    .total-value-header {
+        font-size: 0.95rem;
+    }
 }
 </style>
