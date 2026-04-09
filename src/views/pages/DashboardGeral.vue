@@ -1,8 +1,8 @@
 <template>
     <div class="grid">
         <div class="col-12">
-            <div class="card">
-                <h5 class="text-500 mb-4">Dashboard Geral</h5>
+            <div class="card p-1">
+                <h5 class="text-500 mb-4 m-3">Dashboard Geral</h5>
 
                 <!-- Tabs -->
                 <TabView v-model:activeIndex="activeTabIndex" @tab-change="onTabChange">

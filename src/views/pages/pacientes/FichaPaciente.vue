@@ -1,21 +1,23 @@
 <template>
     <div class="card">
         <!-- Hero Section -->
-        <div class="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-lg p-6 mb-6">
-            <div class="flex justify-content-between align-items-start">
-                <div class="flex-grow-1">
-                    <h1 class="text-light text-4xl font-bold mb-2">{{ paciente?.nome || 'Carregando...' }}</h1>
-                    <div class="flex align-items-center gap-4 text-blue-100 mb-2">
+        <div class="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-lg p-4 md:p-6 mb-6">
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-start gap-3">
+                <div class="flex-grow-1 min-w-0">
+                    <h1 class="text-light text-2xl sm:text-3xl md:text-4xl font-bold mb-2 line-height-3 break-words">
+                        {{ paciente?.nome || 'Carregando...' }}
+                    </h1>
+                    <div class="flex flex-wrap align-items-center gap-2 md:gap-4 text-blue-100 mb-2">
                         <div v-if="paciente?.data_nascimento" class="flex align-items-center">
                             <i class="pi pi-calendar mr-2"></i>
                             <span>{{ calcularIdade(paciente.data_nascimento) }} anos</span>
                         </div>
-                        <div v-if="paciente?.email" class="flex align-items-center">
-                            <i class="pi pi-envelope mr-2"></i>
-                            <span>{{ paciente.email }}</span>
+                        <div v-if="paciente?.email" class="flex align-items-center min-w-0">
+                            <i class="pi pi-envelope mr-2 shrink-0"></i>
+                            <span class="break-all md:break-normal">{{ paciente.email }}</span>
                         </div>
                     </div>
-                    <div class="flex align-items-center gap-2">
+                    <div class="flex flex-wrap align-items-center gap-2">
                         <i class="pi pi-pencil text-blue-100" v-if="podeEditar" v-tooltip.top="'Clique para alterar o status do tratamento'"></i>
                         <Tag :severity="getStatusSeverity(paciente?.status_tratamento)"
                             :value="paciente?.status_tratamento || 'N/A'" 
@@ -27,11 +29,23 @@
                             v-else />
                     </div>
                 </div>
-                <div class="flex gap-2">
-                    <Button icon="pi pi-user-edit" label="Editar" @click="editarPaciente"
-                        v-if="podeEditar" />
-                    <Button icon="pi pi-trash" label="Excluir" severity="danger" @click="confirmarExclusao($event)"
-                        v-if="podeEditar" />
+                <div
+                    v-if="podeEditar"
+                    class="flex flex-column sm:flex-row flex-wrap gap-2 w-full md:w-auto md:shrink-0 md:justify-content-end"
+                >
+                    <Button
+                        class="w-full sm:flex-1 md:flex-initial md:w-auto"
+                        icon="pi pi-user-edit"
+                        label="Editar"
+                        @click="editarPaciente"
+                    />
+                    <Button
+                        class="w-full sm:flex-1 md:flex-initial md:w-auto"
+                        icon="pi pi-trash"
+                        label="Excluir"
+                        severity="danger"
+                        @click="confirmarExclusao($event)"
+                    />
                 </div>
             </div>
         </div>
