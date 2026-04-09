@@ -11,14 +11,10 @@
                             Plano
                         </Tab>
                         <Tab value="1">
-                            <i class="pi pi-lock mr-2"></i>
-                            Segurança
-                        </Tab>
-                        <Tab value="2">
                             <i class="pi pi-whatsapp mr-2"></i>
                             WhatsApp
                         </Tab>
-                        <Tab value="3">
+                        <Tab value="2">
                             <i class="pi pi-bell mr-2"></i>
                             Notificações
                         </Tab>
@@ -32,71 +28,11 @@
 
                         <TabPanel value="1">
                             <div class="p-4 config-tab-body">
-                                <div class="surface-card p-4 border-round">
-                                    <h6 class="mb-3 text-800 font-bold">Segurança da Conta</h6>
-                                    <div class="flex flex-column gap-3">
-                                        <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
-                                            <div class="flex align-items-center gap-3">
-                                                <i class="pi pi-lock text-primary text-xl"></i>
-                                                <div>
-                                                    <h6 class="m-0 text-800">Senha da Conta</h6>
-                                                    <small class="text-600">Altere sua senha para manter a conta segura</small>
-                                                </div>
-                                            </div>
-                                            <Button
-                                                label="Alterar Senha"
-                                                icon="pi pi-key"
-                                                severity="secondary"
-                                                outlined
-                                                @click="showChangePasswordModal = true"
-                                            />
-                                        </div>
-
-                                        <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
-                                            <div class="flex align-items-center gap-3">
-                                                <i class="pi pi-shield text-primary text-xl"></i>
-                                                <div>
-                                                    <h6 class="m-0 text-800">Autenticação de Dois Fatores</h6>
-                                                    <small class="text-600">Adicione uma camada extra de segurança</small>
-                                                </div>
-                                            </div>
-                                            <Button
-                                                label="Configurar"
-                                                icon="pi pi-cog"
-                                                severity="secondary"
-                                                outlined
-                                                disabled
-                                            />
-                                        </div>
-
-                                        <div class="flex align-items-center justify-content-between p-3 surface-100 border-round">
-                                            <div class="flex align-items-center gap-3">
-                                                <i class="pi pi-history text-primary text-xl"></i>
-                                                <div>
-                                                    <h6 class="m-0 text-800">Histórico de Login</h6>
-                                                    <small class="text-600">Veja os últimos acessos à sua conta</small>
-                                                </div>
-                                            </div>
-                                            <Button
-                                                label="Visualizar"
-                                                icon="pi pi-eye"
-                                                severity="secondary"
-                                                outlined
-                                                disabled
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
+                                <EvolutionConfig v-if="activeTab === '1'" />
                             </div>
                         </TabPanel>
 
                         <TabPanel value="2">
-                            <div class="p-4 config-tab-body">
-                                <EvolutionConfig v-if="activeTab === '2'" />
-                            </div>
-                        </TabPanel>
-
-                        <TabPanel value="3">
                             <div class="p-4 config-tab-body">
                                 <div class="row">
                                     <div class="col-12 mb-4">
@@ -172,16 +108,10 @@
             </div>
         </div>
     </div>
-
-    <DialogChangePassword
-        v-model:visible="showChangePasswordModal"
-        @success="handlePasswordChangeSuccess"
-    />
 </template>
 
 <script>
 import { usePlanStore } from '@/store/plan';
-import DialogChangePassword from '@/components/dialogs/configuracoes/DialogChangePassword.vue';
 import EvolutionConfig from '@/components/evolution/EvolutionConfig.vue';
 import ConfiguracaoPlanoTab from '@/views/pages/configuracoes/ConfiguracaoPlanoTab.vue';
 import api from '@/utils/axios';
@@ -197,7 +127,6 @@ export default {
     components: {
         Button,
         ConfiguracaoPlanoTab,
-        DialogChangePassword,
         EvolutionConfig,
         Tab,
         TabList,
@@ -208,7 +137,6 @@ export default {
     data() {
         return {
             activeTab: '0',
-            showChangePasswordModal: false,
             planStore: null,
             handleStatsUpdate: null,
             evolutionConectado: false,
@@ -247,14 +175,6 @@ export default {
             } catch (error) {
                 this.evolutionConectado = false;
             }
-        },
-        handlePasswordChangeSuccess() {
-            this.$toast.add({
-                severity: 'success',
-                summary: 'Sucesso',
-                detail: 'Senha alterada com sucesso!',
-                life: 3000,
-            });
         },
     },
 };
