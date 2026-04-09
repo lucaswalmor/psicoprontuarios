@@ -1,5 +1,5 @@
 <template>
-    <div class="card">
+    <div class="card p-2">
         <!-- Hero Section -->
         <div class="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-lg p-4 md:p-6 mb-6">
             <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-start gap-3">
@@ -113,8 +113,8 @@
             </TabList>
             <TabPanels>
                 <!-- Tab Dados Pessoais -->
-                <TabPanel :value="0">
-                    <div class="card" v-if="paciente">
+                <TabPanel :value="0" class="p-0">
+                    <div class="card p-3" v-if="paciente">
                         <h5 class="text-500 mb-4">Informações do Paciente</h5>
 
                         <!-- Informações Essenciais -->
@@ -153,21 +153,25 @@
                 <!-- Tab Prontuários -->
                 <TabPanel :value="1">
                     <div class="card">
-                        <div class="flex justify-content-between align-items-center mb-4">
-                            <h5 class="text-500 mb-0">Lista de Prontuários</h5>
-                            <div class="flex gap-2">
-                                <Button 
-                                    v-if="paciente && totalProntuarios > 0" 
-                                    label="Exportar Todos" 
-                                    icon="pi pi-file-export" 
+                        <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3 mb-4">
+                            <h5 class="text-500 mb-0 min-w-0 break-words">Lista de Prontuários</h5>
+                            <div
+                                class="flex flex-column sm:flex-row flex-wrap gap-2 w-full md:w-auto md:shrink-0 md:justify-content-end"
+                            >
+                                <Button
+                                    v-if="paciente && totalProntuarios > 0"
+                                    class="w-full sm:flex-1 md:flex-initial md:w-auto"
+                                    label="Exportar Todos"
+                                    icon="pi pi-file-export"
                                     severity="help"
-                                    @click="exportarTodosProntuarios" 
+                                    @click="exportarTodosProntuarios"
                                 />
-                                <Button 
-                                    v-if="podeEditar && paciente" 
-                                    label="Novo Prontuário" 
+                                <Button
+                                    v-if="podeEditar && paciente"
+                                    class="w-full sm:flex-1 md:flex-initial md:w-auto"
+                                    label="Novo Prontuário"
                                     icon="pi pi-plus"
-                                    @click="abrirDialogNovoProntuario" 
+                                    @click="abrirDialogNovoProntuario"
                                 />
                             </div>
                         </div>

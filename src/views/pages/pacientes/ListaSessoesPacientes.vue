@@ -1,28 +1,29 @@
 <template>
     <div class="card">
-        <div class="flex justify-content-between align-items-center mb-4">
-            <div class="flex align-items-center gap-3">
-                <h5 class="text-500 mb-0">Lista de Sessões</h5>
-                <div class="flex align-items-center gap-2">
-                    <Button 
-                        icon="pi pi-chevron-left" 
-                        class="p-button-text p-button-sm"
+        <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-start lg:align-items-center gap-3 mb-4">
+            <div class="flex flex-column sm:flex-row sm:flex-wrap sm:align-items-center gap-2 md:gap-3 min-w-0 w-full">
+                <h5 class="text-500 mb-0 break-words">Lista de Sessões</h5>
+                <div class="flex align-items-center gap-2 flex-wrap shrink-0">
+                    <Button
+                        icon="pi pi-chevron-left"
+                        class="p-button-text p-button-sm shrink-0"
                         @click="mesAnterior"
                         v-tooltip.top="'Mês anterior'"
                     />
-                    <span class="text-500 font-medium">{{ periodoAtual }}</span>
-                    <Button 
-                        icon="pi pi-chevron-right" 
-                        class="p-button-text p-button-sm"
+                    <span class="text-500 font-medium whitespace-nowrap">{{ periodoAtual }}</span>
+                    <Button
+                        icon="pi pi-chevron-right"
+                        class="p-button-text p-button-sm shrink-0"
                         @click="mesProximo"
                         v-tooltip.top="'Próximo mês'"
                     />
                 </div>
             </div>
-            <Button 
+            <Button
                 v-if="!planStore.isPlanPaused"
-                label="Nova Sessão" 
-                icon="pi pi-plus" 
+                class="w-full sm:w-auto md:shrink-0"
+                label="Nova Sessão"
+                icon="pi pi-plus"
                 @click="abrirDialogNovaSessao"
             />
         </div>
@@ -47,7 +48,7 @@
             </Column>
             <Column header="Ações">
                 <template #body="slotProps">
-                    <div class="flex gap-2">
+                    <div class="flex flex-wrap gap-2 align-items-center">
                         <Button v-if="!planStore.isPlanPaused" icon="pi pi-pencil" 
                             class="p-button-text p-button-sm" 
                             @click="editarAgendamento(slotProps.data)"
