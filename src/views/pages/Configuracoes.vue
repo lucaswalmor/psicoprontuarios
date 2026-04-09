@@ -101,60 +101,66 @@
                                 <div class="row">
                                     <div class="col-12 mb-4">
                                         <h5>Central de Notificações</h5>
-                                        <p class="text-muted">Configure mensagens automáticas enviadas via WhatsApp para seus pacientes.</p>
+                                        <p>Configure mensagens automáticas enviadas via WhatsApp para seus pacientes.</p>
                                     </div>
 
                                     <div class="col-md-4">
                                         <div class="card h-100">
-                                            <div class="card-body text-center">
+                                            <div class="card-body text-center d-flex flex-column">
                                                 <div class="fs-1 mb-2">🎉</div>
-                                                <h6 class="card-title">Datas Comemorativas</h6>
-                                                <p class="card-text text-muted small">
+                                                <h6 class="card-title notificacao-card-title">Datas Comemorativas</h6>
+                                                <p class="card-text small notificacao-card-text">
                                                     Configure mensagens automáticas para datas especiais como Natal, Dia das Mães e muito mais.
                                                 </p>
-                                                <Button
-                                                    label="Configurar"
-                                                    icon="pi pi-cog"
-                                                    @click="$router.push('/notificacoes/datas-comemorativas')"
-                                                    :disabled="!evolutionConectado"
-                                                />
-                                                <p v-if="!evolutionConectado" class="text-danger small mt-2">
-                                                    ⚠️ Configure o WhatsApp primeiro para habilitar notificações.
-                                                </p>
+                                                <div class="mt-auto">
+                                                    <Button
+                                                        label="Configurar"
+                                                        icon="pi pi-cog"
+                                                        @click="$router.push('/notificacoes/datas-comemorativas')"
+                                                        :disabled="!evolutionConectado"
+                                                    />
+                                                    <p v-if="!evolutionConectado" class="text-danger small mt-2">
+                                                        ⚠️ Configure o WhatsApp primeiro para habilitar notificações.
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="col-md-4">
                                         <div class="card h-100">
-                                            <div class="card-body text-center">
+                                            <div class="card-body text-center d-flex flex-column">
                                                 <div class="fs-1 mb-2">🎂</div>
-                                                <h6 class="card-title">Aniversariantes</h6>
-                                                <p class="card-text text-muted small">
+                                                <h6 class="card-title notificacao-card-title">Aniversariantes</h6>
+                                                <p class="card-text small notificacao-card-text">
                                                     Configure mensagens automáticas para aniversários dos pacientes.
                                                 </p>
-                                                <Button
-                                                    label="Configurar"
-                                                    icon="pi pi-cog"
-                                                    @click="$router.push('/notificacoes/aniversariantes')"
-                                                    :disabled="!evolutionConectado"
-                                                />
-                                                <p v-if="!evolutionConectado" class="text-danger small mt-2">
-                                                    ⚠️ Configure o WhatsApp primeiro para habilitar notificações.
-                                                </p>
+                                                <div class="mt-auto">
+                                                    <Button
+                                                        label="Configurar"
+                                                        icon="pi pi-cog"
+                                                        @click="$router.push('/notificacoes/aniversariantes')"
+                                                        :disabled="!evolutionConectado"
+                                                    />
+                                                    <p v-if="!evolutionConectado" class="text-danger small mt-2">
+                                                        ⚠️ Configure o WhatsApp primeiro para habilitar notificações.
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="col-md-4">
                                         <div class="card h-100 opacity-50">
-                                            <div class="card-body text-center">
+                                            <div class="card-body text-center d-flex flex-column">
                                                 <div class="fs-1 mb-2">✉️</div>
-                                                <h6 class="card-title">Mensagens Personalizadas</h6>
-                                                <p class="card-text text-muted small">
+                                                <h6 class="card-title notificacao-card-title">Mensagens Personalizadas</h6>
+                                                <p class="card-text small notificacao-card-text">
                                                     Em breve: crie mensagens personalizadas para datas especiais escolhidas por você.
                                                 </p>
-                                                <Button label="Em Breve" icon="pi pi-lock" disabled />
+                                                <div class="mt-auto">
+                                                    <Button label="Em Breve" icon="pi pi-lock" disabled />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -262,5 +268,13 @@ export default {
 
 .surface-card:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.notificacao-card-title {
+    color: var(--text-color);
+}
+
+.notificacao-card-text {
+    color: var(--text-color-secondary);
 }
 </style>
