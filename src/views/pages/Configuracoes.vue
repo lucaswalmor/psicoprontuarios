@@ -126,12 +126,33 @@
                                     </div>
 
                                     <div class="col-md-4">
-                                        <div class="card h-100 opacity-50">
+                                        <div class="card h-100">
                                             <div class="card-body text-center">
                                                 <div class="fs-1 mb-2">🎂</div>
                                                 <h6 class="card-title">Aniversariantes</h6>
                                                 <p class="card-text text-muted small">
-                                                    Em breve: envie mensagens automáticas no aniversário de cada paciente.
+                                                    Configure mensagens automáticas para aniversários dos pacientes.
+                                                </p>
+                                                <Button
+                                                    label="Configurar"
+                                                    icon="pi pi-cog"
+                                                    @click="$router.push('/notificacoes/aniversariantes')"
+                                                    :disabled="!evolutionConectado"
+                                                />
+                                                <p v-if="!evolutionConectado" class="text-danger small mt-2">
+                                                    ⚠️ Configure o WhatsApp primeiro para habilitar notificações.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="card h-100 opacity-50">
+                                            <div class="card-body text-center">
+                                                <div class="fs-1 mb-2">✉️</div>
+                                                <h6 class="card-title">Mensagens Personalizadas</h6>
+                                                <p class="card-text text-muted small">
+                                                    Em breve: crie mensagens personalizadas para datas especiais escolhidas por você.
                                                 </p>
                                                 <Button label="Em Breve" icon="pi pi-lock" disabled />
                                             </div>

@@ -12,6 +12,7 @@ import npsService from './npsService';
 import asaasService from './asaasService';
 import assinaturaService from './assinaturaService';
 import mensagemComemorativaService from './mensagemComemorativaService';
+import mensagemAniversarianteService from './mensagemAniversarianteService';
 
 export {
     pacientesService,
@@ -27,7 +28,8 @@ export {
     npsService,
     asaasService,
     assinaturaService,
-    mensagemComemorativaService
+    mensagemComemorativaService,
+    mensagemAniversarianteService
 };
 
 export default {
@@ -44,5 +46,6 @@ export default {
     npsService,
     asaasService,
     assinaturaService,
-    mensagemComemorativaService
+    mensagemComemorativaService,
+    mensagemAniversarianteService
 };

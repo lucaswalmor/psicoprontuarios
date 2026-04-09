@@ -119,6 +119,12 @@ const router = createRouter({
                     meta: { requiresAuth: true }
                 },
                 {
+                    path: '/notificacoes/aniversariantes',
+                    name: 'Aniversariantes',
+                    component: () => import('@/views/notificacoes/Aniversariantes.vue'),
+                    meta: { requiresAuth: true }
+                },
+                {
                     path: '/faq',
                     name: 'Faq',
                     component: () => import('@/views/pages/Faq.vue'),

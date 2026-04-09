@@ -86,6 +86,7 @@ app.config.globalProperties.$leadsService = services.leadsService;
 app.config.globalProperties.$anexosService = services.anexosService;
 app.config.globalProperties.$npsService = services.npsService;
 app.config.globalProperties.$mensagemComemorativaService = services.mensagemComemorativaService;
+app.config.globalProperties.$mensagemAniversarianteService = services.mensagemAniversarianteService;
 
 (async () => {
     if (localStorage.getItem('token')) {
