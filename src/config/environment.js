@@ -5,9 +5,8 @@ export const config = {
     // URLs da API para diferentes ambientes
     apiUrls: {
         development: 'http://127.0.0.1:8000/api',
-        production: 'https://psicoprontuarios-v2.lksoftware.com.br/public/api/',
-        // productionV1: 'https://psicoprontuarios.lksoftware.com.br/public/api/',
-        // production: 'https://api.psicoprontuarios.com.br/api/'
+        // production: 'https://psicoprontuarios-v2.lksoftware.com.br/public/api/',
+        production: 'https://lucas-psicoprontuarios.irkqjy.easypanel.host/api/',
     },
     
     // Configurações do Google OAuth
