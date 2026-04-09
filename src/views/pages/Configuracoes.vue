@@ -1,8 +1,8 @@
 <template>
     <div class="grid">
         <div class="col-12">
-            <div class="card">
-                <h5 class="mb-4">Configurações</h5>
+            <div class="card p-1">
+                <h5 class="mb-4 m-3">Configurações</h5>
 
                 <Tabs v-model:value="activeTab">
                     <TabList>
@@ -25,13 +25,13 @@
                     </TabList>
                     <TabPanels>
                         <TabPanel value="0">
-                            <div class="p-4">
+                            <div class="p-4 config-tab-body">
                                 <ConfiguracaoPlanoTab v-if="activeTab === '0'" />
                             </div>
                         </TabPanel>
 
                         <TabPanel value="1">
-                            <div class="p-4">
+                            <div class="p-4 config-tab-body">
                                 <div class="surface-card p-4 border-round">
                                     <h6 class="mb-3 text-800 font-bold">Segurança da Conta</h6>
                                     <div class="flex flex-column gap-3">
@@ -91,13 +91,13 @@
                         </TabPanel>
 
                         <TabPanel value="2">
-                            <div class="p-4">
+                            <div class="p-4 config-tab-body">
                                 <EvolutionConfig v-if="activeTab === '2'" />
                             </div>
                         </TabPanel>
 
                         <TabPanel value="3">
-                            <div class="p-4">
+                            <div class="p-4 config-tab-body">
                                 <div class="row">
                                     <div class="col-12 mb-4">
                                         <h5>Central de Notificações</h5>
@@ -276,5 +276,11 @@ export default {
 
 .notificacao-card-text {
     color: var(--text-color-secondary);
+}
+
+@media (max-width: 991px) {
+    .config-tab-body {
+        padding: 0.25rem !important;
+    }
 }
 </style>

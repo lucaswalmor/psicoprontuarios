@@ -1,5 +1,5 @@
 <template>
-    <div class="surface-card p-4 border-round border-1 surface-border">
+    <div>
         <h6 class="mb-3 text-800 font-bold">Configurar WhatsApp</h6>
         <p class="text-600 mb-4">Informe o número que será usado para conectar o WhatsApp.</p>
 

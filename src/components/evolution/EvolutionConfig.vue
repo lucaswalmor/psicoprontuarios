@@ -1,5 +1,5 @@
 <template>
-    <div class="surface-card p-4 border-round border-1 surface-border">
+    <div class="surface-card p-4 border-round border-1 surface-border evolution-config-card">
         <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
             <div>
                 <h6 class="mb-1 text-800 font-bold">Integração com WhatsApp</h6>
@@ -22,7 +22,7 @@
             />
 
             <div v-else>
-                <div class="surface-100 p-3 border-round mb-3">
+                <div class="surface-100 p-3 border-round mb-3 evolution-instance-info">
                     <p class="m-0"><strong>Número:</strong> {{ formattedPhone(instance.phone_number) }}</p>
                     <small class="text-600">Identificador: {{ instance.instance_name }}</small>
                 </div>
@@ -220,3 +220,15 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+@media (max-width: 991px) {
+    .evolution-config-card {
+        padding: 0.75rem !important;
+    }
+
+    .evolution-instance-info {
+        padding: 0.5rem !important;
+    }
+}
+</style>

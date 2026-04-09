@@ -1,6 +1,6 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
-import { computed, ref, watch, onMounted } from 'vue';
+import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import AppSidebar from './AppSidebar.vue';
 import AppTopbar from './AppTopbar.vue';
 import Breadcrumb from '@/components/Breadcrumb.vue';
@@ -14,8 +14,28 @@ const outsideClickListener = ref(null);
 const planLoading = ref(false);
 const showNpsDialog = ref(false);
 
+const isDesktop = ref(typeof window !== 'undefined' && window.innerWidth > 991);
+
+function updateIsDesktop() {
+    isDesktop.value = window.innerWidth > 991;
+}
+
+/** Sidebar só é montada quando o menu está “aberto”, para o corpo usar 100% quando fechado. */
+const showSidebar = computed(() => {
+    if (!isDesktop.value) {
+        return layoutState.staticMenuMobileActive;
+    }
+    if (layoutConfig.menuMode === 'overlay') {
+        return layoutState.overlayMenuActive;
+    }
+    return !layoutState.staticMenuDesktopInactive;
+});
+
 // Event listeners para loading de plano
 onMounted(() => {
+    updateIsDesktop();
+    window.addEventListener('resize', updateIsDesktop);
+
     window.addEventListener('plan-check-start', () => {
         planLoading.value = true;
         window.planLoadingActive = true; // Variável global para o axios
@@ -28,6 +48,16 @@ onMounted(() => {
     
     // Verificar se precisa mostrar dialog NPS
     checkNpsRequired();
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('resize', updateIsDesktop);
+});
+
+watch(isDesktop, (desktop) => {
+    if (desktop) {
+        layoutState.staticMenuMobileActive = false;
+    }
 });
 
 watch(isSidebarActive, (newVal) => {
@@ -63,7 +93,7 @@ function bindOutsideClickListener() {
 
 function unbindOutsideClickListener() {
     if (outsideClickListener.value) {
-        document.removeEventListener('click', outsideClickListener);
+        document.removeEventListener('click', outsideClickListener.value);
         outsideClickListener.value = null;
     }
 }
@@ -71,6 +101,7 @@ function unbindOutsideClickListener() {
 function isOutsideClicked(event) {
     const sidebarEl = document.querySelector('.layout-sidebar');
     const topbarEl = document.querySelector('.layout-menu-button');
+    if (!sidebarEl || !topbarEl) return false;
 
     return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || topbarEl.isSameNode(event.target) || topbarEl.contains(event.target));
 }
@@ -102,7 +133,7 @@ function handleNpsSuccess() {
 <template>
     <div class="layout-wrapper" :class="containerClass">
         <app-topbar></app-topbar>
-        <app-sidebar></app-sidebar>
+        <app-sidebar v-if="showSidebar"></app-sidebar>
         <div class="layout-main-container">
             <div class="container-fluid">
             <!-- <div class="layout-main"> -->
