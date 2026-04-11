@@ -34,6 +34,13 @@
                 <Message v-if="mostrarAlterarCartao" severity="error" :closable="false" class="mb-4">
                     Existe cobrança <strong>em atraso</strong>. Atualize o cartão com o botão <strong>Alterar cartão</strong> em Ações (acima de Parar assinatura).
                 </Message>
+                <Message v-else-if="avisoTrialComCobrancaFutura" severity="info" :closable="false" class="mb-4">
+                    Sua assinatura está em <strong>período de teste</strong>
+                    <template v-if="textoDiasRestantesTrial">
+                        ({{ textoDiasRestantesTrial }})
+                    </template>.
+                    A cobrança ficará pendente até a data de vencimento e será processada automaticamente no fim do trial.
+                </Message>
                 <Message v-else-if="temFaturaPendente" severity="warn" :closable="false" class="mb-4">
                     Existe cobrança <strong>pendente</strong>. Confirme o pagamento no e-mail da Asaas ou aguarde a confirmação automática.
                 </Message>
@@ -312,11 +319,40 @@ export default {
         mostrarReativar() {
             return this.assinatura?.status === 'pausada';
         },
+        isTrial() {
+            return this.assinatura?.status === 'trial';
+        },
         /** Cobrança vencida (atrasada) — exibe Alterar cartão */
         mostrarAlterarCartao() {
             return this.faturas.some((f) => (f.asaas_status || '').toUpperCase() === 'OVERDUE');
         },
+        avisoTrialComCobrancaFutura() {
+            if (!this.isTrial) return false;
+            return this.faturas.some((f) => (f.asaas_status || '').toUpperCase() === 'PENDING');
+        },
+        diasRestantesTrial() {
+            const dataFimTrial = this.assinatura?.data_fim_trial;
+            if (!dataFimTrial) return null;
+
+            const fim = new Date(String(dataFimTrial).replace(' ', 'T'));
+            if (Number.isNaN(fim.getTime())) return null;
+
+            const hoje = new Date();
+            const inicioHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+            const fimDoTrial = new Date(fim.getFullYear(), fim.getMonth(), fim.getDate());
+
+            const diffMs = fimDoTrial.getTime() - inicioHoje.getTime();
+            return Math.ceil(diffMs / 86400000);
+        },
+        textoDiasRestantesTrial() {
+            if (!this.isTrial) return '';
+            if (this.diasRestantesTrial == null) return '';
+            if (this.diasRestantesTrial <= 0) return 'termina hoje';
+            if (this.diasRestantesTrial === 1) return 'falta 1 dia';
+            return `faltam ${this.diasRestantesTrial} dias`;
+        },
         temFaturaPendente() {
+            if (this.isTrial) return false;
             return this.faturas.some((f) => {
                 const st = (f.asaas_status || '').toUpperCase();
                 return st === 'PENDING' || st === 'OVERDUE';
