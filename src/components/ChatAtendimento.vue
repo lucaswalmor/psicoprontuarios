@@ -18,9 +18,20 @@
                         <small>Online agora</small>
                     </div>
                 </div>
-                <button @click="toggleChat" class="close-btn" aria-label="Fechar chat">
-                    <i class="pi pi-times"></i>
-                </button>
+                <div class="chat-header-actions">
+                    <button
+                        @click="clearConversation"
+                        class="header-action-btn clear-btn"
+                        type="button"
+                        aria-label="Limpar conversa"
+                        title="Limpar conversa"
+                    >
+                        <i class="pi pi-trash"></i>
+                    </button>
+                    <button @click="toggleChat" class="header-action-btn close-btn" type="button" aria-label="Fechar chat">
+                        <i class="pi pi-times"></i>
+                    </button>
+                </div>
             </div>
 
             <div class="chat-body">
@@ -28,6 +39,17 @@
                     <div v-for="message in messages" :key="message.id" class="message" :class="{ 'user': message.isUser }">
                         <div class="message-bubble">
                             <div class="message-content" v-html="formatMessage(message.text)"></div>
+                            <div v-if="!message.isUser && message.actions?.length" class="message-actions">
+                                <button
+                                    v-for="(action, actionIndex) in message.actions"
+                                    :key="`${message.id}-${actionIndex}-${action.label || 'acao'}`"
+                                    class="action-button"
+                                    type="button"
+                                    @click="handleAction(action)"
+                                >
+                                    {{ action.label || 'Abrir' }}
+                                </button>
+                            </div>
                         </div>
                         <div class="message-time text-500">{{ formatTime(message.timestamp) }}</div>
                     </div>
@@ -75,11 +97,15 @@ export default {
     },
     data() {
         return {
+            storageKey: 'psicoprontuarios_chat_messages_v1',
+            visitorIdStorageKey: 'psicoprontuarios_chat_visitor_id_v1',
+            visitorSessionId: '',
             isOpen: false,
             messages: [
                 {
                     id: 1,
                     text: 'Olá! Como posso ajudá-lo hoje?',
+                    actions: [],
                     isUser: false,
                     timestamp: new Date()
                 }
@@ -89,6 +115,10 @@ export default {
             unreadMessages: 0,
             isShaking: false // Controle do efeito de balançando
         };
+    },
+    created() {
+        this.visitorSessionId = this.getOrCreateVisitorSessionId();
+        this.loadPersistedConversation();
     },
     methods: {
         toggleChat() {
@@ -106,11 +136,13 @@ export default {
             const message = {
                 id: Date.now(),
                 text: this.newMessage,
+                actions: [],
                 isUser: true,
                 timestamp: new Date()
             };
             
             this.messages.push(message);
+            this.persistConversation();
             this.isTyping = true;
             this.scrollToBottom();
             
@@ -127,17 +159,25 @@ export default {
                         phone: this.getUserPhone()
                     }
                 });
+
+                // Debug do payload retornado pelo N8N
+                console.log('[ChatAtendimento] Resposta bruta N8N:', response);
+                console.log('[ChatAtendimento] Chaves da resposta:', Object.keys(response || {}));
+                if (response?.actions) {
+                    console.log('[ChatAtendimento] actions recebidas:', response.actions);
+                }
                 
                 if (response && (response.response || response.output)) {
-                    // Adicionar resposta do N8N (suporte a 'response' e 'output')
-                    const responseText = response.response || response.output;
-                    console.log('Texto da resposta:', responseText);
+                    const parsedPayload = this.parseN8nPayload(response);
+                    console.log('Texto da resposta:', parsedPayload.text);
                     this.messages.push({
                         id: Date.now() + 1,
-                        text: responseText,
+                        text: parsedPayload.text,
+                        actions: parsedPayload.actions,
                         isUser: false,
                         timestamp: new Date()
                     });
+                    this.persistConversation();
                     this.scrollToBottom();
                     // Ativar efeito de balançando se chat estiver fechado
                     if (!this.isOpen) {
@@ -149,9 +189,11 @@ export default {
                     this.messages.push({
                         id: Date.now() + 1,
                         text: 'Mensagem recebida! Um atendente responderá em breve.',
+                        actions: [],
                         isUser: false,
                         timestamp: new Date()
                     });
+                    this.persistConversation();
                     this.scrollToBottom();
                     // Ativar efeito de balançando se chat estiver fechado
                     if (!this.isOpen) {
@@ -165,9 +207,11 @@ export default {
                 this.messages.push({
                     id: Date.now() + 1,
                     text: 'Erro ao enviar mensagem. Tente novamente.',
+                    actions: [],
                     isUser: false,
                     timestamp: new Date()
                 });
+                this.persistConversation();
                 this.scrollToBottom();
             } finally {
                 this.isTyping = false;
@@ -203,6 +247,57 @@ export default {
             const userId = this.getUserId();
             return `psicologo-${userId}`;
         },
+
+        getOrCreateVisitorSessionId() {
+            let visitorId = localStorage.getItem(this.visitorIdStorageKey);
+            if (!visitorId) {
+                visitorId = `visitante-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+                localStorage.setItem(this.visitorIdStorageKey, visitorId);
+            }
+            return visitorId;
+        },
+
+        loadPersistedConversation() {
+            try {
+                const raw = localStorage.getItem(this.storageKey);
+                if (!raw) {
+                    return;
+                }
+
+                const parsed = JSON.parse(raw);
+                if (!Array.isArray(parsed) || !parsed.length) {
+                    return;
+                }
+
+                this.messages = parsed.map((message) => ({
+                    id: message.id || Date.now(),
+                    text: message.text || '',
+                    actions: this.normalizeActions(message.actions),
+                    isUser: Boolean(message.isUser),
+                    timestamp: message.timestamp ? new Date(message.timestamp) : new Date()
+                }));
+            } catch (error) {
+                console.warn('[ChatAtendimento] Falha ao carregar conversa salva:', error);
+            }
+        },
+
+        persistConversation() {
+            try {
+                const serializable = this.messages.slice(-80).map((message) => ({
+                    id: message.id,
+                    text: message.text,
+                    actions: this.normalizeActions(message.actions),
+                    isUser: Boolean(message.isUser),
+                    timestamp: message.timestamp instanceof Date
+                        ? message.timestamp.toISOString()
+                        : message.timestamp
+                }));
+
+                localStorage.setItem(this.storageKey, JSON.stringify(serializable));
+            } catch (error) {
+                console.warn('[ChatAtendimento] Falha ao salvar conversa:', error);
+            }
+        },
         
         // Métodos para efeitos visuais
         startShaking() {
@@ -216,6 +311,23 @@ export default {
         stopShaking() {
             this.isShaking = false;
         },
+
+        clearConversation() {
+            this.messages = [
+                {
+                    id: Date.now(),
+                    text: 'Olá! Como posso ajudá-lo hoje?',
+                    actions: [],
+                    isUser: false,
+                    timestamp: new Date()
+                }
+            ];
+            this.unreadMessages = 0;
+            this.stopShaking();
+            localStorage.removeItem(this.storageKey);
+            this.persistConversation();
+            this.scrollToBottom();
+        },
         
         // Rolar para a última mensagem
         scrollToBottom() {
@@ -225,6 +337,68 @@ export default {
                     messagesContainer.scrollTop = messagesContainer.scrollHeight;
                 }
             });
+        },
+
+        parseN8nPayload(response) {
+            const rawText = response.response || response.output || '';
+            let text = typeof rawText === 'string' ? rawText : String(rawText || '');
+            let actions = this.normalizeActions(response.actions);
+
+            // Fallback: alguns fluxos do N8N retornam output como string JSON.
+            if (typeof rawText === 'string') {
+                const trimmed = rawText.trim();
+                if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+                    try {
+                        const parsed = JSON.parse(trimmed);
+                        text = parsed.output || parsed.response || text;
+                        actions = this.normalizeActions(parsed.actions);
+                    } catch (e) {
+                        // Mantém texto puro se não for JSON válido.
+                    }
+                }
+            }
+
+            return { text, actions };
+        },
+
+        normalizeActions(actions) {
+            if (!Array.isArray(actions)) {
+                return [];
+            }
+
+            return actions
+                .filter((action) => action && typeof action === 'object')
+                .map((action) => ({
+                    label: action.label || 'Abrir',
+                    type: action.type || 'route',
+                    to: action.to || '',
+                    url: action.url || '',
+                    target: action.target || ''
+                }));
+        },
+
+        handleAction(action) {
+            const type = action?.type;
+
+            if (type === 'route' && action.to) {
+                this.$router.push(action.to);
+                return;
+            }
+
+            if (type === 'anchor' && action.target) {
+                const anchorId = action.target.startsWith('#')
+                    ? action.target.slice(1)
+                    : action.target;
+                const element = document.getElementById(anchorId);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+                return;
+            }
+
+            if (type === 'url' && action.url) {
+                window.open(action.url, '_blank', 'noopener,noreferrer');
+            }
         },
         
         // Método auxiliar para obter dados do usuário
@@ -237,7 +411,7 @@ export default {
         getUserId() {
             // Obter ID do usuário logado do sessionStorage
             const user = this.getUserData();
-            return user.id || 'psicologo-' + Date.now();
+            return user.id || this.visitorSessionId;
         },
         
         getUserName() {
@@ -478,8 +652,37 @@ export default {
     transform: scale(1.05) !important;
 }
 
+.chat-header-actions {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.4rem !important;
+}
+
+.header-action-btn {
+    width: 1.9rem !important;
+    height: 1.9rem !important;
+    border-radius: 50% !important;
+    border: none !important;
+    color: white !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+}
+
+.clear-btn {
+    background: rgba(255, 255, 255, 0.16) !important;
+}
+
+.clear-btn:hover {
+    background: rgba(248, 113, 113, 0.38) !important;
+    transform: scale(1.05) !important;
+}
+
 .chat-body {
     flex: 1 !important;
+    min-height: 0 !important;
     display: flex !important;
     flex-direction: column !important;
     background:
@@ -490,9 +693,12 @@ export default {
 
 .messages {
     flex: 1 !important;
+    min-height: 0 !important;
     padding: 0.9rem !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
     display: flex !important;
     flex-direction: column !important;
     gap: 0.7rem !important;
@@ -610,6 +816,30 @@ export default {
 .message-content .list-text {
     flex: 1 !important;
     line-height: 1.4 !important;
+}
+
+.message-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 0.45rem !important;
+    margin-top: 0.65rem !important;
+}
+
+.action-button {
+    border: 1px solid #3b82f6 !important;
+    background: #eff6ff !important;
+    color: #1d4ed8 !important;
+    border-radius: 999px !important;
+    padding: 0.33rem 0.7rem !important;
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.action-button:hover {
+    background: #dbeafe !important;
+    transform: translateY(-1px) !important;
 }
 
 .chat-input {

@@ -39,7 +39,6 @@
                             <img src="@/assets/img/no-bg.webp" alt="PsicoProntuários" class="logo">
                             <h1 class="text-3xl font-bold text-purple-600 mb-2">PsicoProntuários</h1>
                         </div>
-                        <p class="text-600">Não precisa de cartão de crédito para testar.</p>
                     </div>
                     <!-- Botão Google -->
                     <GoogleSignInButton 
@@ -480,12 +479,16 @@
             @update:visible="showExistingUserDialog = $event"
             @access-system="goToSystem"
         />
+
+        <ChatAtendimento :webhook-url="n8nChatWebhookUrl" />
     </div>
 </template>
 
 <script>
 import logo from '@/assets/img/no-bg.webp';
 import userService from '@/services/userService';
+import ChatAtendimento from '@/components/ChatAtendimento.vue';
+import { getN8nChatWebhookUrl } from '@/config/environment.js';
 import GoogleSignInButton from '@/components/GoogleSignInButton.vue';
 import DialogCadastroSucesso from '@/components/dialogs/DialogCadastroSucesso.vue';
 import DialogContaExistente from '@/components/dialogs/DialogContaExistente.vue';
@@ -501,6 +504,7 @@ import InputIcon from 'primevue/inputicon';
 export default {
     name: 'Cadastro',
     components: {
+        ChatAtendimento,
         GoogleSignInButton,
         DialogCadastroSucesso,
         DialogContaExistente,
@@ -519,6 +523,7 @@ export default {
             loading: false,
             loadingCep: false,
             error: '',
+            n8nChatWebhookUrl: getN8nChatWebhookUrl(),
             showSuccessDialog: false,
             showExistingUserDialog: false,
             countdown: 3,
