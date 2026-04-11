@@ -302,4 +302,25 @@ const router = createRouter({
 
 setupAuthInactiveGuard(router);
 
+// Recupera automaticamente de erro de chunk desatualizado após deploy.
+router.onError((error) => {
+    const mensagem = String(error?.message || '');
+    const erroDeChunk =
+        mensagem.includes('Failed to fetch dynamically imported module') ||
+        mensagem.includes('Importing a module script failed');
+
+    if (!erroDeChunk) return;
+
+    const chaveReload = 'chunk-reload-attempted';
+    const jaTentouReload = sessionStorage.getItem(chaveReload) === '1';
+
+    if (jaTentouReload) {
+        sessionStorage.removeItem(chaveReload);
+        return;
+    }
+
+    sessionStorage.setItem(chaveReload, '1');
+    window.location.reload();
+});
+
 export default router;
