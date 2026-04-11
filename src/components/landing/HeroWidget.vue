@@ -42,7 +42,7 @@ const scrollToLeads = () => {
                             </span>
                         </h1>
                         <p class="text-lg md:text-xl lg:text-2xl text-surface-700 dark:text-surface-200 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                            Gerencie seus pacientes de forma segura e eficiente. Sistema completo para psicólogos e profissionais da saúde mental.
+                            Menos planilha e mais clínica: prontuário, agenda, financeiro e rotinas no WhatsApp para você focar no atendimento.
                         </p>
                     </div>
                     
@@ -68,11 +68,11 @@ const scrollToLeads = () => {
                     <div class="flex flex-wrap justify-center lg:justify-start gap-8 pt-8">
                         <div class="flex items-center gap-2">
                             <i class="pi pi-shield text-green-500 text-xl"></i>
-                            <span class="text-sm text-surface-600 dark:text-surface-300">LGPD Compliant</span>
+                            <span class="text-sm text-surface-600 dark:text-surface-300">Adequação à LGPD</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <i class="pi pi-check-circle text-blue-500 text-xl"></i>
-                            <span class="text-sm text-surface-600 dark:text-surface-300">100% Seguro</span>
+                            <span class="text-sm text-surface-600 dark:text-surface-300">Dados por conta</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <i class="pi pi-clock text-orange-500 text-xl"></i>

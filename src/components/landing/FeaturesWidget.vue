@@ -33,7 +33,7 @@
                     </div>
                     <h3 class="feature-title">Prontuários Seguros</h3>
                     <p class="feature-description">
-                        Dados protegidos e sigilosos conforme LGPD. Criptografia de ponta a ponta.
+                        Dados clínicos com controle de acesso, sigilo profissional e boas práticas alinhadas à LGPD.
                     </p>
                 </div>
             </div>
@@ -70,9 +70,9 @@
                     <div class="feature-icon bg-gradient-to-br from-orange-400 to-red-500">
                         <i class="pi pi-chart-bar text-white text-2xl"></i>
                     </div>
-                    <h3 class="feature-title">Relatórios Detalhados</h3>
+                    <h3 class="feature-title">Visão da prática</h3>
                     <p class="feature-description">
-                        Gere relatórios completos e personalizados para suas sessões e tratamentos.
+                        Dashboard, financeiro da consulta e indicadores de evolução (humor, GAD-7, PHQ-9) para decidir com dados.
                     </p>
                 </div>
             </div>
@@ -96,22 +96,22 @@
                     <div class="feature-icon bg-gradient-to-br from-green-400 to-emerald-500">
                         <i class="pi pi-whatsapp text-white text-2xl"></i>
                     </div>
-                    <h3 class="feature-title">Automação 100% WhatsApp</h3>
+                    <h3 class="feature-title">WhatsApp no fluxo de trabalho</h3>
                     <p class="feature-description">
-                        Seus pacientes podem cadastrar dados, acessar prontuários, listar informações e muito mais direto pelo WhatsApp.
+                        Cadastros, listagens e consultas das principais telas pelo WhatsApp, sem abrir o navegador. Menos cliques, mais tempo com o paciente.
                     </p>
                 </div>
             </div>
 
-            <!-- Card 8: Captação de Pacientes -->
+            <!-- Card 8: Notificações automáticas -->
             <div class="col-md-4">
                 <div class="feature-card h-100">
                     <div class="feature-icon bg-gradient-to-br from-violet-500 to-purple-600">
-                        <i class="pi pi-users text-white text-2xl"></i>
+                        <i class="pi pi-bell text-white text-2xl"></i>
                     </div>
-                    <h3 class="feature-title">Captação de Pacientes</h3>
+                    <h3 class="feature-title">Notificações automáticas</h3>
                     <p class="feature-description">
-                        Trabalhamos ativamente para conseguir novos pacientes e ajudar a expandir sua prática clínica.
+                        Mensagens de aniversário, datas comemorativas e outras rotinas pelo WhatsApp, conforme você configurar.
                     </p>
                 </div>
             </div>
@@ -122,9 +122,9 @@
                     <div class="feature-icon bg-gradient-to-br from-purple-400 to-violet-500">
                         <i class="pi pi-eye text-white text-2xl"></i>
                     </div>
-                    <h3 class="feature-title">Privacidade Total</h3>
+                    <h3 class="feature-title">Privacidade e LGPD</h3>
                     <p class="feature-description">
-                        Seus dados sempre protegidos e seguros. Conformidade total com LGPD.
+                        Tratamento de dados pensado para o contexto clínico, com separação por conta e transparência nas finalidades do uso.
                     </p>
                 </div>
             </div>

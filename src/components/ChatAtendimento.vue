@@ -66,6 +66,13 @@
 <script>
 export default {
     name: 'ChatAtendimento',
+    props: {
+        /** URL completa do webhook POST (ex.: N8N) que recebe o payload da conversa. */
+        webhookUrl: {
+            type: String,
+            required: true
+        }
+    },
     data() {
         return {
             isOpen: false,
@@ -171,9 +178,12 @@ export default {
         },
         
         async sendToN8N(messageData) {
-            const webhookUrl = 'https://petgre-n8n-petgre.irkqjy.easypanel.host/webhook/psico-bot-webhook/chat';
-            
-            const response = await fetch(webhookUrl, {
+            const url = (this.webhookUrl || '').trim();
+            if (!url) {
+                throw new Error('Webhook do chat não configurado.');
+            }
+
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

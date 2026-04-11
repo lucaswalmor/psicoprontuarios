@@ -66,6 +66,9 @@
                 <div class="footer-bottom-content">
                     <p class="copyright">
                         © {{ new Date().getFullYear() }} PsicoProntuários. Todos os direitos reservados.
+                        <span class="copyright-lgpd">
+                            Tratamento de dados pessoais em linha com a LGPD e o sigilo profissional.
+                        </span>
                     </p>
                     <div class="footer-bottom-links">
                         <a href="#" class="bottom-link">Termos</a>
@@ -172,7 +175,11 @@ function smoothScroll(id) {
 }
 
 .copyright {
-    @apply text-surface-600 dark:text-surface-300 text-sm;
+    @apply text-surface-600 dark:text-surface-300 text-sm max-w-2xl text-center md:text-left;
+}
+
+.copyright-lgpd {
+    @apply block mt-2 text-surface-500 dark:text-surface-400 text-xs leading-snug;
 }
 
 .footer-bottom-links {

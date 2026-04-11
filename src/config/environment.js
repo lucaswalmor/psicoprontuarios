@@ -36,4 +36,13 @@ export const getApiUrl = () => {
     return isDevelopment ? config.apiUrls.development : config.apiUrls.production;
 };
 
+/** Webhook N8N do chat flutuante (passado ao componente via prop no layout). */
+const DEFAULT_N8N_CHAT_WEBHOOK_URL =
+    'https://petgre-n8n-petgre.irkqjy.easypanel.host/webhook/psico-bot-webhook/chat';
+
+export const getN8nChatWebhookUrl = () => {
+    const fromEnv = (import.meta.env.VITE_N8N_CHAT_WEBHOOK_URL || '').trim();
+    return fromEnv || DEFAULT_N8N_CHAT_WEBHOOK_URL;
+};
+
 export default config;

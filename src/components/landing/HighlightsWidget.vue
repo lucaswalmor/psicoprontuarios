@@ -53,7 +53,7 @@ import macbook from '@/assets/img/macbook.webp';
                         </div>
                         <div class="feature-item">
                             <i class="pi pi-check-circle text-green-500 text-lg"></i>
-                            <span>Notificações push</span>
+                            <span>Lembretes e rotinas no fluxo de trabalho</span>
                         </div>
                     </div>
                 </div>

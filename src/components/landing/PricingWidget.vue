@@ -1,210 +1,80 @@
 <template>
     <div class="pricing-section">
-        <!-- Header -->
         <div class="text-center mb-16">
             <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-surface-900 dark:text-surface-0 mb-4">
-                Planos Acessíveis
+                Um plano, tudo incluído
             </h2>
             <p class="text-lg md:text-xl text-surface-600 dark:text-surface-300 max-w-3xl mx-auto">
-                Escolha o plano ideal para sua prática e comece a gerenciar seus pacientes hoje mesmo
+                Teste grátis por 7 dias. Depois, valor fixo mensal — sem surpresas na fatura.
             </p>
         </div>
 
-        <!-- Pricing Cards -->
-        <div class="row g-4 justify-content-center">
-            <!-- Plano Gratuito -->
-            <div class="col-lg-4">
-                <div class="pricing-card h-100">
-                    <div class="card-header">
-                        <h3 class="plan-title">Gratuito</h3>
-                        <div class="plan-icon-wrapper">
-                            <i class="pi pi-user text-4xl text-surface-400"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="price-section">
-                        <div class="price">
-                            <span class="currency">R$</span>
-                            <span class="amount">0</span>
-                            <span class="period">/mês</span>
-                        </div>
-                        <p class="text-sm text-surface-500 dark:text-surface-400">Ideal para começar sua prática</p>
-                    </div>
-                    
-                    <Divider class="divider" />
-                    
-                    <ul class="features-list">
-                        <li class="feature-item">
-                            <i class="pi pi-check text-green-500"></i>
-                            <span>Até 5 pacientes</span>
-                        </li>
-                        <li class="feature-item">
-                            <i class="pi pi-check text-green-500"></i>
-                            <span>Agendamentos</span>
-                        </li>
-                        <li class="feature-item">
-                            <i class="pi pi-check text-green-500"></i>
-                            <span>Suporte por email</span>
-                        </li>
-                        <li class="feature-item">
-                            <i class="pi pi-check text-green-500"></i>
-                            <span>Prontuários PDF</span>
-                        </li>
-                        <li class="feature-item">
-                            <i class="pi pi-check text-green-500"></i>
-                            <span>Prontuários ilimitados</span>
-                        </li>
-                        <li class="feature-item">
-                            <i class="pi pi-times text-red-500"></i>
-                            <span class="text-surface-500">Anexos de arquivos</span>
-                        </li>
-                        <li class="feature-item">
-                            <i class="pi pi-times text-red-500"></i>
-                            <span class="text-surface-500">Dashboard</span>
-                        </li>
-                        <li class="feature-item">
-                            <i class="pi pi-times text-red-500"></i>
-                            <span class="text-surface-500">Gestão Financeira</span>
-                        </li>
-                    </ul>
-
-                    <div class="mt-auto pt-6">
-                        <Button 
-                            label="Começar Grátis" 
-                            class="cta-button"
-                            @click="$router.push('/cadastro')"
-                        />
-                    </div>
-                </div>
-            </div>
-
-            <!-- Plano Essencial -->
-            <div class="col-lg-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-xl-5">
                 <div class="pricing-card featured h-100">
-                    <div class="featured-badge">Mais Popular</div>
+                    <div class="featured-badge">Plano Simples</div>
                     <div class="card-header">
-                        <h3 class="plan-title">Essencial</h3>
+                        <h3 class="plan-title">Simples</h3>
                         <div class="plan-icon-wrapper">
                             <i class="pi pi-star text-4xl text-primary-500"></i>
                         </div>
                     </div>
-                    
+
                     <div class="price-section">
                         <div class="price">
                             <span class="currency">R$</span>
                             <span class="amount">29</span>
                             <span class="period">,90/mês</span>
                         </div>
-                        <p class="text-sm text-600">Perfeito para psicólogos em crescimento</p>
+                        <p class="text-sm text-surface-600 dark:text-surface-400 mb-2">
+                            7 dias de teste grátis para conhecer o sistema
+                        </p>
+                        <p class="text-sm text-surface-500 dark:text-surface-400">
+                            Prontuário, agenda, financeiro, anexos, WhatsApp e notificações no mesmo lugar.
+                        </p>
                     </div>
-                    
+
                     <Divider class="divider" />
-                    
+
                     <ul class="features-list">
                         <li class="feature-item">
                             <i class="pi pi-check text-green-500"></i>
-                            <span>Até 15 pacientes</span>
+                            <span>Prontuários com histórico e PDF</span>
                         </li>
                         <li class="feature-item">
                             <i class="pi pi-check text-green-500"></i>
-                            <span>Agendamentos</span>
+                            <span>Agenda com validação de conflitos</span>
                         </li>
                         <li class="feature-item">
                             <i class="pi pi-check text-green-500"></i>
-                            <span>Até 200 anexos</span>
+                            <span>Financeiro da consulta (pagamentos e relatórios)</span>
                         </li>
                         <li class="feature-item">
                             <i class="pi pi-check text-green-500"></i>
-                            <span>Prontuários PDF</span>
+                            <span>Anamnese, anexos e dashboard</span>
                         </li>
                         <li class="feature-item">
                             <i class="pi pi-check text-green-500"></i>
-                            <span>Prontuários ilimitados</span>
+                            <span>Indicadores de evolução (humor, GAD-7, PHQ-9)</span>
                         </li>
                         <li class="feature-item">
                             <i class="pi pi-check text-green-500"></i>
-                            <span>Dashboard</span>
+                            <span>WhatsApp: rotinas e automações no fluxo clínico</span>
                         </li>
                         <li class="feature-item">
                             <i class="pi pi-check text-green-500"></i>
-                            <span>Suporte por email</span>
+                            <span>Notificações de aniversários e datas comemorativas</span>
                         </li>
                         <li class="feature-item">
-                            <i class="pi pi-times text-red-500"></i>
-                            <span class="text-surface-500">Gestão Financeira</span>
+                            <i class="pi pi-check text-green-500"></i>
+                            <span>Suporte por e-mail</span>
                         </li>
                     </ul>
 
                     <div class="mt-auto pt-6">
-                        <Button 
-                            label="Escolher Essencial" 
+                        <Button
+                            label="Começar teste grátis"
                             class="cta-button featured"
-                            @click="$router.push('/cadastro')"
-                        />
-                    </div>
-                </div>
-            </div>
-
-            <!-- Plano Profissional -->
-            <div class="col-lg-4">
-                <div class="pricing-card h-100">
-                    <div class="card-header">
-                        <h3 class="plan-title">Profissional</h3>
-                        <div class="plan-icon-wrapper">
-                            <i class="pi pi-briefcase text-4xl text-surface-400"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="price-section">
-                        <div class="price">
-                            <span class="currency">R$</span>
-                            <span class="amount">59</span>
-                            <span class="period">,90/mês</span>
-                        </div>
-                        <p class="text-sm text-surface-500 dark:text-surface-400">Solução completa para profissionais estabelecidos</p>
-                    </div>
-                    
-                    <Divider class="divider" />
-                    
-                    <ul class="features-list">
-                        <li class="feature-item">
-                            <i class="pi pi-check text-green-500"></i>
-                            <span>Até 30 pacientes</span>
-                        </li>
-                        <li class="feature-item">
-                            <i class="pi pi-check text-green-500"></i>
-                            <span>Agendamentos</span>
-                        </li>
-                        <li class="feature-item">
-                            <i class="pi pi-check text-green-500"></i>
-                            <span>Anexos ilimitados</span>
-                        </li>
-                        <li class="feature-item">
-                            <i class="pi pi-check text-green-500"></i>
-                            <span>Prontuários PDF</span>
-                        </li>
-                        <li class="feature-item">
-                            <i class="pi pi-check text-green-500"></i>
-                            <span>Prontuários ilimitados</span>
-                        </li>
-                        <li class="feature-item">
-                            <i class="pi pi-check text-green-500"></i>
-                            <span>Dashboard</span>
-                        </li>
-                        <li class="feature-item">
-                            <i class="pi pi-check text-green-500"></i>
-                            <span>Suporte completo</span>
-                        </li>
-                        <li class="feature-item">
-                            <i class="pi pi-check text-green-500"></i>
-                            <span>Gestão Financeira</span>
-                        </li>
-                    </ul>
-
-                    <div class="mt-auto pt-6">
-                        <Button 
-                            label="Escolher Profissional" 
-                            class="cta-button"
                             @click="$router.push('/cadastro')"
                         />
                     </div>
@@ -212,13 +82,12 @@
             </div>
         </div>
 
-        <!-- Additional Info -->
         <div class="text-center mt-12">
-            <p class="text-surface-600 dark:text-surface-300 mb-4">
-                Todos os novos usuários começam no plano gratuito
+            <p class="text-surface-600 dark:text-surface-300 mb-2">
+                Cancele quando quiser, conforme as regras do seu contrato de uso.
             </p>
             <p class="text-sm text-surface-500 dark:text-surface-400">
-                Faça upgrade quando quiser • Cancele a qualquer momento • Sem taxas ocultas
+                Valor referente ao plano atual do catálogo — confira sempre os valores na tela de assinatura ao finalizar o cadastro.
             </p>
         </div>
     </div>
@@ -243,13 +112,13 @@ export default {
 }
 
 .pricing-card {
-    @apply bg-surface-0 dark:bg-surface-900 rounded-3xl p-8 border-2 border-surface-200 dark:border-surface-700 transition-all duration-300 hover:shadow-2xl hover:scale-105 relative;
+    @apply bg-surface-0 dark:bg-surface-900 rounded-3xl p-8 border-2 border-surface-200 dark:border-surface-700 transition-all duration-300 hover:shadow-2xl relative;
     display: flex;
     flex-direction: column;
 }
 
 .pricing-card.featured {
-    @apply border-primary shadow-xl scale-105;
+    @apply border-primary shadow-xl;
 }
 
 .featured-badge {
@@ -320,15 +189,11 @@ export default {
     .pricing-section {
         padding: 1rem 0;
     }
-    
+
     .pricing-card {
         @apply p-6;
     }
-    
-    .pricing-card.featured {
-        @apply scale-100;
-    }
-    
+
     .amount {
         @apply text-4xl;
     }

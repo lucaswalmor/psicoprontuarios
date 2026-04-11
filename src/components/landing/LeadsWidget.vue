@@ -11,7 +11,7 @@
                                     Entre em Contato
                                 </h3>
                                 <p class="text-surface-600 dark:text-surface-400">
-                                    Preencha o formulário e entraremos em contato
+                                    Envie seus dados; nossa equipe usa essas informações para retornar por e-mail ou telefone.
                                 </p>
                             </div>
                             
@@ -101,7 +101,7 @@
                             Interessado em nossa plataforma?
                         </h2>
                         <p class="text-lg text-surface-600 dark:text-surface-400 mb-6 leading-relaxed">
-                            Deixe seus dados e entraremos em contato para demonstrar como podemos ajudar você a gerenciar seus pacientes de forma mais eficiente.
+                            Quer falar com alguém antes de criar a conta? Deixe nome, telefone e e-mail — o envio é registrado no nosso fluxo de atendimento (integração automatizada) para retorno o mais rápido possível.
                         </p>
                         
                         <div class="space-y-4">

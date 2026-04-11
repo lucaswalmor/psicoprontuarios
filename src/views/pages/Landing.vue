@@ -7,53 +7,68 @@ import PricingWidget from '@/components/landing/PricingWidget.vue';
 import TopbarWidget from '@/components/landing/TopbarWidget.vue';
 import LeadsWidget from '@/components/landing/LeadsWidget.vue';
 import TestimonialsWidget from '@/components/landing/TestimonialsWidget.vue';
+import ChatAtendimento from '@/components/ChatAtendimento.vue';
+import { getN8nChatWebhookUrl } from '@/config/environment.js';
 import { onMounted } from 'vue';
+
+const n8nChatWebhookUrl = getN8nChatWebhookUrl();
 
 // SEO Meta tags
 const updateMetaTags = () => {
     // Título da página
-    document.title = 'PsicoProntuários - Sistema de Psicologia Online | Consultas e Prontuário Digital';
+    document.title =
+        'PsicoProntuários — Prontuário, agenda e financeiro para psicólogos';
+
+    const descContent =
+        'Software para psicólogos: prontuário digital, agenda, financeiro da consulta, anexos, indicadores de evolução (GAD-7, PHQ-9) e rotinas no WhatsApp. Teste grátis por 7 dias.';
 
     // Meta description
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
-        metaDescription.setAttribute('content', 'PsicoProntuários - Plataforma completa para psicólogos e pacientes. Agende consultas online, gerencie prontuários digitais e tenha acesso a ferramentas profissionais de psicologia.');
+        metaDescription.setAttribute('content', descContent);
     } else {
         const newMeta = document.createElement('meta');
         newMeta.name = 'description';
-        newMeta.content = 'PsicoProntuários - Plataforma completa para psicólogos e pacientes. Agende consultas online, gerencie prontuários digitais e tenha acesso a ferramentas profissionais de psicologia.';
+        newMeta.content = descContent;
         document.head.appendChild(newMeta);
     }
 
     // Meta keywords
     const metaKeywords = document.querySelector('meta[name="keywords"]');
     if (metaKeywords) {
-        metaKeywords.setAttribute('content', 'psicologia online, consulta psicólogo, terapia online, prontuário digital, agendamento consulta, psicologia, saúde mental');
+        metaKeywords.setAttribute(
+            'content',
+            'prontuário psicológico, software psicólogo, agenda consultório, gestão consultório psicologia, LGPD prontuário, financeiro psicólogo, GAD-7, PHQ-9, WhatsApp psicólogo'
+        );
     } else {
         const newMeta = document.createElement('meta');
         newMeta.name = 'keywords';
-        newMeta.content = 'psicologia online, consulta psicólogo, terapia online, prontuário digital, agendamento consulta, psicologia, saúde mental';
+        newMeta.content =
+            'prontuário psicológico, software psicólogo, agenda consultório, gestão consultório psicologia, LGPD prontuário, financeiro psicólogo, GAD-7, PHQ-9, WhatsApp psicólogo';
         document.head.appendChild(newMeta);
     }
 
     // Open Graph tags
     const ogTitle = document.querySelector('meta[property="og:title"]');
     if (ogTitle) {
-        ogTitle.setAttribute('content', 'PsicoProntuários - Sistema de Psicologia Online | Consultas e Prontuário Digital');
+        ogTitle.setAttribute(
+            'content',
+            'PsicoProntuários — Prontuário, agenda e financeiro para psicólogos'
+        );
     } else {
         const newMeta = document.createElement('meta');
         newMeta.setAttribute('property', 'og:title');
-        newMeta.content = 'PsicoProntuários - Sistema de Psicologia Online | Consultas e Prontuário Digital';
+        newMeta.content = 'PsicoProntuários — Prontuário, agenda e financeiro para psicólogos';
         document.head.appendChild(newMeta);
     }
 
     const ogDescription = document.querySelector('meta[property="og:description"]');
     if (ogDescription) {
-        ogDescription.setAttribute('content', 'PsicoProntuários - Plataforma completa para psicólogos e pacientes. Agende consultas online, gerencie prontuários digitais e tenha acesso a ferramentas profissionais de psicologia.');
+        ogDescription.setAttribute('content', descContent);
     } else {
         const newMeta = document.createElement('meta');
         newMeta.setAttribute('property', 'og:description');
-        newMeta.content = 'PsicoProntuários - Plataforma completa para psicólogos e pacientes. Agende consultas online, gerencie prontuários digitais e tenha acesso a ferramentas profissionais de psicologia.';
+        newMeta.content = descContent;
         document.head.appendChild(newMeta);
     }
 
@@ -80,21 +95,24 @@ const updateMetaTags = () => {
 
     const twitterTitle = document.querySelector('meta[name="twitter:title"]');
     if (twitterTitle) {
-        twitterTitle.setAttribute('content', 'PsicoProntuários - Sistema de Psicologia Online | Consultas e Prontuário Digital');
+        twitterTitle.setAttribute(
+            'content',
+            'PsicoProntuários — Prontuário, agenda e financeiro para psicólogos'
+        );
     } else {
         const newMeta = document.createElement('meta');
         newMeta.name = 'twitter:title';
-        newMeta.content = 'PsicoProntuários - Sistema de Psicologia Online | Consultas e Prontuário Digital';
+        newMeta.content = 'PsicoProntuários — Prontuário, agenda e financeiro para psicólogos';
         document.head.appendChild(newMeta);
     }
 
     const twitterDescription = document.querySelector('meta[name="twitter:description"]');
     if (twitterDescription) {
-        twitterDescription.setAttribute('content', 'PsicoProntuários - Plataforma completa para psicólogos e pacientes. Agende consultas online, gerencie prontuários digitais e tenha acesso a ferramentas profissionais de psicologia.');
+        twitterDescription.setAttribute('content', descContent);
     } else {
         const newMeta = document.createElement('meta');
         newMeta.name = 'twitter:description';
-        newMeta.content = 'PsicoProntuários - Plataforma completa para psicólogos e pacientes. Agende consultas online, gerencie prontuários digitais e tenha acesso a ferramentas profissionais de psicologia.';
+        newMeta.content = descContent;
         document.head.appendChild(newMeta);
     }
 
@@ -109,24 +127,30 @@ const updateMetaTags = () => {
         document.head.appendChild(newLink);
     }
 
-    // Structured Data
+    // Structured Data (evita duplicar em re-mount)
+    const prevLd = document.getElementById('ld-json-landing');
+    if (prevLd) {
+        prevLd.remove();
+    }
+
     const structuredData = {
         '@context': 'https://schema.org',
-        '@type': 'WebSite',
-        name: 'PsicoProntuários - Sistema de Psicologia Online',
-        description: 'PsicoProntuários - Plataforma completa para psicólogos e pacientes. Agende consultas online, gerencie prontuários digitais e tenha acesso a ferramentas profissionais de psicologia.',
+        '@type': 'SoftwareApplication',
+        name: 'PsicoProntuários',
+        applicationCategory: 'BusinessApplication',
+        operatingSystem: 'Web',
+        description: descContent,
         url: window.location.origin,
-        potentialAction: {
-            '@type': 'SearchAction',
-            target: {
-                '@type': 'EntryPoint',
-                urlTemplate: window.location.origin + '/search?q={search_term_string}'
-            },
-            'query-input': 'required name=search_term_string'
+        offers: {
+            '@type': 'Offer',
+            price: '29.90',
+            priceCurrency: 'BRL',
+            description: 'Plano Simples com 7 dias de teste grátis (valores sujeitos à confirmação no cadastro).'
         }
     };
 
     const script = document.createElement('script');
+    script.id = 'ld-json-landing';
     script.type = 'application/ld+json';
     script.text = JSON.stringify(structuredData);
     document.head.appendChild(script);
@@ -191,6 +215,8 @@ onMounted(() => {
                 <FooterWidget />
             </div>
         </footer>
+
+        <ChatAtendimento :webhook-url="n8nChatWebhookUrl" />
     </div>
 </template>
 

@@ -6,6 +6,7 @@ import AppTopbar from './AppTopbar.vue';
 import Breadcrumb from '@/components/Breadcrumb.vue';
 import PlanLoading from '@/components/PlanLoading.vue';
 import ChatAtendimento from '@/components/ChatAtendimento.vue';
+import { getN8nChatWebhookUrl } from '@/config/environment';
 import DialogNps from '@/components/dialogs/DialogNps.vue';
 
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
@@ -15,6 +16,8 @@ const planLoading = ref(false);
 const showNpsDialog = ref(false);
 
 const isDesktop = ref(typeof window !== 'undefined' && window.innerWidth > 991);
+
+const n8nChatWebhookUrl = getN8nChatWebhookUrl();
 
 function updateIsDesktop() {
     isDesktop.value = window.innerWidth > 991;
@@ -145,7 +148,7 @@ function handleNpsSuccess() {
     </div>
     <Toast />
     <PlanLoading :loading="planLoading" />
-    <ChatAtendimento />
+    <ChatAtendimento :webhook-url="n8nChatWebhookUrl" />
     
     <!-- Dialog NPS -->
     <DialogNps 

@@ -37,7 +37,8 @@ api.interceptors.request.use(
             '/user/verify-reset-code',
             '/user/reset-password',
             '/cadastro',
-            '/usuario'
+            '/usuario',
+            '/leads'
         ];
         
         // Verificar se a rota atual é pública
@@ -55,7 +56,7 @@ api.interceptors.request.use(
         const isPixStatusRequest = config.url.includes('/user/pix-payment-status/');
         const hasPlanLoading = window.planLoadingActive;
         
-        if (!config.url.includes('/login') && !config.url.includes('/logout') && !(isPlanRequest && hasPlanLoading) && !isPixStatusRequest) {
+        if (!config.url.includes('/login') && !config.url.includes('/logout') && !config.url.includes('/leads') && !(isPlanRequest && hasPlanLoading) && !isPixStatusRequest) {
             showLoading();
         }
         
@@ -96,7 +97,8 @@ api.interceptors.response.use(
             '/user/verify-reset-code',
             '/user/reset-password',
             '/cadastro',
-            '/usuario'
+            '/usuario',
+            '/leads'
         ];
         
         // Verificar se a rota atual é pública
