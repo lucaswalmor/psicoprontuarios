@@ -39,6 +39,11 @@ export default {
                     label: 'Configurações',
                     icon: 'pi pi-cog',
                     to: '/configuracoes'
+                },
+                {
+                    label: 'Suporte',
+                    icon: 'pi pi-comments',
+                    to: '/chamados'
                 }
             ]
         };

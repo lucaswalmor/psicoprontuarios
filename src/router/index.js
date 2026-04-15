@@ -261,6 +261,21 @@ const router = createRouter({
                     component: () => import('@/views/pages/Agendamentos.vue'),
                 },
                 {
+                    path: '/chamados',
+                    name: 'Chamados',
+                    component: () => import('@/views/pages/chamados/ListaChamados.vue'),
+                },
+                {
+                    path: '/chamados/novo',
+                    name: 'NovoChamado',
+                    component: () => import('@/views/pages/chamados/NovoChamado.vue'),
+                },
+                {
+                    path: '/chamados/:id',
+                    name: 'DetalheChamado',
+                    component: () => import('@/views/pages/chamados/DetalheChamado.vue'),
+                },
+                {
                     path: '/assinatura',
                     redirect: { path: '/configuracoes' }
                 },

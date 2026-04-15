@@ -13,6 +13,7 @@ import asaasService from './asaasService';
 import assinaturaService from './assinaturaService';
 import mensagemComemorativaService from './mensagemComemorativaService';
 import mensagemAniversarianteService from './mensagemAniversarianteService';
+import chamadosService from './chamadosService';
 
 export {
     pacientesService,
@@ -29,7 +30,8 @@ export {
     asaasService,
     assinaturaService,
     mensagemComemorativaService,
-    mensagemAniversarianteService
+    mensagemAniversarianteService,
+    chamadosService
 };
 
 export default {
@@ -47,5 +49,6 @@ export default {
     asaasService,
     assinaturaService,
     mensagemComemorativaService,
-    mensagemAniversarianteService
+    mensagemAniversarianteService,
+    chamadosService
 };
