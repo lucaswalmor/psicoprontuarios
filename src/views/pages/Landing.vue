@@ -184,11 +184,6 @@ onMounted(() => {
                 </div>
             </section>
 
-            <!-- Leads Section -->
-            <section id="leads" class="py-16 lg:py-24" aria-label="Formulário de contato">
-                <LeadsWidget />
-            </section>
-
             <!-- Highlights Section -->
             <section id="highlights" class="py-16 lg:py-24 bg-surface-50 dark:bg-surface-800" aria-label="Destaques da plataforma">
                 <div class="container-fluid mx-auto px-4">
@@ -206,6 +201,11 @@ onMounted(() => {
             <!-- Testimonials Section -->
             <section id="testimonials" class="bg-surface-50 dark:bg-surface-800" aria-label="Depoimentos de clientes">
                 <TestimonialsWidget />
+            </section>
+
+            <!-- Leads Section -->
+            <section id="leads" class="py-16 lg:py-24" aria-label="Formulário de contato">
+                <LeadsWidget />
             </section>
         </main>
 

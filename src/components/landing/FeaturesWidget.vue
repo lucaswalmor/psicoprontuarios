@@ -1,6 +1,69 @@
+<script setup>
+import { Swiper, SwiperSlide } from 'swiper/vue';
+import { Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
+
+const features = [
+    {
+        title: 'Fácil de Usar',
+        description: 'Interface intuitiva e moderna para gerenciar seus pacientes sem complicações.',
+        icon: 'pi pi-lightbulb',
+        colorClass: 'feature-icon--yellow'
+    },
+    {
+        title: 'Prontuários Seguros',
+        description: 'Dados clínicos com controle de acesso, sigilo profissional e boas práticas alinhadas à LGPD.',
+        icon: 'pi pi-shield',
+        colorClass: 'feature-icon--blue'
+    },
+    {
+        title: 'Histórico Completo',
+        description: 'Acompanhe todo o histórico de seus pacientes com detalhes e evoluções.',
+        icon: 'pi pi-file',
+        colorClass: 'feature-icon--indigo'
+    },
+    {
+        title: 'Acesso Multiplataforma',
+        description: 'Acesse de qualquer dispositivo, a qualquer hora. Desktop, tablet e mobile.',
+        icon: 'pi pi-mobile',
+        colorClass: 'feature-icon--slate'
+    },
+    {
+        title: 'Visão da prática',
+        description: 'Dashboard, financeiro da consulta e indicadores de evolução (humor, GAD-7, PHQ-9) para decidir com dados.',
+        icon: 'pi pi-chart-bar',
+        colorClass: 'feature-icon--orange'
+    },
+    {
+        title: 'Agendamento Inteligente',
+        description: 'Organize suas consultas e sessões com lembretes automáticos e notificações.',
+        icon: 'pi pi-calendar',
+        colorClass: 'feature-icon--pink'
+    },
+    {
+        title: 'WhatsApp no fluxo de trabalho',
+        description: 'Cadastros, listagens e consultas das principais telas pelo WhatsApp, sem abrir o navegador. Menos cliques, mais tempo com o paciente.',
+        icon: 'pi pi-whatsapp',
+        colorClass: 'feature-icon--green'
+    },
+    {
+        title: 'Notificações automáticas',
+        description: 'Mensagens de aniversário, datas comemorativas e outras rotinas pelo WhatsApp, conforme você configurar.',
+        icon: 'pi pi-bell',
+        colorClass: 'feature-icon--violet'
+    },
+    {
+        title: 'Privacidade e LGPD',
+        description: 'Tratamento de dados pensado para o contexto clínico, com separação por conta e transparência nas finalidades do uso.',
+        icon: 'pi pi-eye',
+        colorClass: 'feature-icon--purple'
+    }
+];
+</script>
+
 <template>
     <div class="features-section">
-        <!-- Header -->
         <div class="text-center mb-16">
             <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-surface-900 dark:text-surface-0 mb-4">
                 Recursos Principais
@@ -10,124 +73,39 @@
             </p>
         </div>
 
-        <!-- Features Grid -->
-        <div class="row g-4">
-            <!-- Card 1: Fácil de Usar -->
-            <div class="col-md-4">
+        <div class="features-grid-desktop row g-4">
+            <div v-for="feature in features" :key="feature.title" class="col-md-4">
                 <div class="feature-card h-100">
-                    <div class="feature-icon bg-gradient-to-br from-yellow-400 to-orange-500">
-                        <i class="pi pi-lightbulb text-white text-2xl"></i>
+                    <div class="feature-icon" :class="feature.colorClass">
+                        <i :class="[feature.icon, 'text-white text-2xl']"></i>
                     </div>
-                    <h3 class="feature-title">Fácil de Usar</h3>
+                    <h3 class="feature-title">{{ feature.title }}</h3>
                     <p class="feature-description">
-                        Interface intuitiva e moderna para gerenciar seus pacientes sem complicações.
+                        {{ feature.description }}
                     </p>
                 </div>
             </div>
+        </div>
 
-            <!-- Card 2: Prontuários Seguros -->
-            <div class="col-md-4">
-                <div class="feature-card h-100">
-                    <div class="feature-icon bg-gradient-to-br from-blue-400 to-cyan-500">
-                        <i class="pi pi-shield text-white text-2xl"></i>
+        <div class="features-swiper-mobile">
+            <Swiper
+                :modules="[Pagination]"
+                :slides-per-view="1.1"
+                :space-between="14"
+                :pagination="{ clickable: true }"
+            >
+                <SwiperSlide v-for="feature in features" :key="`mobile-${feature.title}`">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon" :class="feature.colorClass">
+                            <i :class="[feature.icon, 'text-white text-2xl']"></i>
+                        </div>
+                        <h3 class="feature-title">{{ feature.title }}</h3>
+                        <p class="feature-description">
+                            {{ feature.description }}
+                        </p>
                     </div>
-                    <h3 class="feature-title">Prontuários Seguros</h3>
-                    <p class="feature-description">
-                        Dados clínicos com controle de acesso, sigilo profissional e boas práticas alinhadas à LGPD.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Card 3: Histórico Completo -->
-            <div class="col-md-4">
-                <div class="feature-card h-100">
-                    <div class="feature-icon bg-gradient-to-br from-indigo-400 to-purple-500">
-                        <i class="pi pi-file text-white text-2xl"></i>
-                    </div>
-                    <h3 class="feature-title">Histórico Completo</h3>
-                    <p class="feature-description">
-                        Acompanhe todo o histórico de seus pacientes com detalhes e evoluções.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Card 4: Acesso Multiplataforma -->
-            <div class="col-md-4">
-                <div class="feature-card h-100">
-                    <div class="feature-icon bg-gradient-to-br from-slate-400 to-gray-500">
-                        <i class="pi pi-mobile text-white text-2xl"></i>
-                    </div>
-                    <h3 class="feature-title">Acesso Multiplataforma</h3>
-                    <p class="feature-description">
-                        Acesse de qualquer dispositivo, a qualquer hora. Desktop, tablet e mobile.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Card 5: Relatórios Detalhados -->
-            <div class="col-md-4">
-                <div class="feature-card h-100">
-                    <div class="feature-icon bg-gradient-to-br from-orange-400 to-red-500">
-                        <i class="pi pi-chart-bar text-white text-2xl"></i>
-                    </div>
-                    <h3 class="feature-title">Visão da prática</h3>
-                    <p class="feature-description">
-                        Dashboard, financeiro da consulta e indicadores de evolução (humor, GAD-7, PHQ-9) para decidir com dados.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Card 6: Agendamento -->
-            <div class="col-md-4">
-                <div class="feature-card h-100">
-                    <div class="feature-icon bg-gradient-to-br from-pink-400 to-rose-500">
-                        <i class="pi pi-calendar text-white text-2xl"></i>
-                    </div>
-                    <h3 class="feature-title">Agendamento Inteligente</h3>
-                    <p class="feature-description">
-                        Organize suas consultas e sessões com lembretes automáticos e notificações.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Card 7: Automação WhatsApp -->
-            <div class="col-md-4">
-                <div class="feature-card h-100">
-                    <div class="feature-icon bg-gradient-to-br from-green-400 to-emerald-500">
-                        <i class="pi pi-whatsapp text-white text-2xl"></i>
-                    </div>
-                    <h3 class="feature-title">WhatsApp no fluxo de trabalho</h3>
-                    <p class="feature-description">
-                        Cadastros, listagens e consultas das principais telas pelo WhatsApp, sem abrir o navegador. Menos cliques, mais tempo com o paciente.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Card 8: Notificações automáticas -->
-            <div class="col-md-4">
-                <div class="feature-card h-100">
-                    <div class="feature-icon bg-gradient-to-br from-violet-500 to-purple-600">
-                        <i class="pi pi-bell text-white text-2xl"></i>
-                    </div>
-                    <h3 class="feature-title">Notificações automáticas</h3>
-                    <p class="feature-description">
-                        Mensagens de aniversário, datas comemorativas e outras rotinas pelo WhatsApp, conforme você configurar.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Card 9: Privacidade -->
-            <div class="col-md-4">
-                <div class="feature-card h-100">
-                    <div class="feature-icon bg-gradient-to-br from-purple-400 to-violet-500">
-                        <i class="pi pi-eye text-white text-2xl"></i>
-                    </div>
-                    <h3 class="feature-title">Privacidade e LGPD</h3>
-                    <p class="feature-description">
-                        Tratamento de dados pensado para o contexto clínico, com separação por conta e transparência nas finalidades do uso.
-                    </p>
-                </div>
-            </div>
+                </SwiperSlide>
+            </Swiper>
         </div>
     </div>
 </template>
@@ -149,6 +127,42 @@
     flex-shrink: 0;
 }
 
+.feature-icon--yellow {
+    background: linear-gradient(135deg, #facc15, #f97316);
+}
+
+.feature-icon--blue {
+    background: linear-gradient(135deg, #60a5fa, #06b6d4);
+}
+
+.feature-icon--indigo {
+    background: linear-gradient(135deg, #818cf8, #a855f7);
+}
+
+.feature-icon--slate {
+    background: linear-gradient(135deg, #94a3b8, #6b7280);
+}
+
+.feature-icon--orange {
+    background: linear-gradient(135deg, #fb923c, #ef4444);
+}
+
+.feature-icon--pink {
+    background: linear-gradient(135deg, #f472b6, #f43f5e);
+}
+
+.feature-icon--green {
+    background: linear-gradient(135deg, #4ade80, #10b981);
+}
+
+.feature-icon--violet {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+.feature-icon--purple {
+    background: linear-gradient(135deg, #c084fc, #8b5cf6);
+}
+
 .feature-card:hover .feature-icon {
     @apply scale-110;
 }
@@ -161,6 +175,22 @@
 .feature-description {
     @apply text-surface-600 dark:text-surface-300 leading-relaxed;
     flex-grow: 1;
+}
+
+.features-swiper-mobile {
+    display: none;
+}
+
+.features-swiper-mobile :deep(.swiper) {
+    padding: 0 0 2.25rem 0;
+}
+
+.features-swiper-mobile :deep(.swiper-slide) {
+    height: auto;
+}
+
+.features-swiper-mobile :deep(.swiper-pagination-bullet-active) {
+    background: var(--primary-color);
 }
 
 .testimonial-section {
@@ -186,19 +216,27 @@
     .features-section {
         padding: 1rem 0;
     }
-    
+
+    .features-grid-desktop {
+        display: none;
+    }
+
+    .features-swiper-mobile {
+        display: block;
+    }
+
     .feature-card {
         @apply p-6;
     }
-    
+
     .feature-icon {
         @apply w-14 h-14;
     }
-    
+
     .testimonial-section {
         margin-top: 3rem;
     }
-    
+
     .testimonial-section blockquote {
         font-size: 1.125rem;
         line-height: 1.7;
@@ -208,7 +246,7 @@
         min-width: 250px;
         max-width: 100%;
     }
-    
+
     .testimonial-section .bg-gradient-to-r {
         padding: 1.5rem !important;
     }
