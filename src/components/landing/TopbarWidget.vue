@@ -48,16 +48,26 @@ function toggleMobileMenu() {
             </a>
         </div>
 
-        <!-- Mobile Menu Button -->
-        <Button 
-            class="mobile-menu-btn" 
-            text 
-            severity="secondary" 
-            rounded
-            @click="toggleMobileMenu"
-        >
-            <i :class="isMobileMenuOpen ? 'pi pi-times' : 'pi pi-bars'" class="text-xl"></i>
-        </Button>
+        <!-- Mobile Actions -->
+        <div class="mobile-actions">
+            <Button
+                label="Teste Grátis"
+                as="router-link"
+                to="/cadastro"
+                rounded
+                class="mobile-cta-btn"
+                @click="isMobileMenuOpen = false"
+            />
+            <Button 
+                class="mobile-menu-btn" 
+                text 
+                severity="secondary" 
+                rounded
+                @click="toggleMobileMenu"
+            >
+                <i :class="isMobileMenuOpen ? 'pi pi-times' : 'pi pi-bars'" class="text-xl"></i>
+            </Button>
+        </div>
 
         <!-- Navigation Menu -->
         <div class="nav-menu" :class="{ 'mobile-open': isMobileMenuOpen }">
@@ -101,7 +111,7 @@ function toggleMobileMenu() {
                     @click="isMobileMenuOpen = false"
                 />
                 <Button 
-                    label="Cadastrar" 
+                    label="Teste Grátis" 
                     as="router-link" 
                     to="/cadastro"
                     rounded 
@@ -132,6 +142,14 @@ img {
 
 .mobile-menu-btn {
     @apply lg:hidden;
+}
+
+.mobile-actions {
+    @apply flex items-center gap-2 lg:hidden;
+}
+
+.mobile-cta-btn {
+    @apply bg-gradient-to-r from-blue-600 to-purple-600 border-0 hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl text-sm;
 }
 
 .nav-menu {

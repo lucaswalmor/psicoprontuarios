@@ -1,10 +1,10 @@
 <script setup>
 import banner from '@/assets/img/banner.webp';
 
-const scrollToLeads = () => {
-    const leadsSection = document.getElementById('leads');
-    if (leadsSection) {
-        leadsSection.scrollIntoView({ 
+const scrollToPricing = () => {
+    const pricingSection = document.getElementById('pricing');
+    if (pricingSection) {
+        pricingSection.scrollIntoView({
             behavior: 'smooth',
             block: 'start'
         });
@@ -49,18 +49,18 @@ const scrollToLeads = () => {
                     <!-- CTA Buttons -->
                     <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                         <Button 
-                            label="Começar Agora" 
+                            label="Teste Grátis" 
                             as="router-link" 
                             to="/cadastro" 
                             rounded 
                             class="!text-lg !px-8 !py-3 bg-gradient-to-r from-blue-600 to-purple-600 border-0 hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
                         />
                         <Button 
-                            label="Ver Demonstração" 
+                            label="Nossos Planos" 
                             text 
                             rounded 
                             class="!text-lg !px-8 !py-3 text-surface-700 dark:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800"
-                            @click="scrollToLeads"
+                            @click="scrollToPricing"
                         />
                     </div>
                     
