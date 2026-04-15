@@ -14,7 +14,7 @@
                         <i class="pi pi-comments"></i>
                     </div>
                     <div class="chat-header-text">
-                        <h6>Assistente PsicoProntuarios</h6>
+                        <h6 class="text-white">Assistente PsicoProntuarios</h6>
                         <small>Online agora</small>
                     </div>
                 </div>
