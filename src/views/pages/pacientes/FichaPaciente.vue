@@ -167,6 +167,15 @@
                                     @click="exportarTodosProntuarios"
                                 />
                                 <Button
+                                    v-if="paciente && totalProntuarios > 0"
+                                    class="w-full sm:flex-1 md:flex-initial md:w-auto"
+                                    label="Gerar relatório com I.A"
+                                    icon="pi pi-sparkles"
+                                    severity="contrast"
+                                    :loading="relatorioIaLoading"
+                                    @click="abrirRelatorioIA"
+                                />
+                                <Button
                                     v-if="podeEditar && paciente"
                                     class="w-full sm:flex-1 md:flex-initial md:w-auto"
                                     label="Novo Prontuário"
@@ -344,6 +353,78 @@
             @update:visible="dialogAlterarStatus = false"
             @status-alterado="onStatusAlterado" 
         />
+
+        <Dialog
+            v-model:visible="dialogRelatorioIa"
+            modal
+            :style="{ width: 'min(90vw, 850px)' }"
+            header="Relatório geral com I.A"
+        >
+            <div v-if="relatorioIaLoading" class="text-center p-6">
+                <i class="pi pi-spin pi-spinner text-4xl text-primary"></i>
+                <p class="text-500 mt-3">Gerando relatório com IA...</p>
+            </div>
+
+            <div v-else-if="relatorioProntuario && relatorioProntuario.conteudo_json" class="flex flex-column gap-4">
+                <div>
+                    <h6 class="mb-2">Resumo</h6>
+                    <p class="m-0 line-height-3">
+                        {{ relatorioProntuario.conteudo_json.resumo || 'Sem conteúdo.' }}
+                    </p>
+                </div>
+
+                <div>
+                    <h6 class="mb-2">Padrões</h6>
+                    <ul class="m-0 pl-3">
+                        <li v-for="(padrao, index) in (relatorioProntuario.conteudo_json.padroes || [])" :key="index" class="mb-2">
+                            {{ padrao }}
+                        </li>
+                    </ul>
+                    <p v-if="!(relatorioProntuario.conteudo_json.padroes || []).length" class="m-0 text-500">
+                        Nenhum padrão identificado.
+                    </p>
+                </div>
+
+                <div>
+                    <h6 class="mb-2">Evolução</h6>
+                    <p class="m-0 line-height-3">
+                        {{ relatorioProntuario.conteudo_json.evolucao || 'Sem conteúdo.' }}
+                    </p>
+                </div>
+
+                <div>
+                    <h6 class="mb-2">Observações</h6>
+                    <p class="m-0 line-height-3">
+                        {{ relatorioProntuario.conteudo_json.observacoes || 'Sem conteúdo.' }}
+                    </p>
+                </div>
+
+                <small class="text-500">
+                    Última atualização: {{ relatorioProntuario.updated_at ? new Date(relatorioProntuario.updated_at).toLocaleString('pt-BR') : '-' }}
+                </small>
+            </div>
+
+            <div v-else class="text-center p-4 text-500">
+                Nenhum relatório disponível.
+            </div>
+
+            <template #footer>
+                <Button
+                    label="Atualizar relatório"
+                    icon="pi pi-refresh"
+                    :loading="atualizandoRelatorioIa"
+                    @click="atualizarRelatorioIA"
+                />
+                <Button
+                    label="Baixar DOCX"
+                    icon="pi pi-file-word"
+                    severity="secondary"
+                    outlined
+                    :loading="baixandoRelatorioDocx"
+                    @click="baixarRelatorioDocx"
+                />
+            </template>
+        </Dialog>
     </div>
 </template>
 
@@ -582,7 +663,14 @@ export default {
 
             // Evolução
             evolucao: null,
-            loadingEvolucao: false
+            loadingEvolucao: false,
+
+            // Relatório IA
+            dialogRelatorioIa: false,
+            relatorioIaLoading: false,
+            atualizandoRelatorioIa: false,
+            relatorioProntuario: null,
+            baixandoRelatorioDocx: false
         };
     },
     watch: {
@@ -897,6 +985,110 @@ export default {
                     detail: 'Erro ao exportar PDF',
                     life: 3000
                 });
+            }
+        },
+
+        async abrirRelatorioIA() {
+            if (!this.pacienteId) {
+                this.$toast.add({
+                    severity: 'warn',
+                    summary: 'Atenção',
+                    detail: 'Paciente não encontrado',
+                    life: 3000
+                });
+                return;
+            }
+
+            this.dialogRelatorioIa = true;
+            this.relatorioIaLoading = true;
+            this.relatorioProntuario = null;
+
+            try {
+                const response = await this.$prontuariosService.buscarRelatorioProntuario(this.pacienteId);
+                this.relatorioProntuario = response?.data || null;
+            } catch (error) {
+                if (error?.response?.status === 404) {
+                    await this.gerarRelatorioIA();
+                } else {
+                    const mensagemErro = error?.response?.data?.message || 'Erro ao carregar relatório.';
+                    this.$toast.add({
+                        severity: 'error',
+                        summary: 'Erro',
+                        detail: mensagemErro,
+                        life: 5000
+                    });
+                    this.dialogRelatorioIa = false;
+                }
+            } finally {
+                this.relatorioIaLoading = false;
+            }
+        },
+
+        async gerarRelatorioIA() {
+            try {
+                const response = await this.$prontuariosService.gerarRelatorioProntuario(this.pacienteId);
+                this.relatorioProntuario = response?.data || null;
+                this.$toast.add({
+                    severity: 'success',
+                    summary: 'Sucesso',
+                    detail: 'Relatório gerado com sucesso.',
+                    life: 3000
+                });
+            } catch (error) {
+                const mensagemErro = error?.response?.data?.message || 'Erro ao gerar relatório com I.A.';
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: mensagemErro,
+                    life: 5000
+                });
+                throw error;
+            }
+        },
+
+        async atualizarRelatorioIA() {
+            if (!this.pacienteId) return;
+
+            this.atualizandoRelatorioIa = true;
+            try {
+                await this.gerarRelatorioIA();
+            } catch (error) {
+                // Tratado em gerarRelatorioIA
+            } finally {
+                this.atualizandoRelatorioIa = false;
+            }
+        },
+
+        async baixarRelatorioDocx() {
+            if (!this.pacienteId) {
+                this.$toast.add({
+                    severity: 'warn',
+                    summary: 'Atenção',
+                    detail: 'Paciente não encontrado.',
+                    life: 3000
+                });
+                return;
+            }
+
+            this.baixandoRelatorioDocx = true;
+            try {
+                await this.$prontuariosService.exportarRelatorioProntuarioDocx(this.pacienteId);
+                this.$toast.add({
+                    severity: 'success',
+                    summary: 'Sucesso',
+                    detail: 'DOCX exportado com sucesso.',
+                    life: 3000
+                });
+            } catch (error) {
+                const mensagemErro = error?.response?.data?.message || 'Erro ao exportar DOCX.';
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: mensagemErro,
+                    life: 5000
+                });
+            } finally {
+                this.baixandoRelatorioDocx = false;
             }
         },
 

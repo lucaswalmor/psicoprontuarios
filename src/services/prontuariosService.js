@@ -157,6 +157,71 @@ class ProntuariosService {
             throw error;
         }
     }
+
+    async buscarRelatorioProntuario(idPaciente) {
+        try {
+            const response = await axios.get(`/relatorios-prontuarios/${idPaciente}`);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async gerarRelatorioProntuario(idPaciente) {
+        try {
+            const response = await axios.post(`/relatorios-prontuarios/${idPaciente}/gerar`);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async exportarRelatorioProntuarioDocx(idPaciente) {
+        try {
+            const response = await axios.get(`/relatorios-prontuarios/${idPaciente}/docx`, {
+                responseType: 'blob'
+            });
+
+            const contentDisposition = response.headers['content-disposition'];
+            let filename = 'relatorio_ia.docx';
+
+            if (contentDisposition) {
+                let filenameMatch = contentDisposition.match(/filename="([^"]+)"/);
+                if (!filenameMatch) {
+                    filenameMatch = contentDisposition.match(/filename=([^;]+)/);
+                }
+
+                if (filenameMatch) {
+                    filename = filenameMatch[1].trim();
+                    if (filename.startsWith('"') && filename.endsWith('"')) {
+                        filename = filename.slice(1, -1);
+                    }
+                    try {
+                        filename = decodeURIComponent(filename);
+                    } catch (e) {
+                        // mantém o filename original
+                    }
+                }
+            }
+
+            const blob = new Blob([response.data], {
+                type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            });
+
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 export default new ProntuariosService(); 
