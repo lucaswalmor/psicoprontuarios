@@ -343,7 +343,7 @@
             :visible="dialogNovoProntuario" 
             :paciente="paciente || {}"
             :paciente-id="pacienteId"
-            @update:visible="dialogNovoProntuario = false" 
+            @update:visible="dialogNovoProntuario = $event" 
             @salvarProntuario="onProntuarioSalvo" 
         />
         

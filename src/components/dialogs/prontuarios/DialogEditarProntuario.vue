@@ -81,8 +81,18 @@
 
             <div class="col-12 mt-2">
                 <label class="block text-500 font-medium mb-2">Descrição *</label>
+                <Message severity="warn" class="mb-3" :closable="false">
+                    Por privacidade, não inclua o nome nem outros dados que identifiquem o paciente neste texto. Prefira expressões como "o paciente" ou "a pessoa atendida".
+                </Message>
                 <Editor :modelValue="prontuario.descricao" @update:modelValue="prontuario.descricao = $event" editorStyle="height: 320px" />
             </div>
+
+            <div v-if="erroSalvar" class="col-12 mt-2">
+                <Message severity="error" :closable="true" @close="erroSalvar = null">
+                    {{ erroSalvar }}
+                </Message>
+            </div>
+
             <div class="col-12 mt-2 d-flex gap-2 justify-content-end">
                 <Button label="Cancelar" severity="secondary" @click="onUpdateVisible(false)" />
                 <Button label="Salvar" severity="success" @click="salvarProntuario" />
@@ -103,17 +113,29 @@ export default {
         InputMask: () => import('primevue/inputmask'),
         InputNumber: () => import('primevue/inputnumber'),
         Editor: () => import('primevue/editor'),
-        Button: () => import('primevue/button')
+        Button: () => import('primevue/button'),
+        Message: () => import('primevue/message')
     },
     props: {
         prontuario: {
             type: Object,
             default: null
+        },
+        visible: {
+            type: Boolean,
+            default: false
         }
+    },
+    watch: {
+        visible(val) {
+            if (val) {
+                this.erroSalvar = null;
+            }
+        },
     },
     data() {
         return {
-            visible: false,
+            erroSalvar: null,
         }
     },
     methods: {
@@ -145,7 +167,19 @@ export default {
                 this.prontuario[campo] = Math.round(numValor); // Garante que é inteiro
             }
         },
+        mensagemErroApi(err) {
+            const data = err.response?.data;
+            if (data && typeof data.error === 'string') {
+                return data.error;
+            }
+            if (data && typeof data.message === 'string') {
+                return data.message;
+            }
+            return 'Não foi possível salvar. Verifique os dados e tente novamente.';
+        },
         salvarProntuario() {
+            this.erroSalvar = null;
+
             const data = {
                 data_prontuario: this.prontuario.data_prontuario,
                 descricao: this.prontuario.descricao,
@@ -156,6 +190,7 @@ export default {
             }
 
             this.$prontuariosService.update(this.prontuario.id, data).then((res) => {
+                this.erroSalvar = null;
                 this.$toast.add({
                     severity: "success",
                     summary: "Sucesso!",
@@ -163,10 +198,10 @@ export default {
                     life: 3000,
                 });
                 this.$emit('salvarProntuario');
+                this.onUpdateVisible(false);
             }).catch((err) => {
                 console.log(err);
-            }).finally(() => {
-                this.onUpdateVisible(false);
+                this.erroSalvar = this.mensagemErroApi(err);
             });
         }
     },
