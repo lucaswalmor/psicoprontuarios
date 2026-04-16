@@ -90,7 +90,43 @@
                 <Message severity="warn" class="mb-3" :closable="false">
                     Por privacidade, não inclua o nome nem outros dados que identifiquem o paciente neste texto. Prefira expressões como "o paciente" ou "a pessoa atendida".
                 </Message>
-                <Editor :modelValue="prontuario.descricao" @update:modelValue="prontuario.descricao = $event" editorStyle="height: 320px" />
+
+                <div v-if="previewMelhoriaIa" ref="refIaPreview" class="ia-preview">
+                    <h6 class="ia-preview__title">Comparar com a sugestão da I.A.</h6>
+                    <p class="ia-preview__hint">Revise os textos abaixo e escolha se deseja substituir o conteúdo do editor.</p>
+                    <div class="grid">
+                        <div class="col-12 md:col-6">
+                            <span class="ia-preview__label">Seu texto (enviado)</span>
+                            <div class="ia-preview__box">{{ previewMelhoriaIa.textoOriginal }}</div>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <span class="ia-preview__label">Sugestão da I.A.</span>
+                            <div class="ia-preview__box ia-preview__box--sugestao">{{ previewMelhoriaIa.textoSugerido }}</div>
+                        </div>
+                    </div>
+                    <div class="ia-preview__actions">
+                        <Button label="Manter o que digitei" severity="secondary" outlined @click="rejeitarMelhoriaIa" />
+                        <Button label="Aceitar mudança" severity="success" @click="aceitarMelhoriaIa" />
+                    </div>
+                </div>
+
+                <div class="editor-com-ia-wrap mt-3">
+                    <Editor
+                        :key="editorDescricaoKey"
+                        :modelValue="prontuario.descricao"
+                        @update:modelValue="prontuario.descricao = $event"
+                        editorStyle="height: 320px"
+                    />
+                    <button
+                        type="button"
+                        class="editor-com-ia-fab"
+                        :disabled="melhorarIaLoading || !textoDescricaoPlano || !!previewMelhoriaIa"
+                        @click="melhorarTextoIA"
+                    >
+                        <span v-if="melhorarIaLoading" class="editor-com-ia-fab__spinner" aria-hidden="true" />
+                        {{ melhorarIaLoading ? 'Melhorando…' : 'Melhorar texto com I.A' }}
+                    </button>
+                </div>
             </div>
 
             <div v-if="erroSalvar" class="col-12 mt-2">
@@ -107,6 +143,9 @@
     </Dialog>
 </template>
 <script>
+
+const WEBHOOK_MELHORAR_TEXTO_IA =
+    'https://petgre-n8n-petgre.irkqjy.easypanel.host/webhook/b43537a5-c313-485e-814f-d993f2d359dc';
 
 export default {
     name: 'DialogNovoProntuario',
@@ -137,12 +176,23 @@ export default {
         visible(val) {
             if (val) {
                 this.erroSalvar = null;
+                this.previewMelhoriaIa = null;
+            } else {
+                this.previewMelhoriaIa = null;
             }
+        },
+    },
+    computed: {
+        textoDescricaoPlano() {
+            return this.extrairTextoPlano(this.prontuario?.descricao);
         },
     },
     data() {
         return {
             erroSalvar: null,
+            melhorarIaLoading: false,
+            editorDescricaoKey: 0,
+            previewMelhoriaIa: null,
             prontuario: {
                 paciente: {},
                 data_prontuario: new Date().toLocaleDateString('pt-BR'),
@@ -182,6 +232,137 @@ export default {
             } else {
                 this.prontuario[campo] = Math.round(numValor); // Garante que é inteiro
             }
+        },
+        extrairTextoPlano(html) {
+            if (!html || typeof html !== 'string') return '';
+            const div = document.createElement('div');
+            div.innerHTML = html;
+            return (div.textContent || div.innerText || '').replace(/\s+/g, ' ').trim();
+        },
+        obterIdPsicologo() {
+            try {
+                const raw = sessionStorage.getItem('usuario');
+                if (!raw) return null;
+                const u = JSON.parse(raw);
+                return u.id ?? null;
+            } catch {
+                return null;
+            }
+        },
+        async melhorarTextoIA() {
+            const mensagem = this.textoDescricaoPlano;
+            if (!mensagem) return;
+
+            const psicologo = this.obterIdPsicologo();
+            if (psicologo == null) {
+                alert('Erro ao melhorar texto');
+                return;
+            }
+
+            this.melhorarIaLoading = true;
+            try {
+                const res = await fetch(WEBHOOK_MELHORAR_TEXTO_IA, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                    body: JSON.stringify({ mensagem, psicologo }),
+                });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const bodyText = await res.text();
+                let data;
+                try {
+                    data = bodyText ? JSON.parse(bodyText) : null;
+                } catch (parseErr) {
+                    console.error(parseErr);
+                    throw new Error('Resposta não é JSON válido');
+                }
+                const texto = this.normalizarMensagemMelhoradaIa(data);
+                if (!texto) throw new Error('Resposta inválida');
+                const html = this.descricaoMelhoradaParaEditor(texto);
+                this.previewMelhoriaIa = {
+                    textoOriginal: mensagem,
+                    textoSugerido: texto,
+                    htmlSugerido: html,
+                };
+                this.$nextTick(() => {
+                    try {
+                        const el = this.$refs.refIaPreview;
+                        const node = Array.isArray(el) ? el[0] : el;
+                        node?.scrollIntoView?.({ behavior: 'smooth', block: 'nearest' });
+                    } catch (scrollErr) {
+                        console.warn(scrollErr);
+                    }
+                });
+            } catch (e) {
+                console.error(e);
+                alert('Erro ao melhorar texto');
+            } finally {
+                this.melhorarIaLoading = false;
+            }
+        },
+        aceitarMelhoriaIa() {
+            if (!this.previewMelhoriaIa) return;
+            this.prontuario.descricao = this.previewMelhoriaIa.htmlSugerido;
+            this.editorDescricaoKey += 1;
+            this.previewMelhoriaIa = null;
+        },
+        rejeitarMelhoriaIa() {
+            this.previewMelhoriaIa = null;
+        },
+        normalizarPayloadRespostaN8n(data) {
+            if (data == null) return null;
+            if (Array.isArray(data)) {
+                return data.length ? data[0] : null;
+            }
+            if (typeof data === 'object') {
+                return data;
+            }
+            return null;
+        },
+        normalizarMensagemMelhoradaIa(data) {
+            const payload = this.normalizarPayloadRespostaN8n(data) ?? data;
+            let raw = payload?.mensagem;
+            if (raw == null) return null;
+            if (typeof raw === 'object' && raw !== null && typeof raw.mensagem === 'string') {
+                raw = raw.mensagem;
+            }
+            if (typeof raw === 'number' || typeof raw === 'boolean') {
+                raw = String(raw);
+            }
+            if (typeof raw !== 'string') return null;
+
+            let s = raw.trim();
+            if (!s) return null;
+
+            const fence = s.match(/^```(?:json)?\s*\n?([\s\S]*?)\n?```\s*$/im);
+            if (fence) {
+                s = fence[1].trim();
+            }
+
+            try {
+                const parsed = JSON.parse(s);
+                if (typeof parsed === 'string' && parsed.trim()) {
+                    return parsed.trim();
+                }
+                if (parsed && typeof parsed.mensagem === 'string' && parsed.mensagem.trim()) {
+                    return parsed.mensagem.trim();
+                }
+            } catch {
+                /* não é JSON */
+            }
+
+            return raw.trim();
+        },
+        descricaoMelhoradaParaEditor(texto) {
+            if (texto.includes('<') && texto.includes('>')) {
+                return texto;
+            }
+            const esc = (s) =>
+                s
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;');
+            return `<p>${esc(texto).split(/\n+/).filter(Boolean).join('</p><p>')}</p>`;
         },
         mensagemErroApi(err) {
             const data = err.response?.data;
@@ -227,6 +408,7 @@ export default {
 
             this.$prontuariosService.create(data).then((res) => {
                 this.erroSalvar = null;
+                this.previewMelhoriaIa = null;
                 this.$toast.add({
                     severity: "success",
                     summary: "Sucesso ao cadastrar!",
@@ -254,4 +436,116 @@ export default {
     },
 }
 </script>
-<style></style>
+<style scoped>
+.editor-com-ia-wrap {
+    position: relative;
+    isolation: isolate;
+    transform: translateZ(0);
+}
+
+.editor-com-ia-fab {
+    position: fixed;
+    bottom: 1.25rem;
+    right: 1.25rem;
+    z-index: 1100;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    border: none;
+    border-radius: 9999px;
+    box-shadow: 0 10px 25px rgba(79, 70, 229, 0.35);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.editor-com-ia-fab:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(79, 70, 229, 0.42);
+}
+
+.editor-com-ia-fab:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.editor-com-ia-fab__spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: editor-ia-spin 0.7s linear infinite;
+}
+
+@keyframes editor-ia-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.ia-preview {
+    padding: 1rem 1.1rem;
+    border-radius: 12px;
+    border: 1px solid var(--p-content-border-color, #e5e7eb);
+    background: var(--p-content-background, #f9fafb);
+}
+
+.ia-preview__title {
+    margin: 0 0 0.35rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--p-text-color, #111827);
+}
+
+.ia-preview__hint {
+    margin: 0 0 1rem;
+    font-size: 0.875rem;
+    color: var(--p-text-muted-color, #6b7280);
+    line-height: 1.45;
+}
+
+.ia-preview__label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--p-text-muted-color, #6b7280);
+    margin-bottom: 0.35rem;
+}
+
+.ia-preview__box {
+    min-height: 6rem;
+    max-height: 14rem;
+    overflow: auto;
+    padding: 0.75rem 0.85rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--p-text-color, #374151);
+    background: #fff;
+    border: 1px solid var(--p-content-border-color, #e5e7eb);
+    border-radius: 8px;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.ia-preview__box--sugestao {
+    border-color: rgba(79, 70, 229, 0.35);
+    background: linear-gradient(180deg, #fafaff 0%, #fff 100%);
+}
+
+.ia-preview__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--p-content-border-color, #e5e7eb);
+}
+</style>
