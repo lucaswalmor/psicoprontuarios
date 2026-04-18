@@ -14,6 +14,7 @@ import assinaturaService from './assinaturaService';
 import mensagemComemorativaService from './mensagemComemorativaService';
 import mensagemAniversarianteService from './mensagemAniversarianteService';
 import chamadosService from './chamadosService';
+import meuSiteService from './meuSiteService';
 
 export {
     pacientesService,
@@ -31,7 +32,8 @@ export {
     assinaturaService,
     mensagemComemorativaService,
     mensagemAniversarianteService,
-    chamadosService
+    chamadosService,
+    meuSiteService
 };
 
 export default {
@@ -50,5 +52,6 @@ export default {
     assinaturaService,
     mensagemComemorativaService,
     mensagemAniversarianteService,
-    chamadosService
+    chamadosService,
+    meuSiteService
 };

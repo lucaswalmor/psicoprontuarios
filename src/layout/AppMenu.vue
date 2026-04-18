@@ -41,6 +41,11 @@ export default {
                     to: '/configuracoes'
                 },
                 {
+                    label: 'Meu Site',
+                    icon: 'pi pi-globe',
+                    to: '/meu-site'
+                },
+                {
                     label: 'Suporte',
                     icon: 'pi pi-comments',
                     to: '/chamados'
