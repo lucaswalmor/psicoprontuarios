@@ -36,6 +36,20 @@ class MeuSiteService {
         return response.data;
     }
 
+    async uploadFoto(file) {
+        const formData = new FormData();
+        formData.append('foto', file);
+        const response = await api.post('/site/foto', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        return response.data;
+    }
+
+    async deleteFoto() {
+        const response = await api.delete('/site/foto');
+        return response.data;
+    }
+
     async getTodosOsTemas() {
         const response = await api.get('/temas');
         return response.data?.data ?? response.data;

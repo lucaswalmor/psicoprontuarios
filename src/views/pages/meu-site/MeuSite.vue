@@ -27,6 +27,7 @@
                         <Tab value="2"><i class="pi pi-file-edit mr-2" />Textos</Tab>
                         <Tab value="3"><i class="pi pi-th-large mr-2" />Especialidades</Tab>
                         <Tab value="4"><i class="pi pi-clock mr-2" />Horários</Tab>
+                        <Tab value="5"><i class="pi pi-camera mr-2" />Foto</Tab>
                     </TabList>
 
                     <TabPanels>
@@ -44,6 +45,9 @@
                         </TabPanel>
                         <TabPanel value="4">
                             <HorariosTab v-if="activeTab === '4'" :dados="dados" @salvo="onSalvo" />
+                        </TabPanel>
+                        <TabPanel value="5">
+                            <FotoTab v-if="activeTab === '5'" :dados="dados" @salvo="onSalvo" />
                         </TabPanel>
                     </TabPanels>
                 </Tabs>
@@ -65,10 +69,11 @@ import AparenciaTab from './tabs/AparenciaTab.vue';
 import TextosTab from './tabs/TextosTab.vue';
 import EspecialidadesTab from './tabs/EspecialidadesTab.vue';
 import HorariosTab from './tabs/HorariosTab.vue';
+import FotoTab from './tabs/FotoTab.vue';
 
 export default {
     name: 'MeuSite',
-    components: { Tab, TabList, TabPanel, TabPanels, Tabs, ProgressSpinner, GeralTab, AparenciaTab, TextosTab, EspecialidadesTab, HorariosTab },
+    components: { Tab, TabList, TabPanel, TabPanels, Tabs, ProgressSpinner, GeralTab, AparenciaTab, TextosTab, EspecialidadesTab, HorariosTab, FotoTab },
 
     data() {
         return {
