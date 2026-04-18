@@ -167,7 +167,7 @@
                                     @click="exportarTodosProntuarios"
                                 />
                                 <Button
-                                    v-if="paciente && totalProntuarios > 0"
+                                    v-if="paciente && totalProntuarios > 0 && ['pro', 'vitalicio'].includes($planService.resolverTipoPlanoUsuario())"
                                     class="w-full sm:flex-1 md:flex-initial md:w-auto"
                                     label="Gerar relatório com I.A"
                                     icon="pi pi-sparkles"
