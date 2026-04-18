@@ -11,16 +11,26 @@
         <Divider />
 
         <div class="formgrid grid mt-3">
-            <!-- Slug (somente leitura) -->
+            <!-- Slug editável -->
             <div class="field col-12">
-                <label class="font-medium text-sm">Endereço do seu site</label>
-                <div class="flex align-items-center gap-2 mt-1 slug-display">
-                    <i class="pi pi-globe text-color-secondary" />
-                    <span class="text-color-secondary text-sm">psicoprontuarios.com.br/</span>
-                    <span class="font-medium text-primary">{{ slugExibido }}</span>
-                    <Tag value="Fixo" severity="secondary" class="ml-1" style="font-size:.7rem" />
+                <label class="font-medium text-sm">Endereço do seu site (subdomínio)</label>
+                <div class="flex align-items-stretch gap-2 mt-1 flex-wrap">
+                    <span class="flex align-items-center text-color-secondary text-sm px-2 border-round surface-100">psicoprontuarios.com.br/</span>
+                    <InputText
+                        v-model="form.slug"
+                        class="flex-1"
+                        style="min-width: 180px"
+                        placeholder="ex.: ana-silva"
+                        :invalid="slugIndisponivel"
+                        @blur="verificarSlug"
+                    />
                 </div>
-                <small class="text-color-secondary">Gerado automaticamente a partir do seu nome. Não pode ser alterado.</small>
+                <small v-if="slugAjuda" class="block mt-1" :class="slugIndisponivel ? 'text-red-500' : 'text-color-secondary'">
+                    {{ slugAjuda }}
+                </small>
+                <small v-else class="text-color-secondary block mt-1">
+                    Apenas letras minúsculas, números e hífens. Antes de salvar, verificamos se o endereço já está em uso.
+                </small>
             </div>
 
             <!-- CRP -->
@@ -69,12 +79,11 @@ import Button from 'primevue/button';
 import Divider from 'primevue/divider';
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
-import Tag from 'primevue/tag';
 import Textarea from 'primevue/textarea';
 
 export default {
     name: 'GeralTab',
-    components: { Button, Divider, Dropdown, InputText, Tag, Textarea },
+    components: { Button, Divider, Dropdown, InputText, Textarea },
 
     props: {
         dados: { type: Object, default: null },
@@ -84,9 +93,12 @@ export default {
 
     data() {
         return {
-            salvando:    false,
-            slugExibido: '',
+            salvando:           false,
+            verificandoSlug:    false,
+            slugAjuda:          '',
+            slugIndisponivel:   false,
             form: {
+                slug:              '',
                 crp:               '',
                 whatsapp:          '',
                 email:             '',
@@ -106,25 +118,89 @@ export default {
             immediate: true,
             handler(val) {
                 if (!val) return;
-                this.slugExibido           = val.slug             ?? '';
+                this.form.slug             = val.slug             ?? '';
                 this.form.crp              = val.crp              ?? '';
                 this.form.whatsapp         = val.whatsapp         ?? '';
                 this.form.email            = val.email            ?? '';
                 this.form.endereco         = val.endereco         ?? '';
                 this.form.tipo_atendimento = val.tipo_atendimento ?? null;
+                this.slugAjuda             = '';
+                this.slugIndisponivel      = false;
             },
+        },
+        'form.slug'() {
+            this.slugAjuda        = '';
+            this.slugIndisponivel = false;
         },
     },
 
     methods: {
+        async verificarSlug() {
+            const s = String(this.form.slug ?? '').trim();
+            if (!s) {
+                this.slugAjuda        = 'Informe o endereço do seu site.';
+                this.slugIndisponivel = true;
+                return;
+            }
+
+            this.verificandoSlug = true;
+            try {
+                const res = await meuSiteService.checkSlug(s);
+                if (res.slug && res.slug !== this.form.slug) {
+                    this.form.slug = res.slug;
+                }
+                this.slugIndisponivel = !res.disponivel;
+                this.slugAjuda       = res.disponivel
+                    ? 'Este endereço está disponível.'
+                    : (res.message || 'Este endereço já está em uso.');
+            } catch {
+                this.slugAjuda        = 'Não foi possível verificar o endereço. Tente novamente.';
+                this.slugIndisponivel = false;
+            } finally {
+                this.verificandoSlug = false;
+            }
+        },
+
+        primeiraMsgErro(errors) {
+            if (!errors || typeof errors !== 'object') return null;
+            const firstKey = Object.keys(errors)[0];
+            const arr      = errors[firstKey];
+            return Array.isArray(arr) ? arr[0] : String(arr);
+        },
+
         async salvar() {
+            const s = String(this.form.slug ?? '').trim();
+            if (!s) {
+                this.$toast.add({ severity: 'warn', summary: 'Atenção', detail: 'Informe o endereço do seu site.', life: 4000 });
+                return;
+            }
+
+            await this.verificarSlug();
+            if (this.slugIndisponivel) {
+                this.$toast.add({
+                    severity: 'error',
+                    summary:  'Endereço indisponível',
+                    detail:   this.slugAjuda || 'Já existe outro psicólogo usando este endereço.',
+                    life:     5000,
+                });
+                return;
+            }
+
             try {
                 this.salvando = true;
-                await meuSiteService.updateConfiguracoes(this.form);
+                const res = await meuSiteService.updateConfiguracoes(this.form);
+                const slugFinal = res.slug ?? this.form.slug;
+                this.form.slug = slugFinal;
                 this.$toast.add({ severity: 'success', summary: 'Salvo!', detail: 'Configurações gerais atualizadas.', life: 3000 });
-                this.$emit('salvo', this.form);
-            } catch {
-                this.$toast.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possível salvar.', life: 4000 });
+                this.$emit('salvo', { ...this.form, slug: slugFinal });
+                this.slugAjuda        = '';
+                this.slugIndisponivel = false;
+            } catch (e) {
+                const msg =
+                    this.primeiraMsgErro(e?.response?.data?.errors)
+                    ?? e?.response?.data?.message
+                    ?? 'Não foi possível salvar.';
+                this.$toast.add({ severity: 'error', summary: 'Erro', detail: msg, life: 5000 });
             } finally {
                 this.salvando = false;
             }

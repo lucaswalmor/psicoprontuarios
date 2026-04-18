@@ -94,7 +94,8 @@
                     <button
                         type="button"
                         class="editor-com-ia-fab"
-                        :disabled="melhorarIaLoading || !textoDescricaoPlano || !!previewMelhoriaIa"
+                        :disabled="melhorarIaLoading || !podeMelhorarTextoComIa || !!previewMelhoriaIa"
+                        :title="tituloBotaoMelhoriaIa"
                         @click="melhorarTextoIA"
                     >
                         <span v-if="melhorarIaLoading" class="editor-com-ia-fab__spinner" aria-hidden="true" />
@@ -122,6 +123,8 @@ import { Toast } from 'primevue';
 
 const WEBHOOK_MELHORAR_TEXTO_IA =
     'https://petgre-n8n-petgre.irkqjy.easypanel.host/webhook/b43537a5-c313-485e-814f-d993f2d359dc';
+
+const MIN_CARACTERES_MELHORIA_IA = 100;
 
 export default {
     name: 'DialogEditarProntuario',
@@ -157,6 +160,16 @@ export default {
     computed: {
         textoDescricaoPlano() {
             return this.extrairTextoPlano(this.prontuario?.descricao);
+        },
+        podeMelhorarTextoComIa() {
+            return this.textoDescricaoPlano.length >= MIN_CARACTERES_MELHORIA_IA;
+        },
+        tituloBotaoMelhoriaIa() {
+            if (this.melhorarIaLoading || this.previewMelhoriaIa) return '';
+            if (!this.podeMelhorarTextoComIa) {
+                return `É necessário pelo menos ${MIN_CARACTERES_MELHORIA_IA} caracteres na descrição para usar a melhoria por I.A.`;
+            }
+            return '';
         },
     },
     data() {
@@ -217,6 +230,15 @@ export default {
         async melhorarTextoIA() {
             const mensagem = this.textoDescricaoPlano;
             if (!mensagem) return;
+            if (mensagem.length < MIN_CARACTERES_MELHORIA_IA) {
+                this.$toast.add({
+                    severity: 'warn',
+                    summary: 'Texto curto demais',
+                    detail: `Escreva pelo menos ${MIN_CARACTERES_MELHORIA_IA} caracteres na descrição para usar a melhoria por I.A.`,
+                    life: 4000,
+                });
+                return;
+            }
 
             const psicologo = this.obterIdPsicologo();
             if (psicologo == null) {

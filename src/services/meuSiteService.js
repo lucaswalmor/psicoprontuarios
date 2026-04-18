@@ -6,6 +6,12 @@ class MeuSiteService {
         return response.data;
     }
 
+    async checkSlug(slug) {
+        const encoded = encodeURIComponent(String(slug || '').trim() || '-');
+        const response = await api.get(`/site/check-slug/${encoded}`);
+        return response.data;
+    }
+
     async updateConfiguracoes(data) {
         const response = await api.put('/site/configuracoes', data);
         return response.data;
