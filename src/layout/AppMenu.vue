@@ -1,3 +1,72 @@
+<template>
+    <ul class="layout-menu">
+        <li>
+            <PanelMenu :model="menuData">
+                <template #item="{ item }">
+                    <!-- Navegação por rota -->
+                    <router-link
+                        v-if="item.to"
+                        v-slot="{ href, navigate, isActive }"
+                        :to="item.to"
+                        custom
+                    >
+                        <a
+                            :href="href"
+                            @click="navigate"
+                            class="flex align-items-center px-3 py-2 w-full"
+                            :class="{ 'active-route': isActive }"
+                        >
+                            <i :class="['layout-menuitem-icon', item.icon]" class="mr-2" />
+                            <span class="layout-menuitem-text">
+                                {{ item.label }}
+                                {{ $planService.resolverTipoPlanoUsuario() }}
+                            </span>
+                        </a>
+                    </router-link>
+
+                    <!-- Títulos / itens sem rota (ex: grupos) -->
+                    <a
+                        v-else
+                        href="#"
+                        class="flex align-items-center px-3 py-2 w-full"
+                        @click.prevent
+                    >
+                        <i v-if="item.icon" :class="['layout-menuitem-icon', item.icon]" class="mr-2" />
+                        <span class="layout-menuitem-text">{{ item.label }}</span>
+                    </a>
+                </template>
+            </PanelMenu>
+        </li>
+
+        <!-- Botões do Topbar no Drawer (Mobile) -->
+        <li class="mobile-topbar-actions">
+            <!-- Botão de Upgrade -->
+            <button v-if="shouldShowUpgradeButton" type="button" class="mobile-upgrade-button" @click="goToUpgrade">
+                <i class="pi pi-star-fill"></i>
+                <span>Faça o upgrade do seu plano</span>
+            </button>
+
+            <!-- Botão de Tema -->
+            <button type="button" class="mobile-action-button" @click="toggleDarkMode">
+                <i :class="['pi', { 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"></i>
+                <span>{{ isDarkTheme ? 'Modo Claro' : 'Modo Escuro' }}</span>
+            </button>
+
+            <!-- Botão de Perfil -->
+            <button type="button" class="mobile-action-button" @click="goToProfile">
+                <i class="pi pi-user"></i>
+                <span>Meu Perfil</span>
+            </button>
+
+            <!-- Botão de Logout -->
+            <button type="button" class="mobile-action-button" @click="logout">
+                <i class="pi pi-sign-out"></i>
+                <span>Sair</span>
+            </button>
+        </li>
+    </ul>
+</template>
+
 <script>
 import { useLayout } from '@/layout/composables/layout';
 import PanelMenu from 'primevue/panelmenu';
@@ -94,72 +163,6 @@ export default {
     }
 };
 </script>
-
-<template>
-    <ul class="layout-menu">
-        <li>
-            <PanelMenu :model="menuData">
-                <template #item="{ item }">
-                    <!-- Navegação por rota -->
-                    <router-link
-                        v-if="item.to"
-                        v-slot="{ href, navigate, isActive }"
-                        :to="item.to"
-                        custom
-                    >
-                        <a
-                            :href="href"
-                            @click="navigate"
-                            class="flex align-items-center px-3 py-2 w-full"
-                            :class="{ 'active-route': isActive }"
-                        >
-                            <i :class="['layout-menuitem-icon', item.icon]" class="mr-2" />
-                            <span class="layout-menuitem-text">{{ item.label }}</span>
-                        </a>
-                    </router-link>
-
-                    <!-- Títulos / itens sem rota (ex: grupos) -->
-                    <a
-                        v-else
-                        href="#"
-                        class="flex align-items-center px-3 py-2 w-full"
-                        @click.prevent
-                    >
-                        <i v-if="item.icon" :class="['layout-menuitem-icon', item.icon]" class="mr-2" />
-                        <span class="layout-menuitem-text">{{ item.label }}</span>
-                    </a>
-                </template>
-            </PanelMenu>
-        </li>
-
-        <!-- Botões do Topbar no Drawer (Mobile) -->
-        <li class="mobile-topbar-actions">
-            <!-- Botão de Upgrade -->
-            <button v-if="shouldShowUpgradeButton" type="button" class="mobile-upgrade-button" @click="goToUpgrade">
-                <i class="pi pi-star-fill"></i>
-                <span>Faça o upgrade do seu plano</span>
-            </button>
-
-            <!-- Botão de Tema -->
-            <button type="button" class="mobile-action-button" @click="toggleDarkMode">
-                <i :class="['pi', { 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"></i>
-                <span>{{ isDarkTheme ? 'Modo Claro' : 'Modo Escuro' }}</span>
-            </button>
-
-            <!-- Botão de Perfil -->
-            <button type="button" class="mobile-action-button" @click="goToProfile">
-                <i class="pi pi-user"></i>
-                <span>Meu Perfil</span>
-            </button>
-
-            <!-- Botão de Logout -->
-            <button type="button" class="mobile-action-button" @click="logout">
-                <i class="pi pi-sign-out"></i>
-                <span>Sair</span>
-            </button>
-        </li>
-    </ul>
-</template>
 
 <style lang="scss" scoped>
 @media screen and (min-width: 768px) {

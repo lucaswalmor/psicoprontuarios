@@ -128,7 +128,7 @@ import { usePlanStore } from '@/store/plan';
 import { useAsaas } from '@/composables/useAsaas';
 import { useToast } from 'primevue/usetoast';
 import Message from 'primevue/message';
-import planService from '@/services/planService';
+import planService, { parseDescricaoPlano } from '@/services/planService';
 import UpgradeStepper from '@/components/upgrade/UpgradeStepper.vue';
 import PlanoCard from '@/components/upgrade/PlanoCard.vue';
 import FaqModal from '@/components/upgrade/FaqModal.vue';
@@ -164,7 +164,7 @@ export default {
             { id: 2, title: 'Pagamento' }
         ];
 
-        function mapearPlanoApi(p, index) {
+        function mapearPlanoApi(p) {
             const precoNum = Number(p.preco);
             const precoOk = Number.isFinite(precoNum);
             const slug = String(p.slug || '').toLowerCase();
@@ -173,24 +173,28 @@ export default {
             const precoStr = precoOk
                 ? (vitalicio ? `R$ ${precoNum.toFixed(2).replace('.', ',')} (pagamento único)` : `R$ ${precoNum.toFixed(2).replace('.', ',')}/mês`)
                 : 'Consulte valores';
+
+            const { resumo, itens } = parseDescricaoPlano(p.descricao);
             const features = [];
             if (p.trial_dias > 0) {
                 features.push(`${p.trial_dias} dia${p.trial_dias > 1 ? 's' : ''} de trial gratuito`);
             }
-            if (p.descricao && String(p.descricao).trim()) {
-                const partes = String(p.descricao).split(/\.\s+|\n+/).map((s) => s.trim()).filter(Boolean);
-                features.push(...partes);
-            }
+            features.push(...itens);
             if (!features.length) {
                 features.push('Acesso às funcionalidades do sistema');
             }
+
             return {
                 id: p.id,
                 nome: p.nome,
+                slug,
                 preco: precoStr,
-                descricao: p.descricao || '',
-                features: features.slice(0, 12),
-                popular: index === 0
+                /** Texto curto abaixo do preço (cabeçalho do card) */
+                resumo: resumo || String(p.descricao || '').trim() || '',
+                /** Compat: mesma coisa que o resumo quando o formato novo está em uso */
+                descricao: resumo || '',
+                features,
+                popular: slug === 'pro'
             };
         }
 
@@ -200,7 +204,7 @@ export default {
             try {
                 const raw = await planService.listarPlanosPublicos();
                 const arr = Array.isArray(raw) ? raw : [];
-                planosList.value = arr.map((p, i) => mapearPlanoApi(p, i));
+                planosList.value = arr.map((p) => mapearPlanoApi(p));
             } catch (e) {
                 console.error('Erro ao carregar planos:', e);
                 erroPlanos.value = 'Não foi possível carregar os planos. Tente atualizar a página.';

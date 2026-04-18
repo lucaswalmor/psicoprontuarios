@@ -23,18 +23,18 @@
         <div class="card-header">
             <h3 class="plan-name">{{ plan.nome }}</h3>
             <div class="plan-price">{{ plan.preco }}</div>
-            <p class="plan-description">{{ plan.descricao }}</p>
+            <p class="plan-description">{{ plan.resumo || plan.descricao }}</p>
         </div>
 
         <div class="card-features">
             <h4>Recursos incluídos:</h4>
             <ul class="features-list">
                 <li 
-                    v-for="feature in plan.features" 
-                    :key="feature"
+                    v-for="(feature, idx) in plan.features" 
+                    :key="idx + '-' + feature"
                     class="feature-item"
                 >
-                    <i class="pi pi-check"></i>
+                    <i class="pi pi-check text-green-500"></i>
                     <span>{{ feature }}</span>
                 </li>
             </ul>

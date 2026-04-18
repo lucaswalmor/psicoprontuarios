@@ -2,17 +2,17 @@
     <div class="pricing-section">
         <div class="text-center mb-16">
             <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-surface-900 dark:text-surface-0 mb-4">
-                Um plano, tudo incluído
+                Planos para sua clínica
             </h2>
             <p class="text-lg md:text-xl text-surface-600 dark:text-surface-300 max-w-3xl mx-auto">
-                Teste grátis por 7 dias. Depois, valor fixo mensal — sem surpresas na fatura.
+                Teste grátis por 7 dias em qualquer plano. Depois, valor fixo mensal — sem surpresas na fatura.
             </p>
         </div>
 
-        <div class="row justify-content-center">
+        <div class="row justify-content-center g-4">
             <div class="col-lg-6 col-xl-5">
-                <div class="pricing-card featured h-100">
-                    <div class="featured-badge">Plano Simples</div>
+                <div class="pricing-card h-100">
+                    <div class="featured-badge badge-simples">Plano Simples</div>
                     <div class="card-header">
                         <h3 class="plan-title">Simples</h3>
                         <div class="plan-icon-wrapper">
@@ -30,44 +30,59 @@
                             7 dias de teste grátis para conhecer o sistema
                         </p>
                         <p class="text-sm text-surface-500 dark:text-surface-400">
-                            Prontuário, agenda, financeiro, anexos, WhatsApp e notificações no mesmo lugar.
+                            Tudo o essencial para organizar atendimento, prontuário e finanças.
                         </p>
                     </div>
 
                     <Divider class="divider" />
 
                     <ul class="features-list">
-                        <li class="feature-item">
+                        <li v-for="(texto, idx) in featuresSimples" :key="'s-' + idx" class="feature-item">
                             <i class="pi pi-check text-green-500"></i>
-                            <span>Prontuários com histórico e PDF</span>
+                            <span>{{ texto }}</span>
                         </li>
-                        <li class="feature-item">
+                    </ul>
+
+                    <div class="mt-auto pt-6">
+                        <Button
+                            label="Começar teste grátis"
+                            class="cta-button"
+                            @click="$router.push('/cadastro')"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-xl-5">
+                <div class="pricing-card featured h-100">
+                    <div class="featured-badge badge-pro">Plano Pro</div>
+                    <div class="card-header">
+                        <h3 class="plan-title">Pro</h3>
+                        <div class="plan-icon-wrapper">
+                            <i class="pi pi-bolt text-4xl text-primary-500"></i>
+                        </div>
+                    </div>
+
+                    <div class="price-section">
+                        <div class="price">
+                            <span class="currency">R$</span>
+                            <span class="amount">49</span>
+                            <span class="period">,90/mês</span>
+                        </div>
+                        <p class="text-sm text-surface-600 dark:text-surface-400 mb-2">
+                            7 dias de teste grátis — inclui IA, landing page e WhatsApp avançado
+                        </p>
+                        <p class="text-sm text-surface-500 dark:text-surface-400">
+                            Tudo do Simples, mais recursos de IA, página pública e automações.
+                        </p>
+                    </div>
+
+                    <Divider class="divider" />
+
+                    <ul class="features-list">
+                        <li v-for="(texto, idx) in featuresPro" :key="'p-' + idx" class="feature-item">
                             <i class="pi pi-check text-green-500"></i>
-                            <span>Agenda com validação de conflitos</span>
-                        </li>
-                        <li class="feature-item">
-                            <i class="pi pi-check text-green-500"></i>
-                            <span>Financeiro da consulta (pagamentos e relatórios)</span>
-                        </li>
-                        <li class="feature-item">
-                            <i class="pi pi-check text-green-500"></i>
-                            <span>Anamnese, anexos e dashboard</span>
-                        </li>
-                        <li class="feature-item">
-                            <i class="pi pi-check text-green-500"></i>
-                            <span>Indicadores de evolução (humor, GAD-7, PHQ-9)</span>
-                        </li>
-                        <li class="feature-item">
-                            <i class="pi pi-check text-green-500"></i>
-                            <span>WhatsApp: rotinas e automações no fluxo clínico</span>
-                        </li>
-                        <li class="feature-item">
-                            <i class="pi pi-check text-green-500"></i>
-                            <span>Notificações de aniversários e datas comemorativas</span>
-                        </li>
-                        <li class="feature-item">
-                            <i class="pi pi-check text-green-500"></i>
-                            <span>Suporte por e-mail</span>
+                            <span>{{ texto }}</span>
                         </li>
                     </ul>
 
@@ -102,6 +117,33 @@ export default {
     components: {
         Button,
         Divider
+    },
+    data() {
+        return {
+            featuresSimples: [
+                'Dashboard Geral',
+                'Dashboard Financeiro',
+                'Prontuários com histórico e PDF',
+                'Agendamento de Sessões',
+                'Controle Financeiro',
+                'Anamnese e Anexos',
+                'Indicadores de evolução (humor, GAD-7, PHQ-9)'
+            ],
+            featuresPro: [
+                'Dashboard Geral',
+                'Dashboard Financeiro',
+                'Prontuários com histórico e PDF',
+                'Agendamento de Sessões',
+                'Controle Financeiro',
+                'Anamnese e Anexos',
+                'Indicadores de evolução (humor, GAD-7, PHQ-9)',
+                'Landing page gratuita',
+                'Melhoria de texto com I.A no prontuário',
+                'Gerar relatório profissional com I.A nos prontuários',
+                'Notificações de aniversários e datas comemorativas por WhatsApp',
+                'WhatsApp: rotinas e automações no fluxo clínico',
+            ]
+        };
     }
 };
 </script>
@@ -122,7 +164,15 @@ export default {
 }
 
 .featured-badge {
-    @apply absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-full text-sm font-medium;
+    @apply absolute -top-4 left-1/2 transform -translate-x-1/2 text-white px-6 py-2 rounded-full text-sm font-medium bg-gradient-to-r;
+}
+
+.featured-badge.badge-simples {
+    @apply from-slate-600 to-slate-800;
+}
+
+.featured-badge.badge-pro {
+    @apply from-purple-600 to-pink-600;
 }
 
 .card-header {
