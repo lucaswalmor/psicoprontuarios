@@ -123,6 +123,7 @@
                         :disabled="melhorarIaLoading || !podeMelhorarTextoComIa || !!previewMelhoriaIa"
                         :title="tituloBotaoMelhoriaIa"
                         @click="melhorarTextoIA"
+                        v-if="['pro', 'vitalicio'].includes($planService.resolverTipoPlanoUsuario())"
                     >
                         <span v-if="melhorarIaLoading" class="editor-com-ia-fab__spinner" aria-hidden="true" />
                         {{ melhorarIaLoading ? 'Melhorando…' : 'Melhorar texto com I.A' }}

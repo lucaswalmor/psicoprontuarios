@@ -19,7 +19,6 @@
                             <i :class="['layout-menuitem-icon', item.icon]" class="mr-2" />
                             <span class="layout-menuitem-text">
                                 {{ item.label }}
-                                {{ $planService.resolverTipoPlanoUsuario() }}
                             </span>
                         </a>
                     </router-link>
@@ -79,8 +78,8 @@ export default {
     data() {
         return {
             layoutComposable: null,
-            // Modelo estático do menu para o PanelMenu
-            menuData: [
+            /** Itens-base; `menuData` (computed) aplica regras por plano */
+            menuItems: [
                 {
                     label: 'Dashboard',
                     icon: 'pi pi-home',
@@ -123,6 +122,18 @@ export default {
         };
     },
     computed: {
+        /** Itens exibidos no PanelMenu (ex.: Meu Site só Pro ou vitalício) */
+        menuData() {
+            const tipo = this.$planService.resolverTipoPlanoUsuario();
+            const podeMeuSite = ['pro', 'vitalicio'].includes(tipo);
+            return this.menuItems.filter((item) => {
+                if (item.to === '/meu-site') {
+                    return podeMeuSite;
+                }
+                return true;
+            });
+        },
+
         // Computed para tema escuro
         isDarkTheme() {
             return this.layoutComposable?.isDarkTheme;
