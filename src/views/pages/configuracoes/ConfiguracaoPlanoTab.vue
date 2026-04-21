@@ -183,9 +183,24 @@
 
         <Dialog v-model:visible="dialogParar" modal header="Parar assinatura" class="w-full max-w-lg" :closable="true">
             <Message severity="warn" :closable="false" class="mb-3">
-                Ao confirmar, a cobrança recorrente será interrompida na Asaas e <strong>você perderá o acesso ao sistema na hora</strong>
+                Ao confirmar, a recorrência será encerrada e <strong>você perderá o acesso imediatamente</strong>
                 (pacientes, prontuários, agenda etc.).
             </Message>
+
+            <div class="parar-cobrancas-info surface-section border-round-lg p-3 mb-3">
+                <p class="font-semibold text-900 m-0 mb-2">
+                    <i class="pi pi-info-circle mr-2 text-primary"></i>O que acontece com suas cobranças:
+                </p>
+                <ul class="m-0 p-0 pl-3 flex flex-column gap-2 text-sm text-700">
+                    <li>
+                        <strong>Cobranças já confirmadas ou pagas</strong> continuam sendo processadas normalmente pela Asaas — você não perde o que já pagou.
+                    </li>
+                    <li>
+                        <strong>Cobranças futuras (pendentes)</strong> serão canceladas e não gerarão novas faturas.
+                    </li>
+                </ul>
+            </div>
+
             <p class="text-600 text-sm m-0">Para voltar depois, reative a assinatura com cartão válido.</p>
             <template #footer>
                 <Button label="Manter assinatura" severity="secondary" outlined @click="dialogParar = false" />
@@ -553,5 +568,10 @@ export default {
 
 .surface-card {
     border: 1px solid var(--surface-border);
+}
+
+.parar-cobrancas-info {
+    border: 1px solid var(--surface-border);
+    background: var(--surface-50, var(--surface-ground));
 }
 </style>
