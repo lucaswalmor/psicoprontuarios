@@ -16,10 +16,18 @@
                             class="flex align-items-center px-3 py-2 w-full"
                             :class="{ 'active-route': isActive }"
                         >
-                            <i :class="['layout-menuitem-icon', item.icon]" class="mr-2" />
-                            <span class="layout-menuitem-text">
-                                {{ item.label }}
-                            </span>
+                            <div class="menu-item-row">
+                                <i :class="['layout-menuitem-icon', item.icon]" class="mr-2" />
+                                <div class="menu-label-row">
+                                    <span class="layout-menuitem-text">{{ item.label }}</span>
+                                    <Tag
+                                        v-if="item.to === '/meu-site' && !podeMeuSite"
+                                        value="PRO"
+                                        severity="warning"
+                                        class="menu-pro-tag"
+                                    />
+                                </div>
+                            </div>
                         </a>
                     </router-link>
 
@@ -69,11 +77,13 @@
 <script>
 import { useLayout } from '@/layout/composables/layout';
 import PanelMenu from 'primevue/panelmenu';
+import Tag from 'primevue/tag';
 
 export default {
     name: 'AppMenu',
     components: {
-        PanelMenu
+        PanelMenu,
+        Tag
     },
     data() {
         return {
@@ -122,16 +132,14 @@ export default {
         };
     },
     computed: {
-        /** Itens exibidos no PanelMenu (ex.: Meu Site só Pro ou vitalício) */
-        menuData() {
+        podeMeuSite() {
             const tipo = this.$planService.resolverTipoPlanoUsuario();
-            const podeMeuSite = ['pro', 'vitalicio'].includes(tipo);
-            return this.menuItems.filter((item) => {
-                if (item.to === '/meu-site') {
-                    return podeMeuSite;
-                }
-                return true;
-            });
+            return ['pro', 'vitalicio'].includes(tipo);
+        },
+
+        /** Itens exibidos no PanelMenu */
+        menuData() {
+            return this.menuItems;
         },
 
         // Computed para tema escuro
@@ -176,6 +184,27 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.menu-item-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.menu-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    width: 100%;
+    min-width: 0;
+}
+
+.menu-pro-tag {
+    flex: 0 0 auto;
+    font-size: 0.7rem;
+    padding: 0.125rem 0.4rem;
+}
+
 @media screen and (min-width: 768px) {
     .mobile-topbar-actions {
         display: none;

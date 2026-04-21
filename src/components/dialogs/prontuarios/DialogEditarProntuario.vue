@@ -94,13 +94,17 @@
                     <button
                         type="button"
                         class="editor-com-ia-fab"
-                        :disabled="melhorarIaLoading || !podeMelhorarTextoComIa || !!previewMelhoriaIa"
+                        :class="{ 'editor-com-ia-fab--locked': !isPlanoPro }"
+                        :aria-disabled="!isPlanoPro"
+                        :disabled="isPlanoPro && (melhorarIaLoading || !podeMelhorarTextoComIa || !!previewMelhoriaIa)"
                         :title="tituloBotaoMelhoriaIa"
-                        @click="melhorarTextoIA"
-                        v-if="['pro', 'vitalicio'].includes($planService.resolverTipoPlanoUsuario())"
+                        @click="onClickMelhorarTextoIA"
                     >
                         <span v-if="melhorarIaLoading" class="editor-com-ia-fab__spinner" aria-hidden="true" />
-                        {{ melhorarIaLoading ? 'Melhorando…' : 'Melhorar texto com I.A' }}
+                        <span class="editor-com-ia-fab__label">
+                            {{ melhorarIaLoading ? 'Melhorando…' : 'Melhorar texto com I.A' }}
+                        </span>
+                        <Tag v-if="!isPlanoPro" value="PRO" severity="warning" class="editor-com-ia-fab__tag" />
                     </button>
                 </div>
             </div>
@@ -118,9 +122,12 @@
         </div>
         <Toast />
     </Dialog>
+
+    <DialogPlanoPro :visible="dialogPlanoProVisible" @update:visible="dialogPlanoProVisible = $event" />
 </template>
 <script>
 import { Toast } from 'primevue';
+import DialogPlanoPro from '@/components/dialogs/DialogPlanoPro.vue';
 
 const WEBHOOK_MELHORAR_TEXTO_IA =
     'https://petgre-n8n-petgre.irkqjy.easypanel.host/webhook/b43537a5-c313-485e-814f-d993f2d359dc';
@@ -131,12 +138,14 @@ export default {
     name: 'DialogEditarProntuario',
     components: {
         Toast,
+        DialogPlanoPro,
         Dialog: () => import('primevue/dialog'),
         InputMask: () => import('primevue/inputmask'),
         InputNumber: () => import('primevue/inputnumber'),
         Editor: () => import('primevue/editor'),
         Button: () => import('primevue/button'),
-        Message: () => import('primevue/message')
+        Message: () => import('primevue/message'),
+        Tag: () => import('primevue/tag'),
     },
     props: {
         prontuario: {
@@ -159,6 +168,9 @@ export default {
         },
     },
     computed: {
+        isPlanoPro() {
+            return ['pro', 'vitalicio'].includes(this.$planService.resolverTipoPlanoUsuario());
+        },
         textoDescricaoPlano() {
             return this.extrairTextoPlano(this.prontuario?.descricao);
         },
@@ -167,6 +179,9 @@ export default {
         },
         tituloBotaoMelhoriaIa() {
             if (this.melhorarIaLoading || this.previewMelhoriaIa) return '';
+            if (!this.isPlanoPro) {
+                return 'Disponível apenas no Plano Pro.';
+            }
             if (!this.podeMelhorarTextoComIa) {
                 return `É necessário pelo menos ${MIN_CARACTERES_MELHORIA_IA} caracteres na descrição para usar a melhoria por I.A.`;
             }
@@ -181,6 +196,7 @@ export default {
             editorDescricaoKey: 0,
             /** { textoOriginal, textoSugerido, htmlSugerido } ou null */
             previewMelhoriaIa: null,
+            dialogPlanoProVisible: false,
         }
     },
     methods: {
@@ -227,6 +243,13 @@ export default {
             } catch {
                 return null;
             }
+        },
+        onClickMelhorarTextoIA() {
+            if (!this.isPlanoPro) {
+                this.dialogPlanoProVisible = true;
+                return;
+            }
+            this.melhorarTextoIA();
         },
         async melhorarTextoIA() {
             const mensagem = this.textoDescricaoPlano;
@@ -412,6 +435,7 @@ export default {
     z-index: 1100;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
     padding: 0.65rem 1.1rem;
     font-size: 0.875rem;
@@ -425,6 +449,18 @@ export default {
     transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
 }
 
+.editor-com-ia-fab__label {
+    white-space: nowrap;
+}
+
+.editor-com-ia-fab__tag {
+    margin-left: 0.25rem;
+    font-size: 0.7rem;
+    padding: 0.125rem 0.45rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+}
+
 .editor-com-ia-fab:hover:not(:disabled) {
     transform: translateY(-1px);
     box-shadow: 0 12px 28px rgba(79, 70, 229, 0.42);
@@ -433,6 +469,16 @@ export default {
 .editor-com-ia-fab:disabled {
     opacity: 0.65;
     cursor: not-allowed;
+}
+
+.editor-com-ia-fab--locked {
+    opacity: 0.88;
+    cursor: pointer;
+}
+
+.editor-com-ia-fab--locked:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(79, 70, 229, 0.42);
 }
 
 .editor-com-ia-fab__spinner {

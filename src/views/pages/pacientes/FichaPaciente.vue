@@ -167,13 +167,16 @@
                                     @click="exportarTodosProntuarios"
                                 />
                                 <Button
-                                    v-if="paciente && totalProntuarios > 0 && ['pro', 'vitalicio'].includes($planService.resolverTipoPlanoUsuario())"
+                                    v-if="paciente && totalProntuarios > 0"
                                     class="w-full sm:flex-1 md:flex-initial md:w-auto"
                                     label="Gerar relatório com I.A"
                                     icon="pi pi-sparkles"
                                     severity="contrast"
                                     :loading="relatorioIaLoading"
-                                    @click="abrirRelatorioIA"
+                                    :disabled="isPlanoPro && relatorioIaLoading"
+                                    :badge="!isPlanoPro ? 'PRO' : null"
+                                    badgeClass="p-badge-warning"
+                                    @click="onClickRelatorioIA"
                                 />
                                 <Button
                                     v-if="podeEditar && paciente"
@@ -425,6 +428,8 @@
                 />
             </template>
         </Dialog>
+
+        <DialogPlanoPro :visible="dialogPlanoProVisible" @update:visible="dialogPlanoProVisible = $event" />
     </div>
 </template>
 
@@ -437,6 +442,7 @@ import ListaAnexos from './ListaAnexos.vue';
 import Anamnese from '@/components/pacientes/Anamnese.vue';
 import DialogNovoProntuario from '@/components/dialogs/prontuarios/DialogNovoProntuario.vue';
 import DialogAlterarStatus from '@/components/dialogs/pacientes/DialogAlterarStatus.vue';
+import DialogPlanoPro from '@/components/dialogs/DialogPlanoPro.vue';
 
 import prontuariosService from '@/services/prontuariosService';
 import anexosService from '@/services/anexosService';
@@ -450,6 +456,7 @@ export default {
         Anamnese,
         DialogNovoProntuario,
         DialogAlterarStatus,
+        DialogPlanoPro,
     },
     computed: {
         planStore() {
@@ -467,6 +474,10 @@ export default {
             }
             // Planos pagos: verificar se pode editar dados
             return this.planStore.podeEditarDados;
+        },
+
+        isPlanoPro() {
+            return ['pro', 'vitalicio'].includes(this.$planService.resolverTipoPlanoUsuario());
         },
         
         // Gráfico de linha - Evolução temporal
@@ -670,7 +681,8 @@ export default {
             relatorioIaLoading: false,
             atualizandoRelatorioIa: false,
             relatorioProntuario: null,
-            baixandoRelatorioDocx: false
+            baixandoRelatorioDocx: false,
+            dialogPlanoProVisible: false,
         };
     },
     watch: {
@@ -698,6 +710,13 @@ export default {
         }
     },
     methods: {
+        onClickRelatorioIA() {
+            if (!this.isPlanoPro) {
+                this.dialogPlanoProVisible = true;
+                return;
+            }
+            this.abrirRelatorioIA();
+        },
         async carregarDados() {
             this.loading = true;
             try {

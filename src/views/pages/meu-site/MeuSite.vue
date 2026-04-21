@@ -5,7 +5,7 @@
                 <div class="flex align-items-center justify-content-between m-3 mb-4">
                     <h5 class="m-0">Meu Site</h5>
                     <a
-                        v-if="slugAtual"
+                        v-if="slugAtual && ['pro','vitalicio'].includes($planService.resolverTipoPlanoUsuario())"
                         :href="`https://${slugAtual}.psicoprontuarios.com.br`"
                         target="_blank"
                         class="p-button p-button-outlined p-button-sm flex align-items-center gap-2"
@@ -16,7 +16,11 @@
                     </a>
                 </div>
 
-                <div v-if="carregando" class="flex justify-content-center align-items-center p-6">
+                <div class="col-md-12 d-flex justify-content-center align-items-center p-7" v-if="!['pro','vitalicio'].includes($planService.resolverTipoPlanoUsuario())" >
+                    <PlanoPro class="" />
+                </div>
+
+                <div v-else-if="carregando" class="flex justify-content-center align-items-center p-6">
                     <ProgressSpinner style="width:48px;height:48px" />
                 </div>
 
