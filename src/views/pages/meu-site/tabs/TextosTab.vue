@@ -113,7 +113,8 @@ export default {
             handler(val) {
                 if (!val) return;
                 Object.keys(this.form).forEach((campo) => {
-                    this.form[campo] = val[campo] ?? '';
+                    const raw = val[campo];
+                    this.form[campo] = raw === null || raw === undefined ? '' : String(raw);
                 });
             },
         },
@@ -126,8 +127,12 @@ export default {
                 await meuSiteService.updateInformacoes(this.form);
                 this.$toast.add({ severity: 'success', summary: 'Salvo!', detail: 'Textos atualizados com sucesso.', life: 3000 });
                 this.$emit('salvo', this.form);
-            } catch {
-                this.$toast.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possível salvar os textos.', life: 4000 });
+            } catch (err) {
+                const detail =
+                    err?.response?.data?.message ||
+                    err?.message ||
+                    'Não foi possível salvar os textos.';
+                this.$toast.add({ severity: 'error', summary: 'Erro', detail, life: 5000 });
             } finally {
                 this.salvando = false;
             }
