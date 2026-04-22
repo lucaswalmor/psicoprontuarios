@@ -53,6 +53,25 @@
             </div>
 
             <div class="col-12" v-if="agendamento.hora_consulta">
+                <div class="flex align-items-center gap-2 flex-wrap mb-2">
+                    <InputSwitch
+                        id="notificar_whatsapp_lembrete"
+                        v-model="agendamento.deseja_receber_notificacoes"
+                        :disabled="!evolutionWhatsappConectado || evolutionLembreteLoading"
+                    />
+                    <label for="notificar_whatsapp_lembrete" class="text-900 font-medium mb-0 cursor-pointer">
+                        Notificar o paciente por WhatsApp no dia da consulta
+                    </label>
+                    <i
+                        class="pi pi-info-circle text-primary cursor-pointer"
+                        style="font-size: 1rem"
+                        v-tooltip.top="'Para poder enviar este lembrete, conecte o seu WhatsApp em Configurações → aba WhatsApp.'"
+                        aria-hidden="true"
+                    />
+                </div>
+            </div>
+
+            <div class="col-12" v-if="agendamento.hora_consulta">
                 <label class="block text-900 font-medium mb-2">Deseja reagendar esta consulta para os próximos 12 meses?</label>
                 <div class="flex align-items-center gap-3">
                     <label for="reagendar_nao">Não</label>
@@ -117,12 +136,15 @@
 </template>
 
 <script>
+import api from '@/utils/axios';
 import horasMinutosMixin from '@/mixins/horasMinutosMixin';
+import InputSwitch from 'primevue/inputswitch';
 import Select from 'primevue/select';
 
 export default {
     name: 'DialogNovoAgendamento',
     components: {
+        InputSwitch,
         Select
     },
     mixins: [horasMinutosMixin],
@@ -149,18 +171,22 @@ export default {
             isLoading: false,
             pacientes: [],
             errors: {},
+            evolutionWhatsappConectado: false,
+            evolutionLembreteLoading: false,
             agendamento: {
                 data_consulta: '',
                 paciente: null,
                 hora_consulta: '',
                 reagendar_consulta: false,
-                tipo_reagendamento: ''
+                tipo_reagendamento: '',
+                deseja_receber_notificacoes: false,
             }
         };
     },
     watch: {
         visible(newVal) {
             if (newVal) {
+                this.consultarEvolutionLembreteConsulta();
                 // Se não tiver paciente pré-selecionado, carregar lista de pacientes
                 if (!this.paciente && !this.pacienteId) {
                     this.carregarPacientes();
@@ -197,6 +223,21 @@ export default {
         }
     },
     methods: {
+        async consultarEvolutionLembreteConsulta() {
+            this.evolutionLembreteLoading = true;
+            try {
+                const response = await api.get('/evolution/instancia/lembrete-consulta');
+                this.evolutionWhatsappConectado = !!response?.data?.whatsapp_conectado;
+                if (!this.evolutionWhatsappConectado) {
+                    this.agendamento.deseja_receber_notificacoes = false;
+                }
+            } catch (error) {
+                this.evolutionWhatsappConectado = false;
+                this.agendamento.deseja_receber_notificacoes = false;
+            } finally {
+                this.evolutionLembreteLoading = false;
+            }
+        },
         onUpdateVisible(visible) {
             this.$emit('update:visible', visible);
             if (!visible) {
@@ -270,8 +311,10 @@ export default {
                 paciente: null,
                 hora_consulta: '',
                 reagendar_consulta: false,
-                tipo_reagendamento: ''
+                tipo_reagendamento: '',
+                deseja_receber_notificacoes: false,
             };
+            this.evolutionWhatsappConectado = false;
             this.errors = {};
         },
         
@@ -348,8 +391,9 @@ export default {
                         forma_pagamento: ""
                     },
                     tipo_notificacao: [],
-                    deseja_receber_notificacoes: false,
-                    enviar_notificacoes_para: "psicologo"
+                    deseja_receber_notificacoes:
+                        this.evolutionWhatsappConectado && !!this.agendamento.deseja_receber_notificacoes,
+                    enviar_notificacoes_para: null,
                 };
                 
                 await this.$agendamentosService.create(dadosAgendamento);
