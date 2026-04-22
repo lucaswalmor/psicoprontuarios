@@ -48,16 +48,12 @@ export default {
     },
     methods: {
         itemClick(event, item) {
-            console.log('[AppMenuItem] click em item:', item, 'itemKey:', this.itemKey);
             if (item.items) {
-                // Se tem submenu, fazer toggle
                 event.preventDefault();
                 const active = this.layoutState.activeMenuItem === this.itemKey;
                 this.setActiveMenuItem(active ? null : this.itemKey);
             } else if (item.to) {
-                // Se tem rota, navegar
                 event.preventDefault();
-                console.log('[AppMenuItem] navegando para:', item.to);
                 this.$router.push(item.to);
             }
         },
@@ -91,4 +87,18 @@ export default {
     </li>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+/* Estilos alinhados ao AppMenu / tema (componente legado — não usado pelo PanelMenu atual) */
+.layout-menuitem-icon {
+    margin-right: 0.5rem;
+}
+
+a.active-route,
+.router-link-active.active-route {
+    font-weight: 600;
+    color: var(--primary-color);
+    background-color: color-mix(in srgb, var(--primary-color) 11%, var(--surface-card));
+    border-radius: 10px;
+    box-shadow: inset 3px 0 0 0 var(--primary-color);
+}
+</style>
