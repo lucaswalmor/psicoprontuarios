@@ -30,6 +30,7 @@
                 <EvolutionActions
                     :status="status"
                     :instanceName="instance.instance_name"
+                    :excluir-loading="deleting"
                     @gerar-qrcode="abrirQrCode"
                     @enviar-teste="enviarMensagemTeste"
                     @excluir="excluirConfiguracao"

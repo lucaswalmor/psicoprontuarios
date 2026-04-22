@@ -1,5 +1,5 @@
 <template>
-    <div class="d-flex flex-wrap gap-2 mt-3">
+    <div class="d-flex flex-wrap gap-2 mt-3 align-items-center">
         <Button
             v-if="status === 'disconnected' || status === 'connecting'"
             label="Gerar QR Code"
@@ -16,10 +16,11 @@
         />
 
         <Button
-            v-if="status === 'connected'"
             label="Excluir configuração"
             icon="pi pi-trash"
             severity="danger"
+            :loading="excluirLoading"
+            :disabled="excluirLoading"
             @click="confirmarExclusao"
         />
 
@@ -46,13 +47,27 @@ export default {
             type: String,
             default: '',
         },
+        excluirLoading: {
+            type: Boolean,
+            default: false,
+        },
     },
     methods: {
         confirmarExclusao() {
+            if (this.excluirLoading) {
+                return;
+            }
+
+            const estaConectado = this.status === 'connected';
+
+            const message = estaConectado
+                ? 'Sua instância está ativa e conectada ao WhatsApp. Ao excluir, o envio automatizado de mensagens e os lembretes de consulta para pacientes deixarão de funcionar até você configurar novamente. Deseja realmente excluir esta configuração?'
+                : 'Tem certeza que deseja excluir a configuração do WhatsApp? Você precisará configurar novamente para usar o envio de mensagens e lembretes.';
+
             this.$confirm.require({
                 group: 'evolution-delete',
-                header: 'Excluir configuração do WhatsApp',
-                message: 'Tem certeza que deseja excluir a configuração do WhatsApp? Você precisará configurar novamente para usar o envio de mensagens.',
+                header: estaConectado ? 'Excluir instância ativa?' : 'Excluir configuração do WhatsApp',
+                message,
                 icon: 'pi pi-exclamation-triangle',
                 acceptLabel: 'Sim, excluir',
                 rejectLabel: 'Cancelar',
