@@ -1,60 +1,71 @@
 <template>
-    <div class="grid">
-        <div class="col-12">
-            <div class="card p-1">
-                <h5 class="text-500 mb-4 m-3">Dashboard Geral</h5>
-
-                <!-- Tabs -->
-                <TabView v-model:activeIndex="activeTabIndex" @tab-change="onTabChange">
+    <div class="dash-clinic">
+        <div class="grid">
+            <div class="col-12">
+                <div class="dash-clinic-shell card p-0 overflow-hidden">
+                    <header class="dash-clinic-header px-3 py-3 md:px-4 md:py-4">
+                        <p class="dash-clinic-eyebrow m-0 mb-1">Visão geral</p>
+                        <h1 class="dash-clinic-title m-0">Dashboard da clínica</h1>
+                    </header>
+                    <div class="px-2 pb-3 md:px-3 md:pb-4">
+                <TabView
+                    v-model:activeIndex="activeTabIndex"
+                    class="dash-clinic-tabs"
+                    @tab-change="onTabChange"
+                >
                     <!-- Tab Pacientes -->
                     <TabPanel header="Pacientes">
                         <!-- Cards de Estatísticas -->
                         <div class="grid">
                             <!-- Total de Pacientes -->
                             <div class="col-12 md:col-4">
-                                <div class="card cursor-pointer"
+                                <div
+                                    class="card dash-metric cursor-pointer"
                                     :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''"
-                                    @click="$router.push('/pacientes')">
-                                    <div class="flex align-items-center justify-content-between">
-                                        <div>
-                                            <span class="block text-2xl text-500 font-medium mb-2">Total de
-                                                Pacientes</span>
-                                            <!-- <span class="block text-blue-500 text-2xl font-medium mb-2">Total de Pacientes</span> -->
-                                            <div class="font-medium text-xl text-500">{{
-                                                dados.pacientes?.pacientes_total || 0 }}</div>
+                                    @click="$router.push('/pacientes')"
+                                >
+                                    <div class="flex align-items-center justify-content-between gap-3 pl-2">
+                                        <div class="flex-1 min-w-0">
+                                            <span class="dash-metric__label">Total de pacientes</span>
+                                            <div class="dash-metric__value">{{ dados.pacientes?.pacientes_total || 0 }}</div>
                                         </div>
-                                        <i :class="`pi pi-users text-2xl text-500`"></i>
+                                        <div class="dash-metric__icon flex-shrink-0">
+                                            <i class="pi pi-users"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Sessões do dia -->
                             <div class="col-12 md:col-4">
-                                <div class="card cursor-pointer"
+                                <div
+                                    class="card dash-metric cursor-pointer"
                                     :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''"
-                                    @click="$router.push('/agendamentos')">
-                                    <div class="flex align-items-center justify-content-between">
-                                        <div>
-                                            <span class="block text-2xl text-500 font-medium mb-2">Sessões do dia</span>
-                                            <div class="text-500 font-medium text-xl">{{
-                                                dados.prontuarios?.sessoes_do_dia || 0 }}</div>
+                                    @click="$router.push('/agendamentos')"
+                                >
+                                    <div class="flex align-items-center justify-content-between gap-3 pl-2">
+                                        <div class="flex-1 min-w-0">
+                                            <span class="dash-metric__label">Sessões do dia</span>
+                                            <div class="dash-metric__value">{{ dados.prontuarios?.sessoes_do_dia || 0 }}</div>
                                         </div>
-                                        <i :class="`pi pi-calendar text-500 text-2xl`"></i>
+                                        <div class="dash-metric__icon flex-shrink-0">
+                                            <i class="pi pi-calendar"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Prontuários 30 dias -->
                             <div class="col-12 md:col-4">
-                                <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
-                                    <div class="flex align-items-center justify-content-between">
-                                        <div>
-                                            <span class="text-500 block text-2xl font-medium mb-2">Prontuários (30
-                                                dias)</span>
-                                            <div class="text-500 font-medium text-xl">{{
-                                                dados.prontuarios?.prontuarios_30_dias || 0 }}</div>
+                                <div class="card dash-metric" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
+                                    <div class="flex align-items-center justify-content-between gap-3 pl-2">
+                                        <div class="flex-1 min-w-0">
+                                            <span class="dash-metric__label">Prontuários (30 dias)</span>
+                                            <div class="dash-metric__value">{{ dados.prontuarios?.prontuarios_30_dias || 0 }}</div>
                                         </div>
-                                        <i :class="`pi pi-calendar text-500 text-2xl`"></i>
+                                        <div class="dash-metric__icon flex-shrink-0">
+                                            <i class="pi pi-file-edit"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -64,24 +75,22 @@
                         <div class="grid mt-4">
                             <div class="col-12">
                                 <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
-                                    <h6 class="text-500 mb-3">Pacientes por Status</h6>
-                                    <div class="flex align-items-center justify-content-between flex-wrap gap-3">
-                                        <div class="flex align-items-center gap-2">
+                                    <h6>Pacientes por status</h6>
+                                    <div class="dash-status-grid">
+                                        <div class="dash-status-pill">
                                             <i class="pi pi-circle-fill text-blue-500"></i>
-                                            <span class="text-500 font-medium">Em andamento:</span>
-                                            <span class="text-500 font-bold text-xl">{{ dados.pacientes?.pacientes_em_andamento || 0 }}</span>
+                                            <span class="dash-status-pill__label">Em andamento</span>
+                                            <span class="dash-status-pill__value">{{ dados.pacientes?.pacientes_em_andamento || 0 }}</span>
                                         </div>
-                                        <span class="text-500">|</span>
-                                        <div class="flex align-items-center gap-2">
+                                        <div class="dash-status-pill">
                                             <i class="pi pi-circle-fill text-yellow-500"></i>
-                                            <span class="text-500 font-medium">Recesso:</span>
-                                            <span class="text-500 font-bold text-xl">{{ dados.pacientes?.pacientes_recesso || 0 }}</span>
+                                            <span class="dash-status-pill__label">Recesso</span>
+                                            <span class="dash-status-pill__value">{{ dados.pacientes?.pacientes_recesso || 0 }}</span>
                                         </div>
-                                        <span class="text-500">|</span>
-                                        <div class="flex align-items-center gap-2">
+                                        <div class="dash-status-pill">
                                             <i class="pi pi-circle-fill text-green-500"></i>
-                                            <span class="text-500 font-medium">Concluídos:</span>
-                                            <span class="text-500 font-bold text-xl">{{ dados.pacientes?.pacientes_concluidos || 0 }}</span>
+                                            <span class="dash-status-pill__label">Concluídos</span>
+                                            <span class="dash-status-pill__value">{{ dados.pacientes?.pacientes_concluidos || 0 }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -92,63 +101,65 @@
                         <div class="grid mt-4">
                             <!-- Tempo Médio de Tratamento -->
                             <div class="col-12 md:col-3">
-                                <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
-                                    <div class="flex align-items-center justify-content-between">
-                                        <div>
-                                            <span class="block text-500 text-sm font-medium mb-2">Tempo Médio de Tratamento</span>
-                                            <div class="text-500 font-bold text-xl">
-                                                {{ dados.pacientes?.tempo_medio_tratamento || 0 }} dias
-                                            </div>
+                                <div class="card dash-metric" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
+                                    <div class="flex align-items-center justify-content-between gap-3 pl-2">
+                                        <div class="flex-1 min-w-0">
+                                            <span class="dash-metric__label">Tempo médio de tratamento</span>
+                                            <div class="dash-metric__value">{{ dados.pacientes?.tempo_medio_tratamento || 0 }} <span class="text-base font-medium">dias</span></div>
                                         </div>
-                                        <i class="pi pi-clock text-2xl text-500"></i>
+                                        <div class="dash-metric__icon flex-shrink-0">
+                                            <i class="pi pi-clock"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Taxa de Conclusão -->
                             <div class="col-12 md:col-3">
-                                <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
-                                    <div class="flex align-items-center justify-content-between">
-                                        <div>
-                                            <span class="block text-500 text-sm font-medium mb-2">Taxa de Conclusão</span>
-                                            <div class="text-500 font-bold text-xl">
-                                                {{ dados.pacientes?.taxa_conclusao || 0 }}%
-                                            </div>
+                                <div class="card dash-metric" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
+                                    <div class="flex align-items-center justify-content-between gap-3 pl-2">
+                                        <div class="flex-1 min-w-0">
+                                            <span class="dash-metric__label">Taxa de conclusão</span>
+                                            <div class="dash-metric__value">{{ dados.pacientes?.taxa_conclusao || 0 }}%</div>
                                         </div>
-                                        <i class="pi pi-check-circle text-2xl text-500"></i>
+                                        <div class="dash-metric__icon flex-shrink-0">
+                                            <i class="pi pi-check-circle"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Pacientes com Anamnese -->
                             <div class="col-12 md:col-3">
-                                <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
-                                    <div class="flex align-items-center justify-content-between">
-                                        <div>
-                                            <span class="block text-500 text-sm font-medium mb-2">Pacientes com Anamnese</span>
-                                            <div class="text-500 font-bold text-xl">
-                                                {{ dados.pacientes?.percentual_anamnese || 0 }}%
-                                            </div>
+                                <div class="card dash-metric" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
+                                    <div class="flex align-items-center justify-content-between gap-3 pl-2">
+                                        <div class="flex-1 min-w-0">
+                                            <span class="dash-metric__label">Pacientes com anamnese</span>
+                                            <div class="dash-metric__value">{{ dados.pacientes?.percentual_anamnese || 0 }}%</div>
                                         </div>
-                                        <i class="pi pi-file text-2xl text-500"></i>
+                                        <div class="dash-metric__icon flex-shrink-0">
+                                            <i class="pi pi-file"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Novos vs Retornados -->
                             <div class="col-12 md:col-3">
-                                <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
-                                    <div class="flex align-items-center justify-content-between">
-                                        <div>
-                                            <span class="block text-500 text-sm font-medium mb-2">Este Mês</span>
-                                            <div class="text-500 font-medium text-sm">
+                                <div class="card dash-metric" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
+                                    <div class="flex align-items-center justify-content-between gap-3 pl-2">
+                                        <div class="flex-1 min-w-0">
+                                            <span class="dash-metric__label">Este mês</span>
+                                            <div class="text-sm font-semibold mt-1" style="color: var(--text-color-secondary)">
                                                 Novos: {{ dados.pacientes?.pacientes_novos_mes || 0 }}
                                             </div>
-                                            <div class="text-500 font-medium text-sm">
+                                            <div class="text-sm font-semibold" style="color: var(--text-color-secondary)">
                                                 Retornados: {{ dados.pacientes?.pacientes_retornados_mes || 0 }}
                                             </div>
                                         </div>
-                                        <i class="pi pi-users text-2xl text-500"></i>
+                                        <div class="dash-metric__icon flex-shrink-0">
+                                            <i class="pi pi-users"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -158,45 +169,49 @@
                         <div class="grid mt-4" v-if="isPlanoProfissional">
                             <!-- Próxima Sessão -->
                             <div class="col-12 md:col-6">
-                                <div class="card bg-gradient-to-r from-pink-900 to-indigo-900 border-pink-500">
+                                <div class="card dash-feature p-4">
                                     <div class="flex flex-column h-full">
-                                        <div class="flex align-items-center justify-content-between mb-3">
-                                            <h6 class="text-pink-500 font-bold mb-0 text-lg">Próxima Sessão</h6>
-                                            <div class="text-right">
-                                                <div v-if="proximaSessao" class="text-pink-500 font-semibold text-sm">
+                                        <div class="flex align-items-center justify-content-between mb-3 gap-2">
+                                            <h6 class="dash-feature__title mb-0 border-none p-0">Próxima sessão</h6>
+                                            <div class="text-right flex-shrink-0">
+                                                <div v-if="proximaSessao" class="dash-feature__accent font-semibold text-sm">
                                                     {{ formatarData(proximaSessao.data_consulta) }}
                                                 </div>
-                                                <div v-if="proximaSessao" class="text-pink-200 font-medium text-xs">
+                                                <div v-if="proximaSessao" class="dash-feature__meta text-xs">
                                                     {{ formatarHora(proximaSessao.data_consulta) }}
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="flex-grow-1">
+                                        <div class="flex-grow-1 dash-feature__body">
                                             <div v-if="proximaSessao" class="mb-3">
                                                 <div class="flex align-items-center mb-2">
-                                                    <i class="pi pi-user text-pink-300 text-lg mr-2"></i>
-                                                    <span class="text-500 font-semibold">{{ proximaSessao.nome_paciente
-                                                        }}</span>
+                                                    <i class="pi pi-user dash-feature__accent text-lg mr-2"></i>
+                                                    <span class="dash-feature__strong">{{ proximaSessao.nome_paciente }}</span>
                                                 </div>
                                                 <div class="flex align-items-center">
-                                                    <i class="pi pi-phone text-pink-300 text-lg mr-2"></i>
-                                                    <span class="text-500 font-medium text-sm">{{
+                                                    <i class="pi pi-phone dash-feature__accent text-lg mr-2"></i>
+                                                    <span class="text-sm">{{
                                                         proximaSessao.telefone_paciente || 'Telefone não informado'
-                                                        }}</span>
+                                                    }}</span>
                                                 </div>
                                             </div>
 
                                             <div v-else class="text-center py-3">
-                                                <i class="pi pi-calendar-times text-pink-300 text-2xl mb-2"></i>
-                                                <div class="text-500 font-medium text-sm">Não há nenhuma sessão agendada
-                                                    para próxima hora</div>
+                                                <i class="pi pi-calendar-times dash-feature__accent text-2xl mb-2"></i>
+                                                <div class="text-sm">Não há sessão agendada para a próxima hora</div>
                                             </div>
                                         </div>
 
                                         <div class="mt-auto">
-                                            <Button label="Ver Agenda" icon="pi pi-calendar" size="small" class="w-full"
-                                                @click="$router.push('/agendamentos')" />
+                                            <Button
+                                                label="Ver agenda"
+                                                icon="pi pi-calendar"
+                                                size="small"
+                                                class="w-full"
+                                                severity="secondary"
+                                                @click="$router.push('/agendamentos')"
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -204,52 +219,57 @@
 
                             <!-- Aniversariantes do Mês -->
                             <div class="col-12 md:col-6">
-                                <div class="card bg-gradient-to-r from-purple-900 to-blue-900 border-purple-500">
+                                <div class="card dash-feature dash-feature--warm p-4">
                                     <div class="flex flex-column h-full">
-                                        <div class="flex align-items-center justify-content-between mb-3">
-                                            <h6 class="text-purple-500 font-bold mb-0 text-lg">Aniversariantes do Mês
-                                            </h6>
-                                            <div class="text-right">
-                                                <div class="text-purple-500 font-semibold text-sm">
+                                        <div class="flex align-items-center justify-content-between mb-3 gap-2">
+                                            <h6 class="dash-feature__title mb-0 border-none p-0">Aniversariantes do mês</h6>
+                                            <div class="text-right flex-shrink-0">
+                                                <div class="dash-feature__accent font-semibold text-sm">
                                                     {{ dados.pacientes?.aniversariantes_mes?.length || 0 }} pacientes
                                                 </div>
-                                                <div class="text-purple-200 font-medium text-xs">
+                                                <div class="dash-feature__meta text-xs">
                                                     {{ getNomeMesAtual() }}
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="flex-grow-1">
+                                        <div class="flex-grow-1 dash-feature__body">
                                             <div v-if="dados.pacientes?.aniversariantes_mes?.length > 0" class="mb-3">
-                                                <div v-for="aniversariante in dados.pacientes.aniversariantes_mes.slice(0, 3)"
-                                                    :key="aniversariante.id" class="flex align-items-center mb-2">
-                                                    <i class="pi pi-gift text-purple-300 text-lg mr-2"></i>
+                                                <div
+                                                    v-for="aniversariante in dados.pacientes.aniversariantes_mes.slice(0, 3)"
+                                                    :key="aniversariante.id"
+                                                    class="flex align-items-center mb-2"
+                                                >
+                                                    <i class="pi pi-gift dash-feature__accent text-lg mr-2"></i>
                                                     <div class="flex-grow-1">
-                                                        <span class="text-500 font-semibold text-sm">{{
-                                                            aniversariante.nome }}</span>
-                                                        <div class="text-purple-200 font-medium text-xs">
+                                                        <span class="dash-feature__strong text-sm">{{ aniversariante.nome }}</span>
+                                                        <div class="dash-feature__meta text-xs">
                                                             Dia {{ aniversariante.dia_aniversario }}
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div v-if="dados.pacientes.aniversariantes_mes.length > 3"
-                                                    class="text-center">
-                                                    <span class="text-purple-200 font-medium text-xs">
+                                                <div v-if="dados.pacientes.aniversariantes_mes.length > 3" class="text-center">
+                                                    <span class="dash-feature__meta text-xs">
                                                         +{{ dados.pacientes.aniversariantes_mes.length - 3 }} mais
                                                     </span>
                                                 </div>
                                             </div>
 
                                             <div v-else class="text-center py-3">
-                                                <i class="pi pi-calendar-times text-purple-300 text-2xl mb-2"></i>
-                                                <div class="text-500 font-medium text-sm">Nenhum aniversariante este mês
-                                                </div>
+                                                <i class="pi pi-calendar-times dash-feature__accent text-2xl mb-2"></i>
+                                                <div class="text-sm">Nenhum aniversariante este mês</div>
                                             </div>
                                         </div>
 
                                         <div class="mt-auto">
-                                            <Button label="Ver Pacientes" icon="pi pi-users" size="small" class="w-full"
-                                                @click="$router.push('/pacientes')" />
+                                            <Button
+                                                label="Ver pacientes"
+                                                icon="pi pi-users"
+                                                size="small"
+                                                class="w-full"
+                                                severity="secondary"
+                                                @click="$router.push('/pacientes')"
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -261,7 +281,7 @@
                             <!-- Distribuição por Gênero -->
                             <div class="col-12 md:col-6">
                                 <div class="card">
-                                    <h6 class="text-500 mb-3">Distribuição por Gênero</h6>
+                                    <h6 class="mb-3">Distribuição por Gênero</h6>
                                     <Chart type="doughnut" :data="generoChartData" :options="generoChartOptions"
                                         class="h-[200px]" />
                                 </div>
@@ -270,7 +290,7 @@
                             <!-- Distribuição por Faixa Etária -->
                             <div class="col-12 md:col-6">
                                 <div class="card">
-                                    <h6 class="text-500 mb-3">Distribuição por Faixa Etária</h6>
+                                    <h6 class="mb-3">Distribuição por Faixa Etária</h6>
                                     <Chart type="doughnut" :data="faixaEtariaChartData" :options="faixaEtariaChartOptions"
                                         class="h-[200px]" />
                                 </div>
@@ -281,7 +301,7 @@
                         <div class="grid mt-4">
                             <div class="col-12">
                                 <div class="card">
-                                    <h6 class="text-500 mb-3">Evolução de Status (6 meses)</h6>
+                                    <h6 class="mb-3">Evolução de Status (6 meses)</h6>
                                     <Chart type="line" :data="statusEvolutionChartData" :options="statusEvolutionChartOptions"
                                         class="h-[300px]" />
                                 </div>
@@ -291,10 +311,10 @@
                         <!-- Alertas -->
                         <div class="grid mt-4" v-if="mostrarAlertas && isPlanoProfissional">
                             <div class="col-12">
-                                <div class="card bg-red-900 border-red-500" v-if="dados.financeiro?.alerta_financeiro">
+                                <div class="card dash-alert-negative p-4" v-if="dados.financeiro?.alerta_financeiro">
                                     <div class="flex align-items-center">
-                                        <i class="pi pi-exclamation-triangle text-red-500 text-xl mr-3"></i>
-                                        <span class="text-red-200">Atenção: Saldo do mês está negativo!</span>
+                                        <i class="pi pi-exclamation-triangle text-red-400 text-xl mr-3"></i>
+                                        <span>Atenção: saldo do mês está negativo.</span>
                                     </div>
                                 </div>
                             </div>
@@ -305,7 +325,7 @@
                             <!-- Gráfico Barra - Evolução de Pacientes -->
                             <div class="col-12">
                                 <div class="card">
-                                    <h6 class="text-500 mb-3">Evolução de Pacientes (6 meses)</h6>
+                                    <h6 class="mb-3">Evolução de Pacientes (6 meses)</h6>
                                     <Chart type="bar" :data="barChartData" :options="barChartOptions"
                                         class="h-[200px]" />
                                 </div>
@@ -317,10 +337,10 @@
                             <!-- Últimos Pacientes -->
                             <div class="col-12 md:col-6">
                                 <div class="card">
-                                    <h6 class="text-500 mb-3">Últimos Pacientes Cadastrados</h6>
+                                    <h6 class="mb-3">Últimos Pacientes Cadastrados</h6>
                                     <div v-if="dados.pacientes?.ultimos_pacientes?.length > 0">
                                         <div v-for="paciente in dados.pacientes.ultimos_pacientes" :key="paciente.id"
-                                            class="flex justify-content-between align-items-center p-3 border-bottom-1 border-gray-500">
+                                            class="dash-list-row flex justify-content-between align-items-center p-3 border-bottom-1 border-200">
                                             <div>
                                                 <span class="font-medium text-900">{{ paciente.nome }}</span>
                                                 <div class="text-sm text-gray-500">
@@ -340,11 +360,11 @@
                             <!-- Últimos Prontuários -->
                             <div class="col-12 md:col-6">
                                 <div class="card">
-                                    <h6 class="text-500 mb-3">Últimos Prontuários Criados</h6>
+                                    <h6 class="mb-3">Últimos Prontuários Criados</h6>
                                     <div v-if="dados.prontuarios?.ultimos_prontuarios?.length > 0">
                                         <div v-for="prontuario in dados.prontuarios.ultimos_prontuarios"
                                             :key="prontuario.id"
-                                            class="flex justify-content-between align-items-center p-3 border-bottom-1 border-gray-500">
+                                            class="dash-list-row flex justify-content-between align-items-center p-3 border-bottom-1 border-200">
                                             <div>
                                                 <span class="font-medium text-900">{{ prontuario.paciente_nome }}</span>
                                                 <div class="text-sm text-gray-500">
@@ -368,6 +388,8 @@
                         <FinanceiroDashboard :lazy="true" ref="financeiroDashboardRef" />
                     </TabPanel>
                 </TabView>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -377,6 +399,15 @@
 import { usePlanStore } from '@/store/plan';
 import { useThemeStore } from '@/store/theme';
 import FinanceiroDashboard from '@/views/pages/financeiro/FinanceiroDashboard.vue';
+import {
+    darkenCssColor,
+    primaryChartPalette,
+    readPrimaryColor,
+    readTextColor,
+    readTextMutedColor,
+    readThemeResolvedColor,
+    rgbaFromCssColor
+} from '@/utils/themeCssColors';
 
 export default {
     name: 'DashboardGeral',
@@ -439,6 +470,9 @@ export default {
             }
         },
         barChartData() {
+            void this.themeStore.primaryColor;
+            void this.themeStore.theme;
+
             const labels = [];
             const data = [];
 
@@ -546,27 +580,39 @@ export default {
                 concluidosData.push(item.concluidos || 0);
             });
 
+            const primary = readPrimaryColor();
+            const primaryBorder = darkenCssColor(primary, 0.2);
+
             return {
                 labels: labels,
                 datasets: [
                     {
                         label: 'Novos Cadastros',
                         data: novosData,
-                        backgroundColor: '#3b82f6',
-                        borderColor: '#2563eb',
+                        backgroundColor: primary,
+                        borderColor: primaryBorder,
                         borderWidth: 1
                     },
                     {
                         label: 'Concluídos',
                         data: concluidosData,
-                        backgroundColor: '#10b981',
-                        borderColor: '#059669',
+                        backgroundColor: rgbaFromCssColor(primary, 0.42),
+                        borderColor: darkenCssColor(primary, 0.32),
                         borderWidth: 1
                     }
                 ]
             };
         },
         barChartOptions() {
+            void this.themeStore.theme;
+
+            const legendColor = readTextColor();
+            const tickColor = readTextMutedColor();
+            const gridColor = readThemeResolvedColor(
+                ['--p-content-border-color', '--surface-border'],
+                '#e5e7eb'
+            );
+
             return {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -575,7 +621,7 @@ export default {
                         display: true,
                         position: 'top',
                         labels: {
-                            color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000',
+                            color: legendColor,
                             usePointStyle: true,
                             padding: 15
                         }
@@ -585,18 +631,18 @@ export default {
                     y: {
                         beginAtZero: true,
                         grid: {
-                            color: this.themeStore.theme === 'dark' ? '#374151' : '#e5e7eb'
+                            color: gridColor
                         },
                         ticks: {
-                            color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000'
+                            color: tickColor
                         }
                     },
                     x: {
                         grid: {
-                            color: this.themeStore.theme === 'dark' ? '#374151' : '#e5e7eb'
+                            color: gridColor
                         },
                         ticks: {
-                            color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000'
+                            color: tickColor
                         }
                     }
                 }
@@ -607,6 +653,9 @@ export default {
             return this.planStore.isVitalicio || this.planStore.planInfo?.nome === 'Profissional';
         },
         generoChartData() {
+            void this.themeStore.primaryColor;
+            void this.themeStore.theme;
+
             const distribuicao = this.dados.pacientes?.distribuicao_genero || {};
             const labels = Object.keys(distribuicao);
             const data = Object.values(distribuicao);
@@ -615,12 +664,14 @@ export default {
                 labels: labels.length > 0 ? labels : ['Sem dados'],
                 datasets: [{
                     data: data.length > 0 ? data : [0],
-                    backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'],
+                    backgroundColor: primaryChartPalette(5),
                     borderWidth: 0
                 }]
             };
         },
         generoChartOptions() {
+            void this.themeStore.theme;
+
             return {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -629,7 +680,7 @@ export default {
                         display: true,
                         position: 'bottom',
                         labels: {
-                            color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000',
+                            color: readTextColor(),
                             padding: 15
                         }
                     }
@@ -637,6 +688,9 @@ export default {
             };
         },
         faixaEtariaChartData() {
+            void this.themeStore.primaryColor;
+            void this.themeStore.theme;
+
             const distribuicao = this.dados.pacientes?.distribuicao_faixa_etaria || {};
             const labels = Object.keys(distribuicao);
             const data = Object.values(distribuicao);
@@ -645,12 +699,14 @@ export default {
                 labels: labels.length > 0 ? labels : ['Sem dados'],
                 datasets: [{
                     data: data.length > 0 ? data : [0],
-                    backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'],
+                    backgroundColor: primaryChartPalette(4),
                     borderWidth: 0
                 }]
             };
         },
         faixaEtariaChartOptions() {
+            void this.themeStore.theme;
+
             return {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -659,7 +715,7 @@ export default {
                         display: true,
                         position: 'bottom',
                         labels: {
-                            color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000',
+                            color: readTextColor(),
                             padding: 15
                         }
                     }
@@ -667,6 +723,9 @@ export default {
             };
         },
         statusEvolutionChartData() {
+            void this.themeStore.primaryColor;
+            void this.themeStore.theme;
+
             const labels = [];
             const emAndamentoData = [];
             const recessoData = [];
@@ -707,30 +766,33 @@ export default {
                 concluidosData.push(item.concluidos || 0);
             });
 
+            const primary = readPrimaryColor();
+            const conclBorder = darkenCssColor(primary, 0.26);
+
             return {
                 labels: labels.length > 0 ? labels : ['Sem dados'],
                 datasets: [
                     {
                         label: 'Em Andamento',
                         data: emAndamentoData.length > 0 ? emAndamentoData : [0],
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderColor: primary,
+                        backgroundColor: rgbaFromCssColor(primary, 0.12),
                         tension: 0.4,
                         fill: true
                     },
                     {
                         label: 'Recesso',
                         data: recessoData.length > 0 ? recessoData : [0],
-                        borderColor: '#f59e0b',
-                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        borderColor: '#b45309',
+                        backgroundColor: 'rgba(180, 83, 9, 0.12)',
                         tension: 0.4,
                         fill: true
                     },
                     {
                         label: 'Concluídos',
                         data: concluidosData.length > 0 ? concluidosData : [0],
-                        borderColor: '#10b981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderColor: conclBorder,
+                        backgroundColor: rgbaFromCssColor(conclBorder, 0.12),
                         tension: 0.4,
                         fill: true
                     }
@@ -738,6 +800,15 @@ export default {
             };
         },
         statusEvolutionChartOptions() {
+            void this.themeStore.theme;
+
+            const legendColor = readTextColor();
+            const tickColor = readTextMutedColor();
+            const gridColor = readThemeResolvedColor(
+                ['--p-content-border-color', '--surface-border'],
+                '#e5e7eb'
+            );
+
             return {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -746,7 +817,7 @@ export default {
                         display: true,
                         position: 'top',
                         labels: {
-                            color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000',
+                            color: legendColor,
                             usePointStyle: true,
                             padding: 15
                         }
@@ -756,18 +827,18 @@ export default {
                     y: {
                         beginAtZero: true,
                         grid: {
-                            color: this.themeStore.theme === 'dark' ? '#374151' : '#e5e7eb'
+                            color: gridColor
                         },
                         ticks: {
-                            color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000'
+                            color: tickColor
                         }
                     },
                     x: {
                         grid: {
-                            color: this.themeStore.theme === 'dark' ? '#374151' : '#e5e7eb'
+                            color: gridColor
                         },
                         ticks: {
-                            color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000'
+                            color: tickColor
                         }
                     }
                 }
@@ -847,80 +918,26 @@ export default {
 </script>
 
 <style scoped>
-.card {
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+/* Altura em cartões de destaque — sem reescrever a grelha PrimeFlex */
+.dash-clinic .dash-feature .flex-column.h-full {
+    min-height: 200px;
 }
 
-/* Garantir que todos os cards tenham a mesma altura */
-.grid {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.grid>.col-12 {
-    display: flex;
-    flex-direction: column;
-}
-
-.grid>.col-12>.card {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Para os cards da primeira linha (estatísticas) */
-.grid:first-child>.col-12>.card {
-    min-height: 120px;
-}
-
-/* Para os cards da segunda linha (financeiro, próxima sessão e aniversariantes) */
-.grid:nth-child(2)>.col-12>.card {
-    min-height: 180px;
-}
-
-/* Responsividade para dispositivos móveis */
 @media (max-width: 768px) {
-    .grid>.col-12>.card {
+    .dash-clinic .dash-feature .flex-column.h-full {
         min-height: auto;
-        margin-bottom: 1rem;
-    }
-
-    .grid:first-child>.col-12>.card {
-        min-height: 100px;
-    }
-
-    .grid:nth-child(2)>.col-12>.card {
-        min-height: 160px;
-    }
-
-    /* Garantir que os 3 cards da segunda linha sejam empilhados em mobile */
-    .grid:nth-child(2)>.col-12 {
-        margin-bottom: 1rem;
     }
 }
 
-/* Garantir que o conteúdo interno se expanda corretamente */
-.card .flex {
-    flex: 1;
-}
-
-.card .flex-grow-1 {
+.dash-clinic .dash-feature .flex-grow-1 {
     flex-grow: 1;
 }
 
-.card .mt-auto {
+.dash-clinic .dash-feature .mt-auto {
     margin-top: auto;
 }
 
-/* Estilo para cards clicáveis */
-.cursor-pointer {
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.cursor-pointer:hover {
+.dash-clinic .cursor-pointer.dash-metric:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 </style>

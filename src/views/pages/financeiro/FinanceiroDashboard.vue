@@ -1,45 +1,68 @@
 <template>
+    <div class="dash-clinic">
     <div class="grid">
         <div class="col-12">
-            <!-- Filtros -->
-            <div class="flex gap-2 mb-4">
-                <Button label="Filtros" severity="secondary" icon="pi pi-filter" v-if="!hasFiltros"
-                    @click="drawerFilterFinanceiro = true" />
-                <Button label="Limpar Filtros" severity="danger" @click="limparFiltros" v-else />
+            <div class="flex flex-wrap gap-2 justify-content-end align-items-center mb-3">
+                <Button
+                    label="Filtros"
+                    severity="secondary"
+                    icon="pi pi-filter"
+                    v-if="!hasFiltros"
+                    size="small"
+                    @click="drawerFilterFinanceiro = true"
+                />
+                <Button label="Limpar filtros" severity="danger" size="small" @click="limparFiltros" v-else />
             </div>
 
             <!-- Cards de Resumo -->
             <div class="grid">
                 <div class="col-12 md:col-4">
-                    <div class="card card-clickable" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''" @click="$router.push('/financeiro/receitas')">
-                        <div class="flex align-items-center justify-content-between">
-                            <div>
-                                <span class="block text-600 font-medium mb-2">Receitas</span>
-                                <div class="text-600 font-medium text-xl">R$ {{ formatarValor(dados.mes_atual?.receitas || 0) }}</div>
+                    <div
+                        class="card dash-metric card-clickable"
+                        :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''"
+                        @click="$router.push('/financeiro/receitas')"
+                    >
+                        <div class="flex align-items-center justify-content-between gap-3 pl-2">
+                            <div class="flex-1 min-w-0">
+                                <span class="dash-metric__label">Receitas</span>
+                                <div class="dash-metric__value">R$ {{ formatarValor(dados.mes_atual?.receitas || 0) }}</div>
                             </div>
-                            <i class="pi pi-arrow-up text-green-500 text-2xl"></i>
+                            <div class="dash-metric__icon dash-metric__icon--income flex-shrink-0">
+                                <i class="pi pi-arrow-up"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-12 md:col-4">
-                    <div class="card card-clickable" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''" @click="$router.push('/financeiro/despesas')">
-                        <div class="flex align-items-center justify-content-between">
-                            <div>
-                                <span class="block text-600 font-medium mb-2">Despesas</span>
-                                <div class="text-600 font-medium text-xl">R$ {{ formatarValor(dados.mes_atual?.despesas || 0) }}</div>
+                    <div
+                        class="card dash-metric card-clickable"
+                        :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''"
+                        @click="$router.push('/financeiro/despesas')"
+                    >
+                        <div class="flex align-items-center justify-content-between gap-3 pl-2">
+                            <div class="flex-1 min-w-0">
+                                <span class="dash-metric__label">Despesas</span>
+                                <div class="dash-metric__value">R$ {{ formatarValor(dados.mes_atual?.despesas || 0) }}</div>
                             </div>
-                            <i class="pi pi-arrow-down text-red-400 text-2xl"></i>
+                            <div class="dash-metric__icon dash-metric__icon--expense flex-shrink-0">
+                                <i class="pi pi-arrow-down"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-12 md:col-4">
-                    <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
-                        <div class="flex align-items-center justify-content-between">
-                            <div>
-                                <span class="block font-medium mb-2" :class="saldoLabelClass">Saldo</span>
-                                <div class="font-medium text-xl" :class="saldoTextClass">R$ {{ formatarValor(saldo) }}</div>
+                    <div class="card dash-metric" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
+                        <div class="flex align-items-center justify-content-between gap-3 pl-2">
+                            <div class="flex-1 min-w-0">
+                                <span class="dash-metric__label">Saldo</span>
+                                <div class="dash-metric__value" :class="saldo >= 0 ? '' : 'text-red-500'">R$ {{ formatarValor(saldo) }}</div>
                             </div>
-                            <i class="pi pi-wallet text-2xl" :class="saldoIconClass"></i>
+                            <div
+                                class="dash-metric__icon flex-shrink-0"
+                                :class="saldo >= 0 ? 'dash-metric__icon--income' : 'dash-metric__icon--risk'"
+                            >
+                                <i class="pi pi-wallet"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -49,7 +72,7 @@
             <div class="grid">
                 <div class="col-12 md:col-12">
                     <div class="card">
-                        <h6 class="text-600 mb-3">Fluxo de Caixa</h6>
+                        <h6 class="mb-3">Fluxo de caixa</h6>
                         
                         <!-- Filtros de Data -->
                         <div class="grid mb-4">
@@ -125,22 +148,22 @@
             <div class="grid">
                 <div class="col-12">
                     <div class="card">
-                        <h6 class="text-600 mb-3">Resumo Anual</h6>
+                        <h6 class="mb-3">Resumo anual</h6>
                         <div class="grid">
                             <div class="col-12 md:col-4">
-                                <div class="flex justify-content-between align-items-center p-3 border-bottom-1 border-gray-600">
-                                    <span class="font-medium text-900">Receitas Anuais</span>
-                                    <span class="text-500 font-bold">R$ {{ formatarValor(dados.total_ano?.receitas || 0) }}</span>
+                                <div class="dash-list-row flex justify-content-between align-items-center p-3 border-bottom-1 border-200">
+                                    <span class="font-medium text-900">Receitas anuais</span>
+                                    <span class="font-bold dash-figure-accent">R$ {{ formatarValor(dados.total_ano?.receitas || 0) }}</span>
                                 </div>
                             </div>
                             <div class="col-12 md:col-4">
-                                <div class="flex justify-content-between align-items-center p-3 border-bottom-1 border-gray-600">
-                                    <span class="font-medium text-900">Despesas Anuais</span>
+                                <div class="dash-list-row flex justify-content-between align-items-center p-3 border-bottom-1 border-200">
+                                    <span class="font-medium text-900">Despesas anuais</span>
                                     <span class="text-red-400 font-bold">R$ {{ formatarValor(dados.total_ano?.despesas || 0) }}</span>
                                 </div>
                             </div>
                             <div class="col-12 md:col-4">
-                                <div class="flex justify-content-between align-items-center p-3">
+                                <div class="dash-list-row flex justify-content-between align-items-center p-3">
                                     <span class="font-medium text-900">Saldo Anual</span>
                                     <span class="font-bold" :class="(dados.total_ano?.saldo || 0) >= 0 ? 'text-500' : 'text-red-400'">
                                         R$ {{ formatarValor(dados.total_ano?.saldo || 0) }}
@@ -156,11 +179,11 @@
             <div class="grid">
                 <div class="col-12 md:col-6">
                     <div class="card">
-                        <h6 class="text-600 mb-3">Receitas por Categoria</h6>
+                        <h6 class="mb-3">Receitas por categoria</h6>
                         <div v-if="Object.keys(dados.mes_atual?.categorias_receitas || {}).length > 0">
-                            <div v-for="(valor, categoria) in dados.mes_atual.categorias_receitas" :key="categoria" class="flex justify-content-between align-items-center p-3 border-bottom-1 border-gray-600">
+                            <div v-for="(valor, categoria) in dados.mes_atual.categorias_receitas" :key="categoria" class="dash-list-row flex justify-content-between align-items-center p-3 border-bottom-1 border-200">
                                 <span class="font-medium text-900">{{ categoria }}</span>
-                                <span class="text-500 font-bold">R$ {{ formatarValor(valor) }}</span>
+                                <span class="font-bold dash-figure-accent">R$ {{ formatarValor(valor) }}</span>
                             </div>
                         </div>
                         <div v-else class="text-center p-4 text-gray-500">
@@ -170,9 +193,9 @@
                 </div>
                 <div class="col-12 md:col-6">
                     <div class="card">
-                        <h6 class="text-600 mb-3">Despesas por Categoria</h6>
+                        <h6 class="mb-3">Despesas por categoria</h6>
                         <div v-if="Object.keys(dados.mes_atual?.categorias_despesas || {}).length > 0">
-                            <div v-for="(valor, categoria) in dados.mes_atual.categorias_despesas" :key="categoria" class="flex justify-content-between align-items-center p-3 border-bottom-1 border-gray-600">
+                            <div v-for="(valor, categoria) in dados.mes_atual.categorias_despesas" :key="categoria" class="dash-list-row flex justify-content-between align-items-center p-3 border-bottom-1 border-200">
                                 <span class="font-medium text-900">{{ categoria }}</span>
                                 <span class="text-red-400 font-bold">R$ {{ formatarValor(valor) }}</span>
                             </div>
@@ -184,7 +207,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Componente de Filtro -->
         <DrawerFilterFinanceiro 
             :limparCampos="limparCampos" 
@@ -194,12 +217,21 @@
             @limparFiltros="limparFiltros"
         />
     </div>
+    </div>
 </template>
 
 <script>
 import DrawerFilterFinanceiro from '@/components/drawers/DrawerFilterFinanceiro.vue';
 import { useThemeStore } from '@/store/theme';
 import { usePlanStore } from '@/store/plan';
+import {
+    darkenCssColor,
+    readPrimaryColor,
+    readTextColor,
+    readTextMutedColor,
+    readThemeResolvedColor,
+    rgbaFromCssColor
+} from '@/utils/themeCssColors';
 
 export default {
     name: 'FinanceiroDashboard',
@@ -264,19 +296,15 @@ export default {
         saldo() {
             return this.dados.mes_atual?.saldo || 0;
         },
-        saldoClass() {
-            return this.saldo >= 0 ? 'bg-green-900 border-green-600' : 'bg-red-900 border-red-600';
-        },
-        saldoLabelClass() {
-            return this.saldo >= 0 ? 'text-600' : 'text-600';
-        },
-        saldoTextClass() {
-            return this.saldo >= 0 ? 'text-600' : 'text-600';
-        },
-        saldoIconClass() {
-            return this.saldo >= 0 ? 'text-500' : 'text-red-400';
-        },
         barChartData() {
+            void this.themeStore.primaryColor;
+            void this.themeStore.theme;
+
+            const primary = readPrimaryColor();
+            const primaryDark = darkenCssColor(primary, 0.12);
+            const receitasPrevFill = rgbaFromCssColor(primary, 0.5);
+            const receitasPrevBorder = darkenCssColor(primary, 0.06);
+
             // Se temos dados de fluxo de caixa (período específico), usar eles
             if (this.dados.fluxo_caixa && this.dados.fluxo_caixa.length > 0) {
                 // Formatar labels para exibição (dd/mm)
@@ -310,32 +338,32 @@ export default {
                         {
                             label: 'Receitas Pagas',
                             data: receitasPagasData,
-                            backgroundColor: '#16a34a', // Verde forte
-                            borderColor: '#15803d',
+                            backgroundColor: primary,
+                            borderColor: primaryDark,
                             borderWidth: 1,
                             type: 'bar'
                         },
                         {
                             label: 'Receitas Previstas',
                             data: receitasPrevistasData,
-                            backgroundColor: '#86efac', // Verde claro
-                            borderColor: '#4ade80',
+                            backgroundColor: receitasPrevFill,
+                            borderColor: receitasPrevBorder,
                             borderWidth: 1,
                             type: 'bar'
                         },
                         {
                             label: 'Despesas Pagas',
                             data: despesasPagasData,
-                            backgroundColor: '#991b1b', // Vermelho escuro
-                            borderColor: '#7f1d1d',
+                            backgroundColor: '#9f1239',
+                            borderColor: '#881337',
                             borderWidth: 1,
                             type: 'bar'
                         },
                         {
                             label: 'Despesas Previstas',
                             data: despesasPrevistasData,
-                            backgroundColor: '#fca5a5', // Vermelho claro
-                            borderColor: '#f87171',
+                            backgroundColor: '#fda4af',
+                            borderColor: '#fb7185',
                             borderWidth: 1,
                             type: 'bar'
                         },
@@ -343,7 +371,7 @@ export default {
                             label: 'Saldo Acumulativo',
                             data: saldoAcumulativoData,
                             backgroundColor: 'transparent',
-                            borderColor: '#3b82f6',
+                            borderColor: darkenCssColor(primary, 0.22),
                             borderWidth: 3,
                             type: 'line',
                             fill: false,
@@ -375,21 +403,30 @@ export default {
                     {
                         label: 'Receitas',
                         data: receitasData,
-                        backgroundColor: '#22c55e',
-                        borderColor: '#16a34a',
+                        backgroundColor: primary,
+                        borderColor: primaryDark,
                         borderWidth: 1
                     },
                     {
                         label: 'Despesas',
                         data: despesasData,
-                        backgroundColor: '#ef4444',
-                        borderColor: '#dc2626',
+                        backgroundColor: '#e11d48',
+                        borderColor: '#be123c',
                         borderWidth: 1
                     }
                 ]
             };
         },
         barChartOptions() {
+            void this.themeStore.theme;
+
+            const legendColor = readTextColor();
+            const tickColor = readTextMutedColor();
+            const gridColor = readThemeResolvedColor(
+                ['--p-content-border-color', '--surface-border'],
+                '#e5e7eb'
+            );
+
             return {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -397,7 +434,7 @@ export default {
                     legend: {
                         position: 'top',
                         labels: {
-                            color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000'
+                            color: legendColor
                         }
                     }
                 },
@@ -405,18 +442,18 @@ export default {
                     y: {
                         beginAtZero: true,
                         grid: {
-                            color: this.themeStore.theme === 'dark' ? '#374151' : '#e5e7eb'
+                            color: gridColor
                         },
                         ticks: {
-                            color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000'
+                            color: tickColor
                         }
                     },
                     x: {
                         grid: {
-                            color: this.themeStore.theme === 'dark' ? '#374151' : '#e5e7eb'
+                            color: gridColor
                         },
                         ticks: {
-                            color: this.themeStore.theme === 'dark' ? '#ffffff' : '#000000'
+                            color: tickColor
                         }
                     }
                 },

@@ -1,0 +1,371 @@
+/* Estética dashboard: contexto clínico / saúde mental — só aplica onde existir .dash-clinic */
+
+.dash-clinic {
+    --dc-font-display: 'Source Serif 4', 'Georgia', serif;
+    --dc-font-ui: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    /* Cor de destaque = primária do tema (configurador de paleta / claro-escuro na topbar) */
+    --dc-accent: var(--primary-color);
+    --dc-accent-deep: color-mix(in srgb, var(--primary-color) 75%, var(--text-color) 25%);
+    --dc-line: color-mix(in srgb, var(--primary-color) 28%, var(--surface-border));
+
+    font-family: var(--dc-font-ui);
+}
+
+.dash-clinic-title,
+.dash-clinic h6 {
+    font-family: var(--dc-font-display);
+    letter-spacing: -0.02em;
+}
+
+.dash-clinic-eyebrow {
+    font-family: var(--dc-font-ui);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-color-secondary);
+}
+
+.dash-clinic-title {
+    font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+    font-weight: 600;
+    color: var(--text-color);
+    line-height: 1.2;
+}
+
+.dash-clinic-shell {
+    border-radius: 16px !important;
+    border: 1px solid var(--surface-border);
+    box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.04),
+        0 12px 32px rgba(15, 23, 42, 0.06);
+    background: var(--surface-card);
+}
+
+.app-dark .dash-clinic-shell {
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.2),
+        0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.dash-clinic-header {
+    border-bottom: 1px solid var(--surface-border);
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--dc-accent) 10%, var(--surface-card)) 0%,
+        var(--surface-card) 72%
+    );
+}
+
+.dash-clinic h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 0.75rem !important;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--surface-border);
+}
+
+/* Cartões de métrica */
+.dash-metric {
+    position: relative;
+    border-radius: 14px !important;
+    border: 1px solid var(--surface-border) !important;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05) !important;
+    overflow: hidden;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.app-dark .dash-metric {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25) !important;
+}
+
+.dash-metric::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, var(--dc-accent) 0%, var(--dc-accent-deep) 100%);
+    border-radius: 14px 0 0 14px;
+}
+
+.dash-metric:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08) !important;
+}
+
+.dash-metric__label {
+    display: block;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    color: var(--text-color-secondary) !important;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.35rem !important;
+}
+
+.dash-metric__value {
+    font-family: var(--dc-font-display);
+    font-size: 1.5rem !important;
+    font-weight: 600 !important;
+    color: var(--text-color) !important;
+    line-height: 1.15;
+}
+
+.dash-metric__icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--dc-accent) 14%, transparent);
+    color: var(--dc-accent-deep);
+}
+
+.app-dark .dash-metric__icon {
+    background: color-mix(in srgb, var(--dc-accent) 22%, transparent);
+    color: var(--primary-color);
+}
+
+.dash-metric__icon i {
+    font-size: 1.25rem !important;
+}
+
+.dash-metric__icon--income {
+    background: color-mix(in srgb, var(--dc-accent) 18%, transparent) !important;
+    color: var(--dc-accent-deep) !important;
+}
+
+.app-dark .dash-metric__icon--income {
+    color: var(--primary-color) !important;
+}
+
+.dash-metric__icon--expense,
+.dash-metric__icon--risk {
+    background: color-mix(in srgb, #be123c 18%, transparent) !important;
+    color: #9f1239 !important;
+}
+
+/* Painéis destaque (próxima sessão / aniversariantes) — claros, alinhados ao tema */
+.dash-feature {
+    position: relative;
+    border-radius: 14px !important;
+    border: 1px solid color-mix(in srgb, var(--dc-accent) 22%, var(--surface-border)) !important;
+    background:
+        radial-gradient(100% 120% at 100% 0%, color-mix(in srgb, var(--dc-accent) 14%, transparent) 0%, transparent 52%),
+        linear-gradient(
+            165deg,
+            color-mix(in srgb, var(--dc-accent) 9%, var(--surface-card)) 0%,
+            var(--surface-card) 55%
+        );
+    color: var(--text-color);
+    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06) !important;
+    overflow: hidden;
+}
+
+.dash-feature--warm {
+    border-color: color-mix(in srgb, #ea580c 22%, var(--surface-border)) !important;
+    background:
+        radial-gradient(100% 120% at 0% 0%, color-mix(in srgb, #fb923c 12%, transparent) 0%, transparent 50%),
+        linear-gradient(
+            165deg,
+            color-mix(in srgb, #fb923c 8%, var(--surface-card)) 0%,
+            var(--surface-card) 55%
+        );
+}
+
+.app-dark .dash-feature {
+    border-color: color-mix(in srgb, var(--dc-accent) 28%, var(--surface-border)) !important;
+    background:
+        radial-gradient(100% 120% at 100% 0%, color-mix(in srgb, var(--dc-accent) 20%, transparent) 0%, transparent 55%),
+        linear-gradient(
+            165deg,
+            color-mix(in srgb, var(--dc-accent) 12%, var(--surface-card)) 0%,
+            var(--surface-card) 100%
+        );
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.22) !important;
+}
+
+.app-dark .dash-feature--warm {
+    border-color: color-mix(in srgb, #fb923c 25%, var(--surface-border)) !important;
+    background:
+        radial-gradient(100% 120% at 0% 0%, color-mix(in srgb, #fb923c 16%, transparent) 0%, transparent 50%),
+        linear-gradient(
+            165deg,
+            color-mix(in srgb, #fb923c 10%, var(--surface-card)) 0%,
+            var(--surface-card) 100%
+        );
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.22) !important;
+}
+
+.dash-feature__title {
+    font-family: var(--dc-font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0;
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+}
+
+.dash-feature__meta {
+    color: var(--text-color-secondary);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.dash-feature__accent {
+    color: var(--dc-accent-deep) !important;
+}
+
+.app-dark .dash-feature__accent {
+    color: var(--primary-color) !important;
+}
+
+.dash-feature--warm .dash-feature__accent {
+    color: #c2410c !important;
+}
+
+.app-dark .dash-feature--warm .dash-feature__accent {
+    color: #fdba74 !important;
+}
+
+.dash-feature__body {
+    color: var(--text-color-secondary);
+}
+
+.dash-feature__body .dash-feature__strong {
+    color: var(--text-color) !important;
+    font-weight: 600;
+}
+
+.dash-feature .p-button {
+    font-weight: 600;
+}
+
+/* Status pills */
+.dash-status-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: stretch;
+}
+
+.dash-status-pill {
+    flex: 1 1 140px;
+    min-width: 0;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--surface-border);
+    background: color-mix(in srgb, var(--surface-ground) 65%, var(--surface-card));
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dash-status-pill__label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+}
+
+.dash-status-pill__value {
+    font-family: var(--dc-font-display);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-left: auto;
+}
+
+/* Listas */
+.dash-list-row {
+    border-color: var(--surface-border) !important;
+    transition: background 0.15s ease;
+}
+
+.dash-list-row:hover {
+    background: color-mix(in srgb, var(--dc-accent) 6%, var(--surface-card));
+}
+
+.dash-figure-accent {
+    color: var(--dc-accent-deep);
+    font-variant-numeric: tabular-nums;
+}
+
+.app-dark .dash-figure-accent {
+    color: var(--primary-color);
+}
+
+/* Alerta financeiro */
+.dash-alert-negative {
+    border-radius: 12px !important;
+    border: 1px solid rgba(248, 113, 113, 0.45) !important;
+    background: linear-gradient(
+        90deg,
+        rgba(127, 29, 29, 0.35) 0%,
+        rgba(30, 41, 59, 0.65) 100%
+    ) !important;
+}
+
+.dash-alert-negative span {
+    color: #fecaca !important;
+}
+
+/* TabView (PrimeVue 4 — classes p-tabview-tablist*) */
+.dash-clinic-tabs.p-tabview .p-tabview-tablist {
+    background: transparent;
+    border: none;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.dash-clinic-tabs.p-tabview .p-tabview-tab-header {
+    border-radius: 10px !important;
+    border: 1px solid transparent !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem !important;
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.dash-clinic-tabs.p-tabview .p-tabview-tablist-item:not(.p-tabview-tablist-item-active) .p-tabview-tab-header {
+    color: var(--text-color-secondary);
+}
+
+.dash-clinic-tabs.p-tabview .p-tabview-tablist-item.p-tabview-tablist-item-active .p-tabview-tab-header {
+    background: color-mix(in srgb, var(--dc-accent) 12%, var(--surface-card)) !important;
+    border-color: var(--dc-line) !important;
+    color: var(--dc-accent-deep) !important;
+}
+
+.app-dark .dash-clinic-tabs.p-tabview .p-tabview-tablist-item.p-tabview-tablist-item-active .p-tabview-tab-header {
+    color: var(--primary-color) !important;
+}
+
+.dash-clinic-tabs.p-tabview .p-tabview-panels {
+    background: transparent;
+    border: none;
+    padding: 0.5rem 0 0;
+}
+
+/* Altura uniforme em grelhas de cartões dentro do dashboard */
+.dash-clinic .grid > [class*='col-'] > .dash-metric,
+.dash-clinic .grid > [class*='col-'] > .dash-feature {
+    height: 100%;
+}
+
+.dash-clinic .grid > [class*='col-'] > .card:not(.dash-metric):not(.dash-feature) {
+    border-radius: 14px !important;
+    border: 1px solid var(--surface-border);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
+}
+
+.app-dark .dash-clinic .grid > [class*='col-'] > .card:not(.dash-metric):not(.dash-feature) {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2) !important;
+}
