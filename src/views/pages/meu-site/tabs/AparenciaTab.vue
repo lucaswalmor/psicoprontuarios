@@ -11,26 +11,60 @@
         <Divider />
 
         <div class="grid mt-3">
-            <div class="col-12 md:col-6 lg:col-4" v-for="cor in coresConfig" :key="cor.campo">
-                <div class="field">
-                    <label class="font-medium text-sm block mb-1">{{ cor.label }}</label>
-                    <p class="text-color-secondary text-xs m-0 mb-2">{{ cor.descricao }}</p>
-                    <div class="flex align-items-center gap-2">
-                        <input
-                            type="color"
-                            :value="form[cor.campo]"
-                            @input="form[cor.campo] = $event.target.value"
-                            class="color-picker"
+            <div class="col-12 xl:col-7">
+                <div class="grid">
+                    <div class="col-12 md:col-6 lg:col-4" v-for="cor in coresConfig" :key="cor.campo">
+                        <div class="field">
+                            <label class="font-medium text-sm block mb-1">{{ cor.label }}</label>
+                            <p class="text-color-secondary text-xs m-0 mb-2">{{ cor.descricao }}</p>
+                            <div class="flex align-items-center gap-2">
+                                <input
+                                    type="color"
+                                    :value="form[cor.campo]"
+                                    @input="form[cor.campo] = $event.target.value"
+                                    class="color-picker"
+                                />
+                                <InputText
+                                    v-model="form[cor.campo]"
+                                    :placeholder="cor.padrao"
+                                    class="flex-1 font-mono text-sm"
+                                    maxlength="7"
+                                />
+                                <div
+                                    class="color-preview border-round"
+                                    :style="{ background: form[cor.campo] }"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 xl:col-5">
+                <div class="preview-card surface-card border-1 border-round surface-border overflow-hidden">
+                    <div class="flex align-items-center justify-content-between px-3 py-2 border-bottom-1 surface-border">
+                        <span class="font-medium text-sm">Pré-visualização do site</span>
+                        <Button
+                            v-if="urlPreviewSite"
+                            type="button"
+                            icon="pi pi-refresh"
+                            severity="secondary"
+                            text
+                            rounded
+                            title="Recarregar pré-visualização"
+                            :disabled="salvando"
+                            @click="atualizarIframe"
                         />
-                        <InputText
-                            v-model="form[cor.campo]"
-                            :placeholder="cor.padrao"
-                            class="flex-1 font-mono text-sm"
-                            maxlength="7"
-                        />
-                        <div
-                            class="color-preview border-round"
-                            :style="{ background: form[cor.campo] }"
+                    </div>
+                    <div v-if="!urlPreviewSite" class="p-4 text-center text-color-secondary text-sm">
+                        Defina um slug em <strong>Geral</strong> e salve para ver o site aqui.
+                    </div>
+                    <div v-else class="preview-frame-wrap">
+                        <iframe
+                            :key="iframeKey"
+                            :src="iframeSrc"
+                            class="preview-iframe"
+                            title="Pré-visualização do site público"
                         />
                     </div>
                 </div>
@@ -58,6 +92,7 @@ export default {
     data() {
         return {
             salvando: false,
+            iframeKey: 0,
             form: {
                 cor_sage:       '#7A9E87',
                 cor_sage_light: '#A8C4B0',
@@ -85,6 +120,20 @@ export default {
         };
     },
 
+    computed: {
+        urlPreviewSite() {
+            const slug = this.dados?.slug?.trim();
+            if (!slug) return '';
+            return `https://${slug}.psicoprontuarios.com.br/`;
+        },
+        iframeSrc() {
+            if (!this.urlPreviewSite) return '';
+            const bust = `_pv=${this.iframeKey}`;
+            const sep = this.urlPreviewSite.includes('?') ? '&' : '?';
+            return `${this.urlPreviewSite}${sep}${bust}`;
+        },
+    },
+
     watch: {
         dados: {
             immediate: true,
@@ -98,12 +147,17 @@ export default {
     },
 
     methods: {
+        atualizarIframe() {
+            this.iframeKey += 1;
+        },
+
         async salvar() {
             try {
                 this.salvando = true;
                 await meuSiteService.updateCores(this.form);
                 this.$toast.add({ severity: 'success', summary: 'Salvo!', detail: 'Cores atualizadas com sucesso.', life: 3000 });
                 this.$emit('salvo', this.form);
+                this.atualizarIframe();
             } catch {
                 this.$toast.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possível salvar as cores.', life: 4000 });
             } finally {
@@ -131,5 +185,21 @@ export default {
     height: 36px;
     border: 1px solid var(--surface-border);
     flex-shrink: 0;
+}
+
+.preview-frame-wrap {
+    position: relative;
+    width: 100%;
+    min-height: 420px;
+    height: min(70vh, 720px);
+    background: var(--surface-ground);
+}
+
+.preview-iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 420px;
+    border: 0;
 }
 </style>
