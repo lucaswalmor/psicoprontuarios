@@ -65,6 +65,13 @@ export default {
         EvolutionStatusTag,
         ProgressSpinner,
     },
+    props: {
+        prefetch: {
+            type: Object,
+            default: null,
+        },
+    },
+    emits: ['evolution-state-change'],
     data() {
         return {
             loading: false,
@@ -82,6 +89,16 @@ export default {
             return !!this.instance;
         },
     },
+    watch: {
+        prefetch: {
+            deep: true,
+            handler(val) {
+                if (!val) return;
+                this.instance = val.instance ?? null;
+                this.status = val.status || 'disconnected';
+            },
+        },
+    },
     async created() {
         await this.carregarDadosIniciais();
     },
@@ -89,14 +106,23 @@ export default {
         async carregarDadosIniciais() {
             this.loading = true;
             try {
-                await this.carregarInstancia();
-                if (this.hasInstance) {
-                    await this.atualizarStatus();
+                if (this.prefetch) {
+                    this.instance = this.prefetch.instance;
+                    this.status = this.prefetch.status || 'disconnected';
+                    if (!this.instance) {
+                        await this.carregarIdentificadorPrevisto();
+                    }
                 } else {
-                    await this.carregarIdentificadorPrevisto();
+                    await this.carregarInstancia();
+                    if (this.hasInstance) {
+                        await this.atualizarStatus();
+                    } else {
+                        await this.carregarIdentificadorPrevisto();
+                    }
                 }
             } finally {
                 this.loading = false;
+                this.notifyParentState();
             }
         },
         async carregarInstancia() {
@@ -156,6 +182,7 @@ export default {
                 this.showToast('success', 'Sucesso', 'Configuração salva com sucesso.');
                 await this.carregarInstancia();
                 await this.atualizarStatus();
+                this.notifyParentState();
             } catch (error) {
                 const message = error?.response?.data?.message || 'Erro ao salvar configuração do WhatsApp.';
                 this.showToast('error', 'Erro', message);
@@ -172,6 +199,7 @@ export default {
             if (this.instance) {
                 this.instance.status = 'connected';
             }
+            this.notifyParentState();
             this.showToast('success', 'Conectado', 'WhatsApp conectado com sucesso.');
         },
         async enviarMensagemTeste() {
@@ -194,6 +222,7 @@ export default {
                 this.status = 'disconnected';
                 this.showQrDialog = false;
                 await this.carregarIdentificadorPrevisto();
+                this.notifyParentState();
                 this.showToast('success', 'Sucesso', 'Configuração excluída com sucesso.');
             } catch (error) {
                 const message = error?.response?.data?.message || 'Erro ao excluir configuração.';
@@ -216,6 +245,12 @@ export default {
                 summary,
                 detail,
                 life: 3000,
+            });
+        },
+        notifyParentState() {
+            this.$emit('evolution-state-change', {
+                instance: this.instance,
+                status: this.status,
             });
         },
     },

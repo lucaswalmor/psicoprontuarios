@@ -141,7 +141,7 @@ export default {
                 'Melhoria de texto com I.A no prontuário',
                 'Gerar relatório profissional com I.A nos prontuários',
                 'Notificações de aniversários e datas comemorativas por WhatsApp',
-                'WhatsApp: rotinas e automações no fluxo clínico',
+                'WhatsApp: notificações de consulta e lembretes',
             ]
         };
     }

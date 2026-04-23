@@ -11,10 +11,20 @@
                             Plano
                         </Tab>
                         <Tab value="1">
-                            <i class="pi pi-whatsapp mr-2"></i>
-                            WhatsApp
+                            <span class="config-tab-label flex align-items-center gap-2">
+                                <span>
+                                    <i class="pi pi-whatsapp mr-2"></i>
+                                    WhatsApp
+                                </span>
+                                <Tag
+                                    v-if="!podeRecursoPro"
+                                    value="PRO"
+                                    severity="warning"
+                                    class="config-pro-tag"
+                                />
+                            </span>
                         </Tab>
-                        <Tab value="2">
+                        <Tab v-if="mostrarAbaNotificacoes" value="2">
                             <i class="pi pi-bell mr-2"></i>
                             Notificações
                         </Tab>
@@ -28,11 +38,21 @@
 
                         <TabPanel value="1">
                             <div class="p-4 config-tab-body">
-                                <EvolutionConfig v-if="activeTab === '1'" />
+                                <div
+                                    v-if="activeTab === '1' && !podeRecursoPro"
+                                    class="col-12 d-flex justify-content-center align-items-center p-7"
+                                >
+                                    <PlanoPro />
+                                </div>
+                                <EvolutionConfig
+                                    v-else-if="activeTab === '1' && podeRecursoPro"
+                                    :prefetch="evolutionPrefetch"
+                                    @evolution-state-change="onEvolutionStateChange"
+                                />
                             </div>
                         </TabPanel>
 
-                        <TabPanel value="2">
+                        <TabPanel v-if="mostrarAbaNotificacoes" value="2">
                             <div class="p-4 config-tab-body">
                                 <div class="row">
                                     <div class="col-12 mb-4">
@@ -114,8 +134,10 @@
 import { usePlanStore } from '@/store/plan';
 import EvolutionConfig from '@/components/evolution/EvolutionConfig.vue';
 import ConfiguracaoPlanoTab from '@/views/pages/configuracoes/ConfiguracaoPlanoTab.vue';
+import PlanoPro from '@/components/PlanoPro.vue';
 import api from '@/utils/axios';
 import Button from 'primevue/button';
+import Tag from 'primevue/tag';
 import Tab from 'primevue/tab';
 import TabList from 'primevue/tablist';
 import TabPanel from 'primevue/tabpanel';
@@ -128,6 +150,8 @@ export default {
         Button,
         ConfiguracaoPlanoTab,
         EvolutionConfig,
+        PlanoPro,
+        Tag,
         Tab,
         TabList,
         TabPanel,
@@ -140,13 +164,30 @@ export default {
             planStore: null,
             handleStatsUpdate: null,
             evolutionConectado: false,
+            evolutionPrefetch: null,
         };
+    },
+    computed: {
+        podeRecursoPro() {
+            const tipo = this.$planService.resolverTipoPlanoUsuario();
+            return ['pro', 'vitalicio'].includes(tipo);
+        },
+        mostrarAbaNotificacoes() {
+            return this.podeRecursoPro && this.evolutionConectado;
+        },
+    },
+    watch: {
+        mostrarAbaNotificacoes(visivel) {
+            if (!visivel && this.activeTab === '2') {
+                this.activeTab = '0';
+            }
+        },
     },
     created() {
         this.planStore = usePlanStore();
     },
-    mounted() {
-        this.verificarStatusEvolution();
+    async mounted() {
+        await this.carregarEstadoEvolution();
 
         this.handleStatsUpdate = async () => {
             await this.planStore.atualizarStats();
@@ -166,15 +207,47 @@ export default {
     },
     async activated() {
         await this.planStore.atualizarStats();
+        await this.carregarEstadoEvolution();
     },
     methods: {
-        async verificarStatusEvolution() {
+        onEvolutionStateChange({ instance, status }) {
+            this.evolutionPrefetch = { instance, status: status || 'disconnected' };
+            this.evolutionConectado = (status || '') === 'connected';
+        },
+        async carregarEstadoEvolution() {
+            let instance = null;
+            let status = 'disconnected';
+
             try {
-                const response = await api.get('/evolution/instancia/status');
-                this.evolutionConectado = response?.data?.status === 'connected';
+                const instRes = await api.get('/evolution/instancia');
+                instance = instRes?.data?.data || null;
+                status = instance?.status || 'disconnected';
             } catch (error) {
-                this.evolutionConectado = false;
+                if (error?.response?.status === 404) {
+                    instance = null;
+                    status = 'disconnected';
+                } else {
+                    instance = null;
+                }
             }
+
+            try {
+                const stRes = await api.get('/evolution/instancia/status');
+                const st = stRes?.data?.status || 'disconnected';
+                status = st;
+                this.evolutionConectado = st === 'connected';
+                if (instance) {
+                    instance = { ...instance, status: st };
+                }
+            } catch {
+                this.evolutionConectado = false;
+                status = 'disconnected';
+                if (instance) {
+                    instance = { ...instance, status: 'disconnected' };
+                }
+            }
+
+            this.evolutionPrefetch = { instance, status };
         },
     },
 };
@@ -196,6 +269,19 @@ export default {
 
 .notificacao-card-text {
     color: var(--text-color-secondary);
+}
+
+.config-tab-label {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.config-pro-tag {
+    flex: 0 0 auto;
+    font-size: 0.7rem;
+    padding: 0.125rem 0.4rem;
 }
 
 @media (max-width: 991px) {
