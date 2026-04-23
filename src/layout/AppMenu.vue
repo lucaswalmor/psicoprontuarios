@@ -177,6 +177,11 @@ export default {
                     to: '/meu-site'
                 },
                 {
+                    label: 'Modelos de Arquivos',
+                    icon: 'pi pi-folder-open',
+                    to: '/modelos-arquivos'
+                },
+                {
                     label: 'Suporte',
                     icon: 'pi pi-comments',
                     to: '/chamados'
