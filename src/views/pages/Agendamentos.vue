@@ -1,165 +1,135 @@
 <template>
-    <div class="grid">
+    <div class="agendamentos-wrapper">
         <!-- Loading -->
-        <div v-if="isLoading" class="col-12 flex justify-content-center p-4">
+        <div v-if="isLoading" class="loading-state">
             <ProgressSpinner style="width: 50px; height: 50px" />
         </div>
 
-        <!-- Content -->
         <template v-else>
-            <div class="col-12 agendamentos-layout">
-                <div class="grid">
-                    <!-- Coluna Esquerda: Calendário e Feriados -->
-                    <div class="col-12 md:col-4 left-column">
-                        <div class="calendar-wrapper">
-                            <DatePicker 
-                                v-model="dataSelecionada" 
-                                inline 
-                                class="w-full sm:w-[30rem] custom-datepicker"
-                                @update:modelValue="onDataSelecionada"
-                                @month-change="onMonthChange($event)"
-                            />
+            <div class="agendamentos-layout">
+
+                <!-- LEFT PANEL -->
+                <div class="left-panel">
+
+                    <!-- Calendar Card -->
+                    <div class="cal-card">
+                        <DatePicker
+                            v-model="dataSelecionada"
+                            inline
+                            class="w-full custom-datepicker"
+                            @update:modelValue="onDataSelecionada"
+                            @month-change="onMonthChange($event)"
+                        />
+                    </div>
+
+                    <!-- Holidays Card -->
+                    <div class="holidays-card">
+                        <div class="holidays-title">Feriados do Mês</div>
+
+                        <div v-if="feriadosDoMes.length === 0" class="holidays-empty">
+                            <i class="pi pi-info-circle"></i>
+                            <span>Nenhum feriado neste mês</span>
                         </div>
-                        
-                        <!-- Seção de Feriados - Abaixo do calendário em desktop -->
-                        <div class="feriados-wrapper-desktop">
-                            <div class="feriados-card">
-                                <div class="feriados-header">
-                                    <i class="pi pi-calendar-check text-primary"></i>
-                                    <h6 class="feriados-title">Feriados do Mês</h6>
+
+                        <div v-else class="holiday-list">
+                            <div
+                                v-for="feriado in feriadosDoMes"
+                                :key="feriado.data"
+                                class="holiday-item"
+                            >
+                                <div
+                                    class="holiday-date-badge"
+                                    :class="{ 'badge-facultativo': feriado.tipo === 'facultativo' }"
+                                >
+                                    <div class="holiday-date-num">{{ formatarDiaFeriado(feriado.data) }}</div>
+                                    <div class="holiday-date-month">{{ formatarMesFeriado(feriado.data) }}</div>
                                 </div>
-                                
-                                <div v-if="feriadosDoMes.length === 0" class="feriados-empty">
-                                    <i class="pi pi-info-circle text-400"></i>
-                                    <span class="text-500 text-sm">Nenhum feriado neste mês</span>
-                                </div>
-                                
-                                <div v-else class="feriados-list">
-                                    <div 
-                                        v-for="feriado in feriadosDoMes" 
-                                        :key="feriado.data"
-                                        class="feriado-item"
-                                        :class="{ 'feriado-facultativo': feriado.tipo === 'facultativo' }"
+                                <div class="holiday-info">
+                                    <div class="holiday-name">{{ feriado.nome }}</div>
+                                    <span
+                                        class="holiday-tag"
+                                        :class="{ 'tag-facultativo': feriado.tipo === 'facultativo' }"
                                     >
-                                        <div class="feriado-date">
-                                            <span class="feriado-dia">{{ formatarDiaFeriado(feriado.data) }}</span>
-                                            <span class="feriado-mes">{{ formatarMesFeriado(feriado.data) }}</span>
-                                        </div>
-                                        <div class="feriado-content">
-                                            <div class="feriado-nome">{{ feriado.nome }}</div>
-                                            <div class="feriado-tipo">
-                                                <Tag 
-                                                    :value="feriado.tipo === 'nacional' ? 'Nacional' : 'Facultativo'"
-                                                    :severity="feriado.tipo === 'nacional' ? 'success' : 'info'"
-                                                    size="small"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
+                                        {{ feriado.tipo === 'nacional' ? 'Nacional' : 'Facultativo' }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Coluna Direita: Lista de Agendamentos -->
-                    <div class="col-12 md:col-8">
-                        <div class="card agendamentos-card">
-                            <div class="flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
-                                <h6 class="text-900 font-semibold mb-0">
-                                    Agendamentos - {{ dataFormatada }}
-                                </h6>
-                                <Button 
-                                    label="Novo Agendamento" 
-                                    icon="pi pi-plus"
-                                    severity="success"
-                                    @click="abrirDialogNovoAgendamento"
-                                />
-                            </div>
+                </div>
 
-                            <!-- Lista vazia -->
-                            <div v-if="agendamentosDoDia.length === 0" class="empty-state">
-                                <i class="pi pi-calendar-times text-4xl text-600 mb-3"></i>
-                                <p class="text-600">Nenhum agendamento para este dia</p>
-                            </div>
+                <!-- RIGHT PANEL -->
+                <div class="right-panel">
+                    <div class="agenda-card">
 
-                            <!-- Lista de agendamentos -->
-                            <div v-else class="agendamentos-list">
-                                <div 
-                                    v-for="agendamento in agendamentosDoDia" 
-                                    :key="agendamento.publicId"
-                                    class="agendamento-card"
-                                    @click="abrirDialogEditarAgendamento(agendamento)"
-                                >
-                                    <div class="agendamento-card-content">
-                                        <div class="flex align-items-center justify-content-between">
-                                            <div class="flex align-items-center gap-3">
-                                                <div class="agendamento-time">
-                                                    <i class="pi pi-clock"></i>
-                                                    <span>{{ formatarHorario(agendamento) }}</span>
-                                                </div>
-                                                <div class="agendamento-patient">
-                                                    <h6 class="text-900 font-semibold mb-1">{{ agendamento.title }}</h6>
-                                                </div>
-                                            </div>
-                                            <i class="pi pi-chevron-right text-400"></i>
-                                        </div>
+                        <!-- Header -->
+                        <div class="agenda-header">
+                            <div class="agenda-date-info">
+                                <div class="agenda-label">Agendamentos</div>
+                                <div class="agenda-title-text">{{ dataFormatada }}</div>
+                            </div>
+                            <button class="btn-new" @click="abrirDialogNovoAgendamento">
+                                <span class="btn-plus">+</span>
+                                Novo Agendamento
+                            </button>
+                        </div>
+
+                        <!-- Time indicator (somente quando for o dia de hoje) -->
+                        <div v-if="isHoje" class="time-indicator">
+                            <div class="time-dot"></div>
+                            <div class="time-text">Agora: {{ horaAtual }}</div>
+                        </div>
+
+                        <!-- Empty state -->
+                        <div v-if="agendamentosDoDia.length === 0" class="empty-state">
+                            <div class="empty-icon">
+                                <i class="pi pi-calendar"></i>
+                            </div>
+                            <div class="empty-title">Nenhum agendamento</div>
+                            <div class="empty-sub">Clique em "+ Novo Agendamento" para adicionar</div>
+                        </div>
+
+                        <!-- Appointment list -->
+                        <div v-else class="appointments">
+                            <div
+                                v-for="agendamento in agendamentosDoDia"
+                                :key="agendamento.publicId"
+                                class="appt-item"
+                                @click="abrirDialogEditarAgendamento(agendamento)"
+                            >
+                                <div class="appt-time-block">
+                                    <div class="appt-clock-icon">
+                                        <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
+                                            <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5" />
+                                            <path d="M8 4v4l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                        </svg>
                                     </div>
+                                    <div class="appt-time">{{ formatarHorario(agendamento) }}</div>
                                 </div>
+                                <div class="appt-divider"></div>
+                                <div class="appt-info">
+                                    <div class="appt-name">{{ agendamento.title }}</div>
+                                </div>
+                                <i class="pi pi-angle-right appt-arrow"></i>
                             </div>
                         </div>
-                        
-                        <!-- Seção de Feriados - Abaixo da lista em mobile -->
-                        <div class="feriados-wrapper-mobile">
-                            <div class="feriados-card">
-                                <div class="feriados-header">
-                                    <i class="pi pi-calendar-check text-primary"></i>
-                                    <h6 class="feriados-title">Feriados do Mês</h6>
-                                </div>
-                                
-                                <div v-if="feriadosDoMes.length === 0" class="feriados-empty">
-                                    <i class="pi pi-info-circle text-400"></i>
-                                    <span class="text-500 text-sm">Nenhum feriado neste mês</span>
-                                </div>
-                                
-                                <div v-else class="feriados-list">
-                                    <div 
-                                        v-for="feriado in feriadosDoMes" 
-                                        :key="feriado.data"
-                                        class="feriado-item"
-                                        :class="{ 'feriado-facultativo': feriado.tipo === 'facultativo' }"
-                                    >
-                                        <div class="feriado-date">
-                                            <span class="feriado-dia">{{ formatarDiaFeriado(feriado.data) }}</span>
-                                            <span class="feriado-mes">{{ formatarMesFeriado(feriado.data) }}</span>
-                                        </div>
-                                        <div class="feriado-content">
-                                            <div class="feriado-nome">{{ feriado.nome }}</div>
-                                            <div class="feriado-tipo">
-                                                <Tag 
-                                                    :value="feriado.tipo === 'nacional' ? 'Nacional' : 'Facultativo'"
-                                                    :severity="feriado.tipo === 'nacional' ? 'success' : 'info'"
-                                                    size="small"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
+
             </div>
         </template>
 
         <!-- Dialog Novo Agendamento -->
-        <DialogNovoAgendamento 
+        <DialogNovoAgendamento
             v-model:visible="dialogNovoAgendamento"
             :dataSelecionada="dataSelecionadaFormatada"
             @agendamentoSalvo="carregarAgendamentos"
         />
 
         <!-- Dialog Editar Agendamento -->
-        <DialogEditarAgendamento 
+        <DialogEditarAgendamento
             v-model:visible="dialogEditarAgendamento"
             :agendamentoData="agendamentoSelecionado"
             @agendamentoAtualizado="carregarAgendamentos"
@@ -170,7 +140,6 @@
 
 <script>
 import DatePicker from 'primevue/datepicker';
-import Tag from 'primevue/tag';
 import DialogNovoAgendamento from '@/components/dialogs/agendamentos/DialogNovoAgendamento.vue';
 import DialogEditarAgendamento from '@/components/dialogs/agendamentos/DialogEditarAgendamento.vue';
 
@@ -178,7 +147,6 @@ export default {
     name: 'Agendamentos2',
     components: {
         DatePicker,
-        Tag,
         DialogNovoAgendamento,
         DialogEditarAgendamento
     },
@@ -192,8 +160,10 @@ export default {
             dialogEditarAgendamento: false,
             agendamentoSelecionado: {},
             feriados: [],
-            mesVisualizado: hoje.getMonth() + 1, // 1-12
-            anoVisualizado: hoje.getFullYear()
+            mesVisualizado: hoje.getMonth() + 1,
+            anoVisualizado: hoje.getFullYear(),
+            horaAtual: '',
+            horaAtualInterval: null
         };
     },
     computed: {
@@ -205,69 +175,75 @@ export default {
             const day = String(date.getDate()).padStart(2, '0');
             return `${year}-${month}-${day}`;
         },
-        
+
         dataFormatada() {
             if (!this.dataSelecionada) return '';
             const date = new Date(this.dataSelecionada);
-            return date.toLocaleDateString('pt-BR', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
+            return date.toLocaleDateString('pt-BR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
             });
         },
-        
+
+        isHoje() {
+            if (!this.dataSelecionada) return false;
+            const hoje = new Date();
+            const sel = this.dataSelecionada instanceof Date ? this.dataSelecionada : new Date(this.dataSelecionada);
+            return (
+                sel.getFullYear() === hoje.getFullYear() &&
+                sel.getMonth() === hoje.getMonth() &&
+                sel.getDate() === hoje.getDate()
+            );
+        },
+
         agendamentosDoDia() {
             if (!this.dataSelecionada || this.todosAgendamentos.length === 0) {
                 return [];
             }
-            
+
             const dataSelecionadaStr = this.dataSelecionadaFormatada;
-            
+
             return this.todosAgendamentos.filter(agendamento => {
                 return agendamento.date === dataSelecionadaStr;
             }).sort((a, b) => {
-                // Ordenar por horário (se disponível)
                 if (a.time && b.time) {
                     return a.time.localeCompare(b.time);
                 }
                 return 0;
             });
         },
-        
+
         datasComAgendamento() {
-            // Retorna um Set com todas as datas que têm agendamentos (formato YYYY-MM-DD)
             return new Set(this.todosAgendamentos.map(agendamento => agendamento.date));
         },
-        
+
         mesSelecionado() {
             if (!this.dataSelecionada) return null;
             const date = this.dataSelecionada instanceof Date ? this.dataSelecionada : new Date(this.dataSelecionada);
-            return date.getMonth() + 1; // 1-12
+            return date.getMonth() + 1;
         },
-        
+
         anoSelecionado() {
             if (!this.dataSelecionada) return null;
             const date = this.dataSelecionada instanceof Date ? this.dataSelecionada : new Date(this.dataSelecionada);
             return date.getFullYear();
         },
-        
+
         feriadosDoMes() {
             if (!this.mesVisualizado || !this.anoVisualizado) return [];
-            
-            // Garantir que os feriados estão atualizados para o ano visualizado
+
             const feriadosAtualizados = this.obterFeriadosBrasileiros(this.anoVisualizado);
-            
+
             return feriadosAtualizados.filter(feriado => {
                 const feriadoDate = new Date(feriado.data);
                 const feriadoMes = feriadoDate.getMonth() + 1;
                 const feriadoAno = feriadoDate.getFullYear();
-                
-                // Feriados fixos (mesmo mês, qualquer ano) ou feriados móveis do ano específico
+
                 if (feriado.fixo) {
                     return feriadoMes === this.mesVisualizado;
                 } else {
-                    // Feriados móveis já vêm com o ano correto
                     return feriadoMes === this.mesVisualizado && feriadoAno === this.anoVisualizado;
                 }
             }).sort((a, b) => {
@@ -279,44 +255,52 @@ export default {
     },
     async mounted() {
         this.feriados = this.obterFeriadosBrasileiros();
+        this.atualizarHoraAtual();
+        this.horaAtualInterval = setInterval(this.atualizarHoraAtual, 60000);
         await this.carregarAgendamentos();
         this.$nextTick(() => {
             this.marcarDatasComAgendamento();
             this.observarCalendario();
         });
     },
-    
+
     updated() {
-        // Reaplicar marcações quando o componente for atualizado
         this.$nextTick(() => {
             this.marcarDatasComAgendamento();
         });
     },
-    
+
     beforeUnmount() {
-        // Limpar observer ao desmontar componente
         if (this._calendarObserver) {
             this._calendarObserver.disconnect();
         }
+        if (this.horaAtualInterval) {
+            clearInterval(this.horaAtualInterval);
+        }
     },
     methods: {
+        atualizarHoraAtual() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            this.horaAtual = `${h}:${m}`;
+        },
+
         async carregarAgendamentos() {
             this.isLoading = true;
-            
+
             try {
                 const response = await this.$agendamentosService.getAll();
-                
-                // Verifica se a resposta tem a estrutura esperada
+
                 let agendamentos = [];
                 if (response && response.data) {
                     agendamentos = response.data;
                 } else if (Array.isArray(response)) {
                     agendamentos = response;
                 }
-                
+
                 this.todosAgendamentos = this.formatarAgendamentos(agendamentos);
-                
-                // Marcar datas com agendamento após carregar
+
                 this.$nextTick(() => {
                     this.marcarDatasComAgendamento();
                 });
@@ -332,79 +316,72 @@ export default {
                 this.isLoading = false;
             }
         },
-        
+
         formatarAgendamentos(agendamentos) {
             return agendamentos.map(agendamento => {
                 const date = agendamento.date || '';
-                
+
                 return {
                     title: agendamento.title || 'Agendamento',
-                    date: date.split('T')[0].split(' ')[0], // Apenas a data YYYY-MM-DD
-                    time: agendamento.time || '', // Horário da consulta
+                    date: date.split('T')[0].split(' ')[0],
+                    time: agendamento.time || '',
                     publicId: agendamento.publicId
                 };
             });
         },
-        
+
         onDataSelecionada() {
-            // Lista é atualizada automaticamente pelo computed agendamentosDoDia
             this.$nextTick(() => {
                 this.marcarDatasComAgendamento();
             });
         },
-        
+
         onMonthChange(event) {
             if (event && event.month !== undefined && event.year !== undefined) {
                 this.mesVisualizado = event.month;
                 this.anoVisualizado = event.year;
-                
-                // Atualizar marcações após mudança de mês
-                // Usar setTimeout para garantir que o DOM foi atualizado pelo PrimeVue
+
                 setTimeout(() => {
                     this.marcarDatasComAgendamento();
                 }, 100);
             }
         },
-        
+
         temAgendamento(dateObj) {
             if (!dateObj || !dateObj.year || !dateObj.month || !dateObj.day) {
                 return false;
             }
-            
+
             const dateStr = `${dateObj.year}-${String(dateObj.month + 1).padStart(2, '0')}-${String(dateObj.day).padStart(2, '0')}`;
             return this.datasComAgendamento.has(dateStr);
         },
-        
+
         marcarDatasComAgendamento() {
-            // Marcar células do calendário que têm agendamentos
             this.$nextTick(() => {
                 const cells = document.querySelectorAll('.custom-datepicker .p-datepicker-calendar td');
                 if (cells.length === 0) return;
-                
+
                 const datasComAgendamento = this.datasComAgendamento;
-                
-                // Usar o mês e ano visualizados (não a data selecionada) para marcar corretamente
-                // mesVisualizado já está no formato 1-12, então subtrair 1 para usar como índice (0-11)
+
                 const currentYear = this.anoVisualizado || new Date().getFullYear();
-                const currentMonth = (this.mesVisualizado || new Date().getMonth() + 1) - 1; // Converter para 0-indexed
-                
+                const currentMonth = (this.mesVisualizado || new Date().getMonth() + 1) - 1;
+
                 cells.forEach(cell => {
                     const span = cell.querySelector('span');
                     if (!span) return;
-                    
+
                     const dayText = span.textContent.trim();
                     if (!dayText || isNaN(dayText)) return;
-                    
+
                     const day = parseInt(dayText);
-                    
-                    // Verificar se a célula pertence ao mês atual (não é dia de outro mês)
+
                     if (cell.classList.contains('p-datepicker-other-month')) {
                         cell.classList.remove('has-appointment');
                         return;
                     }
-                    
+
                     const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                    
+
                     if (datasComAgendamento.has(dateStr)) {
                         cell.classList.add('has-appointment');
                     } else {
@@ -413,13 +390,11 @@ export default {
                 });
             });
         },
-        
+
         observarCalendario() {
-            // Observar mudanças no calendário para atualizar marcações quando o mês mudar
             const calendarElement = document.querySelector('.custom-datepicker .p-datepicker');
             if (!calendarElement) return;
-            
-            // Debounce para evitar muitas chamadas
+
             let timeoutId = null;
             const debouncedMark = () => {
                 if (timeoutId) clearTimeout(timeoutId);
@@ -427,41 +402,39 @@ export default {
                     this.marcarDatasComAgendamento();
                 }, 150);
             };
-            
+
             const observer = new MutationObserver(debouncedMark);
-            
+
             observer.observe(calendarElement, {
                 childList: true,
                 subtree: true,
                 attributes: true,
                 attributeFilter: ['class']
             });
-            
-            // Guardar referência do observer para limpar quando componente for desmontado
+
             this._calendarObserver = observer;
         },
-        
+
         formatarHorario(agendamento) {
-            // Se o agendamento tem horário, usar ele
             if (agendamento && agendamento.time) {
                 return agendamento.time;
             }
             return '--:--';
         },
-        
+
         abrirDialogNovoAgendamento() {
             this.dialogNovoAgendamento = true;
         },
-        
+
         async abrirDialogEditarAgendamento(agendamento) {
             try {
                 const response = await this.$agendamentosService.getById(agendamento.publicId);
-                
+
                 if (response && Object.keys(response).length > 0) {
                     this.agendamentoSelecionado = response;
-                    
+
                     await this.$nextTick();
-                    
+
                     this.dialogEditarAgendamento = true;
                 } else {
                     throw new Error('Dados do agendamento não encontrados');
@@ -476,15 +449,13 @@ export default {
                 });
             }
         },
-        
+
         obterFeriadosBrasileiros(ano = null) {
-            // Se não passar ano, usar o ano atual
             if (!ano) {
                 ano = new Date().getFullYear();
             }
             const feriados = [];
-            
-            // Função para calcular Páscoa (algoritmo de Meeus/Jones/Butcher)
+
             const calcularPascoa = (ano) => {
                 const a = ano % 19;
                 const b = Math.floor(ano / 100);
@@ -502,32 +473,28 @@ export default {
                 const dia = ((h + l - 7 * m + 114) % 31) + 1;
                 return new Date(ano, mes - 1, dia);
             };
-            
-            // Função para calcular Carnaval (47 dias antes da Páscoa)
+
             const calcularCarnaval = (ano) => {
                 const pascoa = calcularPascoa(ano);
                 const carnaval = new Date(pascoa);
                 carnaval.setDate(pascoa.getDate() - 47);
                 return carnaval;
             };
-            
-            // Função para calcular Sexta-feira Santa (2 dias antes da Páscoa)
+
             const calcularSextaFeiraSanta = (ano) => {
                 const pascoa = calcularPascoa(ano);
                 const sextaFeiraSanta = new Date(pascoa);
                 sextaFeiraSanta.setDate(pascoa.getDate() - 2);
                 return sextaFeiraSanta;
             };
-            
-            // Função para calcular Corpus Christi (60 dias após a Páscoa)
+
             const calcularCorpusChristi = (ano) => {
                 const pascoa = calcularPascoa(ano);
                 const corpusChristi = new Date(pascoa);
                 corpusChristi.setDate(pascoa.getDate() + 60);
                 return corpusChristi;
             };
-            
-            // Feriados fixos nacionais
+
             feriados.push(
                 { data: `${ano}-01-01`, nome: 'Confraternização Universal', tipo: 'nacional', fixo: true },
                 { data: `${ano}-04-21`, nome: 'Tiradentes', tipo: 'nacional', fixo: true },
@@ -539,54 +506,51 @@ export default {
                 { data: `${ano}-11-20`, nome: 'Dia Nacional de Zumbi e da Consciência Negra', tipo: 'facultativo', fixo: true },
                 { data: `${ano}-12-25`, nome: 'Natal', tipo: 'nacional', fixo: true }
             );
-            
-            // Feriados móveis (calculados para o ano atual e próximo)
+
             for (let y = ano; y <= ano + 1; y++) {
                 const pascoa = calcularPascoa(y);
                 const carnaval = calcularCarnaval(y);
                 const sextaFeiraSanta = calcularSextaFeiraSanta(y);
                 const corpusChristi = calcularCorpusChristi(y);
-                
+
                 feriados.push(
-                    { 
-                        data: `${y}-${String(carnaval.getMonth() + 1).padStart(2, '0')}-${String(carnaval.getDate()).padStart(2, '0')}`, 
-                        nome: 'Carnaval', 
-                        tipo: 'facultativo', 
-                        fixo: false 
+                    {
+                        data: `${y}-${String(carnaval.getMonth() + 1).padStart(2, '0')}-${String(carnaval.getDate()).padStart(2, '0')}`,
+                        nome: 'Carnaval',
+                        tipo: 'facultativo',
+                        fixo: false
                     },
-                    { 
-                        data: `${y}-${String(sextaFeiraSanta.getMonth() + 1).padStart(2, '0')}-${String(sextaFeiraSanta.getDate()).padStart(2, '0')}`, 
-                        nome: 'Sexta-feira Santa', 
-                        tipo: 'nacional', 
-                        fixo: false 
+                    {
+                        data: `${y}-${String(sextaFeiraSanta.getMonth() + 1).padStart(2, '0')}-${String(sextaFeiraSanta.getDate()).padStart(2, '0')}`,
+                        nome: 'Sexta-feira Santa',
+                        tipo: 'nacional',
+                        fixo: false
                     },
-                    { 
-                        data: `${y}-${String(pascoa.getMonth() + 1).padStart(2, '0')}-${String(pascoa.getDate()).padStart(2, '0')}`, 
-                        nome: 'Páscoa', 
-                        tipo: 'nacional', 
-                        fixo: false 
+                    {
+                        data: `${y}-${String(pascoa.getMonth() + 1).padStart(2, '0')}-${String(pascoa.getDate()).padStart(2, '0')}`,
+                        nome: 'Páscoa',
+                        tipo: 'nacional',
+                        fixo: false
                     },
-                    { 
-                        data: `${y}-${String(corpusChristi.getMonth() + 1).padStart(2, '0')}-${String(corpusChristi.getDate()).padStart(2, '0')}`, 
-                        nome: 'Corpus Christi', 
-                        tipo: 'facultativo', 
-                        fixo: false 
+                    {
+                        data: `${y}-${String(corpusChristi.getMonth() + 1).padStart(2, '0')}-${String(corpusChristi.getDate()).padStart(2, '0')}`,
+                        nome: 'Corpus Christi',
+                        tipo: 'facultativo',
+                        fixo: false
                     }
                 );
             }
-            
+
             return feriados;
         },
-        
+
         formatarDiaFeriado(dataStr) {
-            // Adicionar 1 dia para corrigir problema de fuso horário
             const date = new Date(dataStr);
             date.setDate(date.getDate() + 1);
             return String(date.getDate()).padStart(2, '0');
         },
-        
+
         formatarMesFeriado(dataStr) {
-            // Adicionar 1 dia para corrigir problema de fuso horário
             const date = new Date(dataStr);
             date.setDate(date.getDate() + 1);
             const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
@@ -597,43 +561,436 @@ export default {
 </script>
 
 <style scoped>
-.agendamentos-layout {
-    min-height: 600px;
+/* ─── Wrapper ────────────────────────────────────────────────── */
+.agendamentos-wrapper {
+    min-height: 100%;
 }
 
-.left-column {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.calendar-wrapper {
+.loading-state {
     display: flex;
     justify-content: center;
-    padding: 0;
-    min-height: 400px;
-    max-height: 600px;
+    padding: 4rem 1rem;
 }
 
-.feriados-wrapper-desktop {
-    display: none;
+/* ─── Layout grid ────────────────────────────────────────────── */
+.agendamentos-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 24px;
+    padding: 4px 0 28px;
+    animation: fadeSlideIn 0.4s ease both;
 }
 
-.feriados-wrapper-mobile {
+/* ─── Left panel ─────────────────────────────────────────────── */
+.left-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Calendar Card */
+.cal-card {
+    background: var(--surface-card);
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--surface-border);
+    overflow: hidden;
+}
+
+/* Holidays Card */
+.holidays-card {
+    background: var(--surface-card);
+    border-radius: 16px;
+    padding: 22px 24px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--surface-border);
+    animation: fadeSlideIn 0.5s ease both;
+    color: var(--text-color);
+}
+
+.holidays-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-color-secondary);
+    opacity: 0.75;
+    margin-bottom: 16px;
+}
+
+.holidays-empty {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-color-secondary);
+    font-size: 13px;
+    padding: 8px 0;
+}
+
+.holiday-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.holiday-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background-color: var(--surface-ground) !important;
+    border: 1px solid var(--surface-border);
+    transition: all 0.2s;
+    color: var(--text-color) !important;
+}
+
+.holiday-item:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+/*
+ * Badge usa --p-primary-500 (token primitivo do PrimeVue 4),
+ * que sempre aponta para a cor real da paleta (ex: emerald-500, purple-500),
+ * independente do light/dark mode semântico.
+ * Em dark mode (classe .app-dark no html), usa --p-primary-600 para garantir
+ * contraste com texto branco, já que alguns temas (noir) mapeiam --primary-color
+ * para tonalidades claras como surface.50.
+ */
+.holiday-date-badge {
+    background-color: var(--p-primary-500, var(--primary-color, #6366f1)) !important;
+    color: #ffffff !important;
+    border-radius: 8px;
+    width: 38px;
+    min-width: 38px;
+    text-align: center;
+    padding: 5px 0;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+:global(.app-dark) .holiday-date-badge {
+    background-color: var(--p-primary-600, var(--p-primary-500, #4f46e5)) !important;
+}
+
+.holiday-date-badge.badge-facultativo {
+    background-color: #3b82f6 !important;
+}
+
+:global(.app-dark) .holiday-date-badge.badge-facultativo {
+    background-color: #2563eb !important;
+}
+
+.holiday-date-num {
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1;
+    color: #ffffff !important;
     display: block;
-    margin-top: 1rem;
 }
 
-/* Customização do DatePicker - aumentar tamanho dos números e altura */
+.holiday-date-month {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.85) !important;
+    display: block;
+}
+
+.holiday-info {
+    flex: 1;
+}
+
+.holiday-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-color) !important;
+}
+
+.holiday-tag {
+    display: inline-block;
+    margin-top: 3px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--primary-color) !important;
+    background: rgba(var(--primary-color-rgb, 99, 102, 241), 0.12);
+    border-radius: 4px;
+    padding: 1px 6px;
+}
+
+.holiday-tag.tag-facultativo {
+    color: var(--blue-500, #3b82f6) !important;
+    background: rgba(59, 130, 246, 0.12);
+}
+
+/* ─── Right panel ────────────────────────────────────────────── */
+.right-panel {
+    animation: fadeSlideIn 0.45s ease both;
+}
+
+.agenda-card {
+    background: var(--surface-card);
+    border-radius: 16px;
+    padding: 28px 32px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--surface-border);
+    min-height: 500px;
+}
+
+/* Agenda header */
+.agenda-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--surface-border);
+}
+
+.agenda-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-color-secondary);
+    opacity: 0.75;
+    margin-bottom: 4px;
+}
+
+.agenda-title-text {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-color);
+    line-height: 1.3;
+    text-transform: capitalize;
+}
+
+/* New appointment button */
+.btn-new {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--green-500, #22c55e);
+    color: #ffffff !important;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 14px rgba(34, 197, 94, 0.3);
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+}
+
+.btn-new:hover {
+    background: var(--green-600, #16a34a);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+}
+
+.btn-new:active {
+    transform: translateY(0);
+}
+
+.btn-plus {
+    font-size: 18px;
+    line-height: 1;
+}
+
+/* ─── Time indicator ─────────────────────────────────────────── */
+.time-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.time-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-50);
+    animation: pulse 2s infinite;
+}
+
+.time-text {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-color-secondary);
+}
+
+/* ─── Appointment list ───────────────────────────────────────── */
+.appointments {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.appt-item {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 16px 20px;
+    border-radius: 10px;
+    border: 1.5px solid var(--surface-border);
+    background: var(--surface-ground);
+    cursor: pointer;
+    transition: all 0.22s;
+    position: relative;
+    overflow: hidden;
+}
+
+.appt-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--primary-color);
+    border-radius: 2px;
+}
+
+.appt-item:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transform: translateX(2px);
+    background: var(--surface-card);
+}
+
+.appt-time-block {
+    text-align: center;
+    min-width: 52px;
+}
+
+.appt-clock-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-color-secondary);
+    opacity: 0.5;
+    margin-bottom: 2px;
+}
+
+.appt-time {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--primary-color);
+    letter-spacing: -0.01em;
+}
+
+.appt-divider {
+    width: 1px;
+    height: 36px;
+    background: var(--surface-border);
+    flex-shrink: 0;
+}
+
+.appt-info {
+    flex: 1;
+}
+
+.appt-name {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-color);
+    letter-spacing: 0.01em;
+}
+
+.appt-arrow {
+    color: var(--text-color-secondary);
+    font-size: 16px;
+    opacity: 0.4;
+    transition: transform 0.2s, opacity 0.2s, color 0.2s;
+}
+
+.appt-item:hover .appt-arrow {
+    transform: translateX(3px);
+    color: var(--primary-color);
+    opacity: 1;
+}
+
+/* ─── Empty state ────────────────────────────────────────────── */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    gap: 12px;
+    text-align: center;
+}
+
+.empty-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--primary-50);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    margin-bottom: 4px;
+}
+
+.empty-icon .pi {
+    font-size: 24px;
+}
+
+.empty-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-color-secondary);
+}
+
+.empty-sub {
+    font-size: 13px;
+    color: var(--text-color-secondary);
+    opacity: 0.7;
+}
+
+/* ─── Animations ─────────────────────────────────────────────── */
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 3px var(--primary-50);
+    }
+    50% {
+        box-shadow: 0 0 0 6px var(--primary-100, rgba(0, 0, 0, 0.04));
+    }
+}
+
+/* ─── DatePicker deep customizations ─────────────────────────── */
 :deep(.custom-datepicker .p-datepicker) {
-    min-height: 400px;
-    max-height: 600px;
     width: 100%;
-    height: auto;
+    border: none;
+    border-radius: 16px;
+    background: var(--surface-card);
+    padding: 16px;
 }
 
 :deep(.custom-datepicker .p-datepicker-calendar) {
-    height: auto;
     width: 100%;
 }
 
@@ -643,46 +1000,35 @@ export default {
 }
 
 :deep(.custom-datepicker .p-datepicker-table td) {
-    padding: 0.4rem;
-    height: auto;
-    min-height: 3rem;
-    max-height: 4rem;
+    padding: 0.3rem;
 }
 
 :deep(.custom-datepicker .p-datepicker-calendar td span) {
     width: 100%;
-    height: 100%;
-    min-height: 3rem;
+    min-height: 2.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-
-/* Destacar datas com agendamento - usando JavaScript para adicionar classes após renderização */
-:deep(.custom-datepicker .p-datepicker-calendar td) {
-    position: relative;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: 50%;
 }
 
 :deep(.custom-datepicker .p-datepicker-weekday-cell) {
     text-align: center;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text-color);
-    padding: 0.4rem;
-    border-radius: 0.5rem;
-    background-color: var(--surface-card);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-color-secondary);
+    padding: 0.3rem;
+    opacity: 0.6;
 }
 
 :deep(.custom-datepicker .p-datepicker-title) {
-    text-align: center;
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: 600;
     color: var(--text-color);
-    padding: 0.4rem;
-    border-radius: 0.5rem;
-    background-color: var(--surface-card);
 }
 
 :deep(.custom-datepicker .p-datepicker-calendar td.has-appointment span) {
@@ -699,368 +1045,58 @@ export default {
     border-color: var(--primary-color) !important;
 }
 
-.agendamentos-card {
-    min-height: 600px;
-    display: flex;
-    flex-direction: column;
-}
-
-.agendamentos-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    flex: 1;
-    overflow-y: auto;
-}
-
-.agendamento-card {
-    background: var(--surface-card);
-    border: 1px solid var(--surface-border);
-    border-radius: 8px;
-    padding: 1rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.agendamento-card:hover {
-    background: var(--surface-hover);
-    border-color: var(--primary-color);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.agendamento-card-content {
-    width: 100%;
-}
-
-.agendamento-time {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--primary-color);
-    font-weight: 600;
-    min-width: 80px;
-}
-
-.agendamento-time i {
-    font-size: 1rem;
-}
-
-.agendamento-patient h6 {
-    margin: 0;
-    font-size: 1rem;
-}
-
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem 1rem;
-    text-align: center;
-    color: var(--text-color-secondary);
-}
-
-.empty-state i {
-    opacity: 0.5;
-}
-
-.empty-state p {
-    margin: 0;
-    font-size: 1rem;
-}
-
-/* Card de Feriados */
-.feriados-card {
-    background: var(--surface-card);
-    border: 1px solid var(--surface-border);
-    border-radius: 12px;
-    padding: 1.25rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.feriados-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 2px solid var(--surface-border);
-}
-
-.feriados-header i {
-    font-size: 1.5rem;
-    color: var(--primary-color);
-}
-
-.feriados-title {
-    margin: 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text-color);
-}
-
-.feriados-empty {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 1rem;
-    text-align: center;
-    justify-content: center;
-}
-
-.feriados-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.feriado-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.875rem;
-    background: var(--surface-ground);
-    border-radius: 8px;
-    border-left: 4px solid var(--primary-color);
-    transition: all 0.2s ease;
-}
-
-.feriado-item:hover {
-    background: var(--surface-hover);
-    transform: translateX(4px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.feriado-item.feriado-facultativo {
-    border-left-color: var(--blue-500);
-}
-
-.feriado-date {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-width: 50px;
-    padding: 0.5rem;
-    background: var(--primary-color);
-    border-radius: 8px;
-    color: white;
-    font-weight: 700;
-}
-
-.feriado-item.feriado-facultativo .feriado-date {
-    background: var(--blue-500);
-}
-
-.feriado-dia {
-    font-size: 1.25rem;
-    line-height: 1.2;
-}
-
-.feriado-mes {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    opacity: 0.9;
-    letter-spacing: 0.5px;
-}
-
-.feriado-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-}
-
-.feriado-nome {
-    font-weight: 600;
-    color: var(--text-color);
-    font-size: 0.95rem;
-    line-height: 1.4;
-}
-
-.feriado-tipo {
-    display: flex;
-    align-items: center;
-}
-
-/* Responsividade */
-/* Desktop - mostrar feriados na coluna esquerda */
-@media (min-width: 768px) {
-    .feriados-wrapper-desktop {
-        display: block;
-    }
-    
-    .feriados-wrapper-mobile {
-        display: none;
+/* ─── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+    .agendamentos-layout {
+        grid-template-columns: 280px 1fr;
+        gap: 16px;
     }
 }
 
-/* Telas médias (tablets) */
-@media (max-width: 1200px) {
-    .calendar-wrapper {
-        min-height: 350px;
-        max-height: 500px;
-    }
-    
-    :deep(.custom-datepicker .p-datepicker) {
-        min-height: 350px;
-        max-height: 500px;
-    }
-    
-    :deep(.custom-datepicker .p-datepicker-table td) {
-        padding: 0.3rem;
-        min-height: 2.5rem;
-        max-height: 3rem;
-    }
-    
-    :deep(.custom-datepicker .p-datepicker-calendar td span) {
-        min-height: 1.75rem;
-        max-height: 2rem;
-        font-size: 1rem;
-    }
-    
-    :deep(.custom-datepicker .p-datepicker-weekday-cell) {
-        font-size: 0.95rem;
-        padding: 0.3rem;
-    }
-    
-    :deep(.custom-datepicker .p-datepicker-title) {
-        font-size: 1rem;
-        padding: 0.3rem;
-    }
-}
-
-/* Telas pequenas (tablets pequenos) */
-@media (max-width: 992px) {
-    .calendar-wrapper {
-        min-height: 300px;
-        max-height: 450px;
-    }
-    
-    :deep(.custom-datepicker .p-datepicker) {
-        min-height: 300px;
-        max-height: 450px;
-    }
-    
-    :deep(.custom-datepicker .p-datepicker-table td) {
-        padding: 0.25rem;
-        min-height: 2rem;
-        max-height: 2.5rem;
-    }
-    
-    :deep(.custom-datepicker .p-datepicker-calendar td span) {
-        min-height: 1.5rem;
-        max-height: 1.75rem;
-        font-size: 0.9rem;
-    }
-    
-    :deep(.custom-datepicker .p-datepicker-weekday-cell) {
-        font-size: 0.85rem;
-        padding: 0.25rem;
-    }
-    
-    :deep(.custom-datepicker .p-datepicker-title) {
-        font-size: 0.9rem;
-        padding: 0.25rem;
-    }
-}
-
-/* Telas muito pequenas (mobile) */
 @media (max-width: 768px) {
-    .calendar-wrapper {
-        padding: 0;
-        margin-bottom: 1rem;
-        min-height: 280px;
-        max-height: 400px;
-    }
-    
-    :deep(.custom-datepicker .p-datepicker) {
-        min-height: 280px;
-        max-height: 400px;
-        width: 100%;
-    }
-    
-    :deep(.custom-datepicker .p-datepicker-table td) {
-        padding: 0.2rem;
-        min-height: 1.75rem;
-        max-height: 2rem;
-    }
-    
-    :deep(.custom-datepicker .p-datepicker-calendar td span) {
-        min-height: 1.25rem;
-        max-height: 1.5rem;
-        font-size: 0.8rem;
-    }
-    
-    :deep(.custom-datepicker .p-datepicker-weekday-cell) {
-        font-size: 0.75rem;
-        padding: 0.2rem;
-    }
-    
-    :deep(.custom-datepicker .p-datepicker-title) {
-        font-size: 0.85rem;
-        padding: 0.2rem;
-    }
-    
-    .agendamento-card {
-        padding: 0.75rem;
-    }
-    
-    .feriados-list {
+    .agendamentos-layout {
         grid-template-columns: 1fr;
+        gap: 20px;
     }
-    
-    .feriado-item {
-        padding: 0.75rem;
+
+    .agenda-card {
+        padding: 20px 18px;
     }
-    
-    .feriado-date {
-        min-width: 45px;
-        padding: 0.4rem;
+
+    .agenda-title-text {
+        font-size: 16px;
     }
-    
-    .feriado-dia {
-        font-size: 1.1rem;
+
+    .btn-new {
+        padding: 9px 14px;
+        font-size: 12px;
     }
-    
-    .feriado-nome {
-        font-size: 0.9rem;
+
+    .appt-item {
+        padding: 12px 14px;
+        gap: 12px;
+    }
+
+    :deep(.custom-datepicker .p-datepicker-calendar td span) {
+        min-height: 2rem;
+        font-size: 0.85rem;
     }
 }
 
-/* Telas extra pequenas */
 @media (max-width: 480px) {
-    .calendar-wrapper {
-        min-height: 250px;
-        max-height: 350px;
+    .agenda-header {
+        flex-direction: column;
+        align-items: flex-start;
     }
-    
-    :deep(.custom-datepicker .p-datepicker) {
-        min-height: 250px;
-        max-height: 350px;
+
+    .btn-new {
+        width: 100%;
+        justify-content: center;
     }
-    
-    :deep(.custom-datepicker .p-datepicker-table td) {
-        padding: 0.15rem;
-        min-height: 1.5rem;
-        max-height: 1.75rem;
-    }
-    
+
     :deep(.custom-datepicker .p-datepicker-calendar td span) {
-        min-height: 2.5rem;
-        font-size: 0.7rem;
-    }
-    
-    :deep(.custom-datepicker .p-datepicker-weekday-cell) {
-        font-size: 0.7rem;
-        padding: 0.15rem;
-    }
-    
-    :deep(.custom-datepicker .p-datepicker-title) {
-        font-size: 0.75rem;
-        padding: 0.15rem;
+        min-height: 1.75rem;
+        font-size: 0.8rem;
     }
 }
 </style>
-
