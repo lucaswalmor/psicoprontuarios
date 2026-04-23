@@ -1,4 +1,8 @@
 :root {
+    /* Alinhado a dashboard-clinic.scss / DashboardGeral + FinanceiroDashboard */
+    --app-font-display: 'Source Serif 4', 'Georgia', serif;
+    --app-font-ui: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+
     --primary-color: var(--p-primary-color);
     --primary-contrast-color: var(--p-primary-contrast-color);
     --text-color: var(--p-text-color);

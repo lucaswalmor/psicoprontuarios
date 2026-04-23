@@ -1,8 +1,8 @@
 /* Estética dashboard: contexto clínico / saúde mental — só aplica onde existir .dash-clinic */
 
 .dash-clinic {
-    --dc-font-display: 'Source Serif 4', 'Georgia', serif;
-    --dc-font-ui: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --dc-font-display: var(--app-font-display);
+    --dc-font-ui: var(--app-font-ui);
     /* Cor de destaque = primária do tema (configurador de paleta / claro-escuro na topbar) */
     --dc-accent: var(--primary-color);
     --dc-accent-deep: color-mix(in srgb, var(--primary-color) 75%, var(--text-color) 25%);
