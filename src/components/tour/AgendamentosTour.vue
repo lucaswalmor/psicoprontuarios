@@ -1,5 +1,6 @@
 <template>
     <VOnboardingWrapper
+        v-if="!dismissed"
         ref="wrapper"
         :steps="steps"
         :options="wrapperOptions"
@@ -145,6 +146,7 @@ export default {
     components: { VOnboardingWrapper, VOnboardingStep },
     data() {
         return {
+            dismissed: false,
             steps: STEPS,
             wrapperOptions: {
                 autoFinishByExit: true,
@@ -159,7 +161,8 @@ export default {
         };
     },
     mounted() {
-        if (!this.isTourDismissed()) {
+        this.dismissed = this.isTourDismissed();
+        if (!this.dismissed) {
             this.scheduleAutoStart();
         }
     },
@@ -181,6 +184,12 @@ export default {
             } catch {
                 /* ignore */
             }
+            this.dismissed = true;
+            try {
+                this.$refs.wrapper?.finish?.();
+            } catch {
+                /* ignore */
+            }
         },
         scheduleAutoStart() {
             clearTimeout(this._autoStartTimer);
@@ -189,7 +198,7 @@ export default {
             }, 500);
         },
         tryStartWithRetry(attempt) {
-            if (this.isTourDismissed()) return;
+            if (this.dismissed || this.isTourDismissed()) return;
             const el = document.querySelector(FIRST_TARGET);
             if (el) {
                 const rect = el.getBoundingClientRect();

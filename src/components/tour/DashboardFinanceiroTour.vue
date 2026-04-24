@@ -1,5 +1,6 @@
 <template>
     <VOnboardingWrapper
+        v-if="!dismissed"
         ref="wrapper"
         :steps="steps"
         :options="wrapperOptions"
@@ -114,6 +115,7 @@ export default {
     components: { VOnboardingWrapper, VOnboardingStep },
     data() {
         return {
+            dismissed: false,
             steps: STEPS,
             wrapperOptions: {
                 autoFinishByExit: true,
@@ -128,7 +130,8 @@ export default {
         };
     },
     mounted() {
-        if (!this.isTourDismissed()) {
+        this.dismissed = this.isTourDismissed();
+        if (!this.dismissed) {
             /* Aguarda o DOM estabilizar e então observa a visibilidade do 1º elemento.
                Quando a aba Financeiro é ativada (display: none → block),
                o IntersectionObserver dispara e o tour inicia automaticamente. */
@@ -153,14 +156,22 @@ export default {
             } catch {
                 /* ignore */
             }
+            this.dismissed = true;
+            this.destroyObserver();
+            try {
+                this.$refs.wrapper?.finish?.();
+            } catch {
+                /* ignore */
+            }
         },
         watchForVisibility() {
+            if (this.dismissed || this.isTourDismissed()) return;
             const el = document.querySelector(FIRST_TARGET);
             if (!el) return;
 
             this._observer = new IntersectionObserver(
                 (entries) => {
-                    if (entries[0].isIntersecting && !this.isTourDismissed()) {
+                    if (entries[0].isIntersecting && !this.dismissed && !this.isTourDismissed()) {
                         this.destroyObserver();
                         this.start();
                     }
