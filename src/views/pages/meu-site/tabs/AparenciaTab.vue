@@ -5,7 +5,13 @@
                 <h6 class="m-0">Aparência</h6>
                 <p class="text-color-secondary text-sm m-0 mt-1">Personalize as cores da sua landing page.</p>
             </div>
-            <Button label="Salvar cores" icon="pi pi-check" :loading="salvando" @click="salvar" />
+            <Button
+                data-tour="tour-meusite-apar-salvar"
+                label="Salvar cores"
+                icon="pi pi-check"
+                :loading="salvando"
+                @click="salvar"
+            />
         </div>
 
         <Divider />
@@ -13,11 +19,16 @@
         <div class="grid mt-3">
             <div class="col-12 xl:col-7">
                 <div class="grid">
-                    <div class="col-12 md:col-6 lg:col-4" v-for="cor in coresConfig" :key="cor.campo">
+                    <div
+                        class="col-12 md:col-6 xl:col-4"
+                        v-for="cor in coresConfig"
+                        :key="cor.campo"
+                        :data-tour="'tour-meusite-apar-' + cor.campo"
+                    >
                         <div class="field">
                             <label class="font-medium text-sm block mb-1">{{ cor.label }}</label>
                             <p class="text-color-secondary text-xs m-0 mb-2">{{ cor.descricao }}</p>
-                            <div class="flex align-items-center gap-2">
+                            <div class="flex align-items-center gap-2 color-row">
                                 <input
                                     type="color"
                                     :value="form[cor.campo]"
@@ -27,7 +38,7 @@
                                 <InputText
                                     v-model="form[cor.campo]"
                                     :placeholder="cor.padrao"
-                                    class="flex-1 font-mono text-sm"
+                                    class="flex-1 font-mono text-sm color-hex"
                                     maxlength="7"
                                 />
                                 <div
@@ -41,11 +52,12 @@
             </div>
 
             <div class="col-12 xl:col-5">
-                <div class="preview-card surface-card border-1 border-round surface-border overflow-hidden">
+                <div class="preview-card surface-card border-1 border-round surface-border overflow-hidden" data-tour="tour-meusite-apar-preview">
                     <div class="flex align-items-center justify-content-between px-3 py-2 border-bottom-1 surface-border">
                         <span class="font-medium text-sm">Pré-visualização do site</span>
                         <Button
                             v-if="urlPreviewSite"
+                            data-tour="tour-meusite-apar-refresh"
                             type="button"
                             icon="pi pi-refresh"
                             severity="secondary"
@@ -185,6 +197,20 @@ export default {
     height: 36px;
     border: 1px solid var(--surface-border);
     flex-shrink: 0;
+}
+
+.color-row {
+    min-width: 0;
+    flex-wrap: wrap;
+}
+
+.color-hex {
+    min-width: 8.5rem;
+    flex: 1 1 9.5rem;
+}
+
+.preview-card {
+    min-width: 0;
 }
 
 .preview-frame-wrap {

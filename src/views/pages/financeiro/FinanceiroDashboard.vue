@@ -1,5 +1,6 @@
 <template>
     <div class="dash-clinic">
+    <DashboardFinanceiroTour />
     <div class="grid">
         <div class="col-12">
             <div class="flex flex-wrap gap-2 justify-content-end align-items-center mb-3">
@@ -19,6 +20,7 @@
                 <div class="col-12 md:col-4">
                     <div
                         class="card dash-metric card-clickable"
+                        data-tour="tour-fin-receitas"
                         :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''"
                         @click="$router.push('/financeiro/receitas')"
                     >
@@ -36,6 +38,7 @@
                 <div class="col-12 md:col-4">
                     <div
                         class="card dash-metric card-clickable"
+                        data-tour="tour-fin-despesas"
                         :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''"
                         @click="$router.push('/financeiro/despesas')"
                     >
@@ -51,7 +54,11 @@
                     </div>
                 </div>
                 <div class="col-12 md:col-4">
-                    <div class="card dash-metric" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
+                    <div
+                        class="card dash-metric"
+                        data-tour="tour-fin-saldo"
+                        :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''"
+                    >
                         <div class="flex align-items-center justify-content-between gap-3 pl-2">
                             <div class="flex-1 min-w-0">
                                 <span class="dash-metric__label">Saldo</span>
@@ -71,7 +78,7 @@
             <!-- Gráficos -->
             <div class="grid">
                 <div class="col-12 md:col-12">
-                    <div class="card">
+                    <div class="card" data-tour="tour-fin-fluxo">
                         <h6 class="mb-3">Fluxo de caixa</h6>
                         
                         <!-- Filtros de Data -->
@@ -147,7 +154,7 @@
             <!-- Resumo Anual -->
             <div class="grid">
                 <div class="col-12">
-                    <div class="card">
+                    <div class="card" data-tour="tour-fin-resumo-anual">
                         <h6 class="mb-3">Resumo anual</h6>
                         <div class="grid">
                             <div class="col-12 md:col-4">
@@ -176,7 +183,7 @@
             </div>
 
             <!-- Categorias -->
-            <div class="grid">
+            <div class="grid" data-tour="tour-fin-categorias">
                 <div class="col-12 md:col-6">
                     <div class="card">
                         <h6 class="mb-3">Receitas por categoria</h6>
@@ -221,6 +228,7 @@
 </template>
 
 <script>
+import DashboardFinanceiroTour from '@/components/tour/DashboardFinanceiroTour.vue';
 import DrawerFilterFinanceiro from '@/components/drawers/DrawerFilterFinanceiro.vue';
 import { useThemeStore } from '@/store/theme';
 import { usePlanStore } from '@/store/plan';
@@ -236,7 +244,8 @@ import {
 export default {
     name: 'FinanceiroDashboard',
     components: {
-        DrawerFilterFinanceiro
+        DrawerFilterFinanceiro,
+        DashboardFinanceiroTour
     },
     props: {
         lazy: {

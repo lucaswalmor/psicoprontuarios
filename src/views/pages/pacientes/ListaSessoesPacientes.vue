@@ -3,7 +3,10 @@
         <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-start lg:align-items-center gap-3 mb-4">
             <div class="flex flex-column sm:flex-row sm:flex-wrap sm:align-items-center gap-2 md:gap-3 min-w-0 w-full">
                 <h5 class="text-500 mb-0 break-words">Lista de Sessões</h5>
-                <div class="flex align-items-center gap-2 flex-wrap shrink-0">
+                <div
+                    data-tour="tour-ficha-sessoes-periodo"
+                    class="flex align-items-center gap-2 flex-wrap shrink-0"
+                >
                     <Button
                         icon="pi pi-chevron-left"
                         class="p-button-text p-button-sm shrink-0"
@@ -19,15 +22,21 @@
                     />
                 </div>
             </div>
-            <Button
+            <span
                 v-if="!planStore.isPlanPaused"
-                class="w-full sm:w-auto md:shrink-0"
-                label="Nova Sessão"
-                icon="pi pi-plus"
-                @click="abrirDialogNovaSessao"
-            />
+                data-tour="tour-ficha-sessoes-nova"
+                class="inline-flex w-full sm:w-auto md:shrink-0"
+            >
+                <Button
+                    class="w-full sm:w-auto md:shrink-0"
+                    label="Nova Sessão"
+                    icon="pi pi-plus"
+                    @click="abrirDialogNovaSessao"
+                />
+            </span>
         </div>
         
+        <div data-tour="tour-ficha-sessoes-tabela">
         <DataTable :value="agendamentos" :loading="loading" tableStyle="min-width: 50rem" 
                    paginator :rows="perPage" :totalRecords="totalAgendamentos" :lazy="true" 
                    @page="onPageChange">
@@ -78,6 +87,7 @@
                 </div>
             </template>
         </DataTable>
+        </div>
 
         <!-- Dialog Nova Sessão -->
         <DialogNovoAgendamento 

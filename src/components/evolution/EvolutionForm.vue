@@ -3,7 +3,7 @@
         <h6 class="mb-3 text-800 font-bold">Configurar WhatsApp</h6>
         <p class="text-600 mb-4">Informe o número que será usado para conectar o WhatsApp.</p>
 
-        <div class="mb-3">
+        <div class="mb-3" data-tour="tour-config-wa-telefone">
             <label for="evolution-phone" class="form-label">Número de WhatsApp</label>
             <InputText
                 id="evolution-phone"
@@ -20,7 +20,9 @@
             Identificador: {{ instanceName || '-' }}
         </small>
 
-        <Button label="Salvar" icon="pi pi-save" :loading="loading" @click="handleSalvar" />
+        <span data-tour="tour-config-wa-salvar" class="inline-flex">
+            <Button label="Salvar" icon="pi pi-save" :loading="loading" @click="handleSalvar" />
+        </span>
     </div>
 </template>
 

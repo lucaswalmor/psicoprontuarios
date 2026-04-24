@@ -5,7 +5,13 @@
                 <h6 class="m-0">Configurações Gerais</h6>
                 <p class="text-color-secondary text-sm m-0 mt-1">Dados de contato e endereço exibidos na landing page.</p>
             </div>
-            <Button label="Salvar" icon="pi pi-check" :loading="salvando" @click="salvar" />
+            <Button
+                data-tour="tour-meusite-geral-salvar"
+                label="Salvar"
+                icon="pi pi-check"
+                :loading="salvando"
+                @click="salvar"
+            />
         </div>
 
         <Divider />
@@ -14,16 +20,20 @@
             <!-- Slug editável -->
             <div class="field col-12">
                 <label class="font-medium text-sm">Endereço do seu site (subdomínio)</label>
-                <div class="flex align-items-stretch gap-2 mt-1 flex-wrap">
-                    <span class="flex align-items-center text-color-secondary text-sm px-2 border-round surface-100">psicoprontuarios.com.br/</span>
-                    <InputText
-                        v-model="form.slug"
-                        class="flex-1"
-                        style="min-width: 180px"
-                        placeholder="ex.: ana-silva"
-                        :invalid="slugIndisponivel"
-                        @blur="verificarSlug"
-                    />
+                <div class="flex align-items-stretch gap-2 mt-1 flex-wrap slug-host-row">
+                    <div class="slug-input-wrap">
+                        <InputText
+                            v-model="form.slug"
+                            data-tour="tour-meusite-geral-slug"
+                            class="w-full"
+                            placeholder="ex.: ana-silva"
+                            :invalid="slugIndisponivel"
+                            @blur="verificarSlug"
+                        />
+                    </div>
+                    <span
+                        class="flex align-items-center text-color-secondary text-sm px-2 border-round surface-100 shrink-0"
+                    >.psicoprontuarios.com.br</span>
                 </div>
                 <small v-if="slugAjuda" class="block mt-1" :class="slugIndisponivel ? 'text-red-500' : 'text-color-secondary'">
                     {{ slugAjuda }}
@@ -36,29 +46,36 @@
             <!-- CRP -->
             <div class="field col-12 md:col-6">
                 <label class="font-medium text-sm">CRP</label>
-                <InputText v-model="form.crp" placeholder="Ex: 06/123456" class="w-full mt-1" />
+                <InputText v-model="form.crp" data-tour="tour-meusite-geral-crp" placeholder="Ex: 06/123456" class="w-full mt-1" />
             </div>
 
             <!-- WhatsApp -->
             <div class="field col-12 md:col-6">
                 <label class="font-medium text-sm">WhatsApp</label>
-                <InputText v-model="form.whatsapp" placeholder="(11) 9 9999-0000" class="w-full mt-1" />
+                <InputText v-model="form.whatsapp" data-tour="tour-meusite-geral-whatsapp" placeholder="(11) 9 9999-0000" class="w-full mt-1" />
             </div>
 
             <!-- E-mail -->
             <div class="field col-12 md:col-6">
                 <label class="font-medium text-sm">E-mail de contato</label>
-                <InputText v-model="form.email" placeholder="contato@exemplo.com.br" class="w-full mt-1" />
+                <InputText v-model="form.email" data-tour="tour-meusite-geral-email" placeholder="contato@exemplo.com.br" class="w-full mt-1" />
             </div>
 
             <!-- Endereço -->
             <div class="field col-12">
                 <label class="font-medium text-sm">Endereço</label>
-                <Textarea v-model="form.endereco" rows="2" placeholder="Rua das Flores, 100 · Centro · São Paulo – SP" class="w-full mt-1" auto-resize />
+                <Textarea
+                    v-model="form.endereco"
+                    data-tour="tour-meusite-geral-endereco"
+                    rows="2"
+                    placeholder="Rua das Flores, 100 · Centro · São Paulo – SP"
+                    class="w-full mt-1"
+                    auto-resize
+                />
             </div>
 
             <!-- Tipo de atendimento -->
-            <div class="field col-12 md:col-6">
+            <div class="field col-12 md:col-6" data-tour="tour-meusite-geral-tipo-atendimento">
                 <label class="font-medium text-sm">Tipo de atendimento</label>
                 <Dropdown
                     v-model="form.tipo_atendimento"
@@ -208,3 +225,12 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+/* Slug: largura limitada — antes o flex-1 esticava o campo na coluna inteira */
+.slug-input-wrap {
+    flex: 0 1 auto;
+    width: min(13rem, 100%);
+    min-width: 7rem;
+}
+</style>

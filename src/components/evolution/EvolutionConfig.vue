@@ -1,5 +1,8 @@
 <template>
-    <div class="surface-card p-4 border-round border-1 surface-border evolution-config-card">
+    <div
+        class="surface-card p-4 border-round border-1 surface-border evolution-config-card"
+        data-tour="tour-config-wa-root"
+    >
         <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
             <div>
                 <h6 class="mb-1 text-800 font-bold">Integração com WhatsApp</h6>
@@ -13,7 +16,7 @@
             <ProgressSpinner />
         </div>
 
-        <div v-else>
+        <div v-else data-tour="tour-config-wa-conteudo">
             <EvolutionForm
                 v-if="!hasInstance"
                 :instanceName="predictedInstanceName"

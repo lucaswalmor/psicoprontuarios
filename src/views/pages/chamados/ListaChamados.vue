@@ -1,6 +1,9 @@
 <script>
+import ListaChamadosTour from '@/components/tour/chamados/ListaChamadosTour.vue';
+
 export default {
     name: 'ListaChamados',
+    components: { ListaChamadosTour },
     data() {
         return {
             chamados: [],
@@ -79,18 +82,31 @@ export default {
 
 <template>
     <div class="card">
-        <div class="header-row">
+        <ListaChamadosTour />
+
+        <div class="header-row" data-tour="tour-chamados-header">
             <div>
-                <h1 class="page-title">Meus Chamados</h1>
+                <h1 class="page-title" data-tour="tour-chamados-titulo">Meus Chamados</h1>
                 <p class="page-subtitle">Acompanhe os atendimentos e respostas do suporte.</p>
             </div>
-            <Button label="Novo Chamado" icon="pi pi-plus" @click="$router.push('/chamados/novo')" />
+            <Button
+                label="Novo Chamado"
+                icon="pi pi-plus"
+                data-tour="tour-chamados-novo"
+                @click="$router.push('/chamados/novo')"
+            />
         </div>
 
-        <div class="filters-row">
-            <InputText v-model="busca" placeholder="Buscar por título ou mensagem..." @keyup.enter="aplicarFiltros" />
+        <div class="filters-row" data-tour="tour-chamados-filtros">
+            <InputText
+                v-model="busca"
+                data-tour="tour-chamados-busca"
+                placeholder="Buscar por título ou mensagem..."
+                @keyup.enter="aplicarFiltros"
+            />
             <Dropdown
                 v-model="filtroStatus"
+                data-tour="tour-chamados-status"
                 :options="statusOptions"
                 optionLabel="label"
                 optionValue="value"
@@ -98,13 +114,20 @@ export default {
                 showClear
                 class="w-full md:w-14rem"
             />
-            <Button label="Filtrar" icon="pi pi-filter" severity="secondary" @click="aplicarFiltros" />
-            <Button label="Limpar" text @click="limparFiltros" />
+            <Button
+                label="Filtrar"
+                icon="pi pi-filter"
+                severity="secondary"
+                data-tour="tour-chamados-filtrar"
+                @click="aplicarFiltros"
+            />
+            <Button label="Limpar" text data-tour="tour-chamados-limpar" @click="limparFiltros" />
         </div>
 
         <DataTable
             :value="chamados"
             :loading="loading"
+            data-tour="tour-chamados-tabela"
             paginator
             lazy
             :rows="rows"

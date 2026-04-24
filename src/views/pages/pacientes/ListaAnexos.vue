@@ -1,9 +1,13 @@
 <template>
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div
+        data-tour="tour-ficha-anexos-upload"
+        class="d-flex justify-content-between align-items-center mb-4"
+    >
         <Button label="Upload de Anexo" icon="pi pi-upload"
             @click="abrirDialogUploadAnexo" />
     </div>
 
+    <div data-tour="tour-ficha-anexos-tabela">
     <DataTable :value="anexos" :loading="loading" tableStyle="min-width: 50rem"
         :emptyMessage="'Nenhum anexo encontrado'">
         <Column field="nome_original" header="Nome do Arquivo" sortable>
@@ -50,6 +54,7 @@
             </div>
         </template>
     </DataTable>
+    </div>
 
     <DialogUploadAnexo :visible="dialogUploadAnexo" :paciente="paciente" @update:visible="onUpdateDialogUploadAnexo"
         @anexo-uploaded="onAnexoUploaded" />

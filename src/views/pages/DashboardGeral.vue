@@ -1,5 +1,6 @@
 <template>
     <div class="dash-clinic">
+        <DashboardGeralTour />
         <div class="grid">
             <div class="col-12">
                 <div class="dash-clinic-shell card p-0 overflow-hidden">
@@ -21,6 +22,7 @@
                             <div class="col-12 md:col-4">
                                 <div
                                     class="card dash-metric cursor-pointer"
+                                    data-tour="tour-clinica-pacientes"
                                     :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''"
                                     @click="$router.push('/pacientes')"
                                 >
@@ -40,6 +42,7 @@
                             <div class="col-12 md:col-4">
                                 <div
                                     class="card dash-metric cursor-pointer"
+                                    data-tour="tour-clinica-sessoes"
                                     :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''"
                                     @click="$router.push('/agendamentos')"
                                 >
@@ -57,7 +60,11 @@
 
                             <!-- Prontuários 30 dias -->
                             <div class="col-12 md:col-4">
-                                <div class="card dash-metric" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
+                                <div
+                                    class="card dash-metric"
+                                    data-tour="tour-clinica-prontuarios"
+                                    :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''"
+                                >
                                     <div class="flex align-items-center justify-content-between gap-3 pl-2">
                                         <div class="flex-1 min-w-0">
                                             <span class="dash-metric__label">Prontuários (30 dias)</span>
@@ -74,7 +81,7 @@
                         <!-- Card Pacientes por Status -->
                         <div class="grid mt-4">
                             <div class="col-12">
-                                <div class="card" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
+                                <div class="card" data-tour="tour-clinica-status" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
                                     <h6>Pacientes por status</h6>
                                     <div class="dash-status-grid">
                                         <div class="dash-status-pill">
@@ -98,7 +105,7 @@
                         </div>
 
                         <!-- Cards de Estatísticas Detalhadas -->
-                        <div class="grid mt-4">
+                        <div class="grid mt-4" data-tour="tour-clinica-metricas">
                             <!-- Tempo Médio de Tratamento -->
                             <div class="col-12 md:col-3">
                                 <div class="card dash-metric" :class="themeStore.theme === 'dark' ? 'bg-white-alpha-10' : ''">
@@ -169,7 +176,7 @@
                         <div class="grid mt-4" v-if="isPlanoProfissional">
                             <!-- Próxima Sessão -->
                             <div class="col-12 md:col-6">
-                                <div class="card dash-feature p-4">
+                                <div class="card dash-feature p-4" data-tour="tour-clinica-proxima-sessao">
                                     <div class="flex flex-column h-full">
                                         <div class="flex align-items-center justify-content-between mb-3 gap-2">
                                             <h6 class="dash-feature__title mb-0 border-none p-0">Próxima sessão</h6>
@@ -219,7 +226,7 @@
 
                             <!-- Aniversariantes do Mês -->
                             <div class="col-12 md:col-6">
-                                <div class="card dash-feature dash-feature--warm p-4">
+                                <div class="card dash-feature dash-feature--warm p-4" data-tour="tour-clinica-aniversariantes">
                                     <div class="flex flex-column h-full">
                                         <div class="flex align-items-center justify-content-between mb-3 gap-2">
                                             <h6 class="dash-feature__title mb-0 border-none p-0">Aniversariantes do mês</h6>
@@ -277,7 +284,7 @@
                         </div>
 
                         <!-- Gráficos de Distribuição -->
-                        <div class="grid mt-4">
+                        <div class="grid mt-4" data-tour="tour-clinica-graficos-dist">
                             <!-- Distribuição por Gênero -->
                             <div class="col-12 md:col-6">
                                 <div class="card">
@@ -300,7 +307,7 @@
                         <!-- Gráfico de Evolução de Status -->
                         <div class="grid mt-4">
                             <div class="col-12">
-                                <div class="card">
+                                <div class="card" data-tour="tour-clinica-evolucao-status">
                                     <h6 class="mb-3">Evolução de Status (6 meses)</h6>
                                     <Chart type="line" :data="statusEvolutionChartData" :options="statusEvolutionChartOptions"
                                         class="h-[300px]" />
@@ -324,7 +331,7 @@
                         <div class="grid mt-4">
                             <!-- Gráfico Barra - Evolução de Pacientes -->
                             <div class="col-12">
-                                <div class="card">
+                                <div class="card" data-tour="tour-clinica-evolucao-pacientes">
                                     <h6 class="mb-3">Evolução de Pacientes (6 meses)</h6>
                                     <Chart type="bar" :data="barChartData" :options="barChartOptions"
                                         class="h-[200px]" />
@@ -333,7 +340,7 @@
                         </div>
 
                         <!-- Listagens Rápidas -->
-                        <div class="grid mt-4">
+                        <div class="grid mt-4" data-tour="tour-clinica-ultimos">
                             <!-- Últimos Pacientes -->
                             <div class="col-12 md:col-6">
                                 <div class="card">
@@ -398,6 +405,7 @@
 <script>
 import { usePlanStore } from '@/store/plan';
 import { useThemeStore } from '@/store/theme';
+import DashboardGeralTour from '@/components/tour/DashboardGeralTour.vue';
 import FinanceiroDashboard from '@/views/pages/financeiro/FinanceiroDashboard.vue';
 import {
     darkenCssColor,
@@ -412,7 +420,8 @@ import {
 export default {
     name: 'DashboardGeral',
     components: {
-        FinanceiroDashboard
+        FinanceiroDashboard,
+        DashboardGeralTour
     },
     data() {
         return {

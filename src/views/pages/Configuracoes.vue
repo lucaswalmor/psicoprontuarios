@@ -1,6 +1,15 @@
 <template>
     <div class="grid">
         <div class="col-12">
+            <!-- Tours: um componente por aba (passos no próprio .vue) -->
+            <ConfiguracaoPlanoTour v-if="planoConteudoModo !== null" :modo="planoConteudoModo" />
+            <ConfiguracaoWhatsappTour
+                v-if="podeRecursoPro"
+                :key="'wa-tour-' + whatsappTourModo"
+                :tour-modo="whatsappTourModo"
+            />
+            <ConfiguracaoNotificacoesTour v-if="mostrarAbaNotificacoes" />
+
             <div class="card p-1">
                 <h5 class="mb-4 m-3">Configurações</h5>
 
@@ -32,7 +41,10 @@
                     <TabPanels>
                         <TabPanel value="0">
                             <div class="p-4 config-tab-body">
-                                <ConfiguracaoPlanoTab v-if="activeTab === '0'" />
+                                <ConfiguracaoPlanoTab
+                                    v-if="activeTab === '0'"
+                                    @plano-conteudo="onPlanoConteudo"
+                                />
                             </div>
                         </TabPanel>
 
@@ -55,13 +67,13 @@
                         <TabPanel v-if="mostrarAbaNotificacoes" value="2">
                             <div class="p-4 config-tab-body">
                                 <div class="row">
-                                    <div class="col-12 mb-4">
+                                    <div class="col-12 mb-4" data-tour="tour-config-notif-intro">
                                         <h5>Central de Notificações</h5>
                                         <p>Configure mensagens automáticas enviadas via WhatsApp para seus pacientes.</p>
                                     </div>
 
                                     <div class="col-md-4">
-                                        <div class="card h-100">
+                                        <div class="card h-100" data-tour="tour-config-notif-datas">
                                             <div class="card-body text-center d-flex flex-column">
                                                 <div class="fs-1 mb-2">🎉</div>
                                                 <h6 class="card-title notificacao-card-title">Datas Comemorativas</h6>
@@ -84,7 +96,7 @@
                                     </div>
 
                                     <div class="col-md-4">
-                                        <div class="card h-100">
+                                        <div class="card h-100" data-tour="tour-config-notif-aniv">
                                             <div class="card-body text-center d-flex flex-column">
                                                 <div class="fs-1 mb-2">🎂</div>
                                                 <h6 class="card-title notificacao-card-title">Aniversariantes</h6>
@@ -107,7 +119,7 @@
                                     </div>
 
                                     <div class="col-md-4">
-                                        <div class="card h-100 opacity-50">
+                                        <div class="card h-100 opacity-50" data-tour="tour-config-notif-personal">
                                             <div class="card-body text-center d-flex flex-column">
                                                 <div class="fs-1 mb-2">✉️</div>
                                                 <h6 class="card-title notificacao-card-title">Mensagens Personalizadas</h6>
@@ -143,12 +155,18 @@ import TabList from 'primevue/tablist';
 import TabPanel from 'primevue/tabpanel';
 import TabPanels from 'primevue/tabpanels';
 import Tabs from 'primevue/tabs';
+import ConfiguracaoPlanoTour from '@/components/tour/configuracoes/ConfiguracaoPlanoTour.vue';
+import ConfiguracaoWhatsappTour from '@/components/tour/configuracoes/ConfiguracaoWhatsappTour.vue';
+import ConfiguracaoNotificacoesTour from '@/components/tour/configuracoes/ConfiguracaoNotificacoesTour.vue';
 
 export default {
     name: 'Configuracoes',
     components: {
         Button,
+        ConfiguracaoNotificacoesTour,
         ConfiguracaoPlanoTab,
+        ConfiguracaoPlanoTour,
+        ConfiguracaoWhatsappTour,
         EvolutionConfig,
         PlanoPro,
         Tag,
@@ -165,6 +183,8 @@ export default {
             handleStatsUpdate: null,
             evolutionConectado: false,
             evolutionPrefetch: null,
+            /** null até ConfiguracaoPlanoTab emitir — evita tour com alvos errados antes do painel carregar */
+            planoConteudoModo: null
         };
     },
     computed: {
@@ -175,6 +195,12 @@ export default {
         mostrarAbaNotificacoes() {
             return this.podeRecursoPro && this.evolutionConectado;
         },
+        /** Define passos do tour (telefone + Salvar só quando ainda não há instância) */
+        whatsappTourModo() {
+            const p = this.evolutionPrefetch;
+            if (p == null) return 'loading';
+            return p.instance ? 'instancia_existente' : 'nova_instancia';
+        }
     },
     watch: {
         mostrarAbaNotificacoes(visivel) {
@@ -210,6 +236,9 @@ export default {
         await this.carregarEstadoEvolution();
     },
     methods: {
+        onPlanoConteudo({ modo }) {
+            this.planoConteudoModo = modo === 'full' ? 'full' : 'simples';
+        },
         onEvolutionStateChange({ instance, status }) {
             this.evolutionPrefetch = { instance, status: status || 'disconnected' };
             this.evolutionConectado = (status || '') === 'connected';

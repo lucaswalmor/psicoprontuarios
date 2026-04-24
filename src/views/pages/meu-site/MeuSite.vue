@@ -36,18 +36,28 @@
 
                     <TabPanels>
                         <TabPanel value="0">
+                            <!-- Tour por aba (passos no .vue do tour) -->
+                            <MeuSiteGeralTour v-if="activeTab === '0'" />
                             <GeralTab v-if="activeTab === '0'" :dados="dados" @salvo="onSalvo" />
                         </TabPanel>
                         <TabPanel value="1">
+                            <MeuSiteAparenciaTour
+                                v-if="activeTab === '1'"
+                                :key="'meusite-apar-' + temSlugPreview"
+                                :tem-preview="temSlugPreview"
+                            />
                             <AparenciaTab v-if="activeTab === '1'" :dados="dados" @salvo="onSalvo" />
                         </TabPanel>
                         <TabPanel value="2">
+                            <MeuSiteTextosTour v-if="activeTab === '2'" />
                             <TextosTab v-if="activeTab === '2'" :dados="dados" @salvo="onSalvo" />
                         </TabPanel>
                         <TabPanel value="3">
+                            <MeuSiteEspecialidadesTour v-if="activeTab === '3'" />
                             <EspecialidadesTab v-if="activeTab === '3'" :dados="dados" @salvo="onSalvo" />
                         </TabPanel>
                         <TabPanel value="4">
+                            <MeuSiteHorariosTour v-if="activeTab === '4'" />
                             <HorariosTab v-if="activeTab === '4'" :dados="dados" @salvo="onSalvo" />
                         </TabPanel>
                         <TabPanel value="5">
@@ -74,10 +84,33 @@ import TextosTab from './tabs/TextosTab.vue';
 import EspecialidadesTab from './tabs/EspecialidadesTab.vue';
 import HorariosTab from './tabs/HorariosTab.vue';
 import FotoTab from './tabs/FotoTab.vue';
+import MeuSiteGeralTour from '@/components/tour/meu-site/MeuSiteGeralTour.vue';
+import MeuSiteAparenciaTour from '@/components/tour/meu-site/MeuSiteAparenciaTour.vue';
+import MeuSiteTextosTour from '@/components/tour/meu-site/MeuSiteTextosTour.vue';
+import MeuSiteEspecialidadesTour from '@/components/tour/meu-site/MeuSiteEspecialidadesTour.vue';
+import MeuSiteHorariosTour from '@/components/tour/meu-site/MeuSiteHorariosTour.vue';
 
 export default {
     name: 'MeuSite',
-    components: { Tab, TabList, TabPanel, TabPanels, Tabs, ProgressSpinner, GeralTab, AparenciaTab, TextosTab, EspecialidadesTab, HorariosTab, FotoTab },
+    components: {
+        Tab,
+        TabList,
+        TabPanel,
+        TabPanels,
+        Tabs,
+        ProgressSpinner,
+        GeralTab,
+        AparenciaTab,
+        TextosTab,
+        EspecialidadesTab,
+        HorariosTab,
+        FotoTab,
+        MeuSiteGeralTour,
+        MeuSiteAparenciaTour,
+        MeuSiteTextosTour,
+        MeuSiteEspecialidadesTour,
+        MeuSiteHorariosTour
+    },
 
     data() {
         return {
@@ -91,6 +124,10 @@ export default {
         slugAtual() {
             return this.dados?.slug ?? null;
         },
+        temSlugPreview() {
+            const s = this.dados?.slug;
+            return !!(s && String(s).trim());
+        }
     },
 
     async mounted() {

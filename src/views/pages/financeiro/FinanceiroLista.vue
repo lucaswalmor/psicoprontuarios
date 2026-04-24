@@ -2,74 +2,73 @@
 <template>
     <div class="grid">
         <div class="col-12">
+            <FinanceiroListaTour :tipo="tipoDetectado" />
+
             <div class="card">
-                <div class="financeiro-header financeiro-header-desktop mb-4">
-                    <div class="financeiro-header-info">
-                        <h5 class="mb-0 mr-4">{{ tipoDetectado === 'receita' ? 'Receitas' : 'Despesas' }}</h5>
-                        <div class="total-container-header">
-                            <span class="total-label-header">
-                                {{ tipoDetectado === 'receita' ? 'Recebidas:' : 'Pagas:' }}
-                            </span>
-                            <span class="text-green-600 font-bold total-value-header">
-                                R$ {{ formatarValor(totalRecebidasPagas) }}
-                            </span>
-                        </div>
-                        <div class="total-container-header">
-                            <span class="total-label-header">Previstas:</span>
-                            <span class="text-red-600 font-bold total-value-header">
-                                R$ {{ formatarValor(totalPrevistas) }}
-                            </span>
+                <!-- Cabeçalho único (responsivo): mesmos data-tour em desktop e mobile sem duplicar árvore -->
+                <div class="financeiro-header-unified mb-4">
+                    <div class="fh-left">
+                        <h5 class="mb-0">{{ tipoDetectado === 'receita' ? 'Receitas' : 'Despesas' }}</h5>
+                        <div data-tour="tour-fin-totais" class="fh-totais">
+                            <div class="total-container-header">
+                                <span class="total-label-header">
+                                    {{ tipoDetectado === 'receita' ? 'Recebidas:' : 'Pagas:' }}
+                                </span>
+                                <span class="text-green-600 font-bold total-value-header">
+                                    R$ {{ formatarValor(totalRecebidasPagas) }}
+                                </span>
+                            </div>
+                            <div class="total-container-header">
+                                <span class="total-label-header">Previstas:</span>
+                                <span class="text-red-600 font-bold total-value-header">
+                                    R$ {{ formatarValor(totalPrevistas) }}
+                                </span>
+                            </div>
                         </div>
                     </div>
-                    <div class="financeiro-header-actions">
-                        <Button v-if="selectedTransacoes && selectedTransacoes.length > 0"
+                    <div class="fh-actions">
+                        <Button
+                            v-if="selectedTransacoes && selectedTransacoes.length > 0"
                             :label="tipoDetectado === 'receita' ? 'Receber Todas' : 'Pagar Todas'"
-                            icon="pi pi-check-circle" severity="success" @click="confirmarPagamentoLote" />
-                        <Button :label="tipoDetectado === 'receita' ? 'Nova Receita' : 'Nova Despesa'"
-                            icon="pi pi-plus" @click="novaTransacao" />
-                        <Button label="Filtros" severity="secondary" icon="pi pi-filter" v-if="!hasFiltros"
-                            @click="drawerFilterFinanceiro = true" />
-                        <Button label="Limpar Filtros" severity="danger" @click="limparFiltros" v-else />
-                    </div>
-                </div>
-
-                <div class="financeiro-header-mobile mb-4">
-                    <h5 class="mb-0">{{ tipoDetectado === 'receita' ? 'Receitas' : 'Despesas' }}</h5>
-
-                    <div class="financeiro-header-mobile-totais">
-                        <div class="total-container-header">
-                            <span class="total-label-header">
-                                {{ tipoDetectado === 'receita' ? 'Recebidas:' : 'Pagas:' }}
-                            </span>
-                            <span class="text-green-600 font-bold total-value-header">
-                                R$ {{ formatarValor(totalRecebidasPagas) }}
-                            </span>
-                        </div>
-                        <div class="total-container-header">
-                            <span class="total-label-header">Previstas:</span>
-                            <span class="text-red-600 font-bold total-value-header">
-                                R$ {{ formatarValor(totalPrevistas) }}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="financeiro-header-mobile-actions">
-                        <Button v-if="selectedTransacoes && selectedTransacoes.length > 0"
-                            :label="tipoDetectado === 'receita' ? 'Receber Todas' : 'Pagar Todas'"
-                            icon="pi pi-check-circle" severity="success" @click="confirmarPagamentoLote" />
-                        <Button :label="tipoDetectado === 'receita' ? 'Nova Receita' : 'Nova Despesa'"
-                            icon="pi pi-plus" @click="novaTransacao" />
-                        <Button label="Filtros" severity="secondary" icon="pi pi-filter" v-if="!hasFiltros"
-                            @click="drawerFilterFinanceiro = true" />
-                        <Button label="Limpar Filtros" severity="danger" @click="limparFiltros" v-else />
+                            icon="pi pi-check-circle"
+                            severity="success"
+                            @click="confirmarPagamentoLote"
+                        />
+                        <span data-tour="tour-fin-nova" class="fh-action-wrap">
+                            <Button
+                                :label="tipoDetectado === 'receita' ? 'Nova Receita' : 'Nova Despesa'"
+                                icon="pi pi-plus"
+                                @click="novaTransacao"
+                            />
+                        </span>
+                        <span data-tour="tour-fin-filtros" class="fh-action-wrap">
+                            <Button
+                                v-if="!hasFiltros"
+                                label="Filtros"
+                                severity="secondary"
+                                icon="pi pi-filter"
+                                @click="drawerFilterFinanceiro = true"
+                            />
+                            <Button v-else label="Limpar Filtros" severity="danger" @click="limparFiltros" />
+                        </span>
                     </div>
                 </div>
 
                 <!-- Tabela -->
-                <DataTable v-model:selection="selectedTransacoes" :value="transacoes" :loading="loading"
-                    :paginator="true" v-model:rows="rowsPerPage" :rowsPerPageOptions="[10, 20, 50]"
-                    :totalRecords="totalRecords" :lazy="true" @page="onPageChange" dataKey="id"
-                    class="p-datatable-sm">
+                <div data-tour="tour-fin-tabela" class="w-full">
+                <DataTable
+                    v-model:selection="selectedTransacoes"
+                    :value="transacoes"
+                    :loading="loading"
+                    :paginator="true"
+                    v-model:rows="rowsPerPage"
+                    :rowsPerPageOptions="[10, 20, 50]"
+                    :totalRecords="totalRecords"
+                    :lazy="true"
+                    @page="onPageChange"
+                    dataKey="id"
+                    class="p-datatable-sm"
+                >
                     <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
                     <Column field="data" header="Data" sortable>
                         <template #body="{ data }">
@@ -131,6 +130,7 @@
                         </div>
                     </template>
                 </DataTable>
+                </div>
             </div>
         </div>
     </div>
@@ -174,6 +174,7 @@
 
 <script>
 import DrawerFilterFinanceiro from '@/components/drawers/DrawerFilterFinanceiro.vue';
+import FinanceiroListaTour from '@/components/tour/FinanceiroListaTour.vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
@@ -183,6 +184,7 @@ export default {
     name: 'FinanceiroLista',
     components: {
         DrawerFilterFinanceiro,
+        FinanceiroListaTour,
         DataTable,
         Column,
         Button,
@@ -618,21 +620,29 @@ export default {
     font-size: 1.1rem;
 }
 
-.financeiro-header {
+.financeiro-header-unified {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
+    flex-wrap: wrap;
 }
 
-.financeiro-header-info {
+.fh-left {
     display: flex;
     align-items: center;
     gap: 0.75rem;
     flex-wrap: wrap;
 }
 
-.financeiro-header-actions {
+.fh-totais {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.fh-actions {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -640,34 +650,33 @@ export default {
     justify-content: flex-end;
 }
 
-.financeiro-header-mobile {
-    display: none;
+.fh-action-wrap {
+    display: inline-flex;
+    align-items: center;
 }
 
 @media (max-width: 768px) {
-    .financeiro-header-desktop {
-        display: none;
-    }
-
-    .financeiro-header-mobile {
-        display: flex;
+    .financeiro-header-unified {
         flex-direction: column;
-        gap: 0.75rem;
+        align-items: stretch;
     }
 
-    .financeiro-header-mobile-totais {
-        display: flex;
+    .fh-left {
         flex-direction: column;
-        gap: 0.5rem;
+        align-items: stretch;
     }
 
-    .financeiro-header-mobile-actions {
-        display: flex;
+    .fh-totais {
         flex-direction: column;
         gap: 0.5rem;
     }
 
-    .financeiro-header-mobile-actions :deep(.p-button) {
+    .fh-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .fh-actions :deep(.p-button) {
         width: 100%;
     }
 

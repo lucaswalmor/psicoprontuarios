@@ -1,23 +1,47 @@
 <template>
     <div class="card p-2">
+        <!-- Tours: um componente por aba (passos no próprio .vue) -->
+        <FichaPacienteDadosTour :pode-editar="podeEditar" />
+        <FichaPacienteProntuariosTour
+            :key="
+                'ficha-pront-tour-' +
+                !!(paciente && totalProntuarios > 0) +
+                '-' +
+                !!(podeEditar && paciente)
+            "
+            :tem-prontuarios="!!(paciente && totalProntuarios > 0)"
+            :pode-criar-prontuario="!!(podeEditar && paciente)"
+        />
+        <FichaPacienteSessoesTour
+            :key="'ficha-sess-tour-' + !planStore.isPlanPaused"
+            :mostrar-nova-sessao="!planStore.isPlanPaused"
+        />
+        <FichaPacienteAnexosTour />
+        <FichaPacienteAnamneseTour />
+
         <!-- Hero Section -->
         <div class="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-lg p-4 md:p-6 mb-6">
             <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-start gap-3">
                 <div class="flex-grow-1 min-w-0">
-                    <h1 class="text-light text-2xl sm:text-3xl md:text-4xl font-bold mb-2 line-height-3 break-words">
-                        {{ paciente?.nome || 'Carregando...' }}
-                    </h1>
-                    <div class="flex flex-wrap align-items-center gap-2 md:gap-4 text-blue-100 mb-2">
-                        <div v-if="paciente?.data_nascimento" class="flex align-items-center">
-                            <i class="pi pi-calendar mr-2"></i>
-                            <span>{{ calcularIdade(paciente.data_nascimento) }} anos</span>
-                        </div>
-                        <div v-if="paciente?.email" class="flex align-items-center min-w-0">
-                            <i class="pi pi-envelope mr-2 shrink-0"></i>
-                            <span class="break-all md:break-normal">{{ paciente.email }}</span>
+                    <div data-tour="tour-ficha-hero-identidade">
+                        <h1 class="text-light text-2xl sm:text-3xl md:text-4xl font-bold mb-2 line-height-3 break-words">
+                            {{ paciente?.nome || 'Carregando...' }}
+                        </h1>
+                        <div class="flex flex-wrap align-items-center gap-2 md:gap-4 text-blue-100 mb-2">
+                            <div v-if="paciente?.data_nascimento" class="flex align-items-center">
+                                <i class="pi pi-calendar mr-2"></i>
+                                <span>{{ calcularIdade(paciente.data_nascimento) }} anos</span>
+                            </div>
+                            <div v-if="paciente?.email" class="flex align-items-center min-w-0">
+                                <i class="pi pi-envelope mr-2 shrink-0"></i>
+                                <span class="break-all md:break-normal">{{ paciente.email }}</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="flex flex-wrap align-items-center gap-2">
+                    <div
+                        data-tour="tour-ficha-hero-status"
+                        class="flex flex-wrap align-items-center gap-2"
+                    >
                         <i class="pi pi-pencil text-blue-100" v-if="podeEditar" v-tooltip.top="'Clique para alterar o status do tratamento'"></i>
                         <Tag :severity="getStatusSeverity(paciente?.status_tratamento)"
                             :value="paciente?.status_tratamento || 'N/A'" 
@@ -33,25 +57,29 @@
                     v-if="podeEditar"
                     class="flex flex-column sm:flex-row flex-wrap gap-2 w-full md:w-auto md:shrink-0 md:justify-content-end"
                 >
-                    <Button
-                        class="w-full sm:flex-1 md:flex-initial md:w-auto"
-                        icon="pi pi-user-edit"
-                        label="Editar"
-                        @click="editarPaciente"
-                    />
-                    <Button
-                        class="w-full sm:flex-1 md:flex-initial md:w-auto"
-                        icon="pi pi-trash"
-                        label="Excluir"
-                        severity="danger"
-                        @click="confirmarExclusao($event)"
-                    />
+                    <span data-tour="tour-ficha-hero-editar" class="inline-flex w-full sm:flex-1 md:flex-initial md:w-auto">
+                        <Button
+                            class="w-full sm:flex-1 md:flex-initial md:w-auto"
+                            icon="pi pi-user-edit"
+                            label="Editar"
+                            @click="editarPaciente"
+                        />
+                    </span>
+                    <span data-tour="tour-ficha-hero-excluir" class="inline-flex w-full sm:flex-1 md:flex-initial md:w-auto">
+                        <Button
+                            class="w-full sm:flex-1 md:flex-initial md:w-auto"
+                            icon="pi pi-trash"
+                            label="Excluir"
+                            severity="danger"
+                            @click="confirmarExclusao($event)"
+                        />
+                    </span>
                 </div>
             </div>
         </div>
 
         <!-- Cards de Estatísticas -->
-        <div class="grid mb-6">
+        <div class="grid mb-6" data-tour="tour-ficha-stats">
             <div class="col-12 md:col-3">
                 <div class="card bg-blue-50 border-blue-200">
                     <div class="flex align-items-center justify-content-between">
@@ -114,7 +142,7 @@
             <TabPanels>
                 <!-- Tab Dados Pessoais -->
                 <TabPanel :value="0" class="p-0">
-                    <div class="card p-3" v-if="paciente">
+                    <div class="card p-3" v-if="paciente" data-tour="tour-ficha-dados-form">
                         <h5 class="text-500 mb-4">Informações do Paciente</h5>
 
                         <!-- Informações Essenciais -->
@@ -158,35 +186,51 @@
                             <div
                                 class="flex flex-column sm:flex-row flex-wrap gap-2 w-full md:w-auto md:shrink-0 md:justify-content-end"
                             >
-                                <Button
+                                <span
                                     v-if="paciente && totalProntuarios > 0"
-                                    class="w-full sm:flex-1 md:flex-initial md:w-auto"
-                                    label="Exportar Todos"
-                                    icon="pi pi-file-export"
-                                    severity="help"
-                                    @click="exportarTodosProntuarios"
-                                />
-                                <Button
+                                    data-tour="tour-ficha-pront-exportar"
+                                    class="inline-flex w-full sm:flex-1 md:flex-initial md:w-auto"
+                                >
+                                    <Button
+                                        class="w-full sm:flex-1 md:flex-initial md:w-auto"
+                                        label="Exportar Todos"
+                                        icon="pi pi-file-export"
+                                        severity="help"
+                                        @click="exportarTodosProntuarios"
+                                    />
+                                </span>
+                                <span
                                     v-if="paciente && totalProntuarios > 0"
-                                    class="w-full sm:flex-1 md:flex-initial md:w-auto"
-                                    label="Gerar relatório com I.A"
-                                    icon="pi pi-sparkles"
-                                    severity="contrast"
-                                    :loading="relatorioIaLoading"
-                                    :disabled="isPlanoPro && relatorioIaLoading"
-                                    :badge="!isPlanoPro ? 'PRO' : null"
-                                    badgeClass="p-badge-warning"
-                                    @click="onClickRelatorioIA"
-                                />
-                                <Button
+                                    data-tour="tour-ficha-pront-relatorio-ia"
+                                    class="inline-flex w-full sm:flex-1 md:flex-initial md:w-auto"
+                                >
+                                    <Button
+                                        class="w-full sm:flex-1 md:flex-initial md:w-auto"
+                                        label="Gerar relatório com I.A"
+                                        icon="pi pi-sparkles"
+                                        severity="contrast"
+                                        :loading="relatorioIaLoading"
+                                        :disabled="isPlanoPro && relatorioIaLoading"
+                                        :badge="!isPlanoPro ? 'PRO' : null"
+                                        badgeClass="p-badge-warning"
+                                        @click="onClickRelatorioIA"
+                                    />
+                                </span>
+                                <span
                                     v-if="podeEditar && paciente"
-                                    class="w-full sm:flex-1 md:flex-initial md:w-auto"
-                                    label="Novo Prontuário"
-                                    icon="pi pi-plus"
-                                    @click="abrirDialogNovoProntuario"
-                                />
+                                    data-tour="tour-ficha-pront-novo"
+                                    class="inline-flex w-full sm:flex-1 md:flex-initial md:w-auto"
+                                >
+                                    <Button
+                                        class="w-full sm:flex-1 md:flex-initial md:w-auto"
+                                        label="Novo Prontuário"
+                                        icon="pi pi-plus"
+                                        @click="abrirDialogNovoProntuario"
+                                    />
+                                </span>
                             </div>
                         </div>
+                        <div data-tour="tour-ficha-pront-lista">
                         <ListaProntuarios 
                             :paciente-id="pacienteId"
                             :prontuarios="prontuarios"
@@ -195,6 +239,7 @@
                             @page-change="onPageChangeProntuarios"
                             @prontuario-salvo="onProntuarioSalvo"
                         />
+                        </div>
                     </div>
                 </TabPanel>
 
@@ -242,6 +287,7 @@
 
                 <!-- Tab Evolução -->
                 <TabPanel :value="5">
+                    <div>
                     <div class="card" v-if="!loadingEvolucao">
                         <h5 class="text-500 mb-4">Evolução do Paciente</h5>
 
@@ -337,6 +383,7 @@
                     <div v-else class="text-center p-6">
                         <i class="pi pi-spin pi-spinner text-4xl text-primary"></i>
                         <p class="text-500 mt-3">Carregando dados de evolução...</p>
+                    </div>
                     </div>
                 </TabPanel>
             </TabPanels>
@@ -443,6 +490,11 @@ import Anamnese from '@/components/pacientes/Anamnese.vue';
 import DialogNovoProntuario from '@/components/dialogs/prontuarios/DialogNovoProntuario.vue';
 import DialogAlterarStatus from '@/components/dialogs/pacientes/DialogAlterarStatus.vue';
 import DialogPlanoPro from '@/components/dialogs/DialogPlanoPro.vue';
+import FichaPacienteDadosTour from '@/components/tour/pacientes/ficha/FichaPacienteDadosTour.vue';
+import FichaPacienteProntuariosTour from '@/components/tour/pacientes/ficha/FichaPacienteProntuariosTour.vue';
+import FichaPacienteSessoesTour from '@/components/tour/pacientes/ficha/FichaPacienteSessoesTour.vue';
+import FichaPacienteAnexosTour from '@/components/tour/pacientes/ficha/FichaPacienteAnexosTour.vue';
+import FichaPacienteAnamneseTour from '@/components/tour/pacientes/ficha/FichaPacienteAnamneseTour.vue';
 
 import prontuariosService from '@/services/prontuariosService';
 import anexosService from '@/services/anexosService';
@@ -457,6 +509,11 @@ export default {
         DialogNovoProntuario,
         DialogAlterarStatus,
         DialogPlanoPro,
+        FichaPacienteAnamneseTour,
+        FichaPacienteAnexosTour,
+        FichaPacienteDadosTour,
+        FichaPacienteProntuariosTour,
+        FichaPacienteSessoesTour
     },
     computed: {
         planStore() {
@@ -479,7 +536,7 @@ export default {
         isPlanoPro() {
             return ['pro', 'vitalicio'].includes(this.$planService.resolverTipoPlanoUsuario());
         },
-        
+
         // Gráfico de linha - Evolução temporal
         lineChartData() {
             if (!this.evolucao?.metricas?.length) {
@@ -682,7 +739,7 @@ export default {
             atualizandoRelatorioIa: false,
             relatorioProntuario: null,
             baixandoRelatorioDocx: false,
-            dialogPlanoProVisible: false,
+            dialogPlanoProVisible: false
         };
     },
     watch: {

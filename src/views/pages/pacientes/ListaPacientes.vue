@@ -1,19 +1,26 @@
 <template>
     <div class="card">
+        <ListaPacientesTour />
+
         <h1>Lista de Pacientes</h1>
 
         <div class="col-md-12 d-flex gap-2 mb-3">
-            <Button label="Filtros" severity="secondary" icon="pi pi-filter" v-if="!hasFiltros"
-                @click="drawerFilterPaciente = true" />
-            <Button label="Limpar Filtros" severity="danger" @click="limparFiltros" v-else />
-            <Button 
-                v-if="podeAdicionarPaciente" 
-                label="Novo Paciente" 
-                icon="pi pi-user-plus" 
-                @click="$router.push('/pacientes/cadastro')" 
-            />
+            <span data-tour="tour-pac-filtros">
+                <Button label="Filtros" severity="secondary" icon="pi pi-filter" v-if="!hasFiltros"
+                    @click="drawerFilterPaciente = true" />
+                <Button label="Limpar Filtros" severity="danger" @click="limparFiltros" v-else />
+            </span>
+            <span data-tour="tour-pac-novo">
+                <Button 
+                    v-if="podeAdicionarPaciente" 
+                    label="Novo Paciente" 
+                    icon="pi pi-user-plus" 
+                    @click="$router.push('/pacientes/cadastro')" 
+                />
+            </span>
         </div>
 
+        <div data-tour="tour-pac-tabela">
         <DataTable :value="pacientes" :loading="loading" tableStyle="min-width: 50rem; cursor: pointer;" rowHover paginator :rows="perPage"
             :totalRecords="totalRecords" :lazy="true" @page="onPageChange" @row-click="$router.push(`/pacientes/ficha/${$event.data.id}`)"
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink">
@@ -61,8 +68,7 @@
                 </div>
             </template>
         </DataTable>
-
-
+        </div>
 
         <ConfirmPopup group="headless">
             <template #container="{ message, acceptCallback, rejectCallback }">
@@ -90,13 +96,15 @@
 <script>
 import DrawerFilterPacientes from '@/components/drawers/DrawerFilterPacientes.vue';
 import DialogNovoProntuario from '@/components/dialogs/prontuarios/DialogNovoProntuario.vue';
+import ListaPacientesTour from '@/components/tour/pacientes/ListaPacientesTour.vue';
 import { usePlanStore } from '@/store/plan';
 
 export default {
     name: 'ListaPacientes',
     components: {
         DrawerFilterPacientes,
-        DialogNovoProntuario
+        DialogNovoProntuario,
+        ListaPacientesTour
     },
     computed: {
         planStore() {

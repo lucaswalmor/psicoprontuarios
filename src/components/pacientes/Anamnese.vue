@@ -2,12 +2,12 @@
     <div class="card">
         <div class="flex justify-content-between align-items-center mb-4">
             <h5 class="text-500 mb-0">Anamnese</h5>
-            <div class="flex gap-2">
+            <span data-tour="tour-ficha-anamnese-salvar" class="inline-flex">
                 <Button label="Salvar" icon="pi pi-save" :loading="loading" @click="salvar" />
-            </div>
+            </span>
         </div>
 
-        <form @submit.prevent="salvar" class="p-fluid">
+        <form data-tour="tour-ficha-anamnese-form" @submit.prevent="salvar" class="p-fluid">
             <div class="grid">
                 <!-- Motivo da Consulta -->
                 <div class="col-12">

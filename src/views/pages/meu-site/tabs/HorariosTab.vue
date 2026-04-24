@@ -5,7 +5,13 @@
                 <h6 class="m-0">Horários de Atendimento</h6>
                 <p class="text-color-secondary text-sm m-0 mt-1">Configure os dias e horários que você atende. Apenas os dias ativos aparecem na landing page.</p>
             </div>
-            <Button label="Salvar horários" icon="pi pi-check" :loading="salvando" @click="salvar" />
+            <Button
+                data-tour="tour-meusite-horarios-salvar"
+                label="Salvar horários"
+                icon="pi pi-check"
+                :loading="salvando"
+                @click="salvar"
+            />
         </div>
 
         <Divider />
@@ -16,10 +22,13 @@
                 :key="dia.dia_semana"
                 class="horario-row"
                 :class="{ inativo: !dia.ativo }"
+                :data-tour="'tour-meusite-horario-linha-' + dia.dia_semana"
             >
                 <!-- Toggle + nome do dia -->
                 <div class="flex align-items-center gap-3" style="min-width:140px">
-                    <InputSwitch v-model="dia.ativo" />
+                    <span :data-tour="'tour-meusite-horario-' + dia.dia_semana + '-switch'">
+                        <InputSwitch v-model="dia.ativo" />
+                    </span>
                     <span class="font-medium" :class="dia.ativo ? 'text-color' : 'text-color-secondary'">
                         {{ dia.dia_nome }}
                     </span>
@@ -30,6 +39,7 @@
                     <span class="text-color-secondary text-sm">das</span>
                     <InputText
                         v-model="dia.hora_inicio"
+                        :data-tour="'tour-meusite-horario-' + dia.dia_semana + '-inicio'"
                         placeholder="08:00"
                         class="w-6rem text-center"
                         :disabled="!dia.ativo"
@@ -39,6 +49,7 @@
                     <span class="text-color-secondary text-sm">às</span>
                     <InputText
                         v-model="dia.hora_fim"
+                        :data-tour="'tour-meusite-horario-' + dia.dia_semana + '-fim'"
                         placeholder="18:00"
                         class="w-6rem text-center"
                         :disabled="!dia.ativo"

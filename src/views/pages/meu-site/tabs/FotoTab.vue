@@ -5,7 +5,14 @@
                 <h6 class="m-0">Foto de Perfil</h6>
                 <small class="text-color-secondary">Esta foto aparece na sua landing page no lugar das iniciais.</small>
             </div>
-            <Button label="Salvar foto" icon="pi pi-check" :loading="salvando" :disabled="!arquivoSelecionado" @click="salvar" />
+            <Button
+                data-tour="tour-meusite-foto-salvar"
+                label="Salvar foto"
+                icon="pi pi-check"
+                :loading="salvando"
+                :disabled="!arquivoSelecionado"
+                @click="salvar"
+            />
         </div>
 
         <Divider />
@@ -13,7 +20,7 @@
         <div class="grid">
             <!-- Preview -->
             <div class="col-12 md:col-4 flex flex-column align-items-center gap-3">
-                <div class="foto-preview" :class="{ 'tem-foto': previewUrl }">
+                <div class="foto-preview" data-tour="tour-meusite-foto-preview" :class="{ 'tem-foto': previewUrl }">
                     <img v-if="previewUrl" :src="previewUrl" alt="Foto de perfil" class="foto-img" />
                     <div v-else class="foto-placeholder">
                         <i class="pi pi-user" style="font-size: 3rem; color: var(--surface-400)" />
@@ -23,6 +30,7 @@
 
                 <Button
                     v-if="fotoAtual && !arquivoSelecionado"
+                    data-tour="tour-meusite-foto-remover"
                     label="Remover foto"
                     icon="pi pi-trash"
                     severity="danger"
@@ -38,6 +46,7 @@
                 <!-- Área de drop -->
                 <div
                     class="upload-area"
+                    data-tour="tour-meusite-foto-upload"
                     :class="{ 'drag-over': isDragging }"
                     @dragover.prevent="isDragging = true"
                     @dragleave.prevent="isDragging = false"
@@ -58,24 +67,43 @@
                 />
 
                 <!-- Info do arquivo selecionado -->
-                <div v-if="arquivoSelecionado" class="arquivo-info flex align-items-center gap-2 p-3 border-round surface-100">
+                <div
+                    v-if="arquivoSelecionado"
+                    data-tour="tour-meusite-foto-arquivo-info"
+                    class="arquivo-info flex align-items-center gap-2 p-3 border-round surface-100"
+                >
                     <i class="pi pi-image text-primary" />
                     <div class="flex-1">
                         <div class="font-medium text-sm">{{ arquivoSelecionado.name }}</div>
                         <small class="text-color-secondary">{{ tamanhoFormatado }}</small>
                     </div>
-                    <Button icon="pi pi-times" text rounded severity="secondary" size="small" @click="limparSelecao" />
+                    <Button
+                        data-tour="tour-meusite-foto-limpar"
+                        icon="pi pi-times"
+                        text
+                        rounded
+                        severity="secondary"
+                        size="small"
+                        @click="limparSelecao"
+                    />
                 </div>
 
                 <Message v-if="erro" severity="error" :closable="false">{{ erro }}</Message>
                 <Message v-if="sucesso" severity="success" :closable="false">{{ sucesso }}</Message>
             </div>
         </div>
+
+        <MeuSiteFotoTour
+            :key="'meusite-foto-tour-' + fotoTourRemover + '-' + fotoTourArquivo"
+            :show-remover="fotoTourRemover"
+            :show-arquivo-info="fotoTourArquivo"
+        />
     </div>
 </template>
 
 <script>
 import meuSiteService from '@/services/meuSiteService';
+import MeuSiteFotoTour from '@/components/tour/meu-site/MeuSiteFotoTour.vue';
 import Button from 'primevue/button';
 import Divider from 'primevue/divider';
 import Message from 'primevue/message';
@@ -84,7 +112,7 @@ const MAX_SIZE_MB = 5;
 
 export default {
     name: 'FotoTab',
-    components: { Button, Divider, Message },
+    components: { Button, Divider, Message, MeuSiteFotoTour },
 
     props: {
         dados: {
@@ -109,6 +137,12 @@ export default {
     },
 
     computed: {
+        fotoTourRemover() {
+            return !!(this.fotoAtual && !this.arquivoSelecionado);
+        },
+        fotoTourArquivo() {
+            return !!this.arquivoSelecionado;
+        },
         tamanhoFormatado() {
             if (!this.arquivoSelecionado) return '';
             const kb = this.arquivoSelecionado.size / 1024;

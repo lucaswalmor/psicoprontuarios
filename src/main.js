@@ -15,6 +15,9 @@ import services from '@/services';
 import authService from '@/services/authService';
 import money from 'v-money3';
 
+import { VOnboardingWrapper } from 'v-onboarding';
+import 'v-onboarding/dist/style.css';
+
 // Carregar configurações iniciais do localStorage
 const loadInitialConfig = () => {
     const config = loadThemeConfig();
@@ -73,6 +76,7 @@ app.use(PrimeVue, {
 app.use(ToastService);
 app.use(ConfirmationService);
 app.use(money);
+app.component('VOnboardingWrapper', VOnboardingWrapper);
 
 // Configurar services globalmente
 app.config.globalProperties.$pacientesService = services.pacientesService;

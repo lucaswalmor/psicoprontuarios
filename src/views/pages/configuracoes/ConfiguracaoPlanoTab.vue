@@ -7,7 +7,11 @@
 
         <template v-else>
             <!-- Vitalício: sem registro de assinatura na Asaas -->
-            <div v-if="ehUsuarioVitalicioSemAssinatura" class="empty-state surface-card border-round-xl p-5 text-center">
+            <div
+                v-if="ehUsuarioVitalicioSemAssinatura"
+                class="empty-state surface-card border-round-xl p-5 text-center"
+                data-tour="tour-config-plano-root"
+            >
                 <div class="empty-icon empty-icon--vitalicio mb-4">
                     <i class="pi pi-verified"></i>
                 </div>
@@ -18,7 +22,11 @@
             </div>
 
             <!-- Sem assinatura (não vitalício) -->
-            <div v-else-if="!assinatura" class="empty-state surface-card border-round-xl p-5 text-center">
+            <div
+                v-else-if="!assinatura"
+                class="empty-state surface-card border-round-xl p-5 text-center"
+                data-tour="tour-config-plano-root"
+            >
                 <div class="empty-icon mb-4">
                     <i class="pi pi-sparkles"></i>
                 </div>
@@ -46,7 +54,7 @@
                 </Message>
 
                 <!-- Hero -->
-                <div class="hero-plano border-round-xl p-4 md:p-5 mb-4">
+                <div class="hero-plano border-round-xl p-4 md:p-5 mb-4" data-tour="tour-config-plano-hero">
                     <div class="flex flex-column md:flex-row md:align-items-start md:justify-content-between gap-4">
                         <div>
                             <p class="text-white-alpha-80 text-sm font-semibold uppercase tracking-wide m-0 mb-2">Seu plano</p>
@@ -60,7 +68,7 @@
                     </div>
                 </div>
 
-                <div class="grid">
+                <div class="grid" data-tour="tour-config-plano-cards">
                     <div class="col-12 lg:col-4">
                         <div class="info-card surface-card border-round-xl p-4 h-full">
                             <div class="flex align-items-center gap-2 mb-3">
@@ -140,7 +148,7 @@
                 </div>
 
                 <!-- Faturas -->
-                <div class="surface-card border-round-xl p-4 mt-4">
+                <div class="surface-card border-round-xl p-4 mt-4" data-tour="tour-config-plano-faturas">
                     <div class="flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
                         <h3 class="m-0 text-xl text-900">Cobranças registradas</h3>
                         <span class="text-600 text-sm">Histórico sincronizado com webhooks da Asaas</span>
@@ -258,6 +266,7 @@ import Tag from 'primevue/tag';
 
 export default {
     name: 'ConfiguracaoPlanoTab',
+    emits: ['plano-conteudo'],
     components: {
         Button,
         Column,
@@ -395,6 +404,9 @@ export default {
                 });
             } finally {
                 this.loading = false;
+                this.$emit('plano-conteudo', {
+                    modo: this.assinatura ? 'full' : 'simples'
+                });
             }
         },
         formatarData(s) {

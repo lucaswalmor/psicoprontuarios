@@ -1,5 +1,7 @@
 <template>
     <div class="agendamentos-wrapper">
+        <AgendamentosTour />
+
         <!-- Loading -->
         <div v-if="isLoading" class="loading-state">
             <ProgressSpinner style="width: 50px; height: 50px" />
@@ -12,7 +14,7 @@
                 <div class="left-panel">
 
                     <!-- Calendar Card -->
-                    <div class="cal-card">
+                    <div class="cal-card" data-tour="tour-ag-calendario">
                         <DatePicker
                             v-model="dataSelecionada"
                             inline
@@ -23,7 +25,7 @@
                     </div>
 
                     <!-- Holidays Card -->
-                    <div class="holidays-card">
+                    <div class="holidays-card" data-tour="tour-ag-feriados">
                         <div class="holidays-title">Feriados do Mês</div>
 
                         <div v-if="feriadosDoMes.length === 0" class="holidays-empty">
@@ -64,17 +66,23 @@
                     <div class="agenda-card">
 
                         <!-- Header -->
-                        <div class="agenda-header">
+                        <div class="agenda-header" data-tour="tour-ag-header">
                             <div class="agenda-date-info">
                                 <div class="agenda-label">Agendamentos</div>
                                 <div class="agenda-title-text">{{ dataFormatada }}</div>
                             </div>
-                            <button class="btn-new" @click="abrirDialogNovoAgendamento">
+                            <button
+                                type="button"
+                                class="btn-new"
+                                data-tour="tour-ag-novo"
+                                @click="abrirDialogNovoAgendamento"
+                            >
                                 <span class="btn-plus">+</span>
                                 Novo Agendamento
                             </button>
                         </div>
 
+                        <div data-tour="tour-ag-area-dia" class="tour-ag-area-dia">
                         <!-- Time indicator (somente quando for o dia de hoje) -->
                         <div v-if="isHoje" class="time-indicator">
                             <div class="time-dot"></div>
@@ -114,6 +122,7 @@
                                 <i class="pi pi-angle-right appt-arrow"></i>
                             </div>
                         </div>
+                        </div>
 
                     </div>
                 </div>
@@ -142,13 +151,15 @@
 import DatePicker from 'primevue/datepicker';
 import DialogNovoAgendamento from '@/components/dialogs/agendamentos/DialogNovoAgendamento.vue';
 import DialogEditarAgendamento from '@/components/dialogs/agendamentos/DialogEditarAgendamento.vue';
+import AgendamentosTour from '@/components/tour/AgendamentosTour.vue';
 
 export default {
     name: 'Agendamentos2',
     components: {
         DatePicker,
         DialogNovoAgendamento,
-        DialogEditarAgendamento
+        DialogEditarAgendamento,
+        AgendamentosTour
     },
     data() {
         const hoje = new Date();
