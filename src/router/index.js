@@ -131,6 +131,12 @@ const router = createRouter({
                     meta: { requiresAuth: true }
                 },
                 {
+                    path: '/notificacoes/personalizadas',
+                    name: 'Personalizadas',
+                    component: () => import('@/views/notificacoes/Personalizadas.vue'),
+                    meta: { requiresAuth: true }
+                },
+                {
                     path: '/faq',
                     name: 'Faq',
                     component: () => import('@/views/pages/Faq.vue'),

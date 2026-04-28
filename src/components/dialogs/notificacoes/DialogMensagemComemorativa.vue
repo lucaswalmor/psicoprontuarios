@@ -34,14 +34,17 @@
                     <button
                         type="button"
                         class="ia-btn"
-                        :disabled="iaLoading || !form.data_comemorativa_id || iaBloqueado"
+                        :class="{ 'ia-btn--locked': !isPlanoPro }"
+                        :aria-disabled="!isPlanoPro"
+                        :disabled="isPlanoPro && (iaLoading || !form.data_comemorativa_id || iaBloqueado)"
                         :title="iaTooltip"
-                        @click="gerarMensagemComIa"
+                        @click="onClickIa"
                     >
                         <span v-if="iaLoading" class="ia-btn__spinner" aria-hidden="true" />
                         <span class="ia-btn__label">
                             {{ iaLoading ? 'Gerando…' : (mensagemVazia ? 'Criar com I.A' : 'Melhorar com I.A') }}
                         </span>
+                        <Tag v-if="!isPlanoPro" value="PRO" severity="warning" class="ia-btn__tag" />
                     </button>
                 </div>
             </div>
@@ -73,10 +76,13 @@
             </div>
         </template>
     </Dialog>
+
+    <DialogPlanoPro :visible="dialogPlanoProVisible" @update:visible="dialogPlanoProVisible = $event" />
 </template>
 
 <script>
 import mensagemComemorativaService from '@/services/mensagemComemorativaService';
+import DialogPlanoPro from '@/components/dialogs/DialogPlanoPro.vue';
 
 const WEBHOOK_IA_DATAS_COMEMORATIVAS =
     'https://petgre-n8n-petgre.irkqjy.easypanel.host/webhook/datas-comemorativas';
@@ -88,6 +94,10 @@ const LS_KEY_IA_DATAS_COMEMORATIVAS = 'psico_prontuario_ia_datas_comemorativas_v
 
 export default {
     name: 'DialogMensagemComemorativa',
+    components: {
+        DialogPlanoPro,
+        Tag: () => import('primevue/tag'),
+    },
     props: {
         visible: {
             type: Boolean,
@@ -106,6 +116,7 @@ export default {
             iaLoading: false,
             iaNow: Date.now(),
             iaTickTimer: null,
+            dialogPlanoProVisible: false,
             datasDisponiveis: [],
             pacientesDisponiveis: [],
             form: {
@@ -119,6 +130,9 @@ export default {
     computed: {
         isEdicao() {
             return !!this.mensagem;
+        },
+        isPlanoPro() {
+            return ['pro', 'vitalicio'].includes(this.$planService.resolverTipoPlanoUsuario());
         },
         mensagemVazia() {
             return !String(this.form.mensagem || '').trim();
@@ -158,6 +172,7 @@ export default {
         },
         iaTooltip() {
             if (this.iaLoading) return '';
+            if (!this.isPlanoPro) return 'Disponível apenas no Plano Pro.';
             if (!this.form.data_comemorativa_id) return 'Selecione uma data comemorativa para usar a I.A.';
 
             const now = this.iaNow || Date.now();
@@ -205,6 +220,13 @@ export default {
         this.pararTickerIa();
     },
     methods: {
+        onClickIa() {
+            if (!this.isPlanoPro) {
+                this.dialogPlanoProVisible = true;
+                return;
+            }
+            this.gerarMensagemComIa();
+        },
         iniciarTickerIa() {
             this.pararTickerIa();
             this.iaNow = Date.now();
@@ -280,6 +302,7 @@ export default {
         },
         async gerarMensagemComIa() {
             if (this.iaLoading) return;
+            if (!this.isPlanoPro) return;
             if (!this.form.data_comemorativa_id) {
                 this.showToast('warn', 'Atenção', 'Selecione uma data comemorativa para usar a I.A.');
                 return;
@@ -475,6 +498,14 @@ export default {
     transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
 }
 
+.ia-btn__tag {
+    margin-left: 0.15rem;
+    font-size: 0.7rem;
+    padding: 0.125rem 0.45rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+}
+
 .ia-btn:hover:not(:disabled) {
     background: rgba(99, 102, 241, 0.12);
     border-color: rgba(99, 102, 241, 0.35);
@@ -483,6 +514,15 @@ export default {
 .ia-btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+.ia-btn--locked {
+    opacity: 0.88;
+    cursor: pointer;
+}
+
+.ia-btn--locked:hover {
+    background: rgba(99, 102, 241, 0.1);
 }
 
 .ia-btn__label {

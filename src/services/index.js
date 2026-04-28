@@ -16,6 +16,7 @@ import mensagemAniversarianteService from './mensagemAniversarianteService';
 import chamadosService from './chamadosService';
 import meuSiteService from './meuSiteService';
 import psicologoService from './psicologoService';
+import mensagemPersonalizadaService from './mensagemPersonalizadaService';
 
 export {
     pacientesService,
@@ -35,7 +36,8 @@ export {
     mensagemAniversarianteService,
     chamadosService,
     meuSiteService,
-    psicologoService
+    psicologoService,
+    mensagemPersonalizadaService
 };
 
 export default {
@@ -56,5 +58,6 @@ export default {
     mensagemAniversarianteService,
     chamadosService,
     meuSiteService,
-    psicologoService
+    psicologoService,
+    mensagemPersonalizadaService
 };

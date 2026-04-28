@@ -119,15 +119,23 @@
                                     </div>
 
                                     <div class="col-md-4">
-                                        <div class="card h-100 opacity-50" data-tour="tour-config-notif-personal">
+                                        <div class="card h-100" data-tour="tour-config-notif-personal">
                                             <div class="card-body text-center d-flex flex-column">
                                                 <div class="fs-1 mb-2">✉️</div>
                                                 <h6 class="card-title notificacao-card-title">Mensagens Personalizadas</h6>
                                                 <p class="card-text small notificacao-card-text">
-                                                    Em breve: crie mensagens personalizadas para datas especiais escolhidas por você.
+                                                    Crie mensagens com texto livre e agende uma data/hora de envio.
                                                 </p>
                                                 <div class="mt-auto">
-                                                    <Button label="Em Breve" icon="pi pi-lock" disabled />
+                                                    <Button
+                                                        label="Configurar"
+                                                        icon="pi pi-cog"
+                                                        @click="$router.push('/notificacoes/personalizadas')"
+                                                        :disabled="!evolutionConectado"
+                                                    />
+                                                    <p v-if="!evolutionConectado" class="text-danger small mt-2">
+                                                        ⚠️ Configure o WhatsApp primeiro para habilitar notificações.
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>

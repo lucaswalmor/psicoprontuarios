@@ -117,7 +117,7 @@ const STEPS = [
         content: {
             title: 'Mensagens personalizadas',
             description:
-                'Área reservada para futuras mensagens personalizadas por data; enquanto isso o cartão permanece indisponível (Em breve).'
+                'Crie mensagens com texto livre e agende uma data/hora de envio para seus pacientes com telefone.'
         },
         options: popperBottom
     }
