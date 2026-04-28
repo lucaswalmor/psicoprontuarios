@@ -8,16 +8,18 @@
     >
         <div class="p-2">
             <Message severity="info" class="mb-3" :closable="false">
-                Esta mensagem será enviada para <strong>todos os seus pacientes com telefone</strong> na data/hora escolhida.
+                Esta mensagem será enviada para <strong>todos os seus pacientes com telefone</strong> na data escolhida.
             </Message>
 
             <div class="field mb-3">
                 <label class="block text-900 font-medium mb-2">Enviar em</label>
-                <InputText
+                <DatePicker
                     v-model="form.enviar_em"
-                    type="datetime-local"
                     class="w-full"
                     :disabled="saving || !!mensagemEnviada"
+                    :manualInput="false"
+                    dateFormat="dd/mm/yy"
+                    showIcon
                 />
                 <small v-if="mensagemEnviada" class="text-600">Esta mensagem já foi enviada e não pode ser editada.</small>
             </div>
@@ -67,6 +69,9 @@ import mensagemPersonalizadaService from '@/services/mensagemPersonalizadaServic
 
 export default {
     name: 'DialogMensagemPersonalizada',
+    components: {
+        DatePicker: () => import('primevue/datepicker'),
+    },
     props: {
         visible: {
             type: Boolean,
@@ -82,7 +87,7 @@ export default {
         return {
             saving: false,
             form: {
-                enviar_em: '',
+                enviar_em: null,
                 mensagem: '',
                 ativo: true,
             },
@@ -111,31 +116,38 @@ export default {
         },
     },
     methods: {
-        toDatetimeLocal(value) {
-            if (!value) return '';
+        toDateOnly(value) {
+            if (!value) return null;
             const d = new Date(value);
-            if (Number.isNaN(d.getTime())) return '';
+            if (Number.isNaN(d.getTime())) return null;
+            d.setHours(0, 0, 0, 0);
+            return d;
+        },
+        formatarDataISO(dateObj) {
+            if (!dateObj) return null;
+            const d = new Date(dateObj);
+            if (Number.isNaN(d.getTime())) return null;
             const pad = (n) => String(n).padStart(2, '0');
-            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
         },
         preencherFormulario() {
             if (this.isEdicao) {
                 this.form = {
-                    enviar_em: this.toDatetimeLocal(this.mensagem.enviar_em),
+                    enviar_em: this.toDateOnly(this.mensagem.enviar_em),
                     mensagem: this.mensagem.mensagem || '',
                     ativo: !!this.mensagem.ativo,
                 };
                 return;
             }
             this.form = {
-                enviar_em: '',
+                enviar_em: null,
                 mensagem: '',
                 ativo: true,
             };
         },
         validarFormulario() {
             if (!this.form.enviar_em) {
-                this.showToast('warn', 'Atenção', 'Informe a data/hora de envio.');
+                this.showToast('warn', 'Atenção', 'Informe a data de envio.');
                 return false;
             }
             if (!this.form.mensagem || !this.form.mensagem.trim()) {
@@ -150,8 +162,13 @@ export default {
 
             this.saving = true;
             try {
+                const enviarEm = this.formatarDataISO(this.form.enviar_em);
+                if (!enviarEm) {
+                    this.showToast('warn', 'Atenção', 'Informe uma data de envio válida.');
+                    return;
+                }
                 const payload = {
-                    enviar_em: this.form.enviar_em,
+                    enviar_em: enviarEm,
                     mensagem: this.form.mensagem,
                     ativo: this.form.ativo,
                 };
