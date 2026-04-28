@@ -205,6 +205,16 @@ export default {
         this.pararTickerIa();
     },
     methods: {
+        obterIdPsicologo() {
+            try {
+                const raw = sessionStorage.getItem('usuario');
+                if (!raw) return null;
+                const u = JSON.parse(raw);
+                return u.id ?? null;
+            } catch {
+                return null;
+            }
+        },
         iniciarTickerIa() {
             this.pararTickerIa();
             this.iaNow = Date.now();
@@ -309,6 +319,12 @@ export default {
                 return;
             }
 
+            const psicologo = this.obterIdPsicologo();
+            if (psicologo == null) {
+                this.showToast('error', 'Erro', 'Não foi possível identificar o psicólogo logado.');
+                return;
+            }
+
             this.iaLoading = true;
             try {
                 const payload = {
@@ -316,6 +332,7 @@ export default {
                     data_comemorativa: tipo,
                     // compat: caso o fluxo do n8n esteja esperando "tipo"
                     tipo,
+                    psicologo,
                 };
 
                 const res = await fetch(WEBHOOK_IA_DATAS_COMEMORATIVAS, {
