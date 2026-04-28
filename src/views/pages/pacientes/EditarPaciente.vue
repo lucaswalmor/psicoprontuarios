@@ -38,7 +38,7 @@
                     </template>
                     <div class="p-fluid">
                 <div class="grid">
-                    <div class="col-12 md:col-4">
+                    <div class="col-12 md:col-6">
                         <label for="nome" class="text-600 mb-2 block">Nome Completo <span class="text-red-500">*</span></label>
                         <InputText 
                             id="nome" 
@@ -47,14 +47,14 @@
                             class="w-full"
                         />
                     </div>
-                    <div class="col-12 md:col-4">
-                        <label for="cpf" class="text-600 mb-2 block">CPF</label>
+                    <div class="col-12 md:col-6">
+                        <label for="telefone" class="text-600 mb-2 block">Telefone</label>
                         <InputMask 
-                            id="cpf" 
-                            v-model="paciente.cpf" 
-                            placeholder="000.000.000-00"
+                            id="telefone" 
+                            v-model="paciente.telefone" 
+                            placeholder="(00) 00000-0000"
                             class="w-full"
-                            mask="999.999.999-99"
+                            mask="(99) 99999-9999"
                         />
                     </div>
                     <div class="col-12 md:col-4">
@@ -95,7 +95,7 @@
                             class="w-full"
                         />
                     </div>
-                    <div class="col-12 md:col-6">
+                    <div class="col-12 md:col-4">
                         <label for="email" class="text-600 mb-2 block">Email</label>
                         <InputText 
                             id="email" 
@@ -105,14 +105,14 @@
                             class="w-full"
                         />
                     </div>
-                    <div class="col-12 md:col-6">
-                        <label for="telefone" class="text-600 mb-2 block">Telefone</label>
+                    <div class="col-12 md:col-4">
+                        <label for="cpf" class="text-600 mb-2 block">CPF</label>
                         <InputMask 
-                            id="telefone" 
-                            v-model="paciente.telefone" 
-                            placeholder="(00) 00000-0000"
+                            id="cpf" 
+                            v-model="paciente.cpf" 
+                            placeholder="000.000.000-00"
                             class="w-full"
-                            mask="(99) 99999-9999"
+                            mask="999.999.999-99"
                         />
                     </div>
                     <div class="col-12 md:col-6">
@@ -648,10 +648,15 @@ export default {
                 });
             } catch (error) {
                 console.error('Erro ao atualizar paciente:', error);
+                const api = error?.response?.data;
+                const firstFieldError =
+                    api?.errors && typeof api.errors === 'object'
+                        ? Object.values(api.errors).flat()?.find((m) => typeof m === 'string' && m.trim())
+                        : null;
                 this.$toast.add({
                     severity: 'error',
                     summary: 'Erro!',
-                    detail: error.response?.data?.error || 'Erro ao atualizar paciente',
+                    detail: api?.message || firstFieldError || api?.error || 'Erro ao atualizar paciente',
                     life: 3000
                 });
             } finally {
