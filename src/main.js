@@ -93,6 +93,7 @@ app.config.globalProperties.$mensagemComemorativaService = services.mensagemCome
 app.config.globalProperties.$mensagemAniversarianteService = services.mensagemAniversarianteService;
 app.config.globalProperties.$chamadosService = services.chamadosService;
 app.config.globalProperties.$planService = services.planService;
+app.config.globalProperties.$psicologoService = services.psicologoService;
 
 (async () => {
     if (localStorage.getItem('token')) {

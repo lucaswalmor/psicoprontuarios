@@ -205,16 +205,6 @@ export default {
         this.pararTickerIa();
     },
     methods: {
-        obterIdPsicologo() {
-            try {
-                const raw = sessionStorage.getItem('usuario');
-                if (!raw) return null;
-                const u = JSON.parse(raw);
-                return u.id ?? null;
-            } catch {
-                return null;
-            }
-        },
         iniciarTickerIa() {
             this.pararTickerIa();
             this.iaNow = Date.now();
@@ -319,7 +309,7 @@ export default {
                 return;
             }
 
-            const psicologo = this.obterIdPsicologo();
+            const psicologo = this.$psicologoService?.obterIdPsicologo?.();
             if (psicologo == null) {
                 this.showToast('error', 'Erro', 'Não foi possível identificar o psicólogo logado.');
                 return;
