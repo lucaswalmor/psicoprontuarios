@@ -99,14 +99,6 @@ const STEPS = [
         options: popperBottom
     },
     {
-        attachTo: { element: '[data-tour="tour-meusite-textos-hero-badge"]' },
-        content: {
-            title: 'Badge de experiência',
-            description: 'Número ou texto curto exibido em destaque (ex.: “8+” anos de experiência).'
-        },
-        options: popperBottomStart
-    },
-    {
         attachTo: { element: '[data-tour="tour-meusite-textos-sobre-titulo"]' },
         content: {
             title: 'Título da seção Sobre',

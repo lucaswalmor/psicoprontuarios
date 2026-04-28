@@ -50,10 +50,6 @@
                     auto-resize
                 />
             </div>
-            <div class="field col-12 md:col-4">
-                <label class="font-medium text-sm">Badge — anos de experiência</label>
-                <InputText v-model="form.hero_badge_anos" data-tour="tour-meusite-textos-hero-badge" placeholder="Ex: 8+" class="w-full mt-1" />
-            </div>
         </div>
 
         <Divider />
@@ -125,7 +121,6 @@ export default {
                 hero_titulo:     '',
                 hero_subtitulo:  '',
                 hero_descricao:  '',
-                hero_badge_anos: '',
                 sobre_titulo:    '',
                 sobre_pacientes: '',
                 sobre_bio_1:     '',
