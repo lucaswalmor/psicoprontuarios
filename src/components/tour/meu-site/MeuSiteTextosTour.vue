@@ -107,14 +107,6 @@ const STEPS = [
         options: popperBottomStart
     },
     {
-        attachTo: { element: '[data-tour="tour-meusite-textos-sobre-pacientes"]' },
-        content: {
-            title: 'Badge pacientes atendidos',
-            description: 'Texto curto para reforço social (ex.: “200+” pacientes).'
-        },
-        options: popperBottomStart
-    },
-    {
         attachTo: { element: '[data-tour="tour-meusite-textos-sobre-bio1"]' },
         content: {
             title: 'Biografia — parágrafo 1',

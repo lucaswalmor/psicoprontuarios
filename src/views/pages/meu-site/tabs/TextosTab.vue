@@ -61,13 +61,9 @@
             </span>
         </div>
         <div class="formgrid grid">
-            <div class="field col-12 md:col-6">
+            <div class="field col-12">
                 <label class="font-medium text-sm">Título da seção</label>
                 <InputText v-model="form.sobre_titulo" data-tour="tour-meusite-textos-sobre-titulo" placeholder="Olá, sou Ana Lima" class="w-full mt-1" />
-            </div>
-            <div class="field col-12 md:col-6">
-                <label class="font-medium text-sm">Badge — pacientes atendidos</label>
-                <InputText v-model="form.sobre_pacientes" data-tour="tour-meusite-textos-sobre-pacientes" placeholder="Ex: 200+" class="w-full mt-1" />
             </div>
             <div class="field col-12">
                 <label class="font-medium text-sm">Biografia — parágrafo 1</label>
@@ -122,7 +118,6 @@ export default {
                 hero_subtitulo:  '',
                 hero_descricao:  '',
                 sobre_titulo:    '',
-                sobre_pacientes: '',
                 sobre_bio_1:     '',
                 sobre_bio_2:     '',
             },
