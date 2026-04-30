@@ -88,6 +88,37 @@
                 />
             </div>
         </div>
+
+        <Divider />
+
+        <!-- Seção CTA -->
+        <div class="mt-2 mb-2">
+            <span class="text-xs font-semibold text-color-secondary uppercase letter-spacing-1">
+                <i class="pi pi-bolt mr-1" /> Chamada final (CTA / próximo passo)
+            </span>
+        </div>
+        <div class="formgrid grid">
+            <div class="field col-12 md:col-6">
+                <label class="font-medium text-sm">Rótulo acima do título</label>
+                <InputText v-model="form.cta_eyebrow" placeholder="Próximo passo" class="w-full mt-1" />
+            </div>
+            <div class="field col-12 md:col-6">
+                <label class="font-medium text-sm">Texto do botão</label>
+                <InputText v-model="form.cta_texto_botao" placeholder="Falar pelo WhatsApp" class="w-full mt-1" />
+            </div>
+            <div class="field col-12">
+                <label class="font-medium text-sm">Título — primeira linha</label>
+                <InputText v-model="form.cta_titulo" placeholder="Pronto para começar" class="w-full mt-1" />
+            </div>
+            <div class="field col-12">
+                <label class="font-medium text-sm">Título — linha em destaque <span class="text-color-secondary text-xs">(itálico)</span></label>
+                <InputText v-model="form.cta_titulo_enfase" placeholder="sua jornada?" class="w-full mt-1" />
+            </div>
+            <div class="field col-12">
+                <label class="font-medium text-sm">Parágrafo</label>
+                <Textarea v-model="form.cta_descricao" rows="3" placeholder="A primeira sessão é um espaço..." class="w-full mt-1" auto-resize />
+            </div>
+        </div>
     </div>
 </template>
 
@@ -120,6 +151,12 @@ export default {
                 sobre_titulo:    '',
                 sobre_bio_1:     '',
                 sobre_bio_2:     '',
+
+                cta_eyebrow: '',
+                cta_titulo: '',
+                cta_titulo_enfase: '',
+                cta_descricao: '',
+                cta_texto_botao: '',
             },
         };
     },
