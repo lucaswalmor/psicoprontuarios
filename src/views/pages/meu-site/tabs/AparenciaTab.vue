@@ -3,7 +3,9 @@
         <div class="flex align-items-center justify-content-between mb-4">
             <div>
                 <h6 class="m-0">Aparência</h6>
-                <p class="text-color-secondary text-sm m-0 mt-1">Personalize as cores da sua landing page.</p>
+                <p class="text-color-secondary text-sm m-0 mt-1">
+                    Cores por seção da landing pública (cabeçalho, hero, CTA, contato, etc.).
+                </p>
             </div>
             <Button
                 data-tour="tour-meusite-apar-salvar"
@@ -18,33 +20,43 @@
 
         <div class="grid mt-3">
             <div class="col-12 xl:col-7">
-                <div class="grid">
-                    <div
-                        class="col-12 md:col-6 xl:col-4"
-                        v-for="cor in coresConfig"
-                        :key="cor.campo"
-                        :data-tour="'tour-meusite-apar-' + cor.campo"
-                    >
-                        <div class="field">
-                            <label class="font-medium text-sm block mb-1">{{ cor.label }}</label>
-                            <p class="text-color-secondary text-xs m-0 mb-2">{{ cor.descricao }}</p>
-                            <div class="flex align-items-center gap-2 color-row">
-                                <input
-                                    type="color"
-                                    :value="form[cor.campo]"
-                                    @input="form[cor.campo] = $event.target.value"
-                                    class="color-picker"
-                                />
-                                <InputText
-                                    v-model="form[cor.campo]"
-                                    :placeholder="cor.padrao"
-                                    class="flex-1 font-mono text-sm color-hex"
-                                    maxlength="7"
-                                />
-                                <div
-                                    class="color-preview border-round"
-                                    :style="{ background: form[cor.campo] }"
-                                />
+                <div
+                    v-for="(grupo, idx) in gruposCores"
+                    :key="grupo.titulo"
+                    :class="{ 'mt-3': idx > 0 }"
+                >
+                    <Divider v-if="idx > 0" class="mb-3" />
+                    <div class="text-xs font-semibold text-color-secondary uppercase letter-spacing-1 mb-3">
+                        {{ grupo.titulo }}
+                    </div>
+                    <div class="grid">
+                        <div
+                            class="col-12 md:col-6 xl:col-4"
+                            v-for="cor in grupo.campos"
+                            :key="cor.campo"
+                            :data-tour="'tour-meusite-apar-' + cor.campo"
+                        >
+                            <div class="field">
+                                <label class="font-medium text-sm block mb-1">{{ cor.label }}</label>
+                                <p class="text-color-secondary text-xs m-0 mb-2">{{ cor.descricao }}</p>
+                                <div class="flex align-items-center gap-2 color-row">
+                                    <input
+                                        type="color"
+                                        :value="form[cor.campo]"
+                                        @input="form[cor.campo] = $event.target.value"
+                                        class="color-picker"
+                                    />
+                                    <InputText
+                                        v-model="form[cor.campo]"
+                                        :placeholder="cor.padrao"
+                                        class="flex-1 font-mono text-sm color-hex"
+                                        maxlength="7"
+                                    />
+                                    <div
+                                        class="color-preview border-round"
+                                        :style="{ background: form[cor.campo] }"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -91,6 +103,143 @@ import Button from 'primevue/button';
 import Divider from 'primevue/divider';
 import InputText from 'primevue/inputtext';
 
+function buildFormDefaults() {
+    const grupos = [
+        {
+            titulo: 'Página',
+            campos: [
+                {
+                    campo: 'page_background_color',
+                    label: 'Fundo geral',
+                    descricao: 'Cor base atrás de todo o conteúdo.',
+                    padrao: '#FFFFFF',
+                },
+            ],
+        },
+        {
+            titulo: 'Cabeçalho (menu)',
+            campos: [
+                { campo: 'header_section_text_color', label: 'Texto do menu', descricao: 'Logo e links.', padrao: '#1E1B4B' },
+                { campo: 'header_section_background_color', label: 'Fundo do menu', descricao: 'Barra fixa superior.', padrao: '#FFFFFF' },
+                { campo: 'header_section_button_background_color', label: 'Fundo do botão', descricao: 'CTA “Agendar consulta”.', padrao: '#7C3AED' },
+                { campo: 'header_section_button_text_color', label: 'Texto do botão', descricao: 'Texto sobre o botão do menu.', padrao: '#FFFFFF' },
+                { campo: 'header_section_border_color', label: 'Linha inferior', descricao: 'Borda sob o menu.', padrao: '#E9D5FF' },
+            ],
+        },
+        {
+            titulo: 'Hero (primeira dobra)',
+            campos: [
+                { campo: 'hero_section_text_color', label: 'Título principal', descricao: 'Cor do H1 e texto principal.', padrao: '#1E1B4B' },
+                { campo: 'hero_section_background_color', label: 'Fundo da seção', descricao: '', padrao: '#FFFFFF' },
+                { campo: 'hero_section_accent_color', label: 'Destaques', descricao: 'Eyebrow, ênfase no título, fotos.', padrao: '#7C3AED' },
+                { campo: 'hero_section_muted_text_color', label: 'Texto secundário', descricao: 'Subtítulo e descrição.', padrao: '#57534E' },
+                { campo: 'hero_section_primary_button_background_color', label: 'Botão principal — fundo', descricao: '', padrao: '#7C3AED' },
+                { campo: 'hero_section_primary_button_text_color', label: 'Botão principal — texto', descricao: '', padrao: '#FFFFFF' },
+                { campo: 'hero_section_secondary_button_border_color', label: 'Botão secundário — borda', descricao: '“Conhecer mais”.', padrao: '#D8B4FE' },
+                { campo: 'hero_section_secondary_button_text_color', label: 'Botão secundário — texto', descricao: '', padrao: '#1E1B4B' },
+                { campo: 'hero_section_photo_gradient_start_color', label: 'Foto — gradiente (início)', descricao: 'Placeholders sem foto.', padrao: '#EDE9FE' },
+                { campo: 'hero_section_photo_gradient_end_color', label: 'Foto — gradiente (fim)', descricao: '', padrao: '#DDD6FE' },
+                { campo: 'hero_section_badge_background_color', label: 'Badge tipo atendimento — fundo', descricao: '', padrao: '#7C3AED' },
+                { campo: 'hero_section_badge_text_color', label: 'Badge tipo atendimento — texto', descricao: '', padrao: '#FFFFFF' },
+            ],
+        },
+        {
+            titulo: 'Sobre mim',
+            campos: [
+                { campo: 'sobre_section_text_color', label: 'Títulos e texto', descricao: '', padrao: '#1E1B4B' },
+                { campo: 'sobre_section_background_color', label: 'Fundo da seção', descricao: '', padrao: '#F5F3FF' },
+                { campo: 'sobre_section_accent_color', label: 'Destaques', descricao: 'Rótulo “Sobre mim” e ênfases.', padrao: '#7C3AED' },
+                { campo: 'sobre_section_body_muted_color', label: 'Biografia', descricao: 'Parágrafos e chips.', padrao: '#44403C' },
+                { campo: 'sobre_section_photo_gradient_start_color', label: 'Foto — gradiente (início)', descricao: '', padrao: '#EDE9FE' },
+                { campo: 'sobre_section_photo_gradient_end_color', label: 'Foto — gradiente (fim)', descricao: '', padrao: '#E9D5FF' },
+                { campo: 'sobre_section_chip_background_color', label: 'Chips — fundo', descricao: '', padrao: '#FFFFFF' },
+                { campo: 'sobre_section_chip_border_color', label: 'Chips — borda', descricao: '', padrao: '#E9D5FF' },
+            ],
+        },
+        {
+            titulo: 'Especialidades',
+            campos: [
+                { campo: 'especialidades_section_text_color', label: 'Títulos', descricao: '', padrao: '#1E1B4B' },
+                { campo: 'especialidades_section_background_color', label: 'Fundo da seção', descricao: '', padrao: '#FFFFFF' },
+                { campo: 'especialidades_section_accent_color', label: 'Destaques', descricao: 'Ênfase no título e ícones.', padrao: '#7C3AED' },
+                { campo: 'especialidades_section_description_color', label: 'Descrição', descricao: 'Parágrafo introdutório.', padrao: '#57534E' },
+                { campo: 'especialidades_section_card_background_color', label: 'Cards — fundo', descricao: '', padrao: '#FFFFFF' },
+                { campo: 'especialidades_section_card_border_color', label: 'Cards — borda', descricao: '', padrao: '#E9D5FF' },
+            ],
+        },
+        {
+            titulo: 'Como funciona',
+            campos: [
+                { campo: 'como_funciona_section_text_color', label: 'Títulos', descricao: '', padrao: '#1E1B4B' },
+                { campo: 'como_funciona_section_background_color', label: 'Fundo da seção', descricao: '', padrao: '#EDE9FE' },
+                { campo: 'como_funciona_section_accent_color', label: 'Destaques', descricao: 'Números e detalhes.', padrao: '#7C3AED' },
+                { campo: 'como_funciona_section_grid_border_color', label: 'Grade entre cards', descricao: '', padrao: '#DDD6FE' },
+                { campo: 'como_funciona_section_card_background_color', label: 'Cards — fundo', descricao: '', padrao: '#FFFFFF' },
+                { campo: 'como_funciona_section_step_muted_color', label: 'Texto dos passos', descricao: 'Descrições dos cards.', padrao: '#57534E' },
+            ],
+        },
+        {
+            titulo: 'Benefícios',
+            campos: [
+                { campo: 'beneficios_section_background_color', label: 'Fundo da seção', descricao: '', padrao: '#1E1B4B' },
+                { campo: 'beneficios_section_label_color', label: 'Rótulo da seção', descricao: '“Por que fazer terapia”.', padrao: '#C4B5FD' },
+                { campo: 'beneficios_section_heading_text_color', label: 'Título principal', descricao: '', padrao: '#FFFFFF' },
+                { campo: 'beneficios_section_heading_em_color', label: 'Ênfase no título', descricao: 'Texto em itálico.', padrao: '#C4B5FD' },
+                { campo: 'beneficios_section_quote_text_color', label: 'Citação', descricao: 'Bloco em itálico à esquerda.', padrao: '#A8A29E' },
+                { campo: 'beneficios_section_quote_border_color', label: 'Borda da citação', descricao: '', padrao: '#7C3AED' },
+                { campo: 'beneficios_section_item_title_color', label: 'Título de cada item', descricao: '', padrao: '#FFFFFF' },
+                { campo: 'beneficios_section_item_text_color', label: 'Texto de cada item', descricao: '', padrao: '#A8A29E' },
+                { campo: 'beneficios_section_icon_background_color', label: 'Fundo do ícone', descricao: '', padrao: '#4C1D95' },
+            ],
+        },
+        {
+            titulo: 'CTA (próximo passo)',
+            campos: [
+                { campo: 'cta_section_background_gradient_start_color', label: 'Fundo — gradiente (início)', descricao: '', padrao: '#7C3AED' },
+                { campo: 'cta_section_background_gradient_end_color', label: 'Fundo — gradiente (fim)', descricao: '', padrao: '#5B21B6' },
+                { campo: 'cta_section_heading_text_color', label: 'Título', descricao: '', padrao: '#FFFFFF' },
+                { campo: 'cta_section_body_text_color', label: 'Subtítulo', descricao: '', padrao: '#E9D5FF' },
+                { campo: 'cta_section_label_text_color', label: '“Próximo passo”', descricao: 'Linha e texto acima do título.', padrao: '#DDD6FE' },
+                { campo: 'cta_section_button_background_color', label: 'Botão WhatsApp — fundo', descricao: '', padrao: '#FFFFFF' },
+                { campo: 'cta_section_button_text_color', label: 'Botão WhatsApp — texto', descricao: '', padrao: '#5B21B6' },
+            ],
+        },
+        {
+            titulo: 'Contato',
+            campos: [
+                { campo: 'contato_section_background_color', label: 'Fundo da seção', descricao: '', padrao: '#FAF5FF' },
+                { campo: 'contato_section_text_color', label: 'Títulos e valores', descricao: '', padrao: '#1E1B4B' },
+                { campo: 'contato_section_accent_color', label: 'Destaques', descricao: 'Rótulos e ícones.', padrao: '#7C3AED' },
+                { campo: 'contato_section_description_color', label: 'Parágrafo introdutório', descricao: '', padrao: '#57534E' },
+                { campo: 'contato_section_card_background_color', label: 'Card horários — fundo', descricao: '', padrao: '#FFFFFF' },
+                { campo: 'contato_section_card_border_color', label: 'Card horários — borda', descricao: '', padrao: '#E9D5FF' },
+                { campo: 'contato_section_icon_background_color', label: 'Ícones de contato — fundo', descricao: '', padrao: '#EDE9FE' },
+                { campo: 'contato_section_map_background_color', label: 'Área do mapa / endereço', descricao: '', padrao: '#EDE9FE' },
+            ],
+        },
+        {
+            titulo: 'Rodapé',
+            campos: [
+                { campo: 'footer_section_background_color', label: 'Fundo', descricao: '', padrao: '#1E1B4B' },
+                { campo: 'footer_section_text_color', label: 'Texto secundário', descricao: 'Linhas legais e copyright.', padrao: '#A8A29E' },
+                { campo: 'footer_section_accent_color', label: 'CRP e destaques', descricao: '', padrao: '#C4B5FD' },
+                { campo: 'footer_section_name_color', label: 'Nome do psicólogo', descricao: '', padrao: '#F5F3FF' },
+            ],
+        },
+    ];
+
+    const form = {};
+    grupos.forEach((g) => {
+        g.campos.forEach((c) => {
+            form[c.campo] = c.padrao;
+        });
+    });
+
+    return { grupos, form };
+}
+
+const { grupos: GRUPOS_PADRAO, form: FORM_PADRAO } = buildFormDefaults();
+
 export default {
     name: 'AparenciaTab',
     components: { Button, Divider, InputText },
@@ -105,30 +254,8 @@ export default {
         return {
             salvando: false,
             iframeKey: 0,
-            form: {
-                cor_sage:       '#7A9E87',
-                cor_sage_light: '#A8C4B0',
-                cor_sage_pale:  '#E8F0EA',
-                cor_sand:       '#C8B89A',
-                cor_sand_light: '#EDE4D6',
-                cor_sand_pale:  '#FAF7F2',
-                cor_bark:       '#5C4A35',
-                cor_ink:        '#1E2820',
-                cor_mist:       '#F4F1EC',
-                cor_white:      '#FDFCFA',
-            },
-            coresConfig: [
-                { campo: 'cor_sage',       label: 'Cor principal',       descricao: 'Botões, destaques e ícones',         padrao: '#7A9E87' },
-                { campo: 'cor_sage_light', label: 'Cor principal clara',  descricao: 'Versão mais clara da cor principal', padrao: '#A8C4B0' },
-                { campo: 'cor_sage_pale',  label: 'Cor principal pálida', descricao: 'Fundos sutis e badges',              padrao: '#E8F0EA' },
-                { campo: 'cor_sand',       label: 'Cor areia',            descricao: 'Elementos neutros e bordas',         padrao: '#C8B89A' },
-                { campo: 'cor_sand_light', label: 'Cor areia clara',      descricao: 'Bordas e divisores sutis',           padrao: '#EDE4D6' },
-                { campo: 'cor_sand_pale',  label: 'Cor areia pálida',     descricao: 'Fundo de seções alternadas leves',   padrao: '#FAF7F2' },
-                { campo: 'cor_bark',       label: 'Cor texto secundário', descricao: 'Subtítulos e parágrafos',            padrao: '#5C4A35' },
-                { campo: 'cor_ink',        label: 'Cor texto principal',  descricao: 'Headers e títulos',                  padrao: '#1E2820' },
-                { campo: 'cor_mist',       label: 'Fundo seções',         descricao: 'Fundo de seções alternadas',         padrao: '#F4F1EC' },
-                { campo: 'cor_white',      label: 'Fundo geral',          descricao: 'Cor de fundo da página',             padrao: '#FDFCFA' },
-            ],
+            gruposCores: GRUPOS_PADRAO,
+            form: { ...FORM_PADRAO },
         };
     },
 

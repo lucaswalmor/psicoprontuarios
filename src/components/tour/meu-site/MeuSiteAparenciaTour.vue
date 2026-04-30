@@ -35,7 +35,7 @@
 <script>
 import { VOnboardingWrapper, VOnboardingStep } from 'v-onboarding';
 
-const STORAGE_KEY = 'psico_prontuario_tour_meu_site_aparencia_v1';
+const STORAGE_KEY = 'psico_prontuario_tour_meu_site_aparencia_v2';
 
 const popperBottomStart = {
     popper: {
@@ -57,57 +57,25 @@ const popperBottom = {
     }
 };
 
-const CORES = [
+/** Poucos passos: as cores agora são por seção (dezenas de campos). */
+const PASSOS = [
     {
-        campo: 'cor_sage',
-        title: 'Cor principal',
+        campo: 'page_background_color',
+        title: 'Fundo da página',
         description:
-            'Seletor nativo de cor + campo hexadecimal. Define botões, destaques e ícones da landing. O quadrado à direita pré-visualiza a cor.'
+            'As cores são organizadas por seção (menu, hero, CTA, contato…). Ajuste o fundo geral e depois cada bloco da landing.'
     },
     {
-        campo: 'cor_sage_light',
-        title: 'Cor principal clara',
-        description: 'Tom mais claro da cor principal, usado em hovers e variações suaves do layout.'
+        campo: 'cta_section_heading_text_color',
+        title: 'Seção CTA',
+        description:
+            'A área “Próximo passo” / WhatsApp tem gradiente, textos e botão próprios — personalize à parte do restante da página.'
     },
     {
-        campo: 'cor_sage_pale',
-        title: 'Cor principal pálida',
-        description: 'Fundos muito leves e badges que combinam com a paleta principal.'
-    },
-    {
-        campo: 'cor_sand',
-        title: 'Cor areia',
-        description: 'Neutro quente para bordas e elementos secundários.'
-    },
-    {
-        campo: 'cor_sand_light',
-        title: 'Cor areia clara',
-        description: 'Divisores e bordas sutis entre blocos.'
-    },
-    {
-        campo: 'cor_sand_pale',
-        title: 'Cor areia pálida',
-        description: 'Fundo alternado em seções leves da página.'
-    },
-    {
-        campo: 'cor_bark',
-        title: 'Texto secundário',
-        description: 'Cor de parágrafos e textos de apoio (tom terroso escuro).'
-    },
-    {
-        campo: 'cor_ink',
-        title: 'Texto principal',
-        description: 'Títulos e cabeçalhos em alto contraste com o fundo.'
-    },
-    {
-        campo: 'cor_mist',
-        title: 'Fundo de seções',
-        description: 'Alternância de fundo entre seções da landing.'
-    },
-    {
-        campo: 'cor_white',
-        title: 'Fundo geral',
-        description: 'Cor base da página atrás do conteúdo principal.'
+        campo: 'contato_section_background_color',
+        title: 'Seção Contato',
+        description:
+            'Cartão de horários, ícones e mapa usam cores dedicadas para combinar fundo, borda e destaques.'
     }
 ];
 
@@ -123,7 +91,7 @@ export default {
     },
     data() {
         return {
-            firstTargetSelector: '[data-tour="tour-meusite-apar-cor_sage"]',
+            firstTargetSelector: '[data-tour="tour-meusite-apar-page_background_color"]',
             wrapperOptions: {
                 autoFinishByExit: true,
                 hideButtons: { previous: true, next: true, exit: true },
@@ -135,9 +103,9 @@ export default {
     },
     computed: {
         steps() {
-            const list = CORES.map((c) => ({
-                attachTo: { element: `[data-tour="tour-meusite-apar-${c.campo}"]` },
-                content: { title: c.title, description: c.description },
+            const list = PASSOS.map((p) => ({
+                attachTo: { element: `[data-tour="tour-meusite-apar-${p.campo}"]` },
+                content: { title: p.title, description: p.description },
                 options: popperBottomStart
             }));
             list.push({
@@ -163,7 +131,7 @@ export default {
                 attachTo: { element: '[data-tour="tour-meusite-apar-salvar"]' },
                 content: {
                     title: 'Salvar cores',
-                    description: 'Envia todas as cores personalizadas para a API e aplica na landing page.'
+                    description: 'Envia todas as cores por seção para a API e aplica na landing page.'
                 },
                 options: popperBottomStart
             });
