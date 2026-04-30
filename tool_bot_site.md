@@ -3,8 +3,6 @@ Manual de Suporte: Meu Site — Landing Page do Psicólogo - PsicoProntuários
 Este manual detalha todas as funcionalidades da seção "Meu Site" da plataforma PsicoProntuários, onde o psicólogo configura e personaliza sua landing page pública.
 
 
-
-
 Índice
 1. O que é o Meu Site
 2. Como acessar
@@ -17,8 +15,6 @@ Este manual detalha todas as funcionalidades da seção "Meu Site" da plataforma
 9. FAQ — Perguntas e Respostas Diretas
 
 
-
-
 1. O que é o Meu Site
 
 O "Meu Site" é a landing page pública e personalizada do psicólogo, disponível na internet para qualquer visitante acessar. Ela exibe informações profissionais, especialidades, horários de atendimento e dados de contato, funcionando como uma página de apresentação profissional.
@@ -26,32 +22,28 @@ O "Meu Site" é a landing page pública e personalizada do psicólogo, disponív
 Ao se cadastrar na plataforma como psicólogo, o sistema cria automaticamente uma página inicial com dados pré-preenchidos a partir do cadastro (nome, e-mail, telefone, CRP e endereço). O psicólogo pode personalizar tudo depois.
 
 
-
-
 2. Como acessar
 
 No menu lateral do painel, clique em "Meu Site" (ícone de globo).
 A página carrega com 5 abas de configuração: Geral, Aparência, Textos, Especialidades e Horários.
-No topo direito da página há um botão "Ver meu site" que abre a landing page pública em uma nova aba.
-
-
+No topo direito da página há um botão "Ver meu site" que abre a landing page pública em uma nova aba (disponível para planos com acesso a esta funcionalidade).
 
 
 3. Endereço público da página (slug)
 
-O endereço público da landing page é gerado automaticamente a partir do nome completo do psicólogo no momento do cadastro.
-Exemplo: o psicólogo "Ana Lima" terá o endereço ana-lima.psicoprontuarios.com.br
-O slug (parte do endereço) é fixo e não pode ser alterado pelo psicólogo, pois é vinculado ao cadastro. Isso evita conflitos e endereços duplicados.
-O endereço é exibido na aba "Geral" como informação somente leitura.
+O endereço público da landing page usa um **slug** (subdomínio), gerado a partir do nome completo do psicólogo no momento do cadastro.
+Exemplo: o psicólogo "Ana Lima" pode ter o endereço `ana-lima.psicoprontuarios.com.br`.
 
+Na aba **Geral**, o slug é exibido como **informação fixa** (somente leitura): o sistema não permite alteração pelo usuário para evitar conflitos e links quebrados.
 
+Como ver o endereço: aba **Geral** ou botão **Ver meu site** no topo da tela **Meu Site**.
 
 
 4. Aba: Geral
 
 Configura os dados de contato e tipo de atendimento exibidos na landing page.
 
-Campos disponíveis
+Campos disponíveis (resumo)
 WhatsApp: Número exibido nos botões de contato e na seção de contatos da página.
 E-mail de contato: E-mail público da landing page (pode ser diferente do e-mail de login).
 Endereço: Endereço do consultório exibido na seção de contato (campo de texto livre).
@@ -64,57 +56,51 @@ Preencha ou edite os campos desejados e clique no botão "Salvar" no canto super
 Observação: Se os campos estiverem vazios, o sistema usa automaticamente os dados do cadastro do psicólogo como fallback (telefone, e-mail, endereço e CRP do cadastro original).
 
 
-
-
 5. Aba: Aparência
 
-Permite personalizar as 10 cores da landing page para combinar com a identidade visual do psicólogo.
+Permite personalizar as **cores por seção** da landing pública (menu, hero, sobre, especialidades, como funciona, benefícios, **CTA**, contato, rodapé, fundo geral da página).
 
-Cores configuráveis
-Cor principal: Usada em botões, destaques e ícones.
-Cor principal clara: Versão mais clara da cor principal.
-Cor principal pálida: Fundos sutis e badges.
-Cor areia: Elementos neutros e bordas.
-Cor areia clara: Bordas e divisores sutis.
-Cor areia pálida: Fundo de seções alternadas leves.
-Cor texto secundário: Subtítulos e parágrafos.
-Cor texto principal: Headers e títulos.
-Fundo seções: Cor de fundo de seções alternadas.
-Fundo geral: Cor de fundo geral da página.
+Como funciona
+Os campos estão agrupados por seção (ex.: Cabeçalho, Hero, CTA, Contato). Cada item é uma cor em **hexadecimal** (#RRGGBB).
+Use o seletor de cor ou digite o código no campo. O quadrado de pré-visualização ao lado atualiza em tempo real.
 
-Como editar uma cor
-Clique no quadrado colorido ao lado do campo para abrir o seletor de cores nativo do navegador.
-Ou, se souber o código hexadecimal, digite diretamente no campo de texto (ex: #7A9E87).
-O quadrado de preview ao lado do campo atualiza em tempo real.
-Clique em "Salvar cores" para aplicar as mudanças.
+Pré-visualização
+À direita (em telas largas), um **iframe** pode mostrar o site público quando o psicólogo já definiu um slug em **Geral** e salvou. Há botão para **recarregar** a pré-visualização após salvar cores no servidor.
 
-Paleta padrão: A paleta inicial é o tema "Sage" (tons de verde-sálvia e areia), ativada automaticamente no cadastro.
+Como salvar
+Clique em **Salvar cores** para enviar todas as cores ao servidor. As alterações passam a valer na landing pública após a atualização da página (há cache no backend; ao salvar, o sistema invalida o cache do site).
 
-
+Paleta inicial: novos cadastros recebem valores padrão (tema roxo/branco) definidos no banco; não é mais a paleta antiga “Sage” com 10 cores genéricas.
 
 
 6. Aba: Textos
 
-Configura todos os textos exibidos nas seções da landing page.
+Configura os textos editáveis da landing page, organizados por blocos.
 
 Seção Principal (Hero) — parte superior da página
 Nome exibido na navegação: Nome que aparece no menu e no rodapé da página.
-Eyebrow: Linha pequena de destaque acima do título principal (ex: número do CRP, especialidade).
-Título principal: Frase de impacto em destaque no centro da página.
+Eyebrow: Linha pequena de destaque acima do título principal (ex.: número do CRP ou frase curta).
+Título principal: Manchete da primeira dobra.
 Subtítulo: Frase complementar abaixo do título.
 Descrição: Parágrafo explicativo sobre o atendimento.
-Badge — anos de experiência: Número exibido no selo de credencial da foto (ex: "8+" exibe "8+ anos de experiência clínica").
 
 Seção Sobre Mim
-Título da seção: Título personalizado da seção de apresentação (ex: "Olá, sou Ana").
-Badge — pacientes atendidos: Número exibido no selo da seção sobre (ex: "200+").
-Biografia — parágrafo 1: Primeiro parágrafo de apresentação profissional.
-Biografia — parágrafo 2: Segundo parágrafo complementar da apresentação.
+Título da seção: Cabeçalho da área “Sobre mim”.
+Biografia — parágrafo 1 e parágrafo 2: Textos da apresentação profissional.
+
+Seção Como funciona
+Título em três partes: texto antes do destaque, palavra(s) em **itálico** no meio, texto depois do destaque (ex.: “Um processo ” + “simples” + “ e transparente”). Inclua espaços nas caixas quando quiser separação visual.
+Parágrafo introdutório: texto acima dos quatro cards.
+Quatro passos (cards): para cada um — **título**, **descrição** e **detalhe opcional** (linha pequena no rodapé do card, ex.: “50 minutos”). Na página pública, os cards **não são numerados**.
+
+Seção Chamada final (CTA / próximo passo)
+Rótulo acima do título (ex.: “Próximo passo”).
+Título em duas partes (primeira linha + linha em destaque/itálico).
+Parágrafo do bloco.
+Texto do botão (ex.: “Falar pelo WhatsApp”).
 
 Como salvar
-Edite os campos desejados e clique em "Salvar textos" no canto superior direito.
-
-
+Edite os campos desejados e clique em **Salvar textos** no canto superior direito da aba.
 
 
 7. Aba: Especialidades
@@ -123,7 +109,7 @@ Configura quais especialidades e abordagens terapêuticas aparecem na landing pa
 
 Seção Especialidades (cards)
 Exibe uma lista de chips clicáveis com todos os temas disponíveis no sistema.
-Clique em um chip para selecioná-lo (fica destacado em verde). Clique novamente para desmarcar.
+Clique em um chip para selecioná-lo (fica destacado). Clique novamente para desmarcar.
 Os temas selecionados aparecem como cards na seção "Áreas de atuação" da landing page, com ícone e nome.
 Clique em "Salvar especialidades" para confirmar a seleção.
 
@@ -133,8 +119,6 @@ As abordagens selecionadas aparecem como tags pequenas (chips) na seção "Sobre
 Clique em "Salvar abordagens" para confirmar.
 
 Observação: Especialidades e abordagens são listas independentes e têm botões de salvar separados.
-
-
 
 
 8. Aba: Horários
@@ -156,8 +140,6 @@ Apenas os dias com toggle ativo aparecem na tabela de horários da seção de co
 Se nenhum dia estiver configurado, a seção exibe a mensagem "Horários não informados.".
 
 
-
-
 9. FAQ — Perguntas e Respostas Diretas
 
 P: O que é o "Meu Site" no PsicoProntuários?
@@ -167,19 +149,19 @@ P: Preciso criar o site do zero?
 R: Não. Ao se cadastrar como psicólogo na plataforma, o sistema cria automaticamente uma página inicial com seus dados de cadastro. Você só precisa personalizar o que quiser.
 
 P: Qual é o endereço da minha landing page?
-R: O endereço é gerado a partir do seu nome completo. Exemplo: se seu nome é "Ana Lima", o endereço será ana-lima.psicoprontuarios.com.br. Você pode ver o endereço na aba "Geral" e acessar a página pelo botão "Ver meu site" no topo da tela.
+R: O endereço usa um subdomínio (slug) gerado a partir do seu nome. Exemplo: `ana-lima.psicoprontuarios.com.br`. Você vê o slug na aba **Geral** e pode abrir a página pelo botão **Ver meu site**.
 
 P: Posso mudar o endereço (slug) da minha página?
-R: Não. O endereço é fixo e gerado automaticamente pelo sistema no momento do cadastro para evitar conflitos. Ele aparece como "somente leitura" na aba Geral.
+R: Não. O slug é fixo após o cadastro e aparece como somente leitura na aba Geral.
 
 P: Como altero meu número de WhatsApp na landing page?
 R: Acesse "Meu Site" no menu lateral, clique na aba "Geral", atualize o campo "WhatsApp" e clique em "Salvar".
 
 P: O que acontece se eu deixar o campo de WhatsApp vazio na aba Geral?
-R: O sistema usa automaticamente o telefone do seu cadastro como fallback. Ou seja, sua landing page sempre terá um número de contato, mesmo que você não preencha a aba Geral.
+R: O sistema usa automaticamente o telefone do seu cadastro como fallback.
 
 P: Como personalizo as cores da minha página?
-R: Acesse a aba "Aparência" em "Meu Site". Clique no quadrado colorido para abrir o seletor de cores ou digite o código hexadecimal no campo de texto. Clique em "Salvar cores" para aplicar.
+R: Acesse a aba **Aparência**. As cores são por **seção** (menu, hero, CTA, contato, etc.). Escolha cada cor com o seletor ou digite o hexadecimal e clique em **Salvar cores**.
 
 P: Onde aparecem os temas de especialidade que seleciono?
 R: Na seção "Áreas de atuação" da sua landing page, como cards com ícone e nome.
@@ -193,29 +175,26 @@ R: Acesse a aba "Horários", ative o toggle dos dias que você atende, preencha 
 P: Se eu não configurar nenhum horário, o que aparece na landing page?
 R: A seção de horários exibe a mensagem "Horários não informados." enquanto nenhum dia estiver ativo.
 
-P: Como altero o texto de apresentação da minha página?
-R: Acesse a aba "Textos" em "Meu Site". Edite os campos da seção "Hero" (título, subtítulo, descrição) e da seção "Sobre Mim" (biografia). Clique em "Salvar textos".
+P: Como altero os textos da landing (hero, sobre, CTA, como funciona)?
+R: Acesse a aba **Textos**. Lá estão o Hero, Sobre, bloco **Como funciona** (título, parágrafo e quatro cards) e a **Chamada final (CTA)**. Clique em **Salvar textos**.
 
 P: O que é o campo "Eyebrow" na aba Textos?
-R: É a linha pequena que aparece acima do título principal na landing page, geralmente usada para destacar o CRP ou a especialidade. Exemplo: "CRP 06/123456 · Psicóloga Clínica".
-
-P: O que é o "Badge de anos de experiência"?
-R: É um número exibido em um selo destacado sobre a foto. Exemplo: colocar "8+" exibe "8+ anos de experiência clínica" na landing page.
+R: É a linha pequena que aparece acima do título principal na primeira dobra; costuma ser usada para CRP ou credencial.
 
 P: Posso ter mais de uma landing page?
 R: Não. Cada psicólogo cadastrado tem exatamente uma landing page vinculada ao seu perfil.
 
 P: A landing page fica visível para qualquer pessoa na internet?
-R: Sim, desde que o campo "Ativo" esteja habilitado (padrão). A página é pública e não requer login para ser acessada.
+R: Sim, desde que o site esteja ativo na configuração do sistema. A página é pública e não requer login para ser acessada.
 
 P: Como vejo minha landing page após fazer alterações?
-R: Clique no botão "Ver meu site" no canto superior direito da tela "Meu Site". Isso abre sua página pública em uma nova aba do navegador.
+R: Use **Ver meu site** no canto superior direito da tela **Meu Site**, ou abra manualmente o subdomínio do seu slug. Após mudanças de cores ou textos salvos no servidor, atualize a página no navegador para ver o resultado.
 
 P: Posso deixar campos em branco na aba Textos?
-R: Sim. Campos em branco simplesmente não exibem aquela informação na landing page. Recomenda-se preencher pelo menos título, subtítulo e a biografia para que a página tenha conteúdo adequado.
+R: Sim em vários campos; onde o texto estiver vazio, a landing pode usar texto padrão ou ocultar o bloco conforme o layout. Recomenda-se preencher hero e biografia para uma página completa.
 
 P: O que é "Tipo de atendimento" na aba Geral?
-R: Define como você realiza suas sessões. As opções são: Online, Presencial ou Online e Presencial. Essa informação aparece em destaque como um badge na landing page.
+R: Define como você realiza suas sessões: Online, Presencial ou Online e Presencial. Essa informação aparece em destaque na landing.
 
 P: Posso salvar cada aba separadamente?
-R: Sim. Cada aba tem seu próprio botão "Salvar" e funciona de forma independente. Você pode editar e salvar apenas a aparência sem afetar os textos, por exemplo.
+R: Sim. Cada aba tem seu próprio botão de salvar (**Salvar**, **Salvar cores**, **Salvar textos**, etc.) e funciona de forma independente.

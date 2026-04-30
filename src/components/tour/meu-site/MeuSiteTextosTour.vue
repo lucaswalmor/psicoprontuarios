@@ -1,10 +1,11 @@
 <template>
     <VOnboardingWrapper
+        v-if="!dismissed"
         ref="wrapper"
         :steps="steps"
         :options="wrapperOptions"
-        @finish="onTourDone"
-        @exit="onTourDone"
+        @finish="onTourFinish"
+        @exit="onTourExit"
     >
         <template #default="{ step, next, previous, exit, isFirst, isLast, index }">
             <VOnboardingStep>
@@ -137,6 +138,7 @@ export default {
     components: { VOnboardingWrapper, VOnboardingStep },
     data() {
         return {
+            dismissed: false,
             steps: STEPS,
             firstTargetSelector: '[data-tour="tour-meusite-textos-nav-nome"]',
             wrapperOptions: {
@@ -149,7 +151,8 @@ export default {
         };
     },
     mounted() {
-        if (this.isTourDismissed()) return;
+        this.dismissed = this.isTourDismissed();
+        if (this.dismissed) return;
         if (!this.steps?.length) return;
         this._retryTimer = setTimeout(() => this.watchForVisibilityWithRetry(0), 400);
     },
@@ -165,15 +168,36 @@ export default {
                 return false;
             }
         },
-        onTourDone() {
+        /** Último passo: a lib já chamou `finish()` — só persistir e desmontar. */
+        onTourFinish() {
             try {
                 localStorage.setItem(STORAGE_KEY, '1');
             } catch {
                 /* ignore */
             }
+            this.dismissed = true;
+            this.destroyObserver();
+        },
+        /**
+         * Botão "Finalizar" no 1º passo chama `exit()` da lib, que só emite evento e NÃO encerra o overlay.
+         * Precisamos chamar `finish()` no wrapper para limpar estado e esconder o tour.
+         */
+        onTourExit() {
+            try {
+                localStorage.setItem(STORAGE_KEY, '1');
+            } catch {
+                /* ignore */
+            }
+            this.destroyObserver();
+            try {
+                this.$refs.wrapper?.finish?.();
+            } catch {
+                /* ignore */
+            }
+            this.dismissed = true;
         },
         watchForVisibilityWithRetry(attempt) {
-            if (this.isTourDismissed()) return;
+            if (this.dismissed || this.isTourDismissed()) return;
             const el = document.querySelector(this.firstTargetSelector);
             if (!el) {
                 if (attempt < 120) {
@@ -200,6 +224,7 @@ export default {
             }
         },
         start() {
+            if (this.dismissed || this.isTourDismissed()) return;
             this.$nextTick(() => {
                 const firstSel = this.steps?.[0]?.attachTo?.element;
                 if (firstSel) {
