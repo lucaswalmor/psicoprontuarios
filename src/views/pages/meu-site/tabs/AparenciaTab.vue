@@ -338,6 +338,9 @@ export default {
 
 .preview-card {
     min-width: 0;
+    position: sticky;
+    top: 1rem;
+    max-height: calc(100vh - 2rem);
 }
 
 .preview-frame-wrap {
