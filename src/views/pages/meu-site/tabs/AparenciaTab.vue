@@ -1,19 +1,10 @@
 <template>
     <div class="p-4">
-        <div class="flex align-items-center justify-content-between mb-4">
-            <div>
-                <h6 class="m-0">Aparência</h6>
-                <p class="text-color-secondary text-sm m-0 mt-1">
-                    Cores por seção da landing pública (cabeçalho, hero, CTA, contato, etc.).
-                </p>
-            </div>
-            <Button
-                data-tour="tour-meusite-apar-salvar"
-                label="Salvar cores"
-                icon="pi pi-check"
-                :loading="salvando"
-                @click="salvar"
-            />
+        <div class="mb-4">
+            <h6 class="m-0">Aparência</h6>
+            <p class="text-color-secondary text-sm m-0 mt-1">
+                Cores por seção da landing pública (cabeçalho, hero, CTA, contato, etc.).
+            </p>
         </div>
 
         <Divider />
@@ -65,20 +56,30 @@
 
             <div class="col-12 xl:col-5">
                 <div class="preview-card surface-card border-1 border-round surface-border overflow-hidden" data-tour="tour-meusite-apar-preview">
-                    <div class="flex align-items-center justify-content-between px-3 py-2 border-bottom-1 surface-border">
+                    <div class="flex align-items-center justify-content-between gap-2 flex-wrap px-3 py-2 border-bottom-1 surface-border">
                         <span class="font-medium text-sm">Pré-visualização do site</span>
-                        <Button
-                            v-if="urlPreviewSite"
-                            data-tour="tour-meusite-apar-refresh"
-                            type="button"
-                            icon="pi pi-refresh"
-                            severity="secondary"
-                            text
-                            rounded
-                            title="Recarregar pré-visualização"
-                            :disabled="salvando"
-                            @click="atualizarIframe"
-                        />
+                        <div class="flex align-items-center gap-2">
+                            <Button
+                                data-tour="tour-meusite-apar-salvar"
+                                label="Salvar cores"
+                                icon="pi pi-check"
+                                size="small"
+                                :loading="salvando"
+                                @click="salvar"
+                            />
+                            <Button
+                                v-if="urlPreviewSite"
+                                data-tour="tour-meusite-apar-refresh"
+                                type="button"
+                                icon="pi pi-refresh"
+                                severity="secondary"
+                                text
+                                rounded
+                                title="Recarregar pré-visualização"
+                                :disabled="salvando"
+                                @click="atualizarIframe"
+                            />
+                        </div>
                     </div>
                     <div v-if="!urlPreviewSite" class="p-4 text-center text-color-secondary text-sm">
                         Defina um slug em <strong>Geral</strong> e salve para ver o site aqui.
