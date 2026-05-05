@@ -23,7 +23,7 @@
                     <div class="price-section">
                         <div class="price">
                             <span class="currency">R$</span>
-                            <span class="amount">29</span>
+                            <span class="amount">39</span>
                             <span class="period">,90/mês</span>
                         </div>
                         <p class="text-sm text-surface-600 dark:text-surface-400 mb-2">
@@ -137,7 +137,7 @@ export default {
                 'Controle Financeiro',
                 'Anamnese e Anexos',
                 'Indicadores de evolução (humor, GAD-7, PHQ-9)',
-                'Landing page gratuita',
+                'Site Exclusivo para você',
                 'Melhoria de texto com I.A no prontuário',
                 'Gerar relatório profissional com I.A nos prontuários',
                 'Notificações de aniversários e datas comemorativas por WhatsApp',
