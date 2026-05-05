@@ -1,6 +1,7 @@
 import AppLayout from '@/layout/AppLayout.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import { setupAuthInactiveGuard } from './authInactiveGuard';
+import { trackPageView } from '@/utils/metaPixel';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -328,6 +329,10 @@ const router = createRouter({
 });
 
 setupAuthInactiveGuard(router);
+
+router.afterEach(() => {
+    trackPageView();
+});
 
 // Recupera automaticamente de erro de chunk desatualizado após deploy.
 router.onError((error) => {

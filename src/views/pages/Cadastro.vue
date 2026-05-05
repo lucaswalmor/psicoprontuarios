@@ -500,6 +500,13 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
+import { trackCadastroEtapa, trackCompleteRegistration } from '@/utils/metaPixel';
+
+const CADASTRO_ETAPA_NOMES = {
+    1: 'dados_pessoais',
+    2: 'endereco',
+    3: 'login'
+};
 
 export default {
     name: 'Cadastro',
@@ -552,6 +559,9 @@ export default {
             errors: {}
         };
     },
+    mounted() {
+        trackCadastroEtapa(1, CADASTRO_ETAPA_NOMES[1]);
+    },
     methods: {
         validateForm() {
             // Usar a validação por etapas para validar tudo
@@ -576,7 +586,9 @@ export default {
 
             try {
                 const formData = this.prepareFormData();
-                const response = await userService.cadastrar(formData);
+                await userService.cadastrar(formData);
+
+                trackCompleteRegistration({ method: 'email' });
 
                 // Limpar formulário após sucesso
                 this.clearForm();
@@ -679,6 +691,7 @@ export default {
                 if (response.cadastroCompleto === false || response.cadastro_completo === false || response.user?.cadastro_completo === false) {
                     this.$router.push('/completar-cadastro');
                 } else {
+                    trackCompleteRegistration({ method: 'google' });
                     this.showSuccessDialog = true;
                     this.startCountdown();
                 }
@@ -708,6 +721,10 @@ export default {
         proximoEtapa() {
             if (this.validarEtapaAtual()) {
                 this.etapaAtual++;
+                const nome = CADASTRO_ETAPA_NOMES[this.etapaAtual];
+                if (nome) {
+                    trackCadastroEtapa(this.etapaAtual, nome);
+                }
             }
         },
 

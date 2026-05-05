@@ -1,8 +1,17 @@
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import logo from '@/assets/img/no-bg.webp';
+import { trackStartTrialClick } from '@/utils/metaPixel';
 
+const router = useRouter();
 const isMobileMenuOpen = ref(false);
+
+function irParaCadastro(placement) {
+    trackStartTrialClick(placement);
+    isMobileMenuOpen.value = false;
+    router.push('/cadastro');
+}
 
 function smoothScroll(id) {
     document.body.click();
@@ -52,11 +61,9 @@ function toggleMobileMenu() {
         <div class="mobile-actions">
             <Button
                 label="Teste Grátis"
-                as="router-link"
-                to="/cadastro"
                 rounded
                 class="mobile-cta-btn"
-                @click="isMobileMenuOpen = false"
+                @click="irParaCadastro('topbar_mobile')"
             />
             <Button 
                 class="mobile-menu-btn" 
@@ -112,11 +119,9 @@ function toggleMobileMenu() {
                 />
                 <Button 
                     label="Teste Grátis" 
-                    as="router-link" 
-                    to="/cadastro"
                     rounded 
                     class="signup-btn"
-                    @click="isMobileMenuOpen = false"
+                    @click="irParaCadastro('topbar')"
                 />
             </div>
         </div>

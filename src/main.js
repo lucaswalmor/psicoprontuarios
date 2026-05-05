@@ -17,6 +17,7 @@ import money from 'v-money3';
 
 import { VOnboardingWrapper } from 'v-onboarding';
 import 'v-onboarding/dist/style.css';
+import { initMetaPixel } from '@/utils/metaPixel';
 
 // Carregar configurações iniciais do localStorage
 const loadInitialConfig = () => {
@@ -63,5 +64,6 @@ app.config.globalProperties.$mensagemPersonalizadaService = services.mensagemPer
             console.warn('Não foi possível sincronizar a sessão com o servidor.');
         }
     }
+    await initMetaPixel();
     app.mount('#app');
 })();

@@ -47,7 +47,7 @@
                         <Button
                             label="Começar teste grátis"
                             class="cta-button"
-                            @click="$router.push('/cadastro')"
+                            @click="irParaCadastro('pricing_simples')"
                         />
                     </div>
                 </div>
@@ -90,7 +90,7 @@
                         <Button
                             label="Começar teste grátis"
                             class="cta-button featured"
-                            @click="$router.push('/cadastro')"
+                            @click="irParaCadastro('pricing_pro')"
                         />
                     </div>
                 </div>
@@ -111,12 +111,19 @@
 <script>
 import Button from 'primevue/button';
 import Divider from 'primevue/divider';
+import { trackStartTrialClick } from '@/utils/metaPixel';
 
 export default {
     name: 'PricingWidget',
     components: {
         Button,
         Divider
+    },
+    methods: {
+        irParaCadastro(placement) {
+            trackStartTrialClick(placement);
+            this.$router.push('/cadastro');
+        }
     },
     data() {
         return {

@@ -1,5 +1,14 @@
 <script setup>
+import { useRouter } from 'vue-router';
 import banner from '@/assets/img/banner.webp';
+import { trackStartTrialClick } from '@/utils/metaPixel';
+
+const router = useRouter();
+
+const irParaCadastro = () => {
+    trackStartTrialClick('hero');
+    router.push('/cadastro');
+};
 
 const scrollToPricing = () => {
     const pricingSection = document.getElementById('pricing');
@@ -50,10 +59,9 @@ const scrollToPricing = () => {
                     <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                         <Button 
                             label="Teste Grátis" 
-                            as="router-link" 
-                            to="/cadastro" 
                             rounded 
                             class="!text-lg !px-8 !py-3 bg-gradient-to-r from-blue-600 to-purple-600 border-0 hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+                            @click="irParaCadastro"
                         />
                         <Button 
                             label="Nossos Planos" 

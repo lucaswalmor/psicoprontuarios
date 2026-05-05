@@ -136,6 +136,7 @@
 <script>
 import { useToast } from 'primevue/usetoast';
 import leadsService from '@/services/leadsService';
+import { trackLead } from '@/utils/metaPixel';
 
 export default {
     name: 'LeadsWidget',
@@ -231,6 +232,8 @@ export default {
                 };
                 
                 await leadsService.cadastrarLead(dados);
+
+                trackLead();
                 
                 // Limpar formulário
                 this.formData.nome = '';
