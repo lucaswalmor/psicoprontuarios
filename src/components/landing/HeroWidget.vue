@@ -1,12 +1,14 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import banner from '@/assets/img/banner.webp';
+import { registrarMarketingLog } from '@/services/marketingLogService.js';
 import { trackStartTrialClick } from '@/utils/metaPixel';
 
 const router = useRouter();
 
 const irParaCadastro = () => {
     trackStartTrialClick('hero');
+    registrarMarketingLog('teste_gratis_click', { placement: 'hero' });
     router.push('/cadastro');
 };
 

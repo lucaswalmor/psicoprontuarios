@@ -111,6 +111,7 @@
 <script>
 import Button from 'primevue/button';
 import Divider from 'primevue/divider';
+import { registrarMarketingLog } from '@/services/marketingLogService.js';
 import { trackStartTrialClick } from '@/utils/metaPixel';
 
 export default {
@@ -122,6 +123,7 @@ export default {
     methods: {
         irParaCadastro(placement) {
             trackStartTrialClick(placement);
+            registrarMarketingLog('teste_gratis_click', { placement });
             this.$router.push('/cadastro');
         }
     },

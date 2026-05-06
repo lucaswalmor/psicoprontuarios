@@ -9,6 +9,7 @@ import LeadsWidget from '@/components/landing/LeadsWidget.vue';
 import TestimonialsWidget from '@/components/landing/TestimonialsWidget.vue';
 import ChatAtendimento from '@/components/ChatAtendimento.vue';
 import { getN8nChatWebhookUrl } from '@/config/environment.js';
+import { registrarLandingViewUmaVez } from '@/services/marketingLogService.js';
 import { onMounted } from 'vue';
 
 const n8nChatWebhookUrl = getN8nChatWebhookUrl();
@@ -158,6 +159,7 @@ const updateMetaTags = () => {
 
 onMounted(() => {
     updateMetaTags();
+    registrarLandingViewUmaVez();
 });
 </script>
 

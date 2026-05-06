@@ -500,6 +500,7 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
+import { registrarMarketingLog } from '@/services/marketingLogService.js';
 import { trackCadastroEtapa, trackCompleteRegistration } from '@/utils/metaPixel';
 
 const CADASTRO_ETAPA_NOMES = {
@@ -560,6 +561,7 @@ export default {
         };
     },
     mounted() {
+        registrarMarketingLog('cadastro_view');
         trackCadastroEtapa(1, CADASTRO_ETAPA_NOMES[1]);
     },
     methods: {
@@ -586,6 +588,10 @@ export default {
 
             try {
                 const formData = this.prepareFormData();
+                registrarMarketingLog('cadastro_etapa_3_submit', {
+                    email: this.form.email
+                });
+
                 await userService.cadastrar(formData);
 
                 trackCompleteRegistration({ method: 'email' });
@@ -719,13 +725,54 @@ export default {
         },
 
         proximoEtapa() {
-            if (this.validarEtapaAtual()) {
-                this.etapaAtual++;
-                const nome = CADASTRO_ETAPA_NOMES[this.etapaAtual];
-                if (nome) {
-                    trackCadastroEtapa(this.etapaAtual, nome);
-                }
+            if (!this.validarEtapaAtual()) {
+                return;
             }
+            const step = this.etapaAtual;
+            if (step === 1) {
+                registrarMarketingLog('cadastro_etapa_1', this.snapshotEtapaMarketing(1));
+            } else if (step === 2) {
+                registrarMarketingLog('cadastro_etapa_2', this.snapshotEtapaMarketing(2));
+            }
+            this.etapaAtual++;
+            const nome = CADASTRO_ETAPA_NOMES[this.etapaAtual];
+            if (nome) {
+                trackCadastroEtapa(this.etapaAtual, nome);
+            }
+        },
+
+        /** Dados do formulário por etapa para logs (sem senhas). */
+        snapshotEtapaMarketing(etapa) {
+            const f = this.form;
+            if (etapa === 1) {
+                return {
+                    nome: f.nome,
+                    sobrenome: f.sobrenome,
+                    telefone: f.telefone,
+                    cpf: f.cpf,
+                    crp: f.crp
+                };
+            }
+            if (etapa === 2) {
+                return {
+                    cep: f.cep,
+                    cidade: f.cidade,
+                    estado: f.estado,
+                    rua: f.rua,
+                    bairro: f.bairro,
+                    numero: f.numero,
+                    complemento: f.complemento
+                };
+            }
+            if (etapa === 3) {
+                const pwd = f.password;
+                return {
+                    email: f.email,
+                    politica_privacidade: Boolean(f.politica_privacidade),
+                    senha_definida: Boolean(pwd && String(pwd).length > 0)
+                };
+            }
+            return {};
         },
 
         voltarEtapa() {

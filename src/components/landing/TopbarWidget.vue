@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import logo from '@/assets/img/no-bg.webp';
+import { registrarMarketingLog } from '@/services/marketingLogService.js';
 import { trackStartTrialClick } from '@/utils/metaPixel';
 
 const router = useRouter();
@@ -9,6 +10,7 @@ const isMobileMenuOpen = ref(false);
 
 function irParaCadastro(placement) {
     trackStartTrialClick(placement);
+    registrarMarketingLog('teste_gratis_click', { placement });
     isMobileMenuOpen.value = false;
     router.push('/cadastro');
 }
