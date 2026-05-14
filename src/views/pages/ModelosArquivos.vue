@@ -143,6 +143,12 @@ export default {
         }
     },
     methods: {
+        /** URL pública dos modelos (pasta public/arquivos) — /src/... não existe no build e pode devolver HTML da SPA. */
+        urlPublicaArquivo(nome) {
+            const base = import.meta.env.BASE_URL || '/';
+            const prefix = base.endsWith('/') ? base : `${base}/`;
+            return `${prefix}arquivos/${encodeURIComponent(nome)}`;
+        },
         async downloadArquivo(arquivo) {
             if (this.downloadingId === arquivo.nome) return;
 
@@ -156,9 +162,14 @@ export default {
                     life: 2000
                 });
 
-                const response = await fetch(`/src/assets/arquivos/${arquivo.nome}`);
+                const response = await fetch(this.urlPublicaArquivo(arquivo.nome));
 
                 if (!response.ok) throw new Error('Arquivo não encontrado');
+
+                const contentType = response.headers.get('content-type') || '';
+                if (contentType.includes('text/html')) {
+                    throw new Error('Resposta inválida (HTML em vez do documento)');
+                }
 
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
@@ -179,7 +190,7 @@ export default {
             } catch {
                 try {
                     const link = document.createElement('a');
-                    link.href = `/src/assets/arquivos/${arquivo.nome}`;
+                    link.href = this.urlPublicaArquivo(arquivo.nome);
                     link.download = arquivo.nome;
                     link.target = '_blank';
                     document.body.appendChild(link);
