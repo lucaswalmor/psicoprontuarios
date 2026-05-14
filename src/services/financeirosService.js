@@ -56,6 +56,18 @@ const financeirosService = {
     // Pagar/Receber transações em lote
     pagarEmLote(ids) {
         return api.post('/financeiros/pagar-lote', { ids });
+    },
+
+    /**
+     * PDF da listagem (receita ou despesa), mesmo período/filtros da tela.
+     * @param {Object} params — obrigatório: tipo 'receita'|'despesa'; opcional: data_inicial, data_final, categoria
+     */
+    exportarPdf(params) {
+        return api.get('/financeiros/exportar-pdf', {
+            params,
+            responseType: 'blob',
+            headers: { Accept: 'application/pdf' }
+        });
     }
 };
 

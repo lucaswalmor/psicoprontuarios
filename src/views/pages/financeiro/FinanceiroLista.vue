@@ -51,6 +51,17 @@
                             />
                             <Button v-else label="Limpar Filtros" severity="danger" @click="limparFiltros" />
                         </span>
+                        <span class="fh-action-wrap">
+                            <Button
+                                label="Exportar PDF"
+                                icon="pi pi-file-pdf"
+                                severity="help"
+                                outlined
+                                :loading="exportandoPdf"
+                                v-tooltip.top="tipoDetectado === 'receita' ? 'Exportar receitas do período filtrado' : 'Exportar despesas do período filtrado'"
+                                @click="exportarListaPdf"
+                            />
+                        </span>
                     </div>
                 </div>
 
@@ -208,6 +219,7 @@ export default {
             rowsPerPage: 10,
             totalRecebidasPagas: 0,
             totalPrevistas: 0,
+            exportandoPdf: false,
             filtros: {
                 tipo: null,
                 categoria: null,
@@ -325,6 +337,84 @@ export default {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             }).format(valor);
+        },
+
+        /**
+         * Parâmetros do PDF: sempre o tipo da tela atual (receitas → receita, despesas → despesa)
+         * e o mesmo intervalo/categoria usados na listagem (mês vigente se não houver datas).
+         */
+        montarParamsExportacaoPdf() {
+            const tipo = this.tipoDetectado;
+            const padraoMes = this.getDataInicioFim();
+            const di = this.filtros.data_inicial || padraoMes.dataInicial;
+            const df = this.filtros.data_final || padraoMes.dataFinal;
+
+            const params = {
+                tipo,
+                data_inicial: di instanceof Date ? di.toISOString().split('T')[0] : di,
+                data_final: df instanceof Date ? df.toISOString().split('T')[0] : df
+            };
+
+            if (this.filtros.categoria) {
+                params.categoria = this.filtros.categoria;
+            }
+
+            return params;
+        },
+
+        async exportarListaPdf() {
+            this.exportandoPdf = true;
+            try {
+                const params = this.montarParamsExportacaoPdf();
+                const response = await this.$financeirosService.exportarPdf(params);
+
+                const blob = new Blob([response.data], { type: 'application/pdf' });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                const cd = response.headers['content-disposition'];
+                let nomeArquivo = params.tipo === 'receita' ? 'receitas.pdf' : 'despesas.pdf';
+                if (cd) {
+                    const m = /filename\*=UTF-8''([^;]+)|filename="([^"]+)"/i.exec(cd);
+                    if (m) {
+                        nomeArquivo = decodeURIComponent((m[1] || m[2] || '').trim());
+                    }
+                }
+                link.download = nomeArquivo || 'financeiro.pdf';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+
+                this.$toast.add({
+                    severity: 'success',
+                    summary: 'PDF',
+                    detail: params.tipo === 'receita'
+                        ? 'Receitas exportadas com sucesso.'
+                        : 'Despesas exportadas com sucesso.',
+                    life: 3000
+                });
+            } catch (error) {
+                let mensagem = 'Não foi possível gerar o PDF.';
+                if (error.response?.data instanceof Blob) {
+                    try {
+                        const texto = await error.response.data.text();
+                        const json = JSON.parse(texto);
+                        mensagem = json.message || mensagem;
+                    } catch {
+                        /* manter mensagem padrão */
+                    }
+                }
+                console.error('Erro ao exportar PDF:', error);
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: mensagem,
+                    life: 4000
+                });
+            } finally {
+                this.exportandoPdf = false;
+            }
         },
 
         async carregarTransacoes() {

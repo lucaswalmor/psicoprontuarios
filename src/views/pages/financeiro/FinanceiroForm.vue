@@ -49,8 +49,10 @@
                                         <template #option="slotProps">
                                             <div class="flex align-items-center justify-content-between w-full">
                                                 <span>{{ slotProps.option.nome }}</span>
-                                                <div class="flex gap-1 ml-2" @click.stop>
+                                                <!-- mousedown.stop: Select/Dropdown do PV4 seleciona a opção no mousedown do <li>; sem isso o overlay fecha antes do click nos botões. -->
+                                                <div class="flex gap-1 ml-2" @mousedown.stop @click.stop>
                                                     <Button 
+                                                        type="button"
                                                         icon="pi pi-pencil" 
                                                         size="small" 
                                                         severity="info"
@@ -60,6 +62,7 @@
                                                         v-tooltip.top="'Editar categoria'"
                                                     />
                                                     <Button 
+                                                        type="button"
                                                         icon="pi pi-trash" 
                                                         size="small" 
                                                         severity="danger"
@@ -143,7 +146,7 @@
                                     placeholder="Selecione o tipo de pagamento"
                                     class="w-full"
                                     :class="{ 'p-invalid': errors.tipo_pagamento }"
-                                    :disabled="!form.data || !getValorNumerico()"
+                                    :disabled="!form.data"
                                 />
                                 <small v-if="errors.tipo_pagamento" class="p-error">{{ errors.tipo_pagamento }}</small>
                             </div>
@@ -372,6 +375,13 @@
 import DatePicker from 'primevue/datepicker';
 import { Money3Component } from 'v-money3';
 
+/** Hoje à meia-noite local (evita deslocar o dia ao formatar/enviar). */
+function dataPadraoLancamento() {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+}
+
 export default {
     name: 'FinanceiroForm',
     components: {
@@ -408,9 +418,9 @@ export default {
                 tipo: null,
                 categoria: '',
                 valorNumerico: 0,
-                data: null,
+                data: dataPadraoLancamento(),
                 descricao: '',
-                tipo_pagamento: null,
+                tipo_pagamento: 'avista',
                 qtd_parcelas: 1,
                 forma_divisao: 'manter',
                 paga: false,
@@ -503,6 +513,8 @@ export default {
                     this.form.tipo = 'despesa';
                 }
             }
+            this.form.data = dataPadraoLancamento();
+            this.form.tipo_pagamento = 'avista';
         } else {
             // Ao editar, carregar a transação que já tem o tipo definido
             await this.carregarTransacao(this.$route.params.id);
@@ -513,9 +525,9 @@ export default {
             this.form.tipo = null;
             this.form.categoria = '';
             this.form.valorNumerico = 0;
-            this.form.data = null;
+            this.form.data = dataPadraoLancamento();
             this.form.descricao = '';
-            this.form.tipo_pagamento = null;
+            this.form.tipo_pagamento = 'avista';
             this.form.qtd_parcelas = 1;
             this.form.forma_divisao = 'manter';
             this.form.paga = false;
