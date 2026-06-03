@@ -4,8 +4,8 @@
         ref="wrapper"
         :steps="steps"
         :options="wrapperOptions"
-        @finish="onTourFinish"
-        @exit="onTourExit"
+        @finish="onTourDone"
+        @exit="onTourDone"
     >
         <template #default="{ step, next, previous, exit, isFirst, isLast, index }">
             <VOnboardingStep>
@@ -21,9 +21,9 @@
                     <h3 v-if="step?.content?.title" class="dtour__title">{{ step.content.title }}</h3>
                     <p v-if="step?.content?.description" class="dtour__desc">{{ step.content.description }}</p>
                     <div class="dtour__actions">
-                        <button v-if="isFirst" type="button" class="dtour__btn dtour__btn--ghost" @click="exit">Finalizar</button>
+                        <button v-if="isFirst" type="button" class="dtour__btn dtour__btn--ghost" @click="() => { onTourDone(); exit(); }">Finalizar</button>
                         <button v-else type="button" class="dtour__btn dtour__btn--ghost" @click="previous">← Voltar</button>
-                        <button type="button" class="dtour__btn dtour__btn--primary" @click="next">
+                        <button type="button" class="dtour__btn dtour__btn--primary" @click="() => { if (isLast) { onTourDone(); exit(); } else { next(); } }">
                             {{ isLast ? 'Concluir' : 'Próximo →' }}
                         </button>
                     </div>
@@ -35,6 +35,7 @@
 
 <script>
 import { VOnboardingWrapper, VOnboardingStep } from 'v-onboarding';
+import userService from '@/services/userService';
 
 const STORAGE_KEY = 'psico_prontuario_tour_meu_site_textos_v1';
 
@@ -168,33 +169,21 @@ export default {
                 return false;
             }
         },
-        /** Último passo: a lib já chamou `finish()` — só persistir e desmontar. */
-        onTourFinish() {
+        onTourDone() {
+            if (this.dismissed) return;
             try {
                 localStorage.setItem(STORAGE_KEY, '1');
             } catch {
                 /* ignore */
             }
+            userService.salvarTourFinalizado(STORAGE_KEY);
             this.dismissed = true;
-            this.destroyObserver();
-        },
-        /**
-         * Botão "Finalizar" no 1º passo chama `exit()` da lib, que só emite evento e NÃO encerra o overlay.
-         * Precisamos chamar `finish()` no wrapper para limpar estado e esconder o tour.
-         */
-        onTourExit() {
-            try {
-                localStorage.setItem(STORAGE_KEY, '1');
-            } catch {
-                /* ignore */
-            }
             this.destroyObserver();
             try {
                 this.$refs.wrapper?.finish?.();
             } catch {
                 /* ignore */
             }
-            this.dismissed = true;
         },
         watchForVisibilityWithRetry(attempt) {
             if (this.dismissed || this.isTourDismissed()) return;

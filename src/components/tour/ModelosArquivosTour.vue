@@ -32,7 +32,7 @@
                             v-if="isFirst"
                             type="button"
                             class="dtour__btn dtour__btn--ghost"
-                            @click="exit"
+                            @click="() => { onTourDone(); exit(); }"
                         >
                             Finalizar
                         </button>
@@ -48,7 +48,7 @@
                         <button
                             type="button"
                             class="dtour__btn dtour__btn--primary"
-                            @click="next"
+                            @click="() => { if (isLast) { onTourDone(); exit(); } else { next(); } }"
                         >
                             {{ isLast ? 'Concluir' : 'Próximo →' }}
                         </button>
@@ -61,6 +61,7 @@
 
 <script>
 import { VOnboardingWrapper, VOnboardingStep } from 'v-onboarding';
+import userService from '@/services/userService';
 
 const STORAGE_KEY = 'psico_prontuario_tour_modelos_arquivos_v1';
 const FIRST_TARGET = '[data-tour="tour-modelos-intro"]';
@@ -211,11 +212,13 @@ export default {
             }
         },
         onTourDone() {
+            if (this.dismissed) return;
             try {
                 localStorage.setItem(STORAGE_KEY, '1');
             } catch {
                 /* ignore */
             }
+            userService.salvarTourFinalizado(STORAGE_KEY);
             this.dismissed = true;
             try {
                 this.$refs.wrapper?.finish?.();

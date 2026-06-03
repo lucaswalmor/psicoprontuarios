@@ -18,12 +18,38 @@
                             :class="{ 'dtour__dot--active': i === index }"
                         />
                     </div>
-                    <h3 v-if="step?.content?.title" class="dtour__title">{{ step.content.title }}</h3>
-                    <p v-if="step?.content?.description" class="dtour__desc">{{ step.content.description }}</p>
+
+                    <h3 v-if="step?.content?.title" class="dtour__title">
+                        {{ step.content.title }}
+                    </h3>
+
+                    <p v-if="step?.content?.description" class="dtour__desc">
+                        {{ step.content.description }}
+                    </p>
+
                     <div class="dtour__actions">
-                        <button v-if="isFirst" type="button" class="dtour__btn dtour__btn--ghost" @click="() => { onTourDone(); exit(); }">Finalizar</button>
-                        <button v-else type="button" class="dtour__btn dtour__btn--ghost" @click="previous">← Voltar</button>
-                        <button type="button" class="dtour__btn dtour__btn--primary" @click="() => { if (isLast) { onTourDone(); exit(); } else { next(); } }">
+                        <button
+                            v-if="isFirst"
+                            type="button"
+                            class="dtour__btn dtour__btn--ghost"
+                            @click="() => { onTourDone(); exit(); }"
+                        >
+                            Finalizar
+                        </button>
+                        <button
+                            v-else
+                            type="button"
+                            class="dtour__btn dtour__btn--ghost"
+                            @click="previous"
+                        >
+                            ← Voltar
+                        </button>
+
+                        <button
+                            type="button"
+                            class="dtour__btn dtour__btn--primary"
+                            @click="() => { if (isLast) { onTourDone(); exit(); } else { next(); } }"
+                        >
                             {{ isLast ? 'Concluir' : 'Próximo →' }}
                         </button>
                     </div>
@@ -37,7 +63,7 @@
 import { VOnboardingWrapper, VOnboardingStep } from 'v-onboarding';
 import userService from '@/services/userService';
 
-const STORAGE_KEY = 'psico_prontuario_tour_meu_site_geral_v1';
+const STORAGE_KEY = 'psico_prontuario_tour_ficha_paciente_tab_evolucao_v1';
 
 const popperBottomStart = {
     popper: {
@@ -53,7 +79,7 @@ const popperBottom = {
     popper: {
         placement: 'bottom',
         modifiers: [
-            { name: 'flip', options: { fallbackPlacements: ['top', 'bottom'] } },
+            { name: 'flip', options: { fallbackPlacements: ['top'] } },
             { name: 'preventOverflow', options: { padding: 8 } }
         ]
     }
@@ -61,79 +87,50 @@ const popperBottom = {
 
 const STEPS = [
     {
-        attachTo: { element: '[data-tour="tour-meusite-geral-slug"]' },
+        attachTo: { element: '[data-tour="tour-ficha-evolucao-resumo"]' },
         content: {
-            title: 'Endereço do site (subdomínio)',
+            title: 'Resumo da evolução',
             description:
-                'O que você digita vira o subdomínio: o site público fica em https://seu-slug.psicoprontuarios.com.br. Use só letras minúsculas, números e hífens. Ao sair do campo, o sistema verifica se o slug está livre; mensagens de ajuda ou erro aparecem abaixo.'
+                'Indicadores calculados a partir das métricas registradas nos prontuários: média atual, tendência, baseline e melhor período.'
         },
         options: popperBottomStart
     },
     {
-        attachTo: { element: '[data-tour="tour-meusite-geral-crp"]' },
+        attachTo: { element: '[data-tour="tour-ficha-evolucao-graficos"]' },
         content: {
-            title: 'CRP',
-            description: 'Registro profissional exibido na landing page. Formato típico: região/número (ex.: 06/123456).'
-        },
-        options: popperBottomStart
-    },
-    {
-        attachTo: { element: '[data-tour="tour-meusite-geral-whatsapp"]' },
-        content: {
-            title: 'WhatsApp',
-            description: 'Número de contato para visitantes entrarem em contato pelo WhatsApp. Preencha com DDD e número como costuma aparecer no site.'
-        },
-        options: popperBottomStart
-    },
-    {
-        attachTo: { element: '[data-tour="tour-meusite-geral-email"]' },
-        content: {
-            title: 'E-mail de contato',
-            description: 'Endereço público de e-mail mostrado na página do seu consultório online.'
-        },
-        options: popperBottomStart
-    },
-    {
-        attachTo: { element: '[data-tour="tour-meusite-geral-endereco"]' },
-        content: {
-            title: 'Endereço',
-            description: 'Texto livre com endereço do consultório ou indicação de atendimento online. Aparece na landing conforme o layout do tema.'
+            title: 'Gráficos de evolução',
+            description:
+                'Visualize a evolução temporal e a comparação multidimensional quando houver métricas suficientes cadastradas nos prontuários.'
         },
         options: popperBottom
     },
     {
-        attachTo: { element: '[data-tour="tour-meusite-geral-tipo-atendimento"]' },
+        attachTo: { element: '[data-tour="tour-ficha-evolucao-insights"]' },
         content: {
-            title: 'Tipo de atendimento',
-            description: 'Selecione Online, Presencial ou ambos. Essa informação ajuda visitantes a entenderem como você atende.'
-        },
-        options: popperBottomStart
-    },
-    {
-        attachTo: { element: '[data-tour="tour-meusite-geral-salvar"]' },
-        content: {
-            title: 'Salvar',
+            title: 'Insights e disponibilidade',
             description:
-                'Grava slug, CRP, contatos, endereço e tipo de atendimento no servidor. O slug obrigatório precisa estar disponível; caso contrário, ajuste até a verificação indicar que está livre.'
+                'Quando houver dados, os insights aparecem aqui. Sem métricas, a aba orienta a registrar informações nos prontuários para alimentar a evolução.'
         },
-        options: popperBottomStart
+        options: popperBottom
     }
 ];
 
 export default {
-    name: 'MeuSiteGeralTour',
+    name: 'FichaPacienteEvolucaoTour',
     components: { VOnboardingWrapper, VOnboardingStep },
     data() {
         return {
             dismissed: false,
             steps: STEPS,
-            firstTargetSelector: '[data-tour="tour-meusite-geral-slug"]',
+            firstTargetSelector: '[data-tour="tour-ficha-evolucao-resumo"]',
             wrapperOptions: {
                 autoFinishByExit: true,
                 hideButtons: { previous: true, next: true, exit: true },
-                scrollToStep: { enabled: true, options: { behavior: 'smooth', block: 'center' } }
+                scrollToStep: {
+                    enabled: true,
+                    options: { behavior: 'smooth', block: 'center' }
+                }
             },
-            _autoStartTimer: null,
             _retryTimer: null,
             _observer: null
         };
@@ -142,10 +139,9 @@ export default {
         this.dismissed = this.isTourDismissed();
         if (this.dismissed) return;
         if (!this.steps?.length) return;
-        this.scheduleAutoStart();
+        this._retryTimer = setTimeout(() => this.watchForVisibilityWithRetry(0), 400);
     },
     beforeUnmount() {
-        clearTimeout(this._autoStartTimer);
         clearTimeout(this._retryTimer);
         this.destroyObserver();
     },
@@ -173,26 +169,6 @@ export default {
                 /* ignore */
             }
         },
-        scheduleAutoStart() {
-            clearTimeout(this._autoStartTimer);
-            this._autoStartTimer = setTimeout(() => {
-                this.$nextTick(() => this.tryStartWithRetry(0));
-            }, 500);
-        },
-        tryStartWithRetry(attempt) {
-            if (this.dismissed || this.isTourDismissed()) return;
-            const el = document.querySelector(this.firstTargetSelector);
-            if (el) {
-                const rect = el.getBoundingClientRect();
-                if (rect.width > 0 || rect.height > 0) {
-                    this.start();
-                    return;
-                }
-            }
-            if (attempt < 20) {
-                this._retryTimer = setTimeout(() => this.tryStartWithRetry(attempt + 1), 200);
-            }
-        },
         watchForVisibilityWithRetry(attempt) {
             if (this.dismissed || this.isTourDismissed()) return;
             const el = document.querySelector(this.firstTargetSelector);
@@ -202,6 +178,7 @@ export default {
                 }
                 return;
             }
+
             this.destroyObserver();
             this._observer = new IntersectionObserver(
                 (entries) => {
@@ -212,6 +189,7 @@ export default {
                 },
                 { threshold: 0.05, rootMargin: '0px' }
             );
+
             this._observer.observe(el);
         },
         destroyObserver() {
@@ -221,6 +199,7 @@ export default {
             }
         },
         start() {
+            if (this.dismissed || this.isTourDismissed()) return;
             this.$nextTick(() => {
                 const firstSel = this.steps?.[0]?.attachTo?.element;
                 if (firstSel) {
@@ -250,20 +229,23 @@ export default {
 <style scoped>
 .dtour {
     width: 22rem;
-    max-width: min(22rem, calc(100vw - 2rem));
     background: #ffffff;
     border-radius: 14px;
     padding: 1.375rem 1.5rem 1.25rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 10px 24px -4px rgba(0, 0, 0, 0.11);
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.07),
+        0 10px 24px -4px rgba(0, 0, 0, 0.11);
     display: flex;
     flex-direction: column;
     gap: 0.625rem;
 }
+
 .dtour__dots {
     display: flex;
     gap: 0.3125rem;
     margin-bottom: 0.25rem;
 }
+
 .dtour__dot {
     width: 7px;
     height: 7px;
@@ -271,10 +253,12 @@ export default {
     background: #e4e4e7;
     transition: background 0.2s ease, transform 0.2s ease;
 }
+
 .dtour__dot--active {
     background: var(--p-primary-color, #6366f1);
     transform: scale(1.2);
 }
+
 .dtour__title {
     margin: 0;
     font-size: 1rem;
@@ -282,17 +266,20 @@ export default {
     line-height: 1.3;
     color: #18181b;
 }
+
 .dtour__desc {
     margin: 0;
     font-size: 0.875rem;
     line-height: 1.55;
     color: #71717a;
 }
+
 .dtour__actions {
     display: flex;
     gap: 0.5rem;
     margin-top: 0.375rem;
 }
+
 .dtour__btn {
     flex: 1;
     cursor: pointer;
@@ -303,26 +290,38 @@ export default {
     padding: 0.625rem 1rem;
     border-radius: 8px;
     border: 1px solid transparent;
-    transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        opacity 0.15s ease;
 }
+
 .dtour__btn:focus-visible {
     outline: none;
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.22);
 }
+
 .dtour__btn--primary {
     background: #18181b;
-    color: #fff;
+    color: #ffffff;
     border-color: #18181b;
+    box-shadow: none;
 }
+
 .dtour__btn--primary:hover {
     background: #3f3f46;
     border-color: #3f3f46;
+    box-shadow: none;
+    opacity: 1;
 }
+
 .dtour__btn--ghost {
     background: transparent;
     color: #52525b;
     border-color: #e4e4e7;
 }
+
 .dtour__btn--ghost:hover {
     background: #f4f4f5;
     border-color: #a1a1aa;

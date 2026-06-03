@@ -100,6 +100,16 @@ class UserService {
             throw error;
         }
     }
+
+    // Salvar tour finalizado no banco
+    async salvarTourFinalizado(tourKey) {
+        try {
+            const response = await api.post('/user/finished-tours', { tour_key: tourKey });
+            return response.data;
+        } catch {
+            return null;
+        }
+    }
 }
 
-export default new UserService(); 
+export default new UserService();

@@ -18,6 +18,7 @@
         />
         <FichaPacienteAnexosTour />
         <FichaPacienteAnamneseTour />
+        <FichaPacienteEvolucaoTour />
 
         <!-- Hero Section -->
         <div class="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-lg p-4 md:p-6 mb-6">
@@ -292,7 +293,7 @@
                         <h5 class="text-500 mb-4">Evolução do Paciente</h5>
 
                         <!-- Cards de Resumo -->
-                        <div class="grid mb-4">
+                        <div class="grid mb-4" data-tour="tour-ficha-evolucao-resumo">
                             <div class="col-12 md:col-3">
                                 <div class="card bg-blue-50 border-blue-200">
                                     <div class="flex align-items-center justify-content-between">
@@ -355,13 +356,13 @@
                         </div>
 
                         <!-- Gráfico de Radar -->
-                        <div class="card mb-4" v-if="evolucao?.metricas?.length > 0">
+                        <div class="card mb-4" v-if="evolucao?.metricas?.length > 0" data-tour="tour-ficha-evolucao-graficos">
                             <h6 class="text-500 mb-3">Comparação Multidimensional</h6>
                             <Chart type="radar" :data="radarChartData" :options="radarChartOptions" style="height: 300px;" />
                         </div>
 
                         <!-- Insights Automáticos -->
-                        <div class="card" v-if="evolucao?.insights?.length > 0">
+                        <div class="card" v-if="evolucao?.insights?.length > 0" data-tour="tour-ficha-evolucao-insights">
                             <h6 class="text-500 mb-3">Insights Automáticos</h6>
                             <div class="flex flex-column gap-2">
                                 <div v-for="(insight, index) in evolucao.insights" :key="index" 
@@ -374,7 +375,7 @@
                         </div>
 
                         <!-- Mensagem quando não há dados -->
-                        <div v-if="!evolucao?.metricas?.length" class="text-center p-6">
+                        <div v-if="!evolucao?.metricas?.length" class="text-center p-6" data-tour="tour-ficha-evolucao-insights">
                             <i class="pi pi-chart-line text-6xl text-gray-400 mb-3"></i>
                             <h6 class="text-500 mb-2">Nenhum dado de evolução disponível</h6>
                             <p class="text-500 text-sm">Adicione métricas nos prontuários para visualizar a evolução do paciente.</p>
@@ -495,6 +496,7 @@ import FichaPacienteProntuariosTour from '@/components/tour/pacientes/ficha/Fich
 import FichaPacienteSessoesTour from '@/components/tour/pacientes/ficha/FichaPacienteSessoesTour.vue';
 import FichaPacienteAnexosTour from '@/components/tour/pacientes/ficha/FichaPacienteAnexosTour.vue';
 import FichaPacienteAnamneseTour from '@/components/tour/pacientes/ficha/FichaPacienteAnamneseTour.vue';
+import FichaPacienteEvolucaoTour from '@/components/tour/pacientes/ficha/FichaPacienteEvolucaoTour.vue';
 
 import prontuariosService from '@/services/prontuariosService';
 import anexosService from '@/services/anexosService';
@@ -512,6 +514,7 @@ export default {
         FichaPacienteAnamneseTour,
         FichaPacienteAnexosTour,
         FichaPacienteDadosTour,
+        FichaPacienteEvolucaoTour,
         FichaPacienteProntuariosTour,
         FichaPacienteSessoesTour
     },

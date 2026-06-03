@@ -1,5 +1,6 @@
 <template>
     <VOnboardingWrapper
+        v-if="!dismissed"
         ref="wrapper"
         :steps="steps"
         :options="wrapperOptions"
@@ -31,7 +32,7 @@
                             v-if="isFirst"
                             type="button"
                             class="dtour__btn dtour__btn--ghost"
-                            @click="exit"
+                            @click="() => { onTourDone(); exit(); }"
                         >
                             Finalizar
                         </button>
@@ -47,7 +48,7 @@
                         <button
                             type="button"
                             class="dtour__btn dtour__btn--primary"
-                            @click="next"
+                            @click="() => { if (isLast) { onTourDone(); exit(); } else { next(); } }"
                         >
                             {{ isLast ? 'Concluir' : 'Próximo →' }}
                         </button>
@@ -60,6 +61,7 @@
 
 <script>
 import { VOnboardingWrapper, VOnboardingStep } from 'v-onboarding';
+import userService from '@/services/userService';
 
 const STORAGE_KEY = 'psico_prontuario_tour_ficha_paciente_tab_anexos_v1';
 
@@ -109,6 +111,7 @@ export default {
     components: { VOnboardingWrapper, VOnboardingStep },
     data() {
         return {
+            dismissed: false,
             steps: STEPS,
             firstTargetSelector: '[data-tour="tour-ficha-anexos-upload"]',
             wrapperOptions: {
@@ -124,7 +127,8 @@ export default {
         };
     },
     mounted() {
-        if (this.isTourDismissed()) return;
+        this.dismissed = this.isTourDismissed();
+        if (this.dismissed) return;
         if (!this.steps?.length) return;
         this._retryTimer = setTimeout(() => this.watchForVisibilityWithRetry(0), 400);
     },
@@ -141,14 +145,23 @@ export default {
             }
         },
         onTourDone() {
+            if (this.dismissed) return;
             try {
                 localStorage.setItem(STORAGE_KEY, '1');
             } catch {
                 /* ignore */
             }
+            userService.salvarTourFinalizado(STORAGE_KEY);
+            this.dismissed = true;
+            this.destroyObserver();
+            try {
+                this.$refs.wrapper?.finish?.();
+            } catch {
+                /* ignore */
+            }
         },
         watchForVisibilityWithRetry(attempt) {
-            if (this.isTourDismissed()) return;
+            if (this.dismissed || this.isTourDismissed()) return;
             const el = document.querySelector(this.firstTargetSelector);
             if (!el) {
                 if (attempt < 120) {
@@ -177,6 +190,7 @@ export default {
             }
         },
         start() {
+            if (this.dismissed || this.isTourDismissed()) return;
             this.$nextTick(() => {
                 const firstSel = this.steps?.[0]?.attachTo?.element;
                 if (firstSel) {

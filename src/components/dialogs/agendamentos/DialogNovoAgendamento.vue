@@ -1,10 +1,9 @@
 <template>
     <Dialog 
-        :visible="visible" 
+        v-model:visible="dialogVisible" 
         modal 
         header="Agendar Consulta" 
         :style="{ width: '600px' }"
-        @update:visible="onUpdateVisible"
     >
         <div class="grid">
             <div class="col-12" v-if="!paciente">
@@ -147,6 +146,7 @@ export default {
         InputSwitch,
         Select
     },
+    emits: ['update:visible', 'agendamentoSalvo'],
     mixins: [horasMinutosMixin],
     props: {
         visible: {
@@ -182,6 +182,16 @@ export default {
                 deseja_receber_notificacoes: false,
             }
         };
+    },
+    computed: {
+        dialogVisible: {
+            get() {
+                return this.visible;
+            },
+            set(value) {
+                this.onUpdateVisible(value);
+            }
+        }
     },
     watch: {
         visible(newVal) {
@@ -248,7 +258,7 @@ export default {
         async carregarPacientes() {
             try {
                 const response = await this.$pacientesService.getAll();
-                this.pacientes = response || [];
+                this.pacientes = this.normalizarListaPacientes(response);
             } catch (error) {
                 console.error('Erro ao carregar pacientes:', error);
                 this.$toast.add({
@@ -258,6 +268,19 @@ export default {
                     life: 3000
                 });
             }
+        },
+
+        normalizarListaPacientes(response) {
+            if (Array.isArray(response)) {
+                return response;
+            }
+            if (Array.isArray(response?.data)) {
+                return response.data;
+            }
+            if (Array.isArray(response?.pacientes)) {
+                return response.pacientes;
+            }
+            return [];
         },
         
         async carregarPacientePorId(pacienteId) {

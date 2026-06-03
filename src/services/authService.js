@@ -1,6 +1,8 @@
 import api from '@/utils/axios';
 import { usePlanStore } from '@/store/plan';
 
+const TOUR_STORAGE_PREFIX = 'psico_prontuario_tour_';
+
 function sincronizarAssinaturaNoPlanStore() {
     try {
         const planStore = usePlanStore();
@@ -9,6 +11,29 @@ function sincronizarAssinaturaNoPlanStore() {
         planStore.sincronizarMetaDoLocalStorage();
     } catch {
         /* pinia pode não estar pronto em testes */
+    }
+}
+
+function sincronizarToursFinalizados(toursFinalizados) {
+    if (!Array.isArray(toursFinalizados)) return;
+
+    toursFinalizados.forEach((tourKey) => {
+        if (typeof tourKey !== 'string' || !tourKey.startsWith(TOUR_STORAGE_PREFIX)) return;
+        try {
+            localStorage.setItem(tourKey, '1');
+        } catch {
+            /* ignore */
+        }
+    });
+}
+
+function limparToursFinalizadosLocais() {
+    try {
+        Object.keys(localStorage)
+            .filter((key) => key.startsWith(TOUR_STORAGE_PREFIX))
+            .forEach((key) => localStorage.removeItem(key));
+    } catch {
+        /* ignore */
     }
 }
 
@@ -40,6 +65,7 @@ class AuthService {
         if (u.assinatura_ativa !== undefined) {
             localStorage.setItem('assinaturaAtiva', String(u.assinatura_ativa));
         }
+        sincronizarToursFinalizados(u.tours_finalizados);
     }
 
     persistirSessaoAtiva(usuario, extra = {}) {
@@ -80,6 +106,7 @@ class AuthService {
         if (usuario.tem_assinatura_ativa !== undefined) {
             localStorage.setItem('temAssinaturaAtiva', String(usuario.tem_assinatura_ativa));
         }
+        sincronizarToursFinalizados(usuario.tours_finalizados);
     }
 
     aplicarRespostaUsuario(data) {
@@ -118,6 +145,7 @@ class AuthService {
             sincronizarAssinaturaNoPlanStore();
             const prev = JSON.parse(sessionStorage.getItem('usuario') || '{}');
             sessionStorage.setItem('usuario', JSON.stringify({ ...prev, ...u }));
+            sincronizarToursFinalizados(u.tours_finalizados);
         }
     }
 
@@ -183,6 +211,7 @@ class AuthService {
         localStorage.removeItem('temAssinaturaAtiva');
         localStorage.removeItem('userAtivo');
         localStorage.removeItem('motivoBloqueio');
+        limparToursFinalizadosLocais();
         sessionStorage.removeItem('usuario');
         sessionStorage.removeItem('sessionTime');
         sessionStorage.removeItem('isAutenticated');

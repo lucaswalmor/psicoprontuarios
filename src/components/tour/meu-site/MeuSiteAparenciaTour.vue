@@ -20,9 +20,9 @@
                     <h3 v-if="step?.content?.title" class="dtour__title">{{ step.content.title }}</h3>
                     <p v-if="step?.content?.description" class="dtour__desc">{{ step.content.description }}</p>
                     <div class="dtour__actions">
-                        <button v-if="isFirst" type="button" class="dtour__btn dtour__btn--ghost" @click="exit">Finalizar</button>
+                        <button v-if="isFirst" type="button" class="dtour__btn dtour__btn--ghost" @click="() => { onTourDone(); exit(); }">Finalizar</button>
                         <button v-else type="button" class="dtour__btn dtour__btn--ghost" @click="previous">← Voltar</button>
-                        <button type="button" class="dtour__btn dtour__btn--primary" @click="next">
+                        <button type="button" class="dtour__btn dtour__btn--primary" @click="() => { if (isLast) { onTourDone(); exit(); } else { next(); } }">
                             {{ isLast ? 'Concluir' : 'Próximo →' }}
                         </button>
                     </div>
@@ -34,6 +34,7 @@
 
 <script>
 import { VOnboardingWrapper, VOnboardingStep } from 'v-onboarding';
+import userService from '@/services/userService';
 
 const STORAGE_KEY = 'psico_prontuario_tour_meu_site_aparencia_v2';
 
@@ -156,11 +157,13 @@ export default {
             }
         },
         onTourDone() {
+            if (this.dismissed) return;
             try {
                 localStorage.setItem(STORAGE_KEY, '1');
             } catch {
                 /* ignore */
             }
+            userService.salvarTourFinalizado(STORAGE_KEY);
         },
         watchForVisibilityWithRetry(attempt) {
             if (this.isTourDismissed()) return;
