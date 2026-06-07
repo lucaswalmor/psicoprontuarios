@@ -1,0 +1,28 @@
+---
+description: Regras gerais do frontend Psico Prontuários — sempre ativa
+alwaysApply: true
+---
+
+# Frontend Psico Prontuários (Vue 3)
+
+SaaS B2B para psicólogos. Vue 3 + PrimeVue 4 + Pinia + Vite. API Laravel em repo separado.
+
+Siga **todas** as regras com prefixo `psicoprontuarios-frontend-*` neste repositório.
+
+Resumo obrigatório:
+- **Telas de produto** (`src/views/pages/`): Options API
+- HTTP via `src/utils/axios.js` + services em `src/services/`
+- Layout: **PrimeFlex** + Tailwind (PrimeUI) — **não há Bootstrap** no projeto
+- Gating Pro: `this.$planService.resolverTipoPlanoUsuario()`
+- Não duplicar lógica do guard `authInactiveGuard.js` em componentes
+- Preferir `@click` em `Button` — evitar `<form>` em código **novo**
+
+## Documentação
+
+- `PSICOPRONTUARIOS_CONTEXTO_IA.md` — visão do produto + contratos API (cópia sincronizada com backend)
+- Atualizar este arquivo quando mudar contratos, rotas ou regras cross-cutting
+
+## Deploy
+
+- Vercel, branch `master`
+- URL API via `getApiUrl()` em `src/config/environment.js` (`VITE_API_URL`)

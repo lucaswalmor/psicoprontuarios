@@ -1,0 +1,57 @@
+---
+description: Padrões Vue — Options API, views e estrutura
+globs: src/views/**,src/**/*.vue
+alwaysApply: false
+---
+
+# Vue — Options API (padrão do produto)
+
+**Telas de negócio** (`src/views/pages/`, dialogs de produto): usar **Options API** exclusivamente.
+
+```js
+export default {
+  name: 'ListaPacientes',
+  data() { return { items: [], loading: false } },
+  computed: {
+    planStore() { return usePlanStore() },
+  },
+  methods: {
+    async carregar() {
+      this.loading = true
+      try {
+        this.items = await this.$pacientesService.getAll()
+      } finally { this.loading = false }
+    }
+  },
+  mounted() { this.carregar() }
+}
+```
+
+## Onde Composition API é aceitável (não refatorar)
+
+- `src/layout/` (AppLayout, menu Sakai) — `<script setup>`
+- `src/components/landing/` — widgets da landing marketing
+- `src/composables/` (`useAsaas.js`)
+- Híbridos existentes com `setup()` — ex: `Upgrade.vue`, `Perfil.vue`
+
+**Código novo em telas de produto:** Options API. Não introduzir `<script setup>` em `views/pages/`.
+
+## Estrutura de pastas
+
+```
+src/views/pages/          # Telas do sistema
+src/views/notificacoes/   # WhatsApp / notificações
+src/components/dialogs/   # Dialogs por domínio
+src/components/drawers/   # Filtros laterais
+src/components/tour/      # Tours v-onboarding
+src/services/             # HTTP (um arquivo por módulo)
+src/store/                # Pinia (plan, theme)
+src/utils/axios.js        # Instância axios compartilhada
+src/config/environment.js # getApiUrl(), getN8nChatWebhookUrl()
+src/router/               # Rotas + authInactiveGuard.js
+src/layout/               # Shell Sakai
+```
+
+## Formulários
+
+Preferir `Button @click="salvar"` sem `<form>`. Existem `<form>` legados (Cadastro, FinanceiroForm) — **não replicar** em código novo.

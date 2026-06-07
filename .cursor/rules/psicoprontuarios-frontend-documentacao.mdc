@@ -1,0 +1,26 @@
+---
+description: Documentação e checklist de PR frontend
+globs: "**/*"
+alwaysApply: false
+---
+
+# Documentação
+
+Atualizar `PSICOPRONTUARIOS_CONTEXTO_IA.md` quando a mudança afetar:
+- Contratos de API consumidos pelo frontend
+- Rotas, guards ou fluxos de assinatura/login
+- Gating de features por plano
+- Integrações (Evolution, Asaas checkout)
+
+Arquivo existe nos repos frontend e backend — **manter cópias sincronizadas**.
+
+# Checklist antes de PR
+
+- [ ] Telas de produto em Options API (sem `<script setup>` novo)
+- [ ] HTTP via service/`utils/axios`, sem URL hardcoded
+- [ ] `getApiUrl()` para base da API
+- [ ] Features Pro verificadas via `$planService`
+- [ ] Layout com PrimeFlex, não Bootstrap
+- [ ] Dark mode: `--p-primary-500/600`, não `--primary-color`
+- [ ] Sem `<form>` em código novo
+- [ ] Dialogs com `emits` + controle de `visible`

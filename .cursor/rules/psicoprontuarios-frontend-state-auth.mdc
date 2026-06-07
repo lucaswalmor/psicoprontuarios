@@ -1,0 +1,40 @@
+---
+description: Autenticação, sessão, Pinia e guard de rotas
+globs: src/router/**,src/store/**,src/services/authService.js
+alwaysApply: false
+---
+
+# Autenticação
+
+**Não existe `authStore`.** Sessão via `authService` + `localStorage`:
+- `token`, `userAtivo`, `statusAssinatura`, `userAssinatura`
+- Sync no boot: `authService.sincronizarSessaoComApi()` em `main.js`
+
+## Guard (`src/router/authInactiveGuard.js`)
+
+| Condição | Redirecionamento |
+|---|---|
+| Sem token | `/login` |
+| `userAtivo === 'false'` | Só rotas públicas + `/pagamento` |
+| `statusAssinatura === 'sem_assinatura'` (não vitalício) | Só `/upgrade` e `/completar-cadastro` |
+| Ativo em `/pagamento` | `/dashboard` |
+
+Nunca duplicar essa lógica em componentes.
+
+## Pinia (`src/store/`)
+
+- `usePlanStore` — limites de plano, `canAddPaciente`, etc.
+- `useThemeStore` — dark mode
+
+Padrão em Options API:
+
+```js
+computed: {
+  planStore() { return usePlanStore() },
+  podeAdicionar() { return this.planStore.canAddPaciente }
+}
+```
+
+## Login inativo (contrato API)
+
+Backend retorna HTTP 200 + `status: 'inativo'` + token limitado. Frontend redireciona para `/pagamento` — não tratar como erro 401.

@@ -1,0 +1,38 @@
+---
+description: Services, axios e chamadas HTTP
+globs: src/services/**,src/utils/axios.js
+alwaysApply: false
+---
+
+# HTTP — utils/axios + services
+
+Toda chamada HTTP passa por `src/utils/axios.js` (baseURL via `getApiUrl()`, interceptors de token e loading).
+
+Services ficam em `src/services/` — **nunca** `import axios from 'axios'` direto com URL hardcoded.
+
+```js
+// src/services/pacientesService.js
+import api from '@/utils/axios'
+
+class PacientesService {
+  async getAll(params = {}) {
+    const response = await api.get('/pacientes', { params })
+    return response.data
+  }
+}
+export default new PacientesService()
+```
+
+## Services globais (main.js)
+
+Registrados como `this.$pacientesService`, `this.$planService`, etc. Preferir `$...Service` em views; import direto também existe.
+
+## environment.js
+
+- Usar `getApiUrl()` — não existe export `API_URL`
+- N8N chat: `getN8nChatWebhookUrl()` (prop no layout, não confundir com leads)
+- `leadsService` posta em `POST /leads` na API Laravel
+
+## Exceções conhecidas (não expandir)
+
+Alguns componentes Evolution (`EvolutionConfig.vue`, `Configuracoes.vue`) importam `api` direto — ao criar código novo, use service.

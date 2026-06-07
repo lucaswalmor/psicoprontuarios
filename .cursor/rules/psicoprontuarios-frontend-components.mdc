@@ -1,0 +1,41 @@
+---
+description: Dialogs, drawers, tours e gating por plano
+globs: src/components/**
+alwaysApply: false
+---
+
+# Dialogs (`src/components/dialogs/`)
+
+- Subpastas por domínio: `dialogs/prontuarios/`, `dialogs/agendamentos/`, etc.
+- Controle via `visible` + `@update:visible` ou computed `visivel` get/set
+- Footer: `Button` Cancelar + Salvar com `:loading`
+- Comunicar com pai via `emits` (`salvo`, `update:visible`)
+
+Alguns dialogs legados usam `<script setup>` — não replicar em dialogs novos de produto.
+
+# Gating por plano
+
+```js
+['pro', 'vitalicio'].includes(this.$planService.resolverTipoPlanoUsuario())
+```
+
+| Feature | Bloqueio |
+|---|---|
+| IA no prontuário | Pro/Vitalício — senão `<DialogPlanoPro />` |
+| Meu Site, WhatsApp | Pro/Vitalício — senão `<PlanoPro />` |
+| Aba Notificações | Pro/Vitalício **e** Evolution `connected` |
+
+# Tours (v-onboarding)
+
+- Componentes em `src/components/tour/`
+- **Armadilha:** `exit()` não encerra overlay — usar `@finish` + `finish()` + flag `dismissed`
+
+# Drawers
+
+Filtros laterais em `src/components/drawers/` (pacientes, financeiro).
+
+# Armadilhas
+
+- Slug do psicólogo: **fixo**, nunca editável na UI
+- Cancelar plano: `POST /api/assinatura/pausar` — avisar bloqueio imediato no modal
+- `/assinatura` redireciona para `/configuracoes`

@@ -1,0 +1,35 @@
+---
+description: UI, CSS, PrimeVue 4 e dark mode
+globs: src/**/*.vue,src/assets/**,src/config/primevue.js
+alwaysApply: false
+---
+
+# UI e CSS
+
+| Camada | Uso |
+|---|---|
+| **PrimeVue 4** | Componentes (`Button`, `Dialog`, `DataTable`, `Tabs`) |
+| **PrimeFlex** | Grid/flex (`grid`, `col-12`, `flex`, `gap-2`) |
+| **Tailwind** | Utilitários via `tailwindcss-primeui` (global em `styles.scss`) |
+| **SCSS** | `<style scoped lang="scss">` por componente |
+
+**Bootstrap não está no projeto** — não usar `container-fluid`, `row`, `col-*` Bootstrap em código novo. Preferir `.card` + PrimeFlex.
+
+## PrimeVue — preset Aura
+
+Config em `src/config/primevue.js`: preset **Aura** (não noir), dark mode via `.app-dark`.
+
+## Dark mode — cores primárias
+
+- `--primary-color` em dark = quase branco — **evitar em código novo**
+- Preferir `--p-primary-500` (light) e `--p-primary-600` (dark):
+
+```scss
+.meu-elemento { color: var(--p-primary-500); }
+:global(.app-dark) .meu-elemento { color: var(--p-primary-600); }
+```
+
+## Feedback
+
+- Toast: `useToast()` (em setup/composables) ou `$toast` via PrimeVue
+- Confirmações: `ConfirmPopup` / `ConfirmationService`
