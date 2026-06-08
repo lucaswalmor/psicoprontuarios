@@ -20,7 +20,8 @@ Resumo obrigatório:
 ## Documentação
 
 - `PSICOPRONTUARIOS_CONTEXTO_IA.md` — visão do produto + contratos API (cópia sincronizada com backend)
-- Atualizar este arquivo quando mudar contratos, rotas ou regras cross-cutting
+- `tool_*.md` — manuais do bot n8n (publicados em `/bot-docs/*.md` após deploy)
+- Atualizar contexto IA e manuais do bot quando mudar contratos, rotas, fluxos ou regras cross-cutting
 
 ## Deploy
 

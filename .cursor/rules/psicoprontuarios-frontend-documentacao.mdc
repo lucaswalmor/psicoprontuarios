@@ -14,6 +14,10 @@ Atualizar `PSICOPRONTUARIOS_CONTEXTO_IA.md` quando a mudança afetar:
 
 Arquivo existe nos repos frontend e backend — **manter cópias sincronizadas**.
 
+# Bot de atendimento (n8n)
+
+Ver regra **`psicoprontuarios-frontend-bot-atendimento`**. Em toda feature ou mudança de fluxo visível ao usuário, atualizar o `tool_*.md` do módulo correspondente.
+
 # Checklist antes de PR
 
 - [ ] Telas de produto em Options API (sem `<script setup>` novo)
@@ -24,3 +28,4 @@ Arquivo existe nos repos frontend e backend — **manter cópias sincronizadas**
 - [ ] Dark mode: `--p-primary-500/600`, não `--primary-color`
 - [ ] Sem `<form>` em código novo
 - [ ] Dialogs com `emits` + controle de `visible`
+- [ ] Manuais `tool_*.md` atualizados (bot n8n) quando a UX ou regras de negócio mudaram

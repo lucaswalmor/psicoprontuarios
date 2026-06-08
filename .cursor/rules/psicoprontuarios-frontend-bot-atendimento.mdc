@@ -1,0 +1,53 @@
+---
+description: Atualizar manuais tool_* do bot (n8n) ao mudar funcionalidades do frontend
+alwaysApply: true
+---
+
+# Bot de atendimento — documentação (`tool_*.md`)
+
+O chat (n8n) lê os manuais via HTTP em produção:
+
+`https://psicoprontuarios.com.br/bot-docs/{arquivo}.md`
+
+Arquivos-fonte na **raiz deste repo**. O deploy copia para `public/bot-docs/` (`npm run sync:bot-docs` no `prebuild`/`predev`).
+
+## Quando atualizar
+
+Sempre que a mudança afetar **o que o usuário vê ou faz** no app (telas, fluxos, planos, gating, textos de ajuda):
+
+- Nova tela, aba, botão ou fluxo
+- Campo novo/obrigatório, renomeação ou remoção
+- Regra de plano (Simples / Pro / Vitalício)
+- Preços, trial ou copy da landing
+- FAQ de suporte que o bot deveria saber responder
+
+## Qual arquivo editar
+
+| Módulo / tema | Arquivo |
+|---|---|
+| Roteamento geral das tools | `tool_bot.md` |
+| Landing, planos, contratação | `tool_bot_landinpage.md` |
+| Agenda / calendário | `tool_bot_agendamento.md` |
+| Pacientes, prontuário, I.A, ficha | `tool_bot_pacientes.md` |
+| Receitas e despesas | `tool_bot_financeiro.md` |
+| Dashboard | `tool_bot_dashboard.md` |
+| Configurações, WhatsApp, notificações | `tool_bot_configuracoes.md` |
+| Meu Site | `tool_bot_site.md` |
+
+**Novo módulo com manual próprio:** criar `tool_bot_{modulo}.md`, registrar em `src/config/botDocs.js`, atualizar `tool_bot.md` e o workflow n8n (`PsicoProntuarios FAQ.json`).
+
+## Checklist (mesma entrega da feature)
+
+1. Atualizar o(s) `tool_*.md` correspondente(s) — linguagem de suporte, passo a passo e FAQ
+2. Conferir preços/planos alinhados a `PricingWidget.vue` e API `/planos`
+3. Rodar `npm run sync:bot-docs` (ou `npm run dev` / `build`)
+4. Deploy na Vercel para publicar em `/bot-docs/*.md`
+5. Se mudou lista de tools ou URLs: atualizar workflow n8n
+
+Não inventar funcionalidades nos manuais. Se não souber o fluxo final, descrever só o que está no código.
+
+## Referência
+
+- Índice local: rota `/bot-docs`
+- Catálogo: `src/config/botDocs.js`
+- Prompt + tools HTTP: `PsicoProntuarios FAQ.json` (n8n)
