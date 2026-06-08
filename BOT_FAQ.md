@@ -218,10 +218,22 @@ O produto é um sistema web para **psicólogos** gerenciarem **pacientes**, **pr
 
 ## 10. Perfil do usuário (psicólogo)
 
-- **GET `/user/profile`** — dados do perfil.
+- **GET `/user/profile`** — dados do perfil (inclui campos de exclusão: `deletion_requested_at`, `deletion_scheduled_for`, `deletion_processed_at`).
 - **PUT `/user/profile`** — atualização (pode disparar e-mails de “dados alterados” para e-mail/telefone).
 - **PUT `/usuario/{idUsuario}`** — edição por ID (com autenticação).
 - **GET `/usuario/{idUsuario}`** — busca por ID.
+
+**Exclusão de conta (LGPD) — aba Segurança em `/perfil` (não em Configurações):**
+
+| Rota | Função |
+|------|--------|
+| POST `/user/enviar-codigo-exclusao` | Envia código por e-mail (contas Google sem senha local). |
+| POST `/user/solicitar-exclusao` | Solicita exclusão (`current_password` ou `codigo_confirmacao`). Carência de 30 dias. |
+| POST `/user/cancelar-exclusao` | Cancela solicitação pendente. |
+
+**Cron (N8N):** `GET /api/cronjob/processar-exclusoes-conta` — processa contas com `deletion_scheduled_for` vencido (middleware `conta.cron.token`, env `CONTA_CRON_TOKEN`).
+
+Manual do bot: `tool_bot_perfil.md` (zona de perigo, fluxo e retenção de dados).
 
 **Validações no `userService.js`:** existem chamadas a `/user/check-email`, `/user/check-cpf`, `/user/check-crp`, `/user/check-telefone`. **No `api.php` analisado essas rotas não estão registradas** — se a tela usar esses métodos sem backend equivalente, pode ocorrer 404 até alguém expor os endpoints.
 

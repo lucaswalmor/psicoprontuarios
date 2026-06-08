@@ -119,6 +119,27 @@
                         <!-- Aba de Segurança -->
                         <TabPanel value="1">
                             <div class="p-4">
+                                <Message
+                                    v-if="exclusaoPendente"
+                                    severity="warn"
+                                    :closable="false"
+                                    class="mb-4"
+                                >
+                                    Sua conta está agendada para exclusão em
+                                    <strong>{{ dataExclusaoFormatada }}</strong>.
+                                    Todos os seus dados pessoais serão removidos nessa data.
+                                    <div class="mt-3">
+                                        <Button
+                                            label="Cancelar solicitação de exclusão"
+                                            severity="warn"
+                                            outlined
+                                            size="small"
+                                            :loading="cancelandoExclusao"
+                                            @click="cancelarExclusaoConta"
+                                        />
+                                    </div>
+                                </Message>
+
                                 <div class="surface-card p-4 border-round">
                                     <h6 class="mb-3 text-800 font-bold">Segurança</h6>
                                     <div class="flex flex-column gap-3">
@@ -174,6 +195,23 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div
+                                    v-if="!exclusaoPendente"
+                                    class="zona-perigo surface-card p-4 border-round mt-4"
+                                >
+                                    <h6 class="mb-2 text-red-600 font-bold">Zona de perigo</h6>
+                                    <p class="text-600 text-sm line-height-3 mt-0 mb-3">
+                                        Solicite a exclusão permanente da sua conta. Você terá 30 dias para cancelar a solicitação.
+                                    </p>
+                                    <Button
+                                        label="Solicitar exclusão de conta"
+                                        icon="pi pi-trash"
+                                        severity="danger"
+                                        outlined
+                                        @click="showExclusaoContaModal = true"
+                                    />
+                                </div>
                             </div>
                         </TabPanel>
                     </TabPanels>
@@ -201,16 +239,25 @@
         v-model:visible="showChangePasswordModal"
         @success="handlePasswordChangeSuccess"
     />
+
+    <DialogExclusaoConta
+        v-model:visible="showExclusaoContaModal"
+        :conta-sem-senha="!!userProfile?.conta_sem_senha"
+        @exclusao-solicitada="handleExclusaoSolicitada"
+    />
 </template>
 
 <script>
 import { useToast } from 'primevue/usetoast';
 import { usePlanStore } from '@/store/plan';
 import userService from '@/services/userService';
-import api from '@/utils/axios';
+import exclusaoContaService from '@/services/exclusaoContaService';
+import authService from '@/services/authService';
 import DialogChangePassword from '@/components/dialogs/configuracoes/DialogChangePassword.vue';
 import DialogEditEmail from '@/components/dialogs/configuracoes/DialogEditEmail.vue';
 import DialogEditPhone from '@/components/dialogs/configuracoes/DialogEditPhone.vue';
+import DialogExclusaoConta from '@/components/dialogs/configuracoes/DialogExclusaoConta.vue';
+import Message from 'primevue/message';
 import Tabs from 'primevue/tabs';
 import TabList from 'primevue/tablist';
 import Tab from 'primevue/tab';
@@ -223,6 +270,8 @@ export default {
         DialogChangePassword,
         DialogEditEmail,
         DialogEditPhone,
+        DialogExclusaoConta,
+        Message,
         Tabs,
         TabList,
         Tab,
@@ -237,7 +286,21 @@ export default {
             showEditEmailModal: false,
             showEditPhoneModal: false,
             showChangePasswordModal: false,
+            showExclusaoContaModal: false,
+            cancelandoExclusao: false,
         };
+    },
+    computed: {
+        exclusaoPendente() {
+            return !!this.userProfile?.deletion_scheduled_for;
+        },
+        dataExclusaoFormatada() {
+            if (!this.userProfile?.deletion_scheduled_for) {
+                return '';
+            }
+            const d = new Date(String(this.userProfile.deletion_scheduled_for).replace(' ', 'T'));
+            return Number.isNaN(d.getTime()) ? this.userProfile.deletion_scheduled_for : d.toLocaleDateString('pt-BR');
+        }
     },
     async mounted() {
         await this.loadUserProfile();
@@ -293,6 +356,50 @@ export default {
             });
         },
 
+        async handleExclusaoSolicitada() {
+            await this.loadUserProfile();
+            await authService.sincronizarSessaoComApi();
+            this.$toast.add({
+                severity: 'success',
+                summary: 'Exclusão solicitada',
+                detail: `Sua conta será excluída em ${this.dataExclusaoFormatada}. Você pode cancelar até lá.`,
+                life: 6000
+            });
+        },
+
+        cancelarExclusaoConta() {
+            this.$confirm.require({
+                message: 'Deseja cancelar a solicitação de exclusão da sua conta?',
+                header: 'Cancelar exclusão',
+                icon: 'pi pi-exclamation-triangle',
+                acceptLabel: 'Sim, cancelar solicitação',
+                rejectLabel: 'Não',
+                accept: async () => {
+                    this.cancelandoExclusao = true;
+                    try {
+                        await exclusaoContaService.cancelarExclusao();
+                        await this.loadUserProfile();
+                        await authService.sincronizarSessaoComApi();
+                        this.$toast.add({
+                            severity: 'success',
+                            summary: 'Solicitação cancelada',
+                            detail: 'A exclusão da sua conta foi cancelada.',
+                            life: 4000
+                        });
+                    } catch (error) {
+                        this.$toast.add({
+                            severity: 'error',
+                            summary: 'Erro',
+                            detail: error.response?.data?.error || 'Não foi possível cancelar a solicitação.',
+                            life: 5000
+                        });
+                    } finally {
+                        this.cancelandoExclusao = false;
+                    }
+                }
+            });
+        },
+
 
         // Função para verificar parâmetros da URL e mostrar mensagens
         checkUrlParams() {
@@ -325,5 +432,10 @@ export default {
 
 .surface-card:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.zona-perigo {
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    background: rgba(254, 242, 242, 0.5);
 }
 </style> 

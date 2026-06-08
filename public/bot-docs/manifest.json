@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-08T01:25:23.202Z",
+  "updatedAt": "2026-06-08T20:55:39.363Z",
   "docs": [
     {
       "slug": "principal",
@@ -49,6 +49,13 @@
       "file": "tool_bot_configuracoes.md",
       "path": "/bot-docs/tool_bot_configuracoes.md",
       "previewPath": "/bot-docs/configuracoes"
+    },
+    {
+      "slug": "perfil",
+      "title": "Perfil",
+      "file": "tool_bot_perfil.md",
+      "path": "/bot-docs/tool_bot_perfil.md",
+      "previewPath": "/bot-docs/perfil"
     },
     {
       "slug": "site",

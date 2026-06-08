@@ -46,6 +46,12 @@ export const BOT_DOCS = [
         description: 'WhatsApp, notificações e plano Pro'
     },
     {
+        slug: 'perfil',
+        file: 'tool_bot_perfil.md',
+        title: 'Perfil',
+        description: 'Dados pessoais, senha, zona de perigo e exclusão de conta LGPD'
+    },
+    {
         slug: 'site',
         file: 'tool_bot_site.md',
         title: 'Meu Site',

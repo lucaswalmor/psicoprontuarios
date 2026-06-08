@@ -32,6 +32,7 @@ Sempre que a mudança afetar **o que o usuário vê ou faz** no app (telas, flux
 | Receitas e despesas | `tool_bot_financeiro.md` |
 | Dashboard | `tool_bot_dashboard.md` |
 | Configurações, WhatsApp, notificações | `tool_bot_configuracoes.md` |
+| Perfil, senha, exclusão de conta LGPD | `tool_bot_perfil.md` |
 | Meu Site | `tool_bot_site.md` |
 
 **Novo módulo com manual próprio:** criar `tool_bot_{modulo}.md`, registrar em `src/config/botDocs.js`, atualizar `tool_bot.md` e o workflow n8n (`PsicoProntuarios FAQ.json`).
