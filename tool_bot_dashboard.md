@@ -20,7 +20,11 @@
 
 ## 1. Visão Geral do Dashboard
 
-O Dashboard é a tela inicial do PsicoProntuários, projetada para oferecer ao psicólogo uma visão 360º da sua clínica ou consultório. Ele centraliza dados sobre pacientes, sessões e produtividade, permitindo uma gestão baseada em dados reais.
+O Dashboard é a tela inicial do PsicoProntuários (`/dashboard`), projetada para oferecer ao psicólogo uma visão 360º da clínica ou consultório. Ele centraliza dados sobre pacientes, sessões e produtividade.
+
+A tela possui **duas abas**:
+- **Pacientes** — métricas clínicas, gráficos e atalhos
+- **Financeiro** — resumo de receitas, despesas e saldo (mesma visão do módulo financeiro, integrada ao dashboard)
 
 **Para acessar:** Menu Lateral → Dashboard.
 
@@ -28,7 +32,7 @@ O Dashboard é a tela inicial do PsicoProntuários, projetada para oferecer ao p
 
 ## 2. Indicadores Principais (Cards)
 
-No topo da tela, quatro cards apresentam os números mais importantes do período:
+No topo da aba **Pacientes**, três cards apresentam os números mais importantes:
 
 | Campo | O que significa |
 |---|---|
@@ -101,17 +105,22 @@ R: É o cálculo que mostra quantos dos seus pacientes totais chegaram ao fim do
 ---
 
 **P: Por que o campo "Próxima Sessão" está vazio?**
-R: Este campo exibe apenas agendamentos confirmados para a próxima hora. Se não houver nada agendado para o curto prazo, ele aparecerá como vazio. Clique em **"Ver Agenda"** para conferir o restante do dia.
+R: Este bloco exibe a próxima consulta agendada. Se não houver sessão futura cadastrada, aparece a mensagem "Não há sessão agendada para a próxima hora". Clique em **"Ver agenda"** para abrir o calendário completo.
 
 ---
 
 **P: Como o sistema calcula o "Tempo Médio de Tratamento"?**
-R: O sistema calcula a diferença entre a data de cadastro e a data de conclusão do tratamento para todos os pacientes com status "Concluído" e tira a média.
+R: O sistema calcula a diferença entre a data de cadastro e a data de conclusão do tratamento para todos os pacientes com status "Concluído" e tira a média em dias.
 
 ---
 
 **P: Posso exportar os gráficos do Dashboard?**
-R: Atualmente os gráficos são para visualização interna no sistema. Para relatórios externos, recomendamos o uso das abas específicas de Pacientes ou Financeiro (em breve).
+R: Os gráficos são para visualização interna. Para exportar histórico clínico, use a aba **Prontuários** na ficha do paciente (PDF individual ou "Exportar Todos"). Para detalhes financeiros, use o menu **Financeiro** → Receitas/Despesas.
+
+---
+
+**P: Onde vejo o resumo financeiro no Dashboard?**
+R: Clique na aba **Financeiro** no topo do Dashboard. Lá aparecem cards de receitas, despesas e saldo do período, com atalho para as telas de lançamentos.
 
 ---
 

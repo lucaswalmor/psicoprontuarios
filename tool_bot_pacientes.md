@@ -94,6 +94,10 @@ Exportação PDF
 Individual: Via menu de ações do prontuário específico.
 Completa: Clique em Exportar Todos no topo da aba para gerar um PDF com todo o histórico.
 
+Recursos de I.A (plano Pro ou Vitalício)
+Melhorar texto com I.A: No editor do prontuário (+ Novo Prontuário ou editar existente), botão "Melhorar texto com I.A" — exige pelo menos 100 caracteres na descrição. Usuários do plano Simples veem etiqueta PRO e tela de upgrade.
+Gerar relatório com I.A: Na aba Prontuários da ficha do paciente, botão "Gerar relatório com I.A" — consolida resumo, padrões, evolução e observações a partir dos prontuários. Disponível apenas no plano Pro ou Vitalício.
+
 
 
 
@@ -181,7 +185,14 @@ P: Como excluo permanentemente um paciente?R: Na ficha do paciente, clique no bo
 P: Como busco um paciente pelo telefone na listagem?R: Na tela principal de Pacientes, clique em "Filtros", digite o número no campo "Telefone" e clique em filtrar.
 P: O que é a escala GAD-7 no prontuário?R: É um campo opcional para registrar a pontuação de ansiedade (0 a 21) do paciente naquela sessão específica.
 P: O que é a escala PHQ-9 no prontuário?R: É um campo opcional para registrar o nível de depressão (0 a 27) identificado na sessão.
-P: Posso imprimir apenas um prontuário isolado?R: Sim. No menu de ações do prontuário (três pontos), selecione "Exportar Prontuário".
+P: Posso imprimir apenas um prontuário isolado?
+R: Sim. No menu de ações do prontuário (três pontos), selecione "Exportar Prontuário".
+P: Como uso a I.A para melhorar o texto do prontuário?
+R: Na aba "Prontuários", abra ou crie um prontuário. Com plano Pro ou Vitalício, use o botão "Melhorar texto com I.A" (mínimo 100 caracteres na descrição).
+P: Como gero um relatório profissional com I.A?
+R: Na aba "Prontuários" da ficha, clique em "Gerar relatório com I.A" (disponível no plano Pro ou Vitalício). O sistema analisa os prontuários do paciente e gera um relatório estruturado.
+P: Sou do plano Simples — posso usar I.A no prontuário?
+R: Não. Melhoria de texto e relatório com I.A são recursos do plano Pro ou Vitalício. Ao clicar, o sistema exibe a tela de upgrade.
 P: Como registro o uso de medicamentos na Anamnese?R: Na aba "Anamnese", utilize o campo específico "Medicamentos Atuais" para listar as substâncias e dosagens.
 P: Consigo apagar todos os agendamentos de um paciente de uma vez?R: Sim. Na aba "Sessões", utilize a opção "Excluir todas as sessões" no menu de ações.
 P: Onde vejo quantas sessões o paciente já realizou?R: No card "Sessões Realizadas" localizado no topo da ficha do paciente.

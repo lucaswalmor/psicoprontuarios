@@ -90,7 +90,7 @@ Template 5: 🌸 Hoje celebramos você, {nome_paciente}! Parabéns por mais um a
 
 **11. Regra de Pacientes Elegíveis**
 
-Tanto nas Datas Comemorativas quanto nos Aniversariantes, o campo de seleção exibe apenas pacientes com status de tratamento "Em Aberto". Pacientes com status Concluído ou Em Recesso não aparecem na lista e não recebem notificações automáticas, mesmo que tenham sido selecionados anteriormente.
+Tanto nas Datas Comemorativas quanto nos Aniversariantes, o campo de seleção exibe apenas pacientes com status de tratamento **"Em Andamento"**. Pacientes com status **Concluído** ou **Recesso** não aparecem na lista e não recebem notificações automáticas, mesmo que tenham sido selecionados anteriormente.
 
 ---
 
@@ -148,7 +148,7 @@ P: Quando exatamente a mensagem de aniversário é enviada?
 R: O sistema verifica todos os dias quais pacientes fazem aniversário naquela data e envia automaticamente para os que possuem notificação ativa.
 
 P: Um paciente em Recesso pode receber notificações?
-R: Não. Apenas pacientes com status "Em Aberto" recebem notificações.
+R: Não. Apenas pacientes com status "Em Andamento" recebem notificações.
 
 P: O que acontece com as notificações se eu excluir a conexão do WhatsApp?
 R: As notificações permanecem salvas no sistema, mas nenhuma mensagem será enviada até que um novo número seja cadastrado e conectado.

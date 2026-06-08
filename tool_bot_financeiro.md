@@ -1,4 +1,4 @@
-PsicoProntuário — Manual de Suporte
+PsicoProntuários — Manual de Suporte
 Módulo: Receitas e Despesas
 
 
@@ -18,7 +18,7 @@ FAQ — Perguntas Frequentes
 
 
 1. Visão Geral da Tela
-As telas de Receitas e Despesas no PsicoProntuário compartilham uma estrutura e funcionalidades idênticas, projetadas para o gerenciamento financeiro do profissional. 
+As telas de Receitas e Despesas no PsicoProntuários compartilham uma estrutura e funcionalidades idênticas, projetadas para o gerenciamento financeiro do profissional.
 
 Principais elementos visuais:
 Indicadores de Totais: No topo da listagem, há cards mostrando os valores totais (ex: "Recebidas" e "Previstas" para receitas; "Pagas" e "Previstas" para despesas).
@@ -160,4 +160,4 @@ P: É possível ver apenas as receitas de "Plano de Saúde"?R: Sim. Clique no bo
 
 
 
-Documento gerado automaticamente com base em testes de usabilidade no sistema PsicoProntuário.
+Documento gerado automaticamente com base em testes de usabilidade no sistema PsicoProntuários.

@@ -389,4 +389,4 @@ Para **“como faço X na tela”**, preferir sempre a seção **Guia do usuári
 
 ---
 
-*Gerado a partir do código em `psico-prontuario-landingpage/src` e `psicoprontuarios-v2` (Laravel). Se algo na API mudar, atualize este arquivo junto com o deploy.*
+*Gerado a partir do código em `psicoprontuarios/src` e `psicoprontuarios-v2` (Laravel). Se algo na API mudar, atualize este arquivo junto com o deploy.*

@@ -19,14 +19,16 @@ Este manual detalha todas as funcionalidades da seção "Meu Site" da plataforma
 
 O "Meu Site" é a landing page pública e personalizada do psicólogo, disponível na internet para qualquer visitante acessar. Ela exibe informações profissionais, especialidades, horários de atendimento e dados de contato, funcionando como uma página de apresentação profissional.
 
-Ao se cadastrar na plataforma como psicólogo, o sistema cria automaticamente uma página inicial com dados pré-preenchidos a partir do cadastro (nome, e-mail, telefone, CRP e endereço). O psicólogo pode personalizar tudo depois.
+**Plano necessário:** recurso disponível apenas para assinantes do plano **Pro** ou **Vitalício**. Usuários do plano Simples veem a tela de upgrade ao acessar `/meu-site` (mesmo padrão visual da etiqueta **PRO** no menu).
+
+Ao se cadastrar na plataforma como psicólogo, o sistema cria automaticamente uma página inicial com dados pré-preenchidos a partir do cadastro (nome, e-mail, telefone, CRP e endereço). O psicólogo Pro/Vitalício pode personalizar tudo depois.
 
 
 2. Como acessar
 
 No menu lateral do painel, clique em "Meu Site" (ícone de globo).
 A página carrega com 5 abas de configuração: Geral, Aparência, Textos, Especialidades e Horários.
-No topo direito da página há um botão "Ver meu site" que abre a landing page pública em uma nova aba (disponível para planos com acesso a esta funcionalidade).
+No topo direito da página há um botão "Ver meu site" que abre a landing page pública em uma nova aba (visível apenas para plano **Pro** ou **Vitalício**, quando o slug já estiver definido).
 
 
 3. Endereço público da página (slug)
@@ -141,6 +143,9 @@ Se nenhum dia estiver configurado, a seção exibe a mensagem "Horários não in
 
 
 9. FAQ — Perguntas e Respostas Diretas
+
+P: Preciso do plano Pro para usar o Meu Site?
+R: Sim. A personalização da landing page pública (Meu Site) está disponível apenas no plano Pro ou Vitalício.
 
 P: O que é o "Meu Site" no PsicoProntuários?
 R: É a landing page pública do psicólogo, uma página na internet onde qualquer pessoa pode ver suas informações profissionais, especialidades, horários e formas de contato.

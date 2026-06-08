@@ -4,7 +4,6 @@ Módulo: Agendamentos
 Base de conhecimento para bot de atendimento no n8n
 
 
-
 Índice
 1. Visão Geral da Tela de Agendamentos
 2. Como Criar um Novo Agendamento
