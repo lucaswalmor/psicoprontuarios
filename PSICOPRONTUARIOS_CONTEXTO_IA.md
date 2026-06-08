@@ -11,7 +11,7 @@
 - **URL de produção (frontend):** `https://psico-prontuarios-landingpage.vercel.app`
 - **URL de produção (API):** `https://psicoprontuarios-v2.lksoftware.com.br/public/api/`
 - **Landing page pública do psicólogo:** `{slug}.psicoprontuarios.com.br`
-- **Repositório frontend:** `https://github.com/lucaswalmor/psico-prontuario-landingpage`
+- **Repositório frontend:** `https://github.com/lucaswalmor/psicoprontuarios`
 - **Repositório backend:** `https://github.com/lucaswalmor/psicoprontuarios-v2`
 
 ---
@@ -28,7 +28,7 @@
 - **E-mail transacional:** Resend (SMTP, domínio verificado obrigatório)
 - **Deploy:** Docker + Easypanel
 
-### Frontend (`psico-prontuario-landingpage`)
+### Frontend (`psicoprontuarios`)
 - **Framework:** Vue 3 com **Options API** (nunca Composition API)
 - **Build:** Vite
 - **UI:** PrimeVue 4 + PrimeFlex + PrimeIcons
