@@ -34,20 +34,28 @@ export function useAsaas() {
     };
 
     const pausarAssinatura = async () => {
+        return cancelarAssinatura();
+    };
+
+    const cancelarAssinatura = async (motivo = null) => {
         try {
             loading.value = true;
             error.value = null;
 
-            const response = await asaasService.pausarAssinatura();
+            const response = await asaasService.cancelarAssinatura(motivo);
             const assinatura = response.assinatura;
             if (assinatura) {
                 planStore.setAssinatura(assinatura);
             }
-            authService.marcarComoInativo('assinatura_pausada');
+            if (assinatura?.status === 'cancelada_definitiva') {
+                authService.marcarComoInativo('assinatura_cancelada');
+            } else {
+                await authService.sincronizarSessaoComApi();
+            }
             return response;
         } catch (err) {
-            console.error('Erro ao pausar assinatura:', err);
-            error.value = err.message || 'Erro ao pausar assinatura';
+            console.error('Erro ao cancelar assinatura:', err);
+            error.value = err.message || 'Erro ao cancelar assinatura';
             throw err;
         } finally {
             loading.value = false;
@@ -70,27 +78,6 @@ export function useAsaas() {
         } catch (err) {
             console.error('Erro ao reativar assinatura:', err);
             error.value = err.message || 'Erro ao reativar assinatura';
-            throw err;
-        } finally {
-            loading.value = false;
-        }
-    };
-
-    const cancelarAssinatura = async (motivo = null) => {
-        try {
-            loading.value = true;
-            error.value = null;
-
-            const response = await asaasService.cancelarAssinatura(motivo);
-            const assinatura = response.assinatura;
-            if (assinatura) {
-                planStore.setAssinatura(assinatura);
-            }
-            await authService.sincronizarSessaoComApi();
-            return response;
-        } catch (err) {
-            console.error('Erro ao cancelar assinatura:', err);
-            error.value = err.message || 'Erro ao cancelar assinatura';
             throw err;
         } finally {
             loading.value = false;

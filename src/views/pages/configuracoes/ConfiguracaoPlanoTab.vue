@@ -40,7 +40,11 @@
             <template v-else>
                 <!-- Alertas -->
                 <Message v-if="mostrarAlterarCartao" severity="error" :closable="false" class="mb-4">
-                    Existe cobrança <strong>em atraso</strong>. Atualize o cartão com o botão <strong>Alterar cartão</strong> em Ações (acima de Parar assinatura).
+                    Existe cobrança <strong>em atraso</strong>. Atualize o cartão com o botão <strong>Alterar cartão</strong> em Ações (acima de Cancelar plano).
+                </Message>
+                <Message v-else-if="assinatura.status === 'cancelada_pendencia' && assinatura.acesso_ate" severity="warn" :closable="false" class="mb-4">
+                    Seu plano foi cancelado. Você ainda pode usar o PsicoProntuários até <strong>{{ formatarData(assinatura.acesso_ate) }}</strong>.
+                    Não haverá novas cobranças após essa data.
                 </Message>
                 <Message v-else-if="avisoTrialComCobrancaFutura" severity="info" :closable="false" class="mb-4">
                     Sua assinatura está em <strong>período de teste</strong>
@@ -88,7 +92,11 @@
                                     <span class="text-600 text-sm block">Início da cobrança</span>
                                     <span class="text-900 font-medium">{{ formatarData(assinatura.data_inicio_cobranca) }}</span>
                                 </li>
-                                <li v-if="!assinatura.data_fim_trial && !assinatura.data_inicio_cobranca">
+                                <li v-if="assinatura.acesso_ate">
+                                    <span class="text-600 text-sm block">Acesso até</span>
+                                    <span class="text-900 font-medium">{{ formatarData(assinatura.acesso_ate) }}</span>
+                                </li>
+                                <li v-if="!assinatura.data_fim_trial && !assinatura.data_inicio_cobranca && !assinatura.acesso_ate">
                                     <span class="text-600 text-sm">Datas detalhadas aparecem após a primeira sincronização com a Asaas.</span>
                                 </li>
                             </ul>
@@ -122,18 +130,18 @@
                                     @click="dialogCartao = true"
                                 />
                                 <Button
-                                    v-if="mostrarParar"
-                                    label="Parar assinatura"
-                                    icon="pi pi-pause"
+                                    v-if="mostrarCancelar"
+                                    label="Cancelar plano"
+                                    icon="pi pi-times-circle"
                                     severity="danger"
                                     outlined
                                     class="w-full"
-                                    @click="dialogParar = true"
+                                    @click="dialogCancelar = true"
                                 />
                                 <Button
                                     v-if="mostrarReativar"
-                                    label="Reativar assinatura"
-                                    icon="pi pi-play"
+                                    label="Manter assinatura"
+                                    icon="pi pi-refresh"
                                     severity="success"
                                     class="w-full"
                                     :loading="acaoLoading"
@@ -141,7 +149,7 @@
                                 />
                             </div>
                             <small class="text-600 block mt-3 line-height-3">
-                                Parar encerra a recorrência na Asaas e bloqueia o acesso ao app até reativar com cartão válido.
+                                Ao cancelar, você continua com acesso até o fim do período já pago. Não haverá novas cobranças.
                             </small>
                         </div>
                     </div>
@@ -189,10 +197,15 @@
             </template>
         </template>
 
-        <Dialog v-model:visible="dialogParar" modal header="Parar assinatura" class="w-full max-w-lg" :closable="true">
-            <Message severity="warn" :closable="false" class="mb-3">
-                Ao confirmar, a recorrência será encerrada e <strong>você perderá o acesso imediatamente</strong>
-                (pacientes, prontuários, agenda etc.).
+        <Dialog v-model:visible="dialogCancelar" modal header="Cancelar plano" class="w-full max-w-lg" :closable="true">
+            <Message severity="info" :closable="false" class="mb-3">
+                <template v-if="isTrial">
+                    Ao confirmar durante o trial, o acesso será encerrado <strong>imediatamente</strong>.
+                </template>
+                <template v-else>
+                    Você continuará com acesso ao PsicoProntuários até o fim do período já pago.
+                    <strong>Não haverá novas cobranças</strong> após o cancelamento.
+                </template>
             </Message>
 
             <div class="parar-cobrancas-info surface-section border-round-lg p-3 mb-3">
@@ -201,18 +214,23 @@
                 </p>
                 <ul class="m-0 p-0 pl-3 flex flex-column gap-2 text-sm text-700">
                     <li>
-                        <strong>Cobranças já confirmadas ou pagas</strong> continuam sendo processadas normalmente pela Asaas — você não perde o que já pagou.
+                        <strong>Cobranças já confirmadas ou pagas</strong> não são estornadas — você mantém o acesso pelo tempo já pago.
                     </li>
                     <li>
-                        <strong>Cobranças futuras (pendentes)</strong> serão canceladas e não gerarão novas faturas.
+                        <strong>Cobranças futuras</strong> não serão geradas após o cancelamento.
                     </li>
                 </ul>
             </div>
 
-            <p class="text-600 text-sm m-0">Para voltar depois, reative a assinatura com cartão válido.</p>
+            <p class="text-600 text-sm m-0">Você pode clicar em <strong>Manter assinatura</strong> antes do fim do período para desfazer o cancelamento.</p>
             <template #footer>
-                <Button label="Manter assinatura" severity="secondary" outlined @click="dialogParar = false" />
-                <Button label="Parar e perder acesso" severity="danger" :loading="acaoLoading" @click="parar" />
+                <Button label="Manter assinatura" severity="secondary" outlined @click="dialogCancelar = false" />
+                <Button
+                    :label="isTrial ? 'Cancelar trial agora' : 'Confirmar cancelamento'"
+                    severity="danger"
+                    :loading="acaoLoading"
+                    @click="cancelarPlano"
+                />
             </template>
         </Dialog>
 
@@ -287,7 +305,7 @@ export default {
         return {
             loading: true,
             assinatura: null,
-            dialogParar: false,
+            dialogCancelar: false,
             dialogCartao: false,
             acaoLoading: false,
             loadingCartao: false,
@@ -336,12 +354,13 @@ export default {
             if (s === 'cancelada_definitiva') return 'danger';
             return 'secondary';
         },
-        mostrarParar() {
+        mostrarCancelar() {
             const s = this.assinatura?.status;
-            return s === 'trial' || s === 'ativa' || s === 'cancelada_pendencia';
+            return s === 'trial' || s === 'ativa';
         },
         mostrarReativar() {
-            return this.assinatura?.status === 'pausada';
+            const s = this.assinatura?.status;
+            return s === 'pausada' || s === 'cancelada_pendencia';
         },
         isTrial() {
             return this.assinatura?.status === 'trial';
@@ -467,20 +486,27 @@ export default {
                 this.loadingCartao = false;
             }
         },
-        async parar() {
+        async cancelarPlano() {
             this.acaoLoading = true;
             try {
-                const res = await asaasService.pausarAssinatura();
+                const res = await asaasService.cancelarAssinatura();
                 const a = res.assinatura;
                 if (a) {
                     this.planStore.setAssinatura(a);
                 }
-                authService.marcarComoInativo('assinatura_pausada');
-                this.dialogParar = false;
-                this.toast.add({ severity: 'success', summary: 'Assinatura', detail: 'Assinatura pausada na Asaas.', life: 4000 });
+                if (this.isTrial) {
+                    authService.marcarComoInativo('assinatura_cancelada');
+                } else {
+                    await authService.sincronizarSessaoComApi();
+                }
+                this.dialogCancelar = false;
+                const detail = this.isTrial
+                    ? 'Trial cancelado. O acesso foi encerrado.'
+                    : `Plano cancelado. Você mantém acesso${a?.acesso_ate ? ' até ' + this.formatarData(a.acesso_ate) : ''}.`;
+                this.toast.add({ severity: 'success', summary: 'Assinatura', detail, life: 5000 });
                 await this.carregar();
             } catch (e) {
-                const msg = e.response?.data?.error || e.response?.data?.message || e.message || 'Erro ao pausar.';
+                const msg = e.response?.data?.error || e.response?.data?.message || e.message || 'Erro ao cancelar.';
                 this.toast.add({ severity: 'error', summary: 'Erro', detail: msg, life: 6000 });
             } finally {
                 this.acaoLoading = false;
