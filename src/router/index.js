@@ -54,6 +54,17 @@ const router = createRouter({
             component: () => import('@/views/pages/TermosUso.vue')
         },
         {
+            path: '/bot-docs',
+            name: 'bot-docs',
+            component: () => import('@/views/pages/bot/BotDocsIndex.vue')
+        },
+        {
+            path: '/bot-docs/:slug',
+            name: 'bot-doc',
+            component: () => import('@/views/pages/bot/BotDocView.vue'),
+            props: true
+        },
+        {
             path: '/dashboard',
             component: AppLayout,
             redirect: '/dashboard',

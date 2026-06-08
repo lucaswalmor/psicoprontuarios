@@ -18,6 +18,7 @@ const PUBLIC_PATHS = new Set([
 function isPublicRoute(path) {
     if (PUBLIC_PATHS.has(path)) return true;
     if (path.startsWith('/auth/')) return true;
+    if (path === '/bot-docs' || path.startsWith('/bot-docs/')) return true;
     return false;
 }
 

@@ -2,6 +2,9 @@
     "name": "psicoprontuarios",
     "version": "4.3.0",
     "scripts": {
+        "sync:bot-docs": "node scripts/sync-bot-docs.mjs",
+        "predev": "npm run sync:bot-docs",
+        "prebuild": "npm run sync:bot-docs",
         "dev": "vite --host",
         "build": "vite build",
         "preview": "vite preview",

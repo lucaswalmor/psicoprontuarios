@@ -1,0 +1,61 @@
+{
+  "updatedAt": "2026-06-08T01:25:23.202Z",
+  "docs": [
+    {
+      "slug": "principal",
+      "title": "Prompt principal",
+      "file": "tool_bot.md",
+      "path": "/bot-docs/tool_bot.md",
+      "previewPath": "/bot-docs/principal"
+    },
+    {
+      "slug": "landing",
+      "title": "Landing",
+      "file": "tool_bot_landinpage.md",
+      "path": "/bot-docs/tool_bot_landinpage.md",
+      "previewPath": "/bot-docs/landing"
+    },
+    {
+      "slug": "agendamento",
+      "title": "Agendamentos",
+      "file": "tool_bot_agendamento.md",
+      "path": "/bot-docs/tool_bot_agendamento.md",
+      "previewPath": "/bot-docs/agendamento"
+    },
+    {
+      "slug": "pacientes",
+      "title": "Pacientes",
+      "file": "tool_bot_pacientes.md",
+      "path": "/bot-docs/tool_bot_pacientes.md",
+      "previewPath": "/bot-docs/pacientes"
+    },
+    {
+      "slug": "financeiro",
+      "title": "Financeiro",
+      "file": "tool_bot_financeiro.md",
+      "path": "/bot-docs/tool_bot_financeiro.md",
+      "previewPath": "/bot-docs/financeiro"
+    },
+    {
+      "slug": "dashboard",
+      "title": "Dashboard",
+      "file": "tool_bot_dashboard.md",
+      "path": "/bot-docs/tool_bot_dashboard.md",
+      "previewPath": "/bot-docs/dashboard"
+    },
+    {
+      "slug": "configuracoes",
+      "title": "Configurações",
+      "file": "tool_bot_configuracoes.md",
+      "path": "/bot-docs/tool_bot_configuracoes.md",
+      "previewPath": "/bot-docs/configuracoes"
+    },
+    {
+      "slug": "site",
+      "title": "Meu Site",
+      "file": "tool_bot_site.md",
+      "path": "/bot-docs/tool_bot_site.md",
+      "previewPath": "/bot-docs/site"
+    }
+  ]
+}
