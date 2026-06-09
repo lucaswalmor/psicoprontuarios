@@ -9,13 +9,18 @@
                         <h1 class="dash-clinic-title m-0">Dashboard da clínica</h1>
                     </header>
                     <div class="px-2 pb-3 md:px-3 md:pb-4">
-                <TabView
-                    v-model:activeIndex="activeTabIndex"
+                <Tabs
+                    v-model:value="activeTab"
                     class="dash-clinic-tabs"
-                    @tab-change="onTabChange"
+                    @update:value="onTabChange"
                 >
+                    <TabList>
+                        <Tab value="0">Pacientes</Tab>
+                        <Tab value="1">Financeiro</Tab>
+                    </TabList>
+                    <TabPanels>
                     <!-- Tab Pacientes -->
-                    <TabPanel header="Pacientes">
+                    <TabPanel value="0">
                         <!-- Cards de Estatísticas -->
                         <div class="grid">
                             <!-- Total de Pacientes -->
@@ -391,10 +396,11 @@
                     </TabPanel>
 
                     <!-- Tab Financeiro -->
-                    <TabPanel header="Financeiro">
+                    <TabPanel value="1">
                         <FinanceiroDashboard :lazy="true" ref="financeiroDashboardRef" />
                     </TabPanel>
-                </TabView>
+                    </TabPanels>
+                </Tabs>
                     </div>
                 </div>
             </div>
@@ -425,7 +431,7 @@ export default {
     },
     data() {
         return {
-            activeTabIndex: 0,
+            activeTab: '0',
             dados: {
                 pacientes: {
                     pacientes_total: 0,
@@ -903,9 +909,9 @@ export default {
             }
         },
 
-        async onTabChange(event) {
-            // Quando a tab Financeiro for selecionada (índice 1), carregar dados
-            if (event.index === 1) {
+        async onTabChange(value) {
+            // Quando a tab Financeiro for selecionada, carregar dados
+            if (value === '1') {
                 await this.$nextTick();
                 const financeiroDashboard = this.$refs.financeiroDashboardRef;
                 if (financeiroDashboard && !financeiroDashboard.dadosCarregados) {

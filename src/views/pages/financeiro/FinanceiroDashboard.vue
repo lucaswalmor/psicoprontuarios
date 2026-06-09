@@ -87,22 +87,22 @@
                                 <div class="flex gap-2">
                                     <div class="flex-1">
                                         <label class="block text-600 mb-2">Data Inicial</label>
-                                        <Calendar 
+                                        <DatePicker 
                                             v-model="filtrosData.data_inicial" 
                                             dateFormat="dd/mm/yy" 
                                             placeholder="Data inicial"
                                             class="w-full"
-                                            @date-select="aplicarFiltrosData"
+                                            @update:modelValue="aplicarFiltrosData"
                                         />
                                     </div>
                                     <div class="flex-1">
                                         <label class="block text-600 mb-2">Data Final</label>
-                                        <Calendar 
+                                        <DatePicker 
                                             v-model="filtrosData.data_final" 
                                             dateFormat="dd/mm/yy" 
                                             placeholder="Data final"
                                             class="w-full"
-                                            @date-select="aplicarFiltrosData"
+                                            @update:modelValue="aplicarFiltrosData"
                                         />
                                     </div>
                                 </div>

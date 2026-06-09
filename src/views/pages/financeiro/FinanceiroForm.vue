@@ -33,9 +33,9 @@
                                         criar
                                     </span>
                                 </div>
-                                <!-- Dropdown Customizado com Botões nas Opções -->
+                                <!-- Select customizado com botões nas opções -->
                                 <div class="relative">
-                                    <Dropdown 
+                                    <Select 
                                         v-model="form.categoria" 
                                         :options="categoriasComAcoes" 
                                         optionLabel="nome" 
@@ -74,7 +74,7 @@
                                                 </div>
                                             </div>
                                         </template>
-                                    </Dropdown>
+                                    </Select>
                                 </div>
                                 <small v-if="errors.categoria" class="p-error">{{ errors.categoria }}</small>
                             </div>

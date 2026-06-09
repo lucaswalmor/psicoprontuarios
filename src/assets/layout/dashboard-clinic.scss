@@ -335,15 +335,15 @@
     color: #fecaca !important;
 }
 
-/* TabView (PrimeVue 4 — classes p-tabview-tablist*) */
-.dash-clinic-tabs.p-tabview .p-tabview-tablist {
+/* Tabs (PrimeVue 4 — classes p-tablist-tab-list / p-tab) */
+.dash-clinic-tabs.p-tabs .p-tablist-tab-list {
     background: transparent;
     border: none;
     gap: 0.25rem;
     margin-bottom: 0.5rem;
 }
 
-.dash-clinic-tabs.p-tabview .p-tabview-tab-header {
+.dash-clinic-tabs.p-tabs .p-tab {
     border-radius: 10px !important;
     border: 1px solid transparent !important;
     font-weight: 600;
@@ -354,21 +354,21 @@
         border-color 0.15s ease;
 }
 
-.dash-clinic-tabs.p-tabview .p-tabview-tablist-item:not(.p-tabview-tablist-item-active) .p-tabview-tab-header {
+.dash-clinic-tabs.p-tabs .p-tab:not(.p-tab-active) {
     color: var(--text-color-secondary);
 }
 
-.dash-clinic-tabs.p-tabview .p-tabview-tablist-item.p-tabview-tablist-item-active .p-tabview-tab-header {
+.dash-clinic-tabs.p-tabs .p-tab.p-tab-active {
     background: color-mix(in srgb, var(--dc-accent) 12%, var(--surface-card)) !important;
     border-color: var(--dc-line) !important;
     color: var(--dc-accent-deep) !important;
 }
 
-.app-dark .dash-clinic-tabs.p-tabview .p-tabview-tablist-item.p-tabview-tablist-item-active .p-tabview-tab-header {
+.app-dark .dash-clinic-tabs.p-tabs .p-tab.p-tab-active {
     color: var(--primary-color) !important;
 }
 
-.dash-clinic-tabs.p-tabview .p-tabview-panels {
+.dash-clinic-tabs.p-tabs .p-tabpanels {
     background: transparent;
     border: none;
     padding: 0.5rem 0 0;
