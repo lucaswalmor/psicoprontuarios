@@ -34,6 +34,7 @@ Selecione o Paciente no campo de busca.
 Informe a Data da Consulta.
 Selecione a Hora da Consulta no menu dropdown.
 Se desejar repetir automaticamente, ative o toggle 'Deseja reagendar para os próximos 12 meses?' e escolha a Forma de Reagendamento.
+(Opcional) Após escolher o horário, ative **Registrar esta consulta no financeiro** e informe o **Valor da sessão** — o sistema cria receitas previstas vinculadas ao paciente (incluindo séries recorrentes, quando aplicável).
 Clique em Agendar Consulta para confirmar.
 
 3. Campos da Modal: Agendar Consulta
@@ -51,9 +52,14 @@ Reagendar para 12 meses?
 Toggle (Não/Sim). Quando ativado em 'Sim', habilita o campo de Forma de Reagendamento.
 Forma de Reagendamento
 Aparece quando o toggle acima está em 'Sim'. Opções: Semanal, Quinzenal ou Mensal.
+Registrar esta consulta no financeiro
+Toggle opcional. Aparece após selecionar o horário. Quando ativo, exibe o campo Valor da sessão (R$). Cria lançamento(s) de receita prevista na data de cada consulta, categoria Sessão, vinculado ao paciente. O valor padrão pode vir do cadastro do paciente (valor da sessão), se configurado.
+Valor da sessão (R$)
+Obrigatório quando o registro no financeiro está ativo. Valor previsto da consulta.
 
 
 ⚠️  Os campos de recorrência (Reagendamento e Forma) só ficam visíveis e ativos quando o toggle é alternado para 'Sim'.
+⚠️  Ao excluir um agendamento que gerou receita ainda não recebida, a receita vinculada também é removida automaticamente.
 
 4. Reagendamento Automático (Recorrência)
 O sistema permite criar automaticamente uma série de consultas recorrentes para os próximos 12 meses com apenas um agendamento.

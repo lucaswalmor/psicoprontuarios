@@ -96,6 +96,7 @@ Completa: Clique em Exportar Todos no topo da aba para gerar um PDF com todo o h
 
 Recursos de I.A (plano Pro ou Vitalício)
 Melhorar texto com I.A: No editor do prontuário (+ Novo Prontuário ou editar existente), botão "Melhorar texto com I.A" — exige pelo menos 100 caracteres na descrição. Usuários do plano Simples veem etiqueta PRO e tela de upgrade.
+Gravar resumo por voz: No formulário de novo ou editar prontuário, botão "Gravar resumo por voz" (etiqueta PRO no plano Simples). Ao clicar, aparece uma barra de gravação estilo mensagem de voz: grave o resumo da sessão, pause se necessário e envie pelo botão verde. O sistema transcreve o áudio e preenche o rascunho da descrição (e métricas opcionais, quando identificadas). Revise sempre antes de salvar. Exige permissão de microfone no navegador.
 Gerar relatório com I.A: Na aba Prontuários da ficha do paciente, botão "Gerar relatório com I.A" — consolida resumo, padrões, evolução e observações a partir dos prontuários. Disponível apenas no plano Pro ou Vitalício.
 
 
@@ -189,6 +190,10 @@ P: Posso imprimir apenas um prontuário isolado?
 R: Sim. No menu de ações do prontuário (três pontos), selecione "Exportar Prontuário".
 P: Como uso a I.A para melhorar o texto do prontuário?
 R: Na aba "Prontuários", abra ou crie um prontuário. Com plano Pro ou Vitalício, use o botão "Melhorar texto com I.A" (mínimo 100 caracteres na descrição).
+P: Como gravo o resumo da sessão por voz no prontuário?
+R: Com plano Pro ou Vitalício, em Novo Prontuário ou ao editar, clique em "Gravar resumo por voz". Autorize o microfone, fale o resumo, envie pelo botão verde e revise o texto gerado antes de salvar.
+P: A gravação por voz não funciona / dá erro.
+R: Verifique permissão do microfone no navegador, grave por alguns segundos antes de enviar e use Chrome ou Edge atualizado. Se aparecer erro de limite da API, aguarde alguns minutos (plano gratuito da Groq) ou contate o suporte.
 P: Como gero um relatório profissional com I.A?
 R: Na aba "Prontuários" da ficha, clique em "Gerar relatório com I.A" (disponível no plano Pro ou Vitalício). O sistema analisa os prontuários do paciente e gera um relatório estruturado.
 P: Sou do plano Simples — posso usar I.A no prontuário?

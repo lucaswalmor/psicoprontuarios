@@ -15,6 +15,7 @@
 6. [Gráficos e Análises Visuais](#6-gráficos-e-análises-visuais)
 7. [Atalhos de Cadastro e Prontuários](#7-atalhos-de-cadastro-e-prontuários)
 8. [FAQ — Perguntas Frequentes](#8-faq--perguntas-frequentes)
+9. [Aba Financeiro — Receitas não recebidas](#9-aba-financeiro--receitas-não-recebidas)
 
 ---
 
@@ -121,6 +122,28 @@ R: Os gráficos são para visualização interna. Para exportar histórico clín
 
 **P: Onde vejo o resumo financeiro no Dashboard?**
 R: Clique na aba **Financeiro** no topo do Dashboard. Lá aparecem cards de receitas, despesas e saldo do período, com atalho para as telas de lançamentos.
+
+---
+
+## 9. Aba Financeiro — Receitas não recebidas
+
+Na aba **Financeiro** do Dashboard, abaixo do resumo anual e **acima** dos cards "Receitas por categoria" / "Despesas por categoria", pode aparecer o card **Receitas não recebidas**.
+
+**O que ele mostra**
+- Receitas com data **já passada** e status **Não recebido**
+- Linha de resumo com quantidade e valor total pendente
+- Lista das principais receitas (descrição, data e valor)
+- Se houver mais itens do que os exibidos: texto "+ N outras na lista"
+
+**Ações disponíveis**
+- **Ver na lista** (canto superior direito do card): abre Financeiro → Receitas filtrando apenas não recebidas (`Não recebido`)
+- **Clique em uma linha da lista**: abre a tela de **edição** daquela receita para marcar como recebida ou ajustar dados
+
+**P: Por que aparecem receitas de meses anteriores nesse card?**
+R: O card lista todas as receitas vencidas/não recebidas, independentemente do mês selecionado no gráfico de fluxo de caixa. Por isso o clique em cada item leva direto à edição — assim você não precisa procurar na listagem filtrada por mês.
+
+**P: Cadastrei uma sessão no financeiro mas não aparece no card.**
+R: Verifique se a receita está marcada como **Recebida**. Só entram receitas com status **Não recebido** e data igual ou anterior a hoje.
 
 ---
 

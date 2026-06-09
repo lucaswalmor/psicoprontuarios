@@ -108,6 +108,7 @@ O sistema possui um painel de filtros robusto acessado pelo botão Filtros.
 Opções de Filtro:
 Por Categoria: Permite selecionar uma categoria específica (ex: "Consultas") para ver apenas as transações relacionadas a ela.
 Por Período (Data Inicial e Data Final): Permite definir um intervalo de datas para visualizar as transações que ocorreram ou ocorrerão naquele período.
+Por Status de Pagamento/Recebimento: É possível filtrar apenas receitas **não recebidas** ou despesas **não pagas** (útil ao clicar em "Ver na lista" no Dashboard).
 
 ⚠️ Comportamento Importante do Filtro Padrão:Ao acessar a tela de Receitas ou Despesas, o sistema aplica automaticamente um filtro para o mês atual. Se você cadastrar uma transação com data de um mês anterior ou futuro, ela não aparecerá na listagem imediatamente até que você altere as datas no painel de Filtros.
 
@@ -157,6 +158,10 @@ P: O que significa o card "Previstas" no topo da tela?R: O card "Previstas" soma
 P: Como faço para registrar uma receita ou despesa parcelada?R: Ao criar uma nova receita ou despesa, selecione "À Prazo" no campo "Tipo de Pagamento". Um novo campo "Quantidade de Parcelas" aparecerá. Informe o número de parcelas desejado, e o sistema se encarregará de dividir o valor total e gerar os lançamentos correspondentes.
 
 P: É possível ver apenas as receitas de "Plano de Saúde"?R: Sim. Clique no botão "Filtros", abra o campo "Categoria", selecione "Plano de Saúde" e clique em "Filtrar". A lista e os totais serão atualizados para mostrar apenas essas receitas.
+
+P: O Dashboard mostra "Receitas não recebidas". Como acesso essa lista completa?R: No Dashboard → aba Financeiro, no card **Receitas não recebidas**, clique em **Ver na lista**. Você será levado à tela de Receitas já filtrada para itens não recebidos. Também pode clicar em qualquer linha do card para abrir diretamente a edição daquela receita.
+
+P: Agendei uma consulta e marquei "Registrar esta consulta no financeiro". Onde vejo a receita?R: A receita é criada automaticamente na data da consulta, com categoria **Sessão**, vinculada ao paciente. Acesse Financeiro → Receitas (ajuste o filtro de datas se a consulta for de outro mês). Se a receita ainda não foi paga, ela também pode aparecer no card **Receitas não recebidas** do Dashboard após a data da sessão.
 
 
 
