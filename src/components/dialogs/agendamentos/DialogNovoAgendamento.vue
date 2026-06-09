@@ -79,6 +79,33 @@
                 </div>
             </div>
 
+            <div class="col-12" v-if="agendamento.hora_consulta">
+                <div class="flex align-items-center gap-2 flex-wrap mb-2">
+                    <InputSwitch
+                        id="registrar_financeiro"
+                        v-model="agendamento.registrar_financeiro"
+                    />
+                    <label for="registrar_financeiro" class="text-900 font-medium mb-0 cursor-pointer">
+                        Registrar esta consulta no financeiro
+                    </label>
+                </div>
+            </div>
+
+            <div class="col-12 md:col-6" v-if="agendamento.registrar_financeiro">
+                <label for="valor_sessao" class="block text-900 font-medium mb-2">Valor da sessão (R$) *</label>
+                <InputNumber
+                    id="valor_sessao"
+                    v-model="agendamento.valor_sessao"
+                    mode="currency"
+                    currency="BRL"
+                    locale="pt-BR"
+                    class="w-full"
+                    :class="{ 'p-invalid': errors.valor_sessao }"
+                    :min="0.01"
+                />
+                <small v-if="errors.valor_sessao" class="p-error">{{ errors.valor_sessao }}</small>
+            </div>
+
             <div class="col-12" v-if="agendamento.reagendar_consulta">
                 <label class="block text-900 font-medium mb-2">Forma de Reagendamento</label>
                 <div class="flex flex-wrap gap-3">
@@ -138,12 +165,14 @@
 import api from '@/utils/axios';
 import horasMinutosMixin from '@/mixins/horasMinutosMixin';
 import InputSwitch from 'primevue/inputswitch';
+import InputNumber from 'primevue/inputnumber';
 import Select from 'primevue/select';
 
 export default {
     name: 'DialogNovoAgendamento',
     components: {
         InputSwitch,
+        InputNumber,
         Select
     },
     emits: ['update:visible', 'agendamentoSalvo'],
@@ -180,6 +209,8 @@ export default {
                 reagendar_consulta: false,
                 tipo_reagendamento: '',
                 deseja_receber_notificacoes: false,
+                registrar_financeiro: false,
+                valor_sessao: null,
             }
         };
     },
@@ -225,10 +256,9 @@ export default {
             }
         },
         'agendamento.paciente'(newVal) {
-            // Quando um paciente é selecionado no Select, validar o status
-            // limparSelecao = false para não limpar a seleção, apenas mostrar o toast
             if (newVal && this.visible) {
                 this.validarStatusTratamentoPaciente(newVal, false);
+                this.aplicarValorSessaoDefault(newVal);
             }
         }
     },
@@ -283,12 +313,22 @@ export default {
             return [];
         },
         
+        aplicarValorSessaoDefault(paciente) {
+            if (!paciente || this.agendamento.valor_sessao) {
+                return;
+            }
+            const valor = paciente.valor_sessao;
+            if (valor != null && Number(valor) > 0) {
+                this.agendamento.valor_sessao = Number(valor);
+            }
+        },
+
         async carregarPacientePorId(pacienteId) {
             try {
                 const response = await this.$pacientesService.getById(pacienteId);
                 this.agendamento.paciente = response;
-                // Validar status após carregar (limparSelecao = false porque veio de prop pacienteId)
                 this.validarStatusTratamentoPaciente(response, false);
+                this.aplicarValorSessaoDefault(response);
             } catch (error) {
                 console.error('Erro ao carregar paciente:', error);
                 this.$toast.add({
@@ -336,6 +376,8 @@ export default {
                 reagendar_consulta: false,
                 tipo_reagendamento: '',
                 deseja_receber_notificacoes: false,
+                registrar_financeiro: false,
+                valor_sessao: null,
             };
             this.evolutionWhatsappConectado = false;
             this.errors = {};
@@ -407,11 +449,11 @@ export default {
                     hora_notificacao: "",
                     reagendar_consulta: this.agendamento.reagendar_consulta,
                     tipo_reagendamento: this.agendamento.tipo_reagendamento,
+                    registrar_financeiro: !!this.agendamento.registrar_financeiro,
                     financeiro: {
-                        consulta_paga: false,
-                        valor: "",
-                        data_pagamento: "",
-                        forma_pagamento: ""
+                        valor: this.agendamento.registrar_financeiro
+                            ? this.agendamento.valor_sessao
+                            : null,
                     },
                     tipo_notificacao: [],
                     deseja_receber_notificacoes:
@@ -512,6 +554,20 @@ export default {
                     life: 3000
                 });
                 valido = false;
+            }
+
+            if (this.agendamento.registrar_financeiro) {
+                const valor = Number(this.agendamento.valor_sessao);
+                if (!valor || valor <= 0) {
+                    this.errors.valor_sessao = 'Informe o valor da sessão';
+                    this.$toast.add({
+                        severity: 'warn',
+                        summary: 'Atenção',
+                        detail: 'Informe o valor da sessão para registrar no financeiro',
+                        life: 3000
+                    });
+                    valido = false;
+                }
             }
             
             return valido;

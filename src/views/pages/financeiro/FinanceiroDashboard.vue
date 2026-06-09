@@ -75,6 +75,35 @@
                 </div>
             </div>
 
+            <div
+                v-if="dados.receitas_em_aberto?.quantidade > 0"
+                class="card mb-3 border-left-3 border-orange-500"
+            >
+                <div class="flex flex-column md:flex-row md:align-items-center md:justify-content-between gap-3">
+                    <div>
+                        <h6 class="m-0 mb-1 text-orange-600">Receitas de sessão não marcadas como recebidas</h6>
+                        <p class="m-0 text-600 text-sm">
+                            {{ dados.receitas_em_aberto.quantidade }}
+                            {{ dados.receitas_em_aberto.quantidade === 1 ? 'receita' : 'receitas' }}
+                            · total R$ {{ formatarValor(dados.receitas_em_aberto.total_valor) }}
+                        </p>
+                    </div>
+                    <Button
+                        label="Ver receitas em aberto"
+                        icon="pi pi-arrow-right"
+                        severity="warning"
+                        outlined
+                        size="small"
+                        @click="$router.push('/financeiro/receitas?paga=false')"
+                    />
+                </div>
+                <ul v-if="dados.receitas_em_aberto.itens?.length" class="mt-3 mb-0 pl-3 text-sm text-700">
+                    <li v-for="item in dados.receitas_em_aberto.itens" :key="item.id">
+                        {{ item.paciente_nome }} — R$ {{ formatarValor(item.valor) }} — {{ formatarDataItem(item.data) }}
+                    </li>
+                </ul>
+            </div>
+
             <!-- Gráficos -->
             <div class="grid">
                 <div class="col-12 md:col-12">
@@ -273,7 +302,12 @@ export default {
                     ano: new Date().getFullYear(),
                     mes: new Date().getMonth() + 1
                 },
-                fluxo_caixa: []
+                fluxo_caixa: [],
+                receitas_em_aberto: {
+                    total_valor: 0,
+                    quantidade: 0,
+                    itens: [],
+                },
             },
             filtros: {
                 ano: new Date().getFullYear(),
@@ -498,6 +532,14 @@ export default {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             }).format(valor);
+        },
+        formatarDataItem(data) {
+            if (!data) return '-';
+            const [ano, mes, dia] = String(data).split('-');
+            if (ano && mes && dia) {
+                return `${dia}/${mes}/${ano}`;
+            }
+            return data;
         },
         async carregarDados(filtrosAdicionais = {}) {
             try {

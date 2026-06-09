@@ -222,6 +222,19 @@ class ProntuariosService {
             throw error;
         }
     }
+
+    async transcreverAudio(pacienteId, audioBlob) {
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'resumo-sessao.webm');
+
+        const response = await axios.post(
+            `/paciente/${pacienteId}/prontuario/transcrever-audio`,
+            formData,
+            { headers: { 'Content-Type': 'multipart/form-data' } }
+        );
+
+        return response.data;
+    }
 }
 
 export default new ProntuariosService(); 

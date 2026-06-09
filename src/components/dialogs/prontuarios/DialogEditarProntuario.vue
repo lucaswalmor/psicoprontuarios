@@ -84,6 +84,20 @@
                 <Message severity="warn" class="mb-3" :closable="false">
                     Por privacidade, não inclua o nome nem outros dados que identifiquem o paciente neste texto. Prefira expressões como "o paciente" ou "a pessoa atendida".
                 </Message>
+                <div class="flex flex-wrap align-items-center gap-2 mb-3">
+                    <Button
+                        type="button"
+                        :label="vozGravando ? 'Parar gravação' : vozProcessando ? 'Processando áudio…' : 'Gravar resumo por voz'"
+                        :icon="vozGravando ? 'pi pi-stop' : 'pi pi-microphone'"
+                        :severity="vozGravando ? 'danger' : 'secondary'"
+                        :loading="vozProcessando"
+                        :disabled="vozProcessando"
+                        outlined
+                        @click="onClickGravarResumoVoz"
+                    />
+                    <Tag v-if="!isPlanoPro" value="PRO" severity="warning" />
+                    <small v-if="vozGravando" class="text-red-500">Gravando… fale o resumo da sessão</small>
+                </div>
                 <div class="editor-com-ia-wrap">
                     <Editor
                         :key="editorDescricaoKey"
@@ -128,6 +142,7 @@
 <script>
 import { Toast } from 'primevue';
 import DialogPlanoPro from '@/components/dialogs/DialogPlanoPro.vue';
+import prontuarioVozMixin from '@/mixins/prontuarioVozMixin';
 
 const WEBHOOK_MELHORAR_TEXTO_IA =
     'https://petgre-n8n-petgre.irkqjy.easypanel.host/webhook/b43537a5-c313-485e-814f-d993f2d359dc';
@@ -136,6 +151,7 @@ const MIN_CARACTERES_MELHORIA_IA = 100;
 
 export default {
     name: 'DialogEditarProntuario',
+    mixins: [prontuarioVozMixin],
     components: {
         Toast,
         DialogPlanoPro,
@@ -164,6 +180,7 @@ export default {
                 this.previewMelhoriaIa = null;
             } else {
                 this.previewMelhoriaIa = null;
+                this.resetVozState();
             }
         },
     },

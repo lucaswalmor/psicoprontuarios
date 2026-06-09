@@ -225,6 +225,7 @@ export default {
                 categoria: null,
                 data_inicial: this.getDataInicioFim().dataInicial,
                 data_final: this.getDataInicioFim().dataFinal,
+                paga: null,
                 page: 1
             }
         };
@@ -302,10 +303,13 @@ export default {
         }
     },
     async mounted() {
-        // Definir tipo baseado na URL
         this.filtros.tipo = this.tipoDetectado;
 
-        // Carregar categorias e transações sempre; não há mais bloqueio por módulo
+        if (this.$route.query.paga === 'false') {
+            this.filtros.paga = false;
+            this.hasFiltros = true;
+        }
+
         await this.carregarCategorias();
         await this.carregarTransacoes();
     },
@@ -439,9 +443,12 @@ export default {
                     params.data_final = this.filtros.data_final.toISOString().split('T')[0];
                 }
 
-                // Remover categoria se for null
                 if (!params.categoria) {
                     delete params.categoria;
+                }
+
+                if (params.paga === null || params.paga === undefined) {
+                    delete params.paga;
                 }
 
                 const response = await this.$financeirosService.buscar(params);
