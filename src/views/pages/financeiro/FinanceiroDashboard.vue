@@ -15,6 +15,38 @@
                 <Button label="Limpar filtros" severity="danger" size="small" @click="limparFiltros" v-else />
             </div>
 
+            <Message
+                v-if="dados.receitas_em_aberto?.quantidade > 0"
+                severity="warn"
+                :closable="false"
+                class="mb-3 w-full"
+            >
+                <div class="flex flex-column md:flex-row md:align-items-center md:justify-content-between gap-3 w-full">
+                    <div>
+                        <span class="font-semibold">Receitas ainda não marcadas como recebidas</span>
+                        <span class="block text-sm mt-1">
+                            {{ dados.receitas_em_aberto.quantidade }}
+                            {{ dados.receitas_em_aberto.quantidade === 1 ? 'receita com data já passada' : 'receitas com data já passada' }}
+                            · total R$ {{ formatarValor(dados.receitas_em_aberto.total_valor) }}
+                        </span>
+                        <ul v-if="dados.receitas_em_aberto.itens?.length" class="mt-2 mb-0 pl-3 text-sm">
+                            <li v-for="item in dados.receitas_em_aberto.itens" :key="item.id">
+                                {{ item.paciente_nome || item.descricao || 'Receita' }}
+                                — R$ {{ formatarValor(item.valor) }}
+                                — {{ formatarDataItem(item.data) }}
+                            </li>
+                        </ul>
+                    </div>
+                    <Button
+                        label="Ver na lista"
+                        icon="pi pi-arrow-right"
+                        severity="warning"
+                        size="small"
+                        @click="$router.push('/financeiro/receitas?paga=false')"
+                    />
+                </div>
+            </Message>
+
             <!-- Cards de Resumo -->
             <div class="grid">
                 <div class="col-12 md:col-4">
@@ -73,35 +105,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div
-                v-if="dados.receitas_em_aberto?.quantidade > 0"
-                class="card mb-3 border-left-3 border-orange-500"
-            >
-                <div class="flex flex-column md:flex-row md:align-items-center md:justify-content-between gap-3">
-                    <div>
-                        <h6 class="m-0 mb-1 text-orange-600">Receitas de sessão não marcadas como recebidas</h6>
-                        <p class="m-0 text-600 text-sm">
-                            {{ dados.receitas_em_aberto.quantidade }}
-                            {{ dados.receitas_em_aberto.quantidade === 1 ? 'receita' : 'receitas' }}
-                            · total R$ {{ formatarValor(dados.receitas_em_aberto.total_valor) }}
-                        </p>
-                    </div>
-                    <Button
-                        label="Ver receitas em aberto"
-                        icon="pi pi-arrow-right"
-                        severity="warning"
-                        outlined
-                        size="small"
-                        @click="$router.push('/financeiro/receitas?paga=false')"
-                    />
-                </div>
-                <ul v-if="dados.receitas_em_aberto.itens?.length" class="mt-3 mb-0 pl-3 text-sm text-700">
-                    <li v-for="item in dados.receitas_em_aberto.itens" :key="item.id">
-                        {{ item.paciente_nome }} — R$ {{ formatarValor(item.valor) }} — {{ formatarDataItem(item.data) }}
-                    </li>
-                </ul>
             </div>
 
             <!-- Gráficos -->
