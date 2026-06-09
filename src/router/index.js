@@ -121,8 +121,17 @@ const router = createRouter({
                 },
                 {
                     path: '/configuracoes',
-                    name: 'Configuracoes',
-                    component: () => import('@/views/pages/Configuracoes.vue'),
+                    redirect: '/configuracoes/preferencias',
+                },
+                {
+                    path: '/configuracoes/preferencias',
+                    name: 'ConfiguracaoPreferencias',
+                    component: () => import('@/views/pages/configuracoes/ConfiguracaoPreferencias.vue'),
+                },
+                {
+                    path: '/configuracoes/comunicacao',
+                    name: 'ConfiguracaoComunicacao',
+                    component: () => import('@/views/pages/configuracoes/ConfiguracaoComunicacao.vue'),
                 },
                 {
                     path: '/meu-site',
@@ -301,7 +310,7 @@ const router = createRouter({
                 },
                 {
                     path: '/assinatura',
-                    redirect: { path: '/configuracoes' }
+                    redirect: { path: '/perfil', query: { tab: 'plano' } }
                 },
                 {
                     path: '/pagamento',

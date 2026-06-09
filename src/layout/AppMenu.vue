@@ -54,6 +54,12 @@
                                 </span>
                                 <div class="menu-label-row menu-label-row--finance-sub">
                                     <span class="layout-menuitem-text app-nav-entry__label">{{ item.label }}</span>
+                                    <Tag
+                                        v-if="item.proTag"
+                                        value="PRO"
+                                        severity="warning"
+                                        class="menu-pro-tag"
+                                    />
                                 </div>
                             </div>
                         </a>
@@ -169,7 +175,11 @@ export default {
                 {
                     label: 'Configurações',
                     icon: 'pi pi-cog',
-                    to: '/configuracoes'
+                    items: [
+                        { label: 'Preferências', icon: 'pi pi-sliders-h', to: '/configuracoes/preferencias' },
+                        { label: 'Comunicação', icon: 'pi pi-whatsapp', to: '/configuracoes/comunicacao', proTag: true },
+                        { label: 'FAQ', icon: 'pi pi-question-circle', to: '/faq' },
+                    ]
                 },
                 {
                     label: 'Meu Site',

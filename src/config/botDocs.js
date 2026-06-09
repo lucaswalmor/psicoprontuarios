@@ -43,7 +43,7 @@ export const BOT_DOCS = [
         slug: 'configuracoes',
         file: 'tool_bot_configuracoes.md',
         title: 'Configurações',
-        description: 'WhatsApp, notificações e plano Pro'
+        description: 'Preferências, comunicação WhatsApp e notificações para pacientes'
     },
     {
         slug: 'perfil',

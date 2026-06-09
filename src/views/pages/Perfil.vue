@@ -1,6 +1,8 @@
 <template>
     <div class="grid">
         <div class="col-12">
+            <ConfiguracaoPlanoTour v-if="planoConteudoModo !== null" :modo="planoConteudoModo" />
+
             <div class="card">
                 <h5 class="mb-4">Meu Perfil</h5>
 
@@ -17,6 +19,10 @@
                         <Tab value="2">
                             <i class="pi pi-list mr-2"></i>
                             Logs
+                        </Tab>
+                        <Tab value="3">
+                            <i class="pi pi-star mr-2"></i>
+                            Plano
                         </Tab>
                     </TabList>
                     <TabPanels>
@@ -222,6 +228,15 @@
                         <TabPanel value="2">
                             <PerfilLogsTab />
                         </TabPanel>
+
+                        <TabPanel value="3">
+                            <div class="p-4">
+                                <ConfiguracaoPlanoTab
+                                    v-if="activeTab === '3'"
+                                    @plano-conteudo="onPlanoConteudo"
+                                />
+                            </div>
+                        </TabPanel>
                     </TabPanels>
                 </Tabs>
             </div>
@@ -266,6 +281,8 @@ import DialogEditEmail from '@/components/dialogs/configuracoes/DialogEditEmail.
 import DialogEditPhone from '@/components/dialogs/configuracoes/DialogEditPhone.vue';
 import DialogExclusaoConta from '@/components/dialogs/configuracoes/DialogExclusaoConta.vue';
 import PerfilLogsTab from '@/components/perfil/PerfilLogsTab.vue';
+import ConfiguracaoPlanoTab from '@/views/pages/configuracoes/ConfiguracaoPlanoTab.vue';
+import ConfiguracaoPlanoTour from '@/components/tour/configuracoes/ConfiguracaoPlanoTour.vue';
 import Message from 'primevue/message';
 import Tabs from 'primevue/tabs';
 import TabList from 'primevue/tablist';
@@ -281,6 +298,8 @@ export default {
         DialogEditPhone,
         DialogExclusaoConta,
         PerfilLogsTab,
+        ConfiguracaoPlanoTab,
+        ConfiguracaoPlanoTour,
         Message,
         Tabs,
         TabList,
@@ -298,6 +317,7 @@ export default {
             showChangePasswordModal: false,
             showExclusaoContaModal: false,
             cancelandoExclusao: false,
+            planoConteudoModo: null,
         };
     },
     computed: {
@@ -314,11 +334,19 @@ export default {
     },
     async mounted() {
         await this.loadUserProfile();
-        
-        // Verificar parâmetros da URL após carregar os dados
+        this.aplicarTabDaUrl();
         this.checkUrlParams();
     },
     methods: {
+        onPlanoConteudo({ modo }) {
+            this.planoConteudoModo = modo === 'full' ? 'full' : 'simples';
+        },
+        aplicarTabDaUrl() {
+            const tab = new URLSearchParams(window.location.search).get('tab');
+            if (tab === 'plano') {
+                this.activeTab = '3';
+            }
+        },
         async loadUserProfile() {
             try {
                 this.loading = true;

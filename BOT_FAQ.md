@@ -241,13 +241,17 @@ Manual do bot: `tool_bot_perfil.md` (zona de perigo, fluxo e retenção de dados
 
 ## 11. Configurações e notificações
 
-**Preferências (`UserConfigController`):**
+**Preferências do psicólogo (`PreferenciaPsicologoController`, tabela `preferencias_psicologo`):**
 
-- **GET `/user-config`** — lê ou cria padrão.
-- **PUT `/user-config`** — campos booleanos: `notificacoes_consultas_whatsapp`, `notificacoes_consultas_email`, `notificacoes_consultas_pacientes_whatsapp`, `notificacoes_consultas_pacientes_email`.
-- **POST `/user-config/reset`** — volta tudo para `true`.
+- **GET `/preferencias-psicologo`** — lê ou cria padrão.
+- **PUT `/preferencias-psicologo`** — campos booleanos: `agenda_diaria_email`, `agenda_diaria_whatsapp`, `backup_prontuarios_email`.
 
-**Efeito:** o **cron diário** de e-mails (`/api/cronjob/notificar-agendamentos`) só envia e-mail consolidado ao psicólogo se `notificacoes_consultas_email` estiver ativo; e-mails a pacientes no dia da consulta se `notificacoes_consultas_pacientes_email` estiver ativo. Ou seja: as preferências da tela **afetam** o cron de lembretes do dia, não substituem o lembrete agendado por consulta (aquele usa outro fluxo na criação do agendamento).
+**Telas:** `/configuracoes/preferencias` (alertas para o psicólogo), `/configuracoes/comunicacao` (WhatsApp + notificações para pacientes, Pro), plano em `/perfil?tab=plano`.
+
+**Crons (token `AGENDAMENTOS_ROUTE_TOKEN`):**
+
+- **`/cronjob/agenda-diaria-psicologo`** — agenda do dia por e-mail/WhatsApp (só se houver consultas).
+- **`/cronjob/backup-prontuarios-psicologo`** — dia 1º: ZIP com prontuários do mês anterior (e-mail até 25 MB; acima disso WhatsApp).
 
 ---
 
@@ -261,7 +265,7 @@ Manual do bot: `tool_bot_perfil.md` (zona de perigo, fluxo e retenção de dados
 
 | Rota | Função |
 |------|--------|
-| GET `/assinatura/painel` | Assinatura atual + faturas (tela “Plano” em configurações). |
+| GET `/assinatura/painel` | Assinatura atual + faturas (aba “Plano” em Meu Perfil). |
 | POST `/assinatura/iniciar` | Inicia assinatura com `plano_id` e dados do cartão; exige **CPF/CNPJ válido** no perfil (validação Asaas). Inclui período de **trial** conforme `trial_dias` do plano. |
 | POST `/assinatura/cancelar` | Cancela (opcional `motivo_cancelamento`). |
 | POST `/assinatura/pausar` | Pausa cobrança/acesso conforme regra de negócio. |
@@ -319,9 +323,11 @@ Chamadas GET típicas para agendador externo:
 
 | Rota | Função |
 |------|--------|
-| `/cronjob/notificar-agendamentos` | E-mails do **dia**: consolidado para psicólogos (consultas de hoje) e lembrete por paciente; respeita `UserConfig` (e-mail). Timezone America/Sao_Paulo. |
-| `/cronjob/aniversarios` | E-mail de aniversário para pacientes com e-mail e data de nascimento no dia. |
-| `/cronjob/validar-pagamentos` | Registrada no `api.php`, mas **não há método correspondente** em `CronjobController` no código analisado — possível rota quebrada ou pendente de implementação. |
+| `/cronjob/agenda-diaria-psicologo` | Agenda do dia para psicólogos com preferência ativa (e-mail e/ou WhatsApp). Timezone America/Sao_Paulo. |
+| `/cronjob/backup-prontuarios-psicologo` | Dia 1º: backup mensal de prontuários (mês anterior) em ZIP. |
+| `/cronjob/agendamentos-lembrete-consulta` | Lembretes WhatsApp para pacientes no dia da consulta. |
+| `/cronjob/aniversariantes` | Mensagens de aniversário via WhatsApp Evolution. |
+| `/cronjob/datas-comemorativas` | Mensagens de datas comemorativas via WhatsApp Evolution. |
 
 ---
 
