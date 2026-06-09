@@ -300,6 +300,15 @@
     color: var(--primary-color);
 }
 
+.dash-figure-pendente {
+    color: #d97706;
+    font-variant-numeric: tabular-nums;
+}
+
+.app-dark .dash-figure-pendente {
+    color: #fbbf24;
+}
+
 /* Alerta financeiro */
 .dash-alert-negative {
     border-radius: 12px !important;
