@@ -84,19 +84,30 @@
                 <Message severity="warn" class="mb-3" :closable="false">
                     Por privacidade, não inclua o nome nem outros dados que identifiquem o paciente neste texto. Prefira expressões como "o paciente" ou "a pessoa atendida".
                 </Message>
-                <div class="flex flex-wrap align-items-center gap-2 mb-3">
-                    <Button
-                        type="button"
-                        :label="vozGravando ? 'Parar gravação' : vozProcessando ? 'Processando áudio…' : 'Gravar resumo por voz'"
-                        :icon="vozGravando ? 'pi pi-stop' : 'pi pi-microphone'"
-                        :severity="vozGravando ? 'danger' : 'secondary'"
-                        :loading="vozProcessando"
-                        :disabled="vozProcessando"
-                        outlined
-                        @click="onClickGravarResumoVoz"
+                <div class="flex flex-wrap align-items-center gap-2 mb-3 w-full">
+                    <GravadorVozBarra
+                        v-if="vozGravando || vozProcessando"
+                        class="flex-1 min-w-0"
+                        :gravando="vozGravando"
+                        :pausado="vozPausada"
+                        :processando="vozProcessando"
+                        :duracao="vozDuracao"
+                        :niveis="vozNiveis"
+                        @cancelar="cancelarGravacaoVoz"
+                        @alternar-pausa="alternarPausaVoz"
+                        @enviar="enviarGravacaoVoz"
                     />
-                    <Tag v-if="!isPlanoPro" value="PRO" severity="warning" />
-                    <small v-if="vozGravando" class="text-red-500">Gravando… fale o resumo da sessão</small>
+                    <template v-else>
+                        <Button
+                            type="button"
+                            label="Gravar resumo por voz"
+                            icon="pi pi-microphone"
+                            severity="secondary"
+                            outlined
+                            @click="onClickGravarResumoVoz"
+                        />
+                        <Tag v-if="!isPlanoPro" value="PRO" severity="warning" />
+                    </template>
                 </div>
                 <div class="editor-com-ia-wrap">
                     <Editor
@@ -142,6 +153,7 @@
 <script>
 import { Toast } from 'primevue';
 import DialogPlanoPro from '@/components/dialogs/DialogPlanoPro.vue';
+import GravadorVozBarra from '@/components/prontuarios/GravadorVozBarra.vue';
 import prontuarioVozMixin from '@/mixins/prontuarioVozMixin';
 
 const WEBHOOK_MELHORAR_TEXTO_IA =
@@ -153,6 +165,7 @@ export default {
     name: 'DialogEditarProntuario',
     mixins: [prontuarioVozMixin],
     components: {
+        GravadorVozBarra,
         Toast,
         DialogPlanoPro,
         Dialog: () => import('primevue/dialog'),

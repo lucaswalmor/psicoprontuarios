@@ -1,12 +1,23 @@
 import prontuariosService from '@/services/prontuariosService';
 
+const BARRAS_ONDA = 36;
+
 export default {
     data() {
         return {
             vozGravando: false,
+            vozPausada: false,
             vozProcessando: false,
-            mediaRecorder: null,
+            vozDuracao: 0,
+            vozNiveis: [],
             vozChunks: [],
+            mediaRecorder: null,
+            vozStream: null,
+            vozAudioContext: null,
+            vozAnalyser: null,
+            vozAnimationFrame: null,
+            vozTimerInterval: null,
+            vozDescartarAoParar: false,
         };
     },
     methods: {
@@ -15,9 +26,7 @@ export default {
                 this.dialogPlanoProVisible = true;
                 return;
             }
-            if (this.vozGravando) {
-                this.pararGravacaoVoz();
-            } else {
+            if (!this.vozGravando && !this.vozProcessando) {
                 this.iniciarGravacaoVoz();
             }
         },
@@ -34,10 +43,17 @@ export default {
 
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                this.vozStream = stream;
                 this.vozChunks = [];
+                this.vozDuracao = 0;
+                this.vozNiveis = [];
+                this.vozPausada = false;
+                this.vozDescartarAoParar = false;
+
                 const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
                     ? 'audio/webm;codecs=opus'
                     : 'audio/webm';
+
                 this.mediaRecorder = new MediaRecorder(stream, { mimeType });
                 this.mediaRecorder.ondataavailable = (e) => {
                     if (e.data?.size > 0) {
@@ -45,10 +61,15 @@ export default {
                     }
                 };
                 this.mediaRecorder.onstop = () => {
-                    stream.getTracks().forEach((t) => t.stop());
-                    this.enviarAudioProntuario();
+                    this.finalizarStreamVoz();
+                    if (!this.vozDescartarAoParar) {
+                        this.enviarAudioProntuario();
+                    }
+                    this.vozDescartarAoParar = false;
                 };
-                this.mediaRecorder.start();
+
+                this.iniciarMonitoramentoAudio(stream);
+                this.mediaRecorder.start(250);
                 this.vozGravando = true;
             } catch {
                 this.$toast.add({
@@ -59,11 +80,128 @@ export default {
                 });
             }
         },
-        pararGravacaoVoz() {
-            if (this.mediaRecorder && this.vozGravando) {
-                this.mediaRecorder.stop();
-                this.vozGravando = false;
+        iniciarMonitoramentoAudio(stream) {
+            this.pararMonitoramentoAudio(false);
+
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) {
+                return;
             }
+
+            this.vozAudioContext = new AudioCtx();
+            const source = this.vozAudioContext.createMediaStreamSource(stream);
+            this.vozAnalyser = this.vozAudioContext.createAnalyser();
+            this.vozAnalyser.fftSize = 128;
+            this.vozAnalyser.smoothingTimeConstant = 0.75;
+            source.connect(this.vozAnalyser);
+
+            const buffer = new Uint8Array(this.vozAnalyser.frequencyBinCount);
+
+            const atualizarOnda = () => {
+                if (!this.vozGravando || !this.vozAnalyser) {
+                    return;
+                }
+
+                if (!this.vozPausada) {
+                    this.vozAnalyser.getByteFrequencyData(buffer);
+                    const passo = Math.max(1, Math.floor(buffer.length / BARRAS_ONDA));
+                    const barras = [];
+
+                    for (let i = 0; i < BARRAS_ONDA; i++) {
+                        const valor = buffer[i * passo] || 0;
+                        const altura = Math.max(8, Math.min(100, Math.round((valor / 255) * 100)));
+                        barras.push(altura);
+                    }
+
+                    this.vozNiveis = barras;
+                }
+
+                this.vozAnimationFrame = requestAnimationFrame(atualizarOnda);
+            };
+
+            this.vozTimerInterval = setInterval(() => {
+                if (this.vozGravando && !this.vozPausada) {
+                    this.vozDuracao += 1;
+                }
+            }, 1000);
+
+            atualizarOnda();
+        },
+        pararMonitoramentoAudio(limparNiveis = true) {
+            if (this.vozAnimationFrame) {
+                cancelAnimationFrame(this.vozAnimationFrame);
+                this.vozAnimationFrame = null;
+            }
+            if (this.vozTimerInterval) {
+                clearInterval(this.vozTimerInterval);
+                this.vozTimerInterval = null;
+            }
+            if (this.vozAudioContext) {
+                this.vozAudioContext.close().catch(() => {});
+                this.vozAudioContext = null;
+            }
+            this.vozAnalyser = null;
+            if (limparNiveis) {
+                this.vozNiveis = [];
+            }
+        },
+        finalizarStreamVoz() {
+            if (this.vozStream) {
+                this.vozStream.getTracks().forEach((track) => track.stop());
+                this.vozStream = null;
+            }
+            this.pararMonitoramentoAudio();
+            this.vozGravando = false;
+            this.vozPausada = false;
+            this.mediaRecorder = null;
+        },
+        pararGravacaoVoz() {
+            if (!this.mediaRecorder || this.mediaRecorder.state === 'inactive') {
+                return;
+            }
+            if (this.mediaRecorder.state === 'recording' && typeof this.mediaRecorder.requestData === 'function') {
+                this.mediaRecorder.requestData();
+            }
+            this.mediaRecorder.stop();
+        },
+        cancelarGravacaoVoz() {
+            if (!this.vozGravando) {
+                return;
+            }
+            this.vozDescartarAoParar = true;
+            this.vozChunks = [];
+            this.pararGravacaoVoz();
+            this.vozDuracao = 0;
+        },
+        alternarPausaVoz() {
+            if (!this.mediaRecorder || !this.vozGravando) {
+                return;
+            }
+            if (typeof this.mediaRecorder.pause !== 'function' || typeof this.mediaRecorder.resume !== 'function') {
+                return;
+            }
+            if (this.vozPausada) {
+                this.mediaRecorder.resume();
+                this.vozPausada = false;
+            } else {
+                this.mediaRecorder.pause();
+                this.vozPausada = true;
+            }
+        },
+        enviarGravacaoVoz() {
+            if (!this.vozGravando || this.vozProcessando) {
+                return;
+            }
+            if (this.vozDuracao < 1 && this.vozChunks.length === 0) {
+                this.$toast.add({
+                    severity: 'warn',
+                    summary: 'Gravação muito curta',
+                    detail: 'Fale por alguns segundos antes de enviar.',
+                    life: 3500,
+                });
+                return;
+            }
+            this.pararGravacaoVoz();
         },
         resolverPacienteIdVoz() {
             return (
@@ -116,16 +254,21 @@ export default {
             } finally {
                 this.vozProcessando = false;
                 this.vozChunks = [];
+                this.vozDuracao = 0;
             }
         },
         resetVozState() {
-            this.vozGravando = false;
-            this.vozProcessando = false;
-            this.vozChunks = [];
-            if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
-                this.mediaRecorder.stop();
+            if (this.vozGravando) {
+                this.vozDescartarAoParar = true;
+                this.vozChunks = [];
+                this.pararGravacaoVoz();
+            } else {
+                this.finalizarStreamVoz();
             }
-            this.mediaRecorder = null;
+            this.vozProcessando = false;
+            this.vozDuracao = 0;
+            this.vozPausada = false;
+            this.vozChunks = [];
         },
     },
 };

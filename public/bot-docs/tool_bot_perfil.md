@@ -1,5 +1,5 @@
 PsicoProntuários — Manual de Suporte
-Módulo: Perfil — Dados pessoais, Logs, Segurança e exclusão de conta (LGPD)
+Módulo: Perfil — Dados pessoais, Segurança e exclusão de conta (LGPD)
 
 ---
 
@@ -9,23 +9,9 @@ A tela **Perfil** fica no menu do sistema (ícone/avatar do usuário ou item "Pe
 
 A **exclusão de conta** e a **zona de perigo** ficam na aba **Segurança** do Perfil — **não** na tela de Configurações.
 
-A aba **Logs** registra um histórico das **ações que você realizou** no sistema (criar/editar/excluir pacientes, prontuários, financeiro, agendamentos etc.). É um registro para **transparência e controle da sua própria conta** — não inclui simples abertura de telas. Somente você vê esses registros; a equipe de suporte só acessa logs completos pelo painel administrativo, quando necessário.
-
 ---
 
-**2. Aba Logs — o que o psicólogo encontra**
-
-Na aba **Logs** (Perfil) o usuário pode:
-
-- Ver um **histórico cronológico** das alterações feitas por ele (descrição amigável, data e hora).
-- **Filtrar por período** (data inicial e final) pelo botão **Filtros** (painel lateral).
-- Abrir o **detalhe** de cada registro (ícone de olho) para ler a descrição completa.
-
-O que **não** aparece nessa lista: apenas abrir a ficha de um paciente ou navegar em telas — só ações relevantes (cadastros, edições, exclusões, exportações etc.).
-
----
-
-**3. Aba Segurança — o que o psicólogo encontra**
+**2. Aba Segurança — o que o psicólogo encontra**
 
 Na aba Segurança o usuário pode:
 
@@ -35,7 +21,7 @@ Na aba Segurança o usuário pode:
 
 ---
 
-**4. O que é a "zona de perigo"**
+**3. O que é a "zona de perigo"**
 
 A **zona de perigo** é uma área destacada na aba Segurança do Perfil, separada visualmente do restante das opções. Ela reúne ações **irreversíveis ou de alto impacto** — hoje, a principal é **solicitar exclusão permanente da conta**.
 
@@ -48,7 +34,7 @@ A zona de perigo existe para **todos os planos**, inclusive **Vitalício**. O di
 
 ---
 
-**5. Como solicitar exclusão de conta**
+**4. Como solicitar exclusão de conta**
 
 1. Acesse **Perfil → aba Segurança**.
 2. Na **zona de perigo**, clique em **"Solicitar exclusão de conta"**.
@@ -62,7 +48,7 @@ Após confirmar, o sistema envia e-mail de confirmação com a **data prevista**
 
 ---
 
-**6. Período de carência (30 dias)**
+**5. Período de carência (30 dias)**
 
 - A exclusão **não é imediata**: há **30 dias** para o usuário **cancelar a solicitação**.
 - Durante esse período a conta **continua ativa** e o psicólogo pode usar o sistema normalmente.
@@ -71,7 +57,7 @@ Após confirmar, o sistema envia e-mail de confirmação com a **data prevista**
 
 ---
 
-**7. O que acontece com os dados após os 30 dias**
+**6. O que acontece com os dados após os 30 dias**
 
 Quando o prazo vence, o sistema processa a exclusão automaticamente:
 
@@ -90,7 +76,7 @@ Após o processamento, o usuário **não consegue mais entrar** na conta.
 
 ---
 
-**8. Diferença: cancelar plano × excluir conta**
+**7. Diferença: cancelar plano × excluir conta**
 
 | Ação | Onde | Efeito |
 |------|------|--------|
@@ -101,13 +87,7 @@ Oriente o cliente conforme a intenção: parar de pagar ≠ apagar dados pessoai
 
 ---
 
-**9. Perguntas frequentes**
-
-P: Para que serve a aba Logs no Perfil?
-R: É um **histórico das ações que você fez** no sistema (cadastros, edições, exclusões, exportações). Ajuda a revisar o que foi alterado na sua conta. **Não** registra só abrir uma tela ou visualizar um paciente.
-
-P: Outras pessoas veem meus logs?
-R: **Não.** Só você vê a lista resumida no Perfil. A equipe de suporte só acessa detalhes completos pelo painel admin, quando necessário para atendimento.
+**8. Perguntas frequentes**
 
 P: Onde excluo minha conta?
 R: **Perfil → aba Segurança → zona de perigo → Solicitar exclusão de conta.** Não fica em Configurações.
