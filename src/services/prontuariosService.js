@@ -225,12 +225,17 @@ class ProntuariosService {
 
     async transcreverAudio(pacienteId, audioBlob) {
         const formData = new FormData();
-        formData.append('audio', audioBlob, 'resumo-sessao.webm');
+        const mime = audioBlob.type || 'audio/webm';
+        const ext = mime.includes('mp4') ? 'm4a' : mime.includes('ogg') ? 'ogg' : 'webm';
+        formData.append('audio', audioBlob, `resumo-sessao.${ext}`);
 
         const response = await axios.post(
             `/paciente/${pacienteId}/prontuario/transcrever-audio`,
             formData,
-            { headers: { 'Content-Type': 'multipart/form-data' } }
+            {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                timeout: 120000,
+            }
         );
 
         return response.data;

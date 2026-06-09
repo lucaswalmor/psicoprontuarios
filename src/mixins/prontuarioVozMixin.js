@@ -2,6 +2,17 @@ import prontuariosService from '@/services/prontuariosService';
 
 const BARRAS_ONDA = 36;
 
+function resolverMimeGravacao() {
+    const opcoes = [
+        'audio/webm;codecs=opus',
+        'audio/webm',
+        'audio/mp4',
+        'audio/ogg;codecs=opus',
+        '',
+    ];
+    return opcoes.find((tipo) => !tipo || MediaRecorder.isTypeSupported(tipo)) || '';
+}
+
 export default {
     data() {
         return {
@@ -11,6 +22,7 @@ export default {
             vozDuracao: 0,
             vozNiveis: [],
             vozChunks: [],
+            vozMimeType: 'audio/webm',
             mediaRecorder: null,
             vozStream: null,
             vozAudioContext: null,
@@ -42,25 +54,36 @@ export default {
             }
 
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true,
+                    },
+                });
+
                 this.vozStream = stream;
                 this.vozChunks = [];
                 this.vozDuracao = 0;
-                this.vozNiveis = [];
+                this.vozNiveis = Array(BARRAS_ONDA).fill(12);
                 this.vozPausada = false;
                 this.vozDescartarAoParar = false;
+                this.vozGravando = true;
 
-                const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-                    ? 'audio/webm;codecs=opus'
-                    : 'audio/webm';
+                const mimeType = resolverMimeGravacao();
+                this.vozMimeType = mimeType || 'audio/webm';
 
-                this.mediaRecorder = new MediaRecorder(stream, { mimeType });
+                const opcoesRecorder = mimeType ? { mimeType } : undefined;
+                this.mediaRecorder = new MediaRecorder(stream, opcoesRecorder);
                 this.mediaRecorder.ondataavailable = (e) => {
                     if (e.data?.size > 0) {
                         this.vozChunks.push(e.data);
                     }
                 };
                 this.mediaRecorder.onstop = () => {
+                    if (this.mediaRecorder?.mimeType) {
+                        this.vozMimeType = this.mediaRecorder.mimeType;
+                    }
                     this.finalizarStreamVoz();
                     if (!this.vozDescartarAoParar) {
                         this.enviarAudioProntuario();
@@ -68,10 +91,10 @@ export default {
                     this.vozDescartarAoParar = false;
                 };
 
-                this.iniciarMonitoramentoAudio(stream);
-                this.mediaRecorder.start(250);
-                this.vozGravando = true;
+                await this.iniciarMonitoramentoAudio(stream);
+                this.mediaRecorder.start(200);
             } catch {
+                this.vozGravando = false;
                 this.$toast.add({
                     severity: 'error',
                     summary: 'Permissão negada',
@@ -80,7 +103,7 @@ export default {
                 });
             }
         },
-        iniciarMonitoramentoAudio(stream) {
+        async iniciarMonitoramentoAudio(stream) {
             this.pararMonitoramentoAudio(false);
 
             const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -89,13 +112,17 @@ export default {
             }
 
             this.vozAudioContext = new AudioCtx();
+            if (this.vozAudioContext.state === 'suspended') {
+                await this.vozAudioContext.resume();
+            }
+
             const source = this.vozAudioContext.createMediaStreamSource(stream);
             this.vozAnalyser = this.vozAudioContext.createAnalyser();
-            this.vozAnalyser.fftSize = 128;
-            this.vozAnalyser.smoothingTimeConstant = 0.75;
+            this.vozAnalyser.fftSize = 256;
+            this.vozAnalyser.smoothingTimeConstant = 0.55;
             source.connect(this.vozAnalyser);
 
-            const buffer = new Uint8Array(this.vozAnalyser.frequencyBinCount);
+            const buffer = new Uint8Array(this.vozAnalyser.fftSize);
 
             const atualizarOnda = () => {
                 if (!this.vozGravando || !this.vozAnalyser) {
@@ -103,13 +130,15 @@ export default {
                 }
 
                 if (!this.vozPausada) {
-                    this.vozAnalyser.getByteFrequencyData(buffer);
-                    const passo = Math.max(1, Math.floor(buffer.length / BARRAS_ONDA));
+                    this.vozAnalyser.getByteTimeDomainData(buffer);
+
                     const barras = [];
+                    const passo = Math.max(1, Math.floor(buffer.length / BARRAS_ONDA));
 
                     for (let i = 0; i < BARRAS_ONDA; i++) {
-                        const valor = buffer[i * passo] || 0;
-                        const altura = Math.max(8, Math.min(100, Math.round((valor / 255) * 100)));
+                        const amostra = buffer[i * passo] || 128;
+                        const amplitude = Math.abs(amostra - 128) / 128;
+                        const altura = Math.max(10, Math.min(100, Math.round(amplitude * 220)));
                         barras.push(altura);
                     }
 
@@ -183,6 +212,9 @@ export default {
             if (this.vozPausada) {
                 this.mediaRecorder.resume();
                 this.vozPausada = false;
+                if (this.vozAudioContext?.state === 'suspended') {
+                    this.vozAudioContext.resume().catch(() => {});
+                }
             } else {
                 this.mediaRecorder.pause();
                 this.vozPausada = true;
@@ -192,7 +224,9 @@ export default {
             if (!this.vozGravando || this.vozProcessando) {
                 return;
             }
-            if (this.vozDuracao < 1 && this.vozChunks.length === 0) {
+
+            const totalBytes = this.vozChunks.reduce((acc, chunk) => acc + (chunk?.size || 0), 0);
+            if (totalBytes < 500 && this.vozDuracao < 1) {
                 this.$toast.add({
                     severity: 'warn',
                     summary: 'Gravação muito curta',
@@ -201,6 +235,7 @@ export default {
                 });
                 return;
             }
+
             this.pararGravacaoVoz();
         },
         resolverPacienteIdVoz() {
@@ -219,7 +254,19 @@ export default {
             }
 
             this.vozProcessando = true;
-            const blob = new Blob(this.vozChunks, { type: 'audio/webm' });
+            const mime = this.vozMimeType || 'audio/webm';
+            const blob = new Blob(this.vozChunks, { type: mime });
+
+            if (blob.size < 200) {
+                this.vozProcessando = false;
+                this.$toast.add({
+                    severity: 'warn',
+                    summary: 'Áudio vazio',
+                    detail: 'Não captamos som do microfone. Verifique permissões e o dispositivo de entrada.',
+                    life: 5000,
+                });
+                return;
+            }
 
             try {
                 const { data } = await prontuariosService.transcreverAudio(pacienteId, blob);
@@ -249,7 +296,7 @@ export default {
                     severity: 'error',
                     summary: 'Erro',
                     detail: msg,
-                    life: 5000,
+                    life: 6000,
                 });
             } finally {
                 this.vozProcessando = false;
