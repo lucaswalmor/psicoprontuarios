@@ -68,7 +68,6 @@ O produto é um sistema web para **psicólogos** gerenciarem **pacientes**, **pr
 | `/financeiro/novo`, `/financeiro/editar/:id` | Lançamento financeiro. |
 | `/configuracoes` | Abas: Plano (Asaas), Segurança (senha), Preferências (notificações e-mail/WhatsApp). |
 | `/perfil` | Perfil do psicólogo. |
-| `/faq` | Página de FAQ (tenta carregar da API). |
 | `/pagamento` | Tela quando a conta está **inativa** (assinatura/pagamento): reativar, atualizar cartão ou ir a planos. |
 | `/modelos-arquivos` | Download de modelos `.docx` estáticos (contrato, encaminhamento, etc.) — **sem** chamada à API. |
 | `/uikit/*`, `/pages/*`, `/documentation` | Demonstrações/templates Sakai; não são funcionalidades de negócio. |
@@ -310,14 +309,7 @@ O **login** também pode retornar flag de NPS conforme a mesma regra de 3 meses.
 
 ---
 
-## 16. FAQ dentro do sistema
-
-- **Frontend:** `/faq` usa `faqService`: `GET /faq`, `/faq/categoria/{categoria}`, `/faq/buscar?termo=`, `/faq/{id}`.
-- **Backend:** existe `FaqController` completo, mas **no `api.php` não há `Route` registrada para o FaqController** (apenas `use` importado). Se a página falhar ao carregar, a causa provável é **rotas FAQ não publicadas** na API.
-
----
-
-## 17. Cronjobs (API, sem auth no grupo atual)
+## 16. Cronjobs (API, sem auth no grupo atual)
 
 Chamadas GET típicas para agendador externo:
 

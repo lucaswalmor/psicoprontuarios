@@ -14,51 +14,69 @@
                         <ProgressSpinner />
                     </div>
 
-                    <div v-else class="flex flex-column gap-3">
-                        <div class="surface-card p-4 border-round flex align-items-center justify-content-between gap-3 flex-wrap">
-                            <div class="flex-1 min-w-0">
-                                <h6 class="m-0 mb-1">Agenda diária por e-mail</h6>
-                                <p class="text-sm text-color-secondary m-0">
+                    <div v-else class="grid">
+                        <div class="col-12 md:col-4">
+                            <div class="pref-card surface-card border-round-xl p-4 h-full flex flex-column">
+                                <div class="pref-card__icon pref-card__icon--email">
+                                    <i class="pi pi-envelope" />
+                                </div>
+                                <h6 class="pref-card__title">Agenda diária por e-mail</h6>
+                                <p class="pref-card__text flex-1">
                                     Receba todas as manhãs a lista das consultas do dia (somente quando houver consultas).
                                 </p>
+                                <div class="pref-card__toggle">
+                                    <InputSwitch
+                                        v-model="preferencias.agenda_diaria_email"
+                                        :disabled="saving"
+                                        @change="salvar"
+                                    />
+                                </div>
                             </div>
-                            <InputSwitch
-                                v-model="preferencias.agenda_diaria_email"
-                                :disabled="saving"
-                                @change="salvar"
-                            />
                         </div>
 
-                        <div class="surface-card p-4 border-round flex align-items-center justify-content-between gap-3 flex-wrap">
-                            <div class="flex-1 min-w-0">
-                                <h6 class="m-0 mb-1">Agenda diária por WhatsApp</h6>
-                                <p class="text-sm text-color-secondary m-0">
+                        <div class="col-12 md:col-4">
+                            <div
+                                class="pref-card surface-card border-round-xl p-4 h-full flex flex-column"
+                                :class="{ 'pref-card--disabled': !evolutionConectado }"
+                            >
+                                <div class="pref-card__icon pref-card__icon--whatsapp">
+                                    <i class="pi pi-whatsapp" />
+                                </div>
+                                <h6 class="pref-card__title">Agenda diária por WhatsApp</h6>
+                                <p class="pref-card__text flex-1">
                                     Receba a agenda do dia no seu WhatsApp (requer WhatsApp conectado em Comunicação).
                                 </p>
-                                <p v-if="!evolutionConectado" class="text-danger text-sm mt-2 mb-0">
+                                <p v-if="!evolutionConectado" class="pref-card__alert">
                                     Configure e conecte o WhatsApp em Comunicação para habilitar este envio.
                                 </p>
+                                <div class="pref-card__toggle">
+                                    <InputSwitch
+                                        v-model="preferencias.agenda_diaria_whatsapp"
+                                        :disabled="saving || !evolutionConectado"
+                                        @change="salvar"
+                                    />
+                                </div>
                             </div>
-                            <InputSwitch
-                                v-model="preferencias.agenda_diaria_whatsapp"
-                                :disabled="saving || !evolutionConectado"
-                                @change="salvar"
-                            />
                         </div>
 
-                        <div class="surface-card p-4 border-round flex align-items-center justify-content-between gap-3 flex-wrap">
-                            <div class="flex-1 min-w-0">
-                                <h6 class="m-0 mb-1">Backup mensal de prontuários</h6>
-                                <p class="text-sm text-color-secondary m-0">
+                        <div class="col-12 md:col-4">
+                            <div class="pref-card surface-card border-round-xl p-4 h-full flex flex-column">
+                                <div class="pref-card__icon pref-card__icon--backup">
+                                    <i class="pi pi-file-export" />
+                                </div>
+                                <h6 class="pref-card__title">Backup mensal de prontuários</h6>
+                                <p class="pref-card__text flex-1">
                                     No dia 1º de cada mês, receba por e-mail um ZIP com os prontuários do mês anterior
                                     (uma pasta por paciente). Arquivos acima de 25 MB são enviados pelo WhatsApp.
                                 </p>
+                                <div class="pref-card__toggle">
+                                    <InputSwitch
+                                        v-model="preferencias.backup_prontuarios_email"
+                                        :disabled="saving"
+                                        @change="salvar"
+                                    />
+                                </div>
                             </div>
-                            <InputSwitch
-                                v-model="preferencias.backup_prontuarios_email"
-                                :disabled="saving"
-                                @change="salvar"
-                            />
                         </div>
                     </div>
                 </div>
@@ -161,5 +179,72 @@ export default {
 <style scoped>
 .config-tab-body {
     min-height: 200px;
+}
+
+.pref-card {
+    border: 1px solid var(--surface-border);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    gap: 0.75rem;
+}
+
+.pref-card:hover {
+    border-color: color-mix(in srgb, var(--primary-color) 25%, var(--surface-border));
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--primary-color) 8%, transparent);
+}
+
+.pref-card--disabled {
+    opacity: 0.92;
+}
+
+.pref-card__icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+}
+
+.pref-card__icon--email {
+    background: color-mix(in srgb, var(--primary-color) 12%, var(--surface-ground));
+    color: var(--primary-color);
+}
+
+.pref-card__icon--whatsapp {
+    background: color-mix(in srgb, #25d366 15%, var(--surface-ground));
+    color: #128c7e;
+}
+
+.pref-card__icon--backup {
+    background: color-mix(in srgb, var(--orange-500, #f59e0b) 15%, var(--surface-ground));
+    color: var(--orange-600, #d97706);
+}
+
+.pref-card__title {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.pref-card__text {
+    margin: 0;
+    color: var(--text-color-secondary);
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.pref-card__alert {
+    margin: 0;
+    color: var(--red-500, #ef4444);
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
+.pref-card__toggle {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 0.25rem;
 }
 </style>

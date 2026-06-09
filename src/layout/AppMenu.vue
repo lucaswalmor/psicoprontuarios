@@ -34,7 +34,7 @@
                         </a>
                     </router-link>
 
-                    <!-- Receitas / Despesas (filhos do Financeiro): mesmo slot, root === false -->
+                    <!-- Subitens de painel (Financeiro, Configurações, etc.) -->
                     <router-link
                         v-else-if="item.to && !item.items && !root"
                         v-slot="{ href, navigate, isActive }"
@@ -43,16 +43,16 @@
                     >
                         <a
                             :href="href"
-                            class="app-nav-entry app-nav-entry--link app-nav-entry--finance-sub flex align-items-center w-full"
+                            class="app-nav-entry app-nav-entry--link app-nav-entry--submenu flex align-items-center w-full"
                             :class="{ 'app-nav-entry--active': isActive, 'active-route': isActive }"
                             :aria-current="isActive ? 'page' : undefined"
                             @click="navigate"
                         >
-                            <div class="menu-item-row menu-item-row--finance-sub">
-                                <span class="app-nav-entry__icon-wrap app-nav-entry__icon-wrap--finance-sub">
+                            <div class="menu-item-row menu-item-row--submenu">
+                                <span class="app-nav-entry__icon-wrap app-nav-entry__icon-wrap--submenu">
                                     <i :class="['layout-menuitem-icon', item.icon]" />
                                 </span>
-                                <div class="menu-label-row menu-label-row--finance-sub">
+                                <div class="menu-label-row menu-label-row--submenu">
                                     <span class="layout-menuitem-text app-nav-entry__label">{{ item.label }}</span>
                                     <Tag
                                         v-if="item.proTag"
@@ -178,7 +178,6 @@ export default {
                     items: [
                         { label: 'Preferências', icon: 'pi pi-sliders-h', to: '/configuracoes/preferencias' },
                         { label: 'Comunicação', icon: 'pi pi-whatsapp', to: '/configuracoes/comunicacao', proTag: true },
-                        { label: 'FAQ', icon: 'pi pi-question-circle', to: '/faq' },
                     ]
                 },
                 {
@@ -268,39 +267,42 @@ export default {
     padding: 0.55rem 0.65rem;
 }
 
-/* Receitas / Despesas: filhos do Financeiro (slot com root === false) */
-.app-nav-entry--finance-sub {
+/* Subitens de painel (Financeiro, Configurações, etc.) */
+.app-nav-entry--submenu {
     padding: 0 !important;
 }
 
-.app-nav-entry--finance-sub .menu-item-row--finance-sub {
-    padding: 0.3rem 0.45rem 0.3rem 0.3rem;
+.app-nav-entry--submenu .menu-item-row--submenu {
+    padding: 0.55rem 0.65rem;
+    gap: 0.65rem;
+    width: 100%;
+}
+
+.app-nav-entry--submenu .menu-label-row--submenu {
     gap: 0.5rem;
 }
 
-.app-nav-entry--finance-sub .menu-label-row--finance-sub {
-    gap: 0.35rem;
+.app-nav-entry__icon-wrap--submenu {
+    width: 2.25rem;
+    height: 2.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
-.app-nav-entry__icon-wrap--finance-sub {
-    width: 2rem;
-    height: 2rem;
-}
-
-.app-nav-entry__icon-wrap--finance-sub .layout-menuitem-icon.pi {
-    display: inline-grid;
-    place-items: center;
+.app-nav-entry__icon-wrap--submenu .layout-menuitem-icon.pi {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     height: 100%;
-    line-height: 0;
-}
-
-.app-nav-entry__icon-wrap--finance-sub .layout-menuitem-icon.pi::before {
     line-height: 1;
+    margin: 0;
 }
 
-.app-nav-entry--finance-sub .app-nav-entry__label {
-    font-size: 0.875rem;
+.app-nav-entry--submenu .app-nav-entry__label {
+    font-size: 0.9375rem;
     font-weight: 500;
 }
 
@@ -470,10 +472,10 @@ export default {
     padding: 0;
 }
 
-/* Itens sob Financeiro: lista raiz do painel (não usa .p-panelmenu-submenu) */
+/* Subitens de painel — sem recuo lateral para alinhar ícones ao menu principal */
 .app-nav-panelmenu :deep(.p-panelmenu-root-list) {
     margin: 0;
-    padding: 0 0 0 0.35rem !important;
+    padding: 0 !important;
     border-left: none;
     list-style: none;
     width: 100%;
@@ -481,7 +483,7 @@ export default {
 
 .app-nav-panelmenu :deep(.p-panelmenu-submenu) {
     margin: 0;
-    padding: 0.15rem 0 0 0.35rem !important;
+    padding: 0.15rem 0 0 !important;
     border-left: none;
     list-style: none;
     width: 100%;
