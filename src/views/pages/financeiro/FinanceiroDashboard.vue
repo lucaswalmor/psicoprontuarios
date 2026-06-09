@@ -205,10 +205,11 @@
                             </span>
                             <span class="font-bold dash-figure-pendente">R$ {{ formatarValor(dados.receitas_em_aberto.total_valor) }}</span>
                         </div>
-                        <div
+                        <router-link
                             v-for="(item, index) in dados.receitas_em_aberto.itens"
                             :key="item.id"
-                            class="dash-list-row flex justify-content-between align-items-center p-3"
+                            :to="rotaReceitaEmAberto(item.id)"
+                            class="dash-list-row dash-list-row--link flex justify-content-between align-items-center p-3 no-underline"
                             :class="{ 'border-bottom-1 border-200': index < dados.receitas_em_aberto.itens.length - 1 }"
                         >
                             <div class="flex flex-column gap-1 min-w-0 pr-3">
@@ -217,8 +218,11 @@
                                 </span>
                                 <span class="text-sm text-500">{{ formatarDataItem(item.data) }}</span>
                             </div>
-                            <span class="font-bold dash-figure-pendente flex-shrink-0">R$ {{ formatarValor(item.valor) }}</span>
-                        </div>
+                            <span class="flex align-items-center gap-2 flex-shrink-0">
+                                <span class="font-bold dash-figure-pendente">R$ {{ formatarValor(item.valor) }}</span>
+                                <i class="pi pi-angle-right text-400 text-sm"></i>
+                            </span>
+                        </router-link>
                         <div
                             v-if="dados.receitas_em_aberto.quantidade > (dados.receitas_em_aberto.itens?.length || 0)"
                             class="text-center py-2 px-3 text-sm text-500 border-top-1 border-200"
@@ -559,6 +563,12 @@ export default {
                 return `${dia}/${mes}/${ano}`;
             }
             return data;
+        },
+        rotaReceitaEmAberto(id) {
+            return {
+                path: `/financeiro/editar/${id}`,
+                query: { from: 'dashboard' },
+            };
         },
         async carregarDados(filtrosAdicionais = {}) {
             try {

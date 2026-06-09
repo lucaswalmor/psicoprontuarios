@@ -291,6 +291,17 @@
     background: color-mix(in srgb, var(--dc-accent) 6%, var(--surface-card));
 }
 
+.dash-list-row--link {
+    cursor: pointer;
+    color: inherit;
+    text-decoration: none;
+    display: flex;
+}
+
+.dash-list-row--link:hover .pi-angle-right {
+    color: var(--primary-color) !important;
+}
+
 .dash-figure-accent {
     color: var(--dc-accent-deep);
     font-variant-numeric: tabular-nums;
