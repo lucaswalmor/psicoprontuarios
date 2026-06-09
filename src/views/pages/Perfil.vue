@@ -14,6 +14,10 @@
                             <i class="pi pi-lock mr-2"></i>
                             Segurança
                         </Tab>
+                        <Tab value="2">
+                            <i class="pi pi-list mr-2"></i>
+                            Logs
+                        </Tab>
                     </TabList>
                     <TabPanels>
                         <!-- Aba de Dados Pessoais -->
@@ -214,6 +218,10 @@
                                 </div>
                             </div>
                         </TabPanel>
+
+                        <TabPanel value="2">
+                            <PerfilLogsTab />
+                        </TabPanel>
                     </TabPanels>
                 </Tabs>
             </div>
@@ -257,6 +265,7 @@ import DialogChangePassword from '@/components/dialogs/configuracoes/DialogChang
 import DialogEditEmail from '@/components/dialogs/configuracoes/DialogEditEmail.vue';
 import DialogEditPhone from '@/components/dialogs/configuracoes/DialogEditPhone.vue';
 import DialogExclusaoConta from '@/components/dialogs/configuracoes/DialogExclusaoConta.vue';
+import PerfilLogsTab from '@/components/perfil/PerfilLogsTab.vue';
 import Message from 'primevue/message';
 import Tabs from 'primevue/tabs';
 import TabList from 'primevue/tablist';
@@ -271,6 +280,7 @@ export default {
         DialogEditEmail,
         DialogEditPhone,
         DialogExclusaoConta,
+        PerfilLogsTab,
         Message,
         Tabs,
         TabList,

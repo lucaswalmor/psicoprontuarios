@@ -30,9 +30,22 @@ Alguns dialogs legados usam `<script setup>` — não replicar em dialogs novos 
 - Componentes em `src/components/tour/`
 - **Armadilha:** `exit()` não encerra overlay — usar `@finish` + `finish()` + flag `dismissed`
 
-# Drawers
+# Drawers — filtros laterais
 
-Filtros laterais em `src/components/drawers/` (pacientes, financeiro).
+Filtros em `src/components/drawers/` (pacientes, financeiro, logs do perfil).
+
+## Padrão obrigatório (listagens com filtro)
+
+1. **Botão "Filtros"** (`severity="secondary"`, `icon="pi pi-filter"`) abre um **Drawer** à direita (`position="right"`).
+2. Com filtros ativos, trocar para **"Limpar Filtros"** (`severity="danger"`) — igual `ListaPacientes.vue` e `FinanceiroLista.vue`.
+3. Componente dedicado em `src/components/drawers/DrawerFilter*.vue`:
+   - prop `visible` + `@update:visible`
+   - emit do filtro aplicado (ex.: `@filtrarPacientes`, `@filtrarLogs`)
+   - botões **Limpar** (dentro do drawer) e **Filtrar**
+4. **Persistência:** salvar filtros aplicados no `localStorage` via `src/utils/filterStorage.js` (`loadStoredFilters`, `saveStoredFilters`, `clearStoredFilters`). Chave por tela, ex.: `perfil-logs`, `pacientes-lista`.
+5. Ao montar a tela, restaurar filtros do cache antes da primeira requisição.
+
+Referência: `DrawerFilterPacientes.vue`, `DrawerFilterFinanceiro.vue`, `DrawerFilterLogsPerfil.vue`.
 
 # Armadilhas
 
