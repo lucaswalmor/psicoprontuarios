@@ -494,7 +494,14 @@ export default {
         },
         'form.forma_divisao'() {
             this.atualizarParcelas();
-        }
+        },
+        'form.paga'(paga) {
+            if (paga) {
+                this.form.data_pagamento = dataPadraoLancamento();
+            } else {
+                this.form.data_pagamento = null;
+            }
+        },
     },
     async mounted() {
         await this.carregarCategorias();
@@ -613,6 +620,8 @@ export default {
                 // Converter data_pagamento para Date object para o DatePicker
                 if (transacao.data_pagamento) {
                     this.form.data_pagamento = new Date(transacao.data_pagamento);
+                } else if (transacao.paga) {
+                    this.form.data_pagamento = dataPadraoLancamento();
                 } else {
                     this.form.data_pagamento = null;
                 }
