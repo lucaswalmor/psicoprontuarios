@@ -6,7 +6,7 @@
                     <div class="col-12 mb-4">
                         <h5>Preferências</h5>
                         <p class="text-color-secondary m-0">
-                            Configure alertas enviados para você — agenda do dia e backup mensal de prontuários.
+                            Configure alertas para você, backup de prontuários e lembretes automáticos enviados aos pacientes.
                         </p>
                     </div>
 
@@ -15,7 +15,7 @@
                     </div>
 
                     <div v-else class="grid">
-                        <div class="col-12 md:col-4">
+                        <div class="col-12 md:col-6 xl:col-3">
                             <div class="pref-card surface-card border-round-xl p-4 h-full flex flex-column">
                                 <div class="pref-card__icon pref-card__icon--email">
                                     <i class="pi pi-envelope" />
@@ -34,7 +34,7 @@
                             </div>
                         </div>
 
-                        <div class="col-12 md:col-4">
+                        <div class="col-12 md:col-6 xl:col-3">
                             <div
                                 class="pref-card surface-card border-round-xl p-4 h-full flex flex-column"
                                 :class="{ 'pref-card--disabled': !evolutionConectado }"
@@ -59,7 +59,7 @@
                             </div>
                         </div>
 
-                        <div class="col-12 md:col-4">
+                        <div class="col-12 md:col-6 xl:col-3">
                             <div class="pref-card surface-card border-round-xl p-4 h-full flex flex-column">
                                 <div class="pref-card__icon pref-card__icon--backup">
                                     <i class="pi pi-file-export" />
@@ -73,6 +73,32 @@
                                     <InputSwitch
                                         v-model="preferencias.backup_prontuarios_email"
                                         :disabled="saving"
+                                        @change="salvar"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 md:col-6 xl:col-3">
+                            <div
+                                class="pref-card surface-card border-round-xl p-4 h-full flex flex-column"
+                                :class="{ 'pref-card--disabled': !evolutionConectado }"
+                            >
+                                <div class="pref-card__icon pref-card__icon--paciente">
+                                    <i class="pi pi-bell" />
+                                </div>
+                                <h6 class="pref-card__title">Lembrete de consulta para pacientes</h6>
+                                <p class="pref-card__text flex-1">
+                                    Envia WhatsApp no dia da consulta para pacientes que aceitaram receber lembretes
+                                    (campo marcado no agendamento).
+                                </p>
+                                <p v-if="!evolutionConectado" class="pref-card__alert">
+                                    Configure e conecte o WhatsApp em Comunicação para habilitar este envio.
+                                </p>
+                                <div class="pref-card__toggle">
+                                    <InputSwitch
+                                        v-model="preferencias.lembrete_consulta_paciente_whatsapp"
+                                        :disabled="saving || !evolutionConectado"
                                         @change="salvar"
                                     />
                                 </div>
@@ -106,6 +132,7 @@ export default {
                 agenda_diaria_email: false,
                 agenda_diaria_whatsapp: false,
                 backup_prontuarios_email: false,
+                lembrete_consulta_paciente_whatsapp: true,
             },
         };
     },
@@ -124,6 +151,7 @@ export default {
                     agenda_diaria_email: !!dados.agenda_diaria_email,
                     agenda_diaria_whatsapp: !!dados.agenda_diaria_whatsapp,
                     backup_prontuarios_email: !!dados.backup_prontuarios_email,
+                    lembrete_consulta_paciente_whatsapp: dados.lembrete_consulta_paciente_whatsapp !== false,
                 };
             } catch (error) {
                 this.$toast.add({
@@ -219,6 +247,11 @@ export default {
 .pref-card__icon--backup {
     background: color-mix(in srgb, var(--orange-500, #f59e0b) 15%, var(--surface-ground));
     color: var(--orange-600, #d97706);
+}
+
+.pref-card__icon--paciente {
+    background: color-mix(in srgb, var(--blue-500, #3b82f6) 15%, var(--surface-ground));
+    color: var(--blue-600, #2563eb);
 }
 
 .pref-card__title {
