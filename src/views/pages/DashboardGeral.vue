@@ -384,7 +384,7 @@
                                                 </div>
                                             </div>
                                             <Button icon="pi pi-eye" rounded outlined size="small"
-                                                @click="$router.push({ path: `/pacientes/ficha/${prontuario.paciente_id}`, query: { tab: '1' } })" />
+                                                @click="$router.push(`/pacientes/ficha/${prontuario.paciente_id}/prontuarios`)" />
                                         </div>
                                     </div>
                                     <div v-else class="text-center p-4 text-gray-500">

@@ -1,0 +1,66 @@
+.ficha-page.card {
+    padding: 2rem;
+}
+
+.ficha-area-card {
+    border: 1px solid var(--surface-border);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.ficha-area-card:hover {
+    border-color: color-mix(in srgb, var(--primary-color) 25%, var(--surface-border));
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--primary-color) 8%, transparent);
+    transform: translateY(-2px);
+}
+
+.ficha-area-card__icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+}
+
+.ficha-area-card__title {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.ficha-area-card__text {
+    margin: 0;
+    color: var(--text-color-secondary);
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.ficha-area-card__badge {
+    margin: 0;
+    color: var(--text-color-secondary);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.ficha-stat-card {
+    border: 1px solid var(--surface-border);
+}
+
+.ficha-stat-card__label {
+    display: block;
+    color: var(--text-color-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 0.35rem;
+}
+
+.ficha-stat-card__value {
+    color: var(--text-color);
+    font-size: 1.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+}

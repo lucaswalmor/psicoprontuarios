@@ -101,8 +101,7 @@ const router = createRouter({
                 },
                 {
                     path: '/pacientes/prontuarios/:pacienteId',
-                    name: 'Prontuários do Paciente',
-                    component: () => import('@/views/pages/pacientes/ListaProntuarios.vue')
+                    redirect: (to) => `/pacientes/ficha/${to.params.pacienteId}/prontuarios`
                 },
                 {
                     path: '/pacientes/anexos',
@@ -111,13 +110,52 @@ const router = createRouter({
                 },
                 {
                     path: '/pacientes/anexos/:id',
-                    name: 'Anexos do Paciente',
-                    component: () => import('@/views/pages/pacientes/ListaAnexos.vue')
+                    redirect: (to) => `/pacientes/ficha/${to.params.id}/anexos`
                 },
                 {
                     path: '/pacientes/ficha/:id',
                     name: 'Ficha do Paciente',
-                    component: () => import('@/views/pages/pacientes/FichaPaciente.vue')
+                    component: () => import('@/views/pages/pacientes/ficha/FichaPacienteHub.vue'),
+                    beforeEnter(to) {
+                        const tabParam = to.query.tab;
+                        if (tabParam === undefined) return true;
+                        const tabMap = { 0: 'dados', 1: 'prontuarios', 2: 'sessoes', 3: 'anexos', 4: 'anamnese', 5: 'evolucao' };
+                        const secao = tabMap[parseInt(tabParam, 10)];
+                        if (secao) {
+                            return `/pacientes/ficha/${to.params.id}/${secao}`;
+                        }
+                        return true;
+                    }
+                },
+                {
+                    path: '/pacientes/ficha/:id/dados',
+                    name: 'FichaPacienteDados',
+                    component: () => import('@/views/pages/pacientes/ficha/FichaPacienteDados.vue')
+                },
+                {
+                    path: '/pacientes/ficha/:id/prontuarios',
+                    name: 'FichaPacienteProntuarios',
+                    component: () => import('@/views/pages/pacientes/ficha/FichaPacienteProntuarios.vue')
+                },
+                {
+                    path: '/pacientes/ficha/:id/sessoes',
+                    name: 'FichaPacienteSessoes',
+                    component: () => import('@/views/pages/pacientes/ficha/FichaPacienteSessoes.vue')
+                },
+                {
+                    path: '/pacientes/ficha/:id/anexos',
+                    name: 'FichaPacienteAnexos',
+                    component: () => import('@/views/pages/pacientes/ficha/FichaPacienteAnexos.vue')
+                },
+                {
+                    path: '/pacientes/ficha/:id/anamnese',
+                    name: 'FichaPacienteAnamnese',
+                    component: () => import('@/views/pages/pacientes/ficha/FichaPacienteAnamnese.vue')
+                },
+                {
+                    path: '/pacientes/ficha/:id/evolucao',
+                    name: 'FichaPacienteEvolucao',
+                    component: () => import('@/views/pages/pacientes/ficha/FichaPacienteEvolucao.vue')
                 },
                 {
                     path: '/configuracoes',

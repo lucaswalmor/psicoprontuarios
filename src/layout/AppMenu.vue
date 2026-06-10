@@ -6,15 +6,15 @@
                     <!-- Navegação principal: rota direta (não é filho de painel com submenu) -->
                     <router-link
                         v-if="item.to && !item.items && root"
-                        v-slot="{ href, navigate, isActive }"
+                        v-slot="{ href, navigate }"
                         :to="item.to"
                         custom
                     >
                         <a
                             :href="href"
                             class="app-nav-entry app-nav-entry--link flex align-items-center w-full"
-                            :class="{ 'app-nav-entry--active': isActive, 'active-route': isActive }"
-                            :aria-current="isActive ? 'page' : undefined"
+                            :class="{ 'app-nav-entry--active': isRouteActive(item.to), 'active-route': isRouteActive(item.to) }"
+                            :aria-current="isRouteActive(item.to) ? 'page' : undefined"
                             @click="navigate"
                         >
                             <div class="menu-item-row">
@@ -37,15 +37,15 @@
                     <!-- Subitens de painel (Financeiro, Configurações, etc.) -->
                     <router-link
                         v-else-if="item.to && !item.items && !root"
-                        v-slot="{ href, navigate, isActive }"
+                        v-slot="{ href, navigate }"
                         :to="item.to"
                         custom
                     >
                         <a
                             :href="href"
                             class="app-nav-entry app-nav-entry--link app-nav-entry--submenu flex align-items-center w-full"
-                            :class="{ 'app-nav-entry--active': isActive, 'active-route': isActive }"
-                            :aria-current="isActive ? 'page' : undefined"
+                            :class="{ 'app-nav-entry--active': isRouteActive(item.to), 'active-route': isRouteActive(item.to) }"
+                            :aria-current="isRouteActive(item.to) ? 'page' : undefined"
                             @click="navigate"
                         >
                             <div class="menu-item-row menu-item-row--submenu">
@@ -242,6 +242,12 @@ export default {
             if (this.layoutComposable) {
                 this.layoutComposable.toggleDarkMode();
             }
+        },
+
+        isRouteActive(to) {
+            if (!to) return false;
+            const current = this.$route.path;
+            return current === to || current.startsWith(to + '/');
         }
     },
     mounted() {
