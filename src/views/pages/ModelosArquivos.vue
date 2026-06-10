@@ -7,56 +7,56 @@
                 <div class="col-12 mb-4 p-4 pb-0" data-tour="tour-modelos-intro">
                     <h5>Modelos de Arquivos</h5>
                     <p class="text-color-secondary m-0">
-                        Documentos prontos para uso na sua prática clínica. Clique em um card ou use o botão <strong>Baixar</strong>.
+                        Documentos prontos para uso na sua prática clínica. Clique no card ou no ícone de download para baixar.
                     </p>
                 </div>
 
                 <div class="p-4 pt-0" data-tour="tour-modelos-grid">
-                    <div class="row">
+                    <div class="grid">
                         <div
                             v-for="arquivo in arquivos"
                             :key="arquivo.nome"
-                            class="col-12 md:col-6 lg:col-4 mb-3"
+                            class="col-12 md:col-6 xl:col-4"
                         >
                             <div
-                                class="card h-100 modelos-card"
-                                :class="{ 'modelos-card--loading': downloadingId === arquivo.nome }"
+                                class="modelo-card surface-card border-round-xl"
+                                :class="{ 'modelo-card--loading': downloadingId === arquivo.nome }"
                                 :data-tour="`tour-modelos-card-${arquivo.tourId}`"
+                                :style="{ borderLeft: `4px solid ${arquivo.cor}` }"
                                 role="button"
                                 tabindex="0"
                                 @click="downloadArquivo(arquivo)"
                                 @keydown.enter.prevent="downloadArquivo(arquivo)"
                                 @keydown.space.prevent="downloadArquivo(arquivo)"
                             >
-                                <div class="card-body text-center d-flex flex-column">
-                                    <div class="fs-1 mb-2 modelos-icone" :style="{ color: arquivo.color }">
-                                        <i :class="arquivo.icon"></i>
+                                <div class="modelo-card__header">
+                                    <div
+                                        class="modelo-card__icon-wrap"
+                                        :style="{ background: arquivo.corFundo }"
+                                    >
+                                        <i :class="arquivo.icon" :style="{ color: arquivo.cor }" />
                                     </div>
-
-                                    <div class="d-flex justify-content-center gap-2 mb-2 flex-wrap">
-                                        <span
-                                            class="badge modelos-badge"
-                                            :style="{ color: arquivo.color, background: arquivo.colorLight }"
-                                        >
-                                            {{ arquivo.categoria }}
-                                        </span>
-                                    </div>
-
-                                    <h6 class="card-title modelos-titulo">{{ arquivo.titulo }}</h6>
-                                    <p class="card-text small modelos-descricao">
-                                        {{ arquivo.descricao }}
-                                    </p>
-
-                                    <div class="mt-auto">
-                                        <Button
-                                            label="Baixar"
-                                            icon="pi pi-download"
-                                            :loading="downloadingId === arquivo.nome"
-                                            :data-tour="`tour-modelos-btn-${arquivo.tourId}`"
-                                            @click.stop="downloadArquivo(arquivo)"
-                                        />
-                                    </div>
+                                    <h6 class="modelo-card__title">{{ arquivo.titulo }}</h6>
+                                    <Button
+                                        icon="pi pi-download"
+                                        rounded
+                                        text
+                                        severity="secondary"
+                                        :loading="downloadingId === arquivo.nome"
+                                        :aria-label="`Baixar ${arquivo.titulo}`"
+                                        :data-tour="`tour-modelos-btn-${arquivo.tourId}`"
+                                        class="modelo-card__action"
+                                        @click.stop="downloadArquivo(arquivo)"
+                                    />
                                 </div>
+
+                                <p class="modelo-card__desc">{{ arquivo.descricao }}</p>
+                                <p class="modelo-card__badge">{{ arquivo.categoria }} · .docx</p>
+
+                                <i
+                                    :class="[arquivo.icon, 'modelo-card__deco']"
+                                    aria-hidden="true"
+                                />
                             </div>
                         </div>
                     </div>
@@ -91,8 +91,8 @@ export default {
                     descricao: 'Documento oficial para comprovar a presença do paciente em consulta psicológica.',
                     categoria: 'Documentação',
                     icon: 'pi pi-verified',
-                    color: '#6366f1',
-                    colorLight: 'rgba(99, 102, 241, 0.1)'
+                    cor: '#7c3aed',
+                    corFundo: 'rgba(124, 58, 237, 0.10)'
                 },
                 {
                     nome: 'contrato_prestacao_servico.docx',
@@ -101,8 +101,8 @@ export default {
                     descricao: 'Modelo de contrato completo para formalizar a relação entre psicólogo e paciente.',
                     categoria: 'Jurídico',
                     icon: 'pi pi-file-edit',
-                    color: '#0ea5e9',
-                    colorLight: 'rgba(14, 165, 233, 0.1)'
+                    cor: '#0891b2',
+                    corFundo: 'rgba(8, 145, 178, 0.10)'
                 },
                 {
                     nome: 'receituario_psicologico.docx',
@@ -111,8 +111,8 @@ export default {
                     descricao: 'Modelo de receituário para prescrição de atividades, exercícios e orientações terapêuticas.',
                     categoria: 'Clínico',
                     icon: 'pi pi-heart',
-                    color: '#ec4899',
-                    colorLight: 'rgba(236, 72, 153, 0.1)'
+                    cor: '#9333ea',
+                    corFundo: 'rgba(147, 51, 234, 0.10)'
                 },
                 {
                     nome: 'modelo_encaminhamento.docx',
@@ -121,8 +121,8 @@ export default {
                     descricao: 'Documento para encaminhar pacientes a outros profissionais de saúde ou especialistas.',
                     categoria: 'Clínico',
                     icon: 'pi pi-send',
-                    color: '#f59e0b',
-                    colorLight: 'rgba(245, 158, 11, 0.1)'
+                    cor: '#ea580c',
+                    corFundo: 'rgba(234, 88, 12, 0.10)'
                 },
                 {
                     nome: 'ficha_evolucao.docx',
@@ -131,16 +131,11 @@ export default {
                     descricao: 'Ficha estruturada para registrar e acompanhar a evolução clínica do paciente ao longo do tratamento.',
                     categoria: 'Prontuário',
                     icon: 'pi pi-chart-line',
-                    color: '#10b981',
-                    colorLight: 'rgba(16, 185, 129, 0.1)'
+                    cor: '#16a34a',
+                    corFundo: 'rgba(22, 163, 74, 0.10)'
                 }
             ]
         };
-    },
-    computed: {
-        categorias() {
-            return [...new Set(this.arquivos.map(a => a.categoria))];
-        }
     },
     methods: {
         /** URL pública dos modelos (pasta public/arquivos) — /src/... não existe no build e pode devolver HTML da SPA. */
@@ -220,36 +215,89 @@ export default {
 </script>
 
 <style scoped>
-.modelos-card {
-    cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+.modelo-card {
+    position: relative;
+    overflow: hidden;
+    padding: 1.25rem 1.25rem 1.25rem 1rem;
+    min-height: 150px;
+    height: 100%;
     border: 1px solid var(--surface-border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    background: var(--surface-card);
+    cursor: pointer;
 }
 
-.modelos-card:hover {
+.modelo-card:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.11);
     transform: translateY(-2px);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
-    border-color: color-mix(in srgb, var(--primary-color) 35%, var(--surface-border));
 }
 
-.modelos-card--loading {
+.modelo-card--loading {
     opacity: 0.75;
     pointer-events: none;
 }
 
-.modelos-icone {
-    line-height: 1;
+.modelo-card__header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    position: relative;
+    z-index: 1;
 }
 
-.modelos-badge {
+.modelo-card__icon-wrap {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.25rem;
+}
+
+.modelo-card__title {
+    flex: 1;
+    margin: 0;
+    font-size: 0.95rem;
     font-weight: 600;
-}
-
-.modelos-titulo {
     color: var(--text-color);
+    line-height: 1.3;
 }
 
-.modelos-descricao {
+.modelo-card__action {
+    flex-shrink: 0;
+}
+
+.modelo-card__desc {
+    margin: 0;
+    font-size: 0.78rem;
     color: var(--text-color-secondary);
+    line-height: 1.5;
+    position: relative;
+    z-index: 1;
+    max-width: 85%;
+}
+
+.modelo-card__badge {
+    margin: 0.4rem 0 0 0;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-color-secondary);
+    position: relative;
+    z-index: 1;
+}
+
+.modelo-card__deco {
+    position: absolute;
+    bottom: -4px;
+    right: 4px;
+    font-size: 5rem;
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 0;
+    line-height: 1;
 }
 </style>

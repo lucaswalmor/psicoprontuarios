@@ -1,5 +1,6 @@
 <template>
     <VOnboardingWrapper
+        v-if="!dismissed"
         ref="wrapper"
         :steps="steps"
         :options="wrapperOptions"
@@ -92,6 +93,7 @@ export default {
     },
     data() {
         return {
+            dismissed: false,
             firstTargetSelector: '[data-tour="tour-meusite-apar-page_background_color"]',
             wrapperOptions: {
                 autoFinishByExit: true,
@@ -140,7 +142,8 @@ export default {
         }
     },
     mounted() {
-        if (this.isTourDismissed()) return;
+        this.dismissed = this.isTourDismissed();
+        if (this.dismissed) return;
         if (!this.steps?.length) return;
         this._retryTimer = setTimeout(() => this.watchForVisibilityWithRetry(0), 400);
     },
@@ -164,9 +167,16 @@ export default {
                 /* ignore */
             }
             userService.salvarTourFinalizado(STORAGE_KEY);
+            this.dismissed = true;
+            this.destroyObserver();
+            try {
+                this.$refs.wrapper?.finish?.();
+            } catch {
+                /* ignore */
+            }
         },
         watchForVisibilityWithRetry(attempt) {
-            if (this.isTourDismissed()) return;
+            if (this.dismissed || this.isTourDismissed()) return;
             const el = document.querySelector(this.firstTargetSelector);
             if (!el) {
                 if (attempt < 120) {
@@ -177,7 +187,7 @@ export default {
             this.destroyObserver();
             this._observer = new IntersectionObserver(
                 (entries) => {
-                    if (entries[0].isIntersecting && !this.isTourDismissed()) {
+                    if (entries[0].isIntersecting && !this.dismissed && !this.isTourDismissed()) {
                         this.destroyObserver();
                         this.start();
                     }
@@ -193,6 +203,7 @@ export default {
             }
         },
         start() {
+            if (this.dismissed || this.isTourDismissed()) return;
             this.$nextTick(() => {
                 const firstSel = this.steps?.[0]?.attachTo?.element;
                 if (firstSel) {

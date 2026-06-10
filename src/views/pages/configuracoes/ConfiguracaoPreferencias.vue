@@ -15,93 +15,40 @@
                     </div>
 
                     <div v-else class="grid">
-                        <div class="col-12 md:col-6 xl:col-3">
-                            <div class="pref-card surface-card border-round-xl p-4 h-full flex flex-column">
-                                <div class="pref-card__icon pref-card__icon--email">
-                                    <i class="pi pi-envelope" />
-                                </div>
-                                <h6 class="pref-card__title">Agenda diária por e-mail</h6>
-                                <p class="pref-card__text flex-1">
-                                    Receba todas as manhãs a lista das consultas do dia (somente quando houver consultas).
-                                </p>
-                                <div class="pref-card__toggle">
-                                    <InputSwitch
-                                        v-model="preferencias.agenda_diaria_email"
-                                        :disabled="saving"
-                                        @change="salvar"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-12 md:col-6 xl:col-3">
+                        <div
+                            v-for="card in cards"
+                            :key="card.key"
+                            class="col-12 md:col-6 xl:col-3"
+                        >
                             <div
-                                class="pref-card surface-card border-round-xl p-4 h-full flex flex-column"
-                                :class="{ 'pref-card--disabled': !evolutionConectado }"
+                                class="pref-card surface-card border-round-xl"
+                                :class="{ 'pref-card--disabled': card.cardDisabled }"
+                                :style="{ borderLeft: `4px solid ${card.cor}` }"
                             >
-                                <div class="pref-card__icon pref-card__icon--whatsapp">
-                                    <i class="pi pi-whatsapp" />
+                                <div class="pref-card__header">
+                                    <div
+                                        class="pref-card__icon-wrap"
+                                        :style="{ background: card.corFundo }"
+                                    >
+                                        <i :class="card.icon" :style="{ color: card.cor }" />
+                                    </div>
+                                    <h6 class="pref-card__title">{{ card.titulo }}</h6>
+                                    <div class="pref-card__toggle">
+                                        <InputSwitch
+                                            v-model="preferencias[card.key]"
+                                            :disabled="card.switchDisabled"
+                                            @change="salvar"
+                                        />
+                                    </div>
                                 </div>
-                                <h6 class="pref-card__title">Agenda diária por WhatsApp</h6>
-                                <p class="pref-card__text flex-1">
-                                    Receba a agenda do dia no seu WhatsApp (requer WhatsApp conectado em Comunicação).
-                                </p>
-                                <p v-if="!evolutionConectado" class="pref-card__alert">
-                                    Configure e conecte o WhatsApp em Comunicação para habilitar este envio.
-                                </p>
-                                <div class="pref-card__toggle">
-                                    <InputSwitch
-                                        v-model="preferencias.agenda_diaria_whatsapp"
-                                        :disabled="saving || !evolutionConectado"
-                                        @change="salvar"
-                                    />
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="col-12 md:col-6 xl:col-3">
-                            <div class="pref-card surface-card border-round-xl p-4 h-full flex flex-column">
-                                <div class="pref-card__icon pref-card__icon--backup">
-                                    <i class="pi pi-file-export" />
-                                </div>
-                                <h6 class="pref-card__title">Backup mensal de prontuários</h6>
-                                <p class="pref-card__text flex-1">
-                                    No dia 1º de cada mês, receba por e-mail um ZIP com os prontuários do mês anterior
-                                    (uma pasta por paciente). Arquivos acima de 25 MB são enviados pelo WhatsApp.
-                                </p>
-                                <div class="pref-card__toggle">
-                                    <InputSwitch
-                                        v-model="preferencias.backup_prontuarios_email"
-                                        :disabled="saving"
-                                        @change="salvar"
-                                    />
-                                </div>
-                            </div>
-                        </div>
+                                <p class="pref-card__desc">{{ card.descricao }}</p>
+                                <p v-if="card.alert" class="pref-card__alert">{{ card.alert }}</p>
 
-                        <div class="col-12 md:col-6 xl:col-3">
-                            <div
-                                class="pref-card surface-card border-round-xl p-4 h-full flex flex-column"
-                                :class="{ 'pref-card--disabled': !evolutionConectado }"
-                            >
-                                <div class="pref-card__icon pref-card__icon--paciente">
-                                    <i class="pi pi-bell" />
-                                </div>
-                                <h6 class="pref-card__title">Lembrete de consulta para pacientes</h6>
-                                <p class="pref-card__text flex-1">
-                                    Envia WhatsApp no dia da consulta para pacientes que aceitaram receber lembretes
-                                    (campo marcado no agendamento).
-                                </p>
-                                <p v-if="!evolutionConectado" class="pref-card__alert">
-                                    Configure e conecte o WhatsApp em Comunicação para habilitar este envio.
-                                </p>
-                                <div class="pref-card__toggle">
-                                    <InputSwitch
-                                        v-model="preferencias.lembrete_consulta_paciente_whatsapp"
-                                        :disabled="saving || !evolutionConectado"
-                                        @change="salvar"
-                                    />
-                                </div>
+                                <i
+                                    :class="[card.icon, 'pref-card__deco']"
+                                    aria-hidden="true"
+                                />
                             </div>
                         </div>
                     </div>
@@ -135,6 +82,59 @@ export default {
                 lembrete_consulta_paciente_whatsapp: true,
             },
         };
+    },
+    computed: {
+        cards() {
+            const waOff = !this.evolutionConectado;
+            const waAlert = 'Configure e conecte o WhatsApp em Comunicação para habilitar este envio.';
+
+            return [
+                {
+                    key: 'agenda_diaria_email',
+                    titulo: 'Agenda diária por e-mail',
+                    descricao: 'Receba todas as manhãs a lista das consultas do dia (somente quando houver consultas).',
+                    icon: 'pi pi-envelope',
+                    cor: '#7c3aed',
+                    corFundo: 'rgba(124, 58, 237, 0.10)',
+                    cardDisabled: false,
+                    switchDisabled: this.saving,
+                    alert: null,
+                },
+                {
+                    key: 'agenda_diaria_whatsapp',
+                    titulo: 'Agenda diária por WhatsApp',
+                    descricao: 'Receba a agenda do dia no seu WhatsApp (requer WhatsApp conectado em Comunicação).',
+                    icon: 'pi pi-whatsapp',
+                    cor: '#16a34a',
+                    corFundo: 'rgba(22, 163, 74, 0.10)',
+                    cardDisabled: waOff,
+                    switchDisabled: this.saving || waOff,
+                    alert: waOff ? waAlert : null,
+                },
+                {
+                    key: 'backup_prontuarios_email',
+                    titulo: 'Backup mensal de prontuários',
+                    descricao: 'No dia 1º de cada mês, receba por e-mail um ZIP com os prontuários do mês anterior (uma pasta por paciente). Arquivos acima de 25 MB são enviados pelo WhatsApp.',
+                    icon: 'pi pi-file-export',
+                    cor: '#ea580c',
+                    corFundo: 'rgba(234, 88, 12, 0.10)',
+                    cardDisabled: false,
+                    switchDisabled: this.saving,
+                    alert: null,
+                },
+                {
+                    key: 'lembrete_consulta_paciente_whatsapp',
+                    titulo: 'Lembrete de consulta para pacientes',
+                    descricao: 'Envia WhatsApp no dia da consulta para pacientes que aceitaram receber lembretes (campo marcado no agendamento).',
+                    icon: 'pi pi-bell',
+                    cor: '#0891b2',
+                    corFundo: 'rgba(8, 145, 178, 0.10)',
+                    cardDisabled: waOff,
+                    switchDisabled: this.saving || waOff,
+                    alert: waOff ? waAlert : null,
+                },
+            ];
+        },
     },
     async mounted() {
         await Promise.all([this.carregarPreferencias(), this.carregarEstadoEvolution()]);
@@ -210,74 +210,87 @@ export default {
 }
 
 .pref-card {
+    position: relative;
+    overflow: hidden;
+    padding: 1.25rem 1.25rem 1.25rem 1rem;
+    min-height: 150px;
+    height: 100%;
     border: 1px solid var(--surface-border);
-    transition: box-shadow 0.2s ease, border-color 0.2s ease;
-    gap: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    background: var(--surface-card);
 }
 
 .pref-card:hover {
-    border-color: color-mix(in srgb, var(--primary-color) 25%, var(--surface-border));
-    box-shadow: 0 4px 14px color-mix(in srgb, var(--primary-color) 8%, transparent);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.11);
+    transform: translateY(-2px);
 }
 
 .pref-card--disabled {
     opacity: 0.92;
 }
 
-.pref-card__icon {
-    width: 3rem;
-    height: 3rem;
-    border-radius: 12px;
+.pref-card__header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    position: relative;
+    z-index: 1;
+}
+
+.pref-card__icon-wrap {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.35rem;
-}
-
-.pref-card__icon--email {
-    background: color-mix(in srgb, var(--primary-color) 12%, var(--surface-ground));
-    color: var(--primary-color);
-}
-
-.pref-card__icon--whatsapp {
-    background: color-mix(in srgb, #25d366 15%, var(--surface-ground));
-    color: #128c7e;
-}
-
-.pref-card__icon--backup {
-    background: color-mix(in srgb, var(--orange-500, #f59e0b) 15%, var(--surface-ground));
-    color: var(--orange-600, #d97706);
-}
-
-.pref-card__icon--paciente {
-    background: color-mix(in srgb, var(--blue-500, #3b82f6) 15%, var(--surface-ground));
-    color: var(--blue-600, #2563eb);
+    flex-shrink: 0;
+    font-size: 1.25rem;
 }
 
 .pref-card__title {
+    flex: 1;
     margin: 0;
-    color: var(--text-color);
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 600;
-}
-
-.pref-card__text {
-    margin: 0;
-    color: var(--text-color-secondary);
-    font-size: 0.875rem;
-    line-height: 1.5;
-}
-
-.pref-card__alert {
-    margin: 0;
-    color: var(--red-500, #ef4444);
-    font-size: 0.8rem;
-    line-height: 1.4;
+    color: var(--text-color);
+    line-height: 1.3;
 }
 
 .pref-card__toggle {
-    display: flex;
-    justify-content: flex-end;
-    padding-top: 0.25rem;
+    flex-shrink: 0;
+}
+
+.pref-card__desc {
+    margin: 0;
+    font-size: 0.78rem;
+    color: var(--text-color-secondary);
+    line-height: 1.5;
+    position: relative;
+    z-index: 1;
+    max-width: 85%;
+}
+
+.pref-card__alert {
+    margin: 0.5rem 0 0 0;
+    font-size: 0.75rem;
+    color: var(--red-500, #ef4444);
+    line-height: 1.4;
+    position: relative;
+    z-index: 1;
+    max-width: 85%;
+}
+
+.pref-card__deco {
+    position: absolute;
+    bottom: -4px;
+    right: 4px;
+    font-size: 5rem;
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 0;
+    line-height: 1;
 }
 </style>

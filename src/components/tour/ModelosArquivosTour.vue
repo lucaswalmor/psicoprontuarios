@@ -106,7 +106,7 @@ function buildSteps(arquivos) {
             content: {
                 title: 'Modelos de Arquivos',
                 description:
-                    'Aqui você encontra documentos prontos (.docx) para usar na prática clínica. Você pode clicar no card para baixar, ou usar o botão Baixar dentro de cada modelo.'
+                    'Aqui você encontra documentos prontos (.docx) para usar na prática clínica. Clique no card ou no ícone de download para baixar cada modelo.'
             },
             options: popBottomStart
         },

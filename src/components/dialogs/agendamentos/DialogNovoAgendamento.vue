@@ -7,8 +7,17 @@
     >
         <div class="grid">
             <div class="col-12" v-if="!paciente">
-                <label for="paciente" class="block text-900 font-medium mb-2">Paciente</label>
+                <div class="flex align-items-center gap-2 mb-2">
+                    <label for="paciente" class="text-900 font-medium mb-0">Paciente</label>
+                    <i
+                        class="pi pi-info-circle text-primary cursor-pointer"
+                        style="font-size: 1rem"
+                        v-tooltip.top="'A lista exibe apenas pacientes com status Em Andamento.'"
+                        aria-label="A lista exibe apenas pacientes com status Em Andamento."
+                    />
+                </div>
                 <Select 
+                    id="paciente"
                     v-model="agendamento.paciente" 
                     :options="pacientes" 
                     optionLabel="nome" 
@@ -287,7 +296,7 @@ export default {
         
         async carregarPacientes() {
             try {
-                const response = await this.$pacientesService.getAll();
+                const response = await this.$pacientesService.getAll({ status: 'Em Andamento' });
                 this.pacientes = this.normalizarListaPacientes(response);
             } catch (error) {
                 console.error('Erro ao carregar pacientes:', error);
