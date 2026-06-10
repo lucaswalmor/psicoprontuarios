@@ -24,6 +24,9 @@ Painel lateral direito: exibe os agendamentos do dia selecionado com horário e 
 Feriados do Mês: bloco abaixo do calendário listando os feriados nacionais do mês vigente.
 Botão + Novo Agendamento: verde, no canto superior direito, abre a modal para criar um agendamento.
 
+Relação com a ficha do paciente
+Consultas criadas aqui ficam vinculadas ao paciente e aparecem na tela **Sessões** da ficha (`/pacientes/ficha/:id/sessoes`). Para acessar: **Pacientes** → abra o paciente (hub) → card **Sessões**. Também é possível agendar sessão diretamente nessa tela com **+ Nova Sessão**.
+
 2. Como Criar um Novo Agendamento
 Siga os passos abaixo para agendar uma consulta:
 
@@ -143,7 +146,7 @@ R: Use as setas < > no topo do calendário para avançar ou voltar mês a mês. 
 P: Posso agendar para um paciente que ainda não está cadastrado?
 R: Não. O paciente precisa estar previamente cadastrado na seção 'Pacientes' para aparecer no campo de seleção da modal de agendamento.
 P: O agendamento feito aqui aparece também na ficha do paciente?
-R: Sim. Todos os agendamentos criados ficam vinculados ao paciente e são visíveis na aba 'Sessões' dentro da ficha do paciente.
+R: Sim. Todos os agendamentos ficam vinculados ao paciente e aparecem na tela **Sessões** da ficha. Caminho: **Pacientes** → abra o paciente (hub em `/pacientes/ficha/:id`) → card **Sessões** → `/pacientes/ficha/:id/sessoes`. O card **Sessões** no hub também mostra um resumo (ex.: "12 agendadas · 0 pendentes").
 P: O que acontece se eu clicar em Cancelar na modal?
 R: A modal é fechada e nenhuma alteração é salva. O agendamento original não é afetado.
 

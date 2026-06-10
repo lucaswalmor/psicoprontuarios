@@ -25,6 +25,7 @@ Sempre que a mudança afetar **o que o usuário vê ou faz** no app (telas, flux
 
 | Módulo / tema | Arquivo |
 |---|---|
+| System Message do agente n8n (JSON + actions) | `system_message_bot.md` |
 | Roteamento geral das tools | `tool_bot.md` |
 | Landing, planos, contratação | `tool_bot_landinpage.md` |
 | Agenda / calendário | `tool_bot_agendamento.md` |
@@ -43,7 +44,7 @@ Sempre que a mudança afetar **o que o usuário vê ou faz** no app (telas, flux
 2. Conferir preços/planos alinhados a `PricingWidget.vue` e API `/planos`
 3. Rodar `npm run sync:bot-docs` (ou `npm run dev` / `build`)
 4. Deploy na Vercel para publicar em `/bot-docs/*.md`
-5. Se mudou lista de tools ou URLs: atualizar workflow n8n
+5. Se mudou lista de tools ou URLs: atualizar workflow n8n e `system_message_bot.md`
 
 Não inventar funcionalidades nos manuais. Se não souber o fluxo final, descrever só o que está no código.
 

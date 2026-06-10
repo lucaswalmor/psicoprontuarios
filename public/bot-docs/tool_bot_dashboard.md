@@ -86,10 +86,12 @@ O dashboard gera automaticamente quatro visualizações gráficas:
 
 ## 7. Atalhos de Cadastro e Prontuários
 
-Na parte inferior, o sistema lista as movimentações mais recentes:
+Na parte inferior da aba **Pacientes**, o sistema lista as movimentações mais recentes:
 
-- **Últimos Pacientes Cadastrados:** Lista rápida com nome e data de cadastro dos 5 pacientes mais recentes.
-- **Últimos Prontuários Criados:** Atalho para os 5 prontuários preenchidos mais recentemente, facilitando a continuidade do registro.
+- **Últimos Pacientes Cadastrados:** Lista com nome e data dos 5 pacientes mais recentes. O ícone de olho abre o **hub da ficha** (`/pacientes/ficha/:id`), com cards para Dados, Prontuários, Sessões, etc.
+- **Últimos Prontuários Criados:** Lista dos 5 prontuários mais recentes. O ícone de olho abre diretamente a tela **Prontuários** do paciente (`/pacientes/ficha/:id/prontuarios`).
+
+**Nota:** A ficha do paciente não usa mais abas. Ela é um hub com cards; cada área (Prontuários, Sessões, Anexos…) abre em tela dedicada com botão **"Voltar à ficha"**.
 
 ---
 
@@ -116,7 +118,7 @@ R: O sistema calcula a diferença entre a data de cadastro e a data de conclusã
 ---
 
 **P: Posso exportar os gráficos do Dashboard?**
-R: Os gráficos são para visualização interna. Para exportar histórico clínico, use a aba **Prontuários** na ficha do paciente (PDF individual ou "Exportar Todos"). Para detalhes financeiros, use o menu **Financeiro** → Receitas/Despesas.
+R: Os gráficos são para visualização interna. Para exportar histórico clínico, abra a ficha do paciente → card **Prontuários** → **Exportar Todos** (PDF completo) ou exporte um prontuário individual pelo menu de três pontos. Para detalhes financeiros, use o menu **Financeiro** → Receitas/Despesas.
 
 ---
 
@@ -144,6 +146,11 @@ R: O card lista todas as receitas vencidas/não recebidas, independentemente do 
 
 **P: Cadastrei uma sessão no financeiro mas não aparece no card.**
 R: Verifique se a receita está marcada como **Recebida**. Só entram receitas com status **Não recebido** e data igual ou anterior a hoje.
+
+---
+
+**P: Como abro a ficha de um paciente a partir do Dashboard?**
+R: Na lista **Últimos Pacientes Cadastrados**, clique no ícone de olho — abre o hub da ficha (`/pacientes/ficha/:id`). Para ir direto aos prontuários de um item em **Últimos Prontuários Criados**, use o ícone de olho naquela linha (`/pacientes/ficha/:id/prontuarios`).
 
 ---
 

@@ -144,7 +144,7 @@ const updateMetaTags = () => {
         url: window.location.origin,
         offers: {
             '@type': 'Offer',
-            price: '29.90',
+            price: '39.90',
             priceCurrency: 'BRL',
             description: 'Plano Simples com 7 dias de teste grátis (valores sujeitos à confirmação no cadastro).'
         }
