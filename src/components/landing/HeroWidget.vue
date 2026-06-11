@@ -48,7 +48,7 @@ const scrollToPricing = () => {
                     <div class="space-y-4">
                         <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-4xl xl:text-5xl font-bold leading-tight bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                             <span class="block">Sistema para Psicólogos</span>
-                            <span class="block">Prontuário Eletrônico, Agenda e Financeiro</span>
+                            <span class="block">Prontuário Eletrônico, Agenda Online e Financeiro</span>
                         </h1>
                         <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-3xl xl:text-4xl font-light text-surface-600 dark:text-surface-300 leading-tight">
                             Seu consultório organizado em um só lugar
