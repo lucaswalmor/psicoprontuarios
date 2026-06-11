@@ -70,7 +70,7 @@
 </template>
 <script>
 import DialogEditarProntuario from '@/components/dialogs/prontuarios/DialogEditarProntuario.vue';
-import logoUrl from '@/assets/img/logo3_semfundo.png';
+import logoUrl from '@/assets/img/logo.webp';
 import jsPDF from 'jspdf';
 import { usePlanStore } from '@/store/plan';
 
