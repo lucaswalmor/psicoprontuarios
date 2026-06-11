@@ -21,7 +21,8 @@ const n8nChatWebhookUrl = getN8nChatWebhookUrl();
 // Aqui só garantimos o title ao navegar de volta para a landing via SPA.
 const updateMetaTags = () => {
     document.title =
-        'PsicoProntuários — Prontuário, agenda e financeiro para psicólogos';
+        'Sistema para Psicólogos | PsicoProntuários — Prontuário Eletrônico, Agenda e Financeiro Digital';
+        // 'PsicoProntuários — Prontuário, agenda e financeiro para psicólogos';
 };
 
 onMounted(() => {

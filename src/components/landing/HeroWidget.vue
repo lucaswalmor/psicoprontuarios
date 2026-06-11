@@ -29,10 +29,10 @@ const scrollToPricing = () => {
         <div class="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-surface-800 dark:via-surface-900 dark:to-surface-800"></div>
         
         <!-- Content Container -->
-        <div class="container mx-auto px-4 py-16 lg:py-24 relative z-10 d-flex justify-content-center">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div class="hero-container py-16 lg:py-24 relative z-10">
+            <div class="hero-layout">
                 <!-- Hero Image - Primeiro em mobile, segundo em desktop -->
-                <div class="flex justify-center lg:justify-end order-1 lg:order-2">
+                <div class="hero-layout__media">
                     <div class="relative">
                         <div class="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-3xl blur-3xl"></div>
                         <img 
@@ -44,12 +44,16 @@ const scrollToPricing = () => {
                 </div>
                 
                 <!-- Text Content - Segundo em mobile, primeiro em desktop -->
-                <div class="text-center lg:text-left space-y-8 order-2 lg:order-1">
+                <div class="hero-layout__content text-center lg:text-left space-y-8">
                     <div class="space-y-4">
-                        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-surface-900 dark:text-surface-0 leading-tight">
-                            <span class="block font-light text-surface-600 dark:text-surface-300">Seu consultório organizado</span>
-                            <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                                em um só lugar
+                        <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-4xl xl:text-5xl font-bold text-surface-900 dark:text-surface-0 leading-tight">
+                            <span class="block bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                                <span class="block">Sistema para Psicólogos:</span>
+                                <span class="block">Prontuário Eletrônico, Agenda e Financeiro</span>
+                            </span>
+
+                            <span class="block mt-2 text-2xl sm:text-3xl md:text-4xl lg:text-3xl xl:text-4xl font-light text-surface-600 dark:text-surface-300">
+                                Seu consultório organizado em um só lugar
                             </span>
                         </h1>
                         <p class="text-lg md:text-xl lg:text-2xl text-surface-700 dark:text-surface-200 leading-relaxed max-w-2xl mx-auto lg:mx-0">
@@ -107,6 +111,61 @@ const scrollToPricing = () => {
 <style scoped>
 .hero-section {
     background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(147, 51, 234, 0.05) 100%);
+}
+
+.hero-container {
+    width: 100%;
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: 1rem;
+}
+
+.hero-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    align-items: center;
+}
+
+.hero-layout__media {
+    order: 1;
+    min-width: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.hero-layout__content {
+    order: 2;
+    min-width: 0;
+}
+
+@media (min-width: 992px) {
+    .hero-container {
+        padding-inline: 2rem;
+    }
+
+    .hero-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+        gap: clamp(2rem, 3vw, 3.5rem);
+        align-items: center;
+    }
+
+    .hero-layout__media {
+        order: 2;
+        justify-content: center;
+    }
+
+    .hero-layout__content {
+        order: 1;
+    }
+}
+
+@media (min-width: 1920px) {
+    .hero-container {
+        max-width: 1280px;
+        padding-inline: 3rem;
+    }
 }
 
 @media (max-width: 1024px) {
