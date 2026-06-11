@@ -1,7 +1,7 @@
 <script>
 import Button from 'primevue/button';
 import Toast from 'primevue/toast';
-import logo from '@/assets/img/no-bg.webp';
+import logo from '@/assets/img/logo.webp';
 import authService from '@/services/authService';
 
 export default {

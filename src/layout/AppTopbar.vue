@@ -2,7 +2,7 @@
 import { useLayout } from '@/layout/composables/layout';
 import { useThemeStore } from '@/store/theme';
 import AppConfigurator from './AppConfigurator.vue';
-import logo from '@/assets/img/no-bg.webp';
+import logo from '@/assets/img/logo.webp';
 
 const { toggleMenu, toggleDarkMode } = useLayout();
 const themeStore = useThemeStore();

@@ -82,7 +82,7 @@
 </template>
 
 <script setup>
-import logo from '@/assets/img/no-bg.webp';
+import logo from '@/assets/img/logo.webp';
 
 function smoothScroll(id) {
     document.body.click();

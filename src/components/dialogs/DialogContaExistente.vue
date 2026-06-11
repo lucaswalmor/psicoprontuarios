@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import logo from '@/assets/img/no-bg.webp';
+import logo from '@/assets/img/logo.webp';
 
 export default {
     name: 'DialogContaExistente',

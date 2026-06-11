@@ -36,7 +36,7 @@
                     <!-- Logo/Título -->
                     <div class="d-flex flex-column align-items-center justify-content-center">
                         <div class="d-flex flex-column align-items-center justify-content-center">
-                            <img src="@/assets/img/no-bg.webp" alt="PsicoProntuários" class="logo">
+                            <img src="@/assets/img/logo.webp" alt="PsicoProntuários" class="logo">
                             <h1 class="text-3xl font-bold text-purple-600 mb-2">PsicoProntuários</h1>
                         </div>
                     </div>
@@ -485,7 +485,7 @@
 </template>
 
 <script>
-import logo from '@/assets/img/no-bg.webp';
+import logo from '@/assets/img/logo.webp';
 import userService from '@/services/userService';
 import ChatAtendimento from '@/components/ChatAtendimento.vue';
 import { getN8nChatWebhookUrl } from '@/config/environment.js';

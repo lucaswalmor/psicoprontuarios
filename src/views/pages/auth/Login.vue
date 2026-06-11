@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import logo from '@/assets/img/no-bg.webp';
+import logo from '@/assets/img/logo.webp';
 import GoogleSignInButton from '@/components/GoogleSignInButton.vue';
 
 export default {
