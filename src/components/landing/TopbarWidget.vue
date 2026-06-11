@@ -102,6 +102,11 @@ function toggleMobileMenu() {
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a @click="smoothScroll('faq')" class="nav-link">
+                        <span>Dúvidas</span>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a @click="smoothScroll('leads')" class="nav-link">
                         <span>Contato</span>
                     </a>

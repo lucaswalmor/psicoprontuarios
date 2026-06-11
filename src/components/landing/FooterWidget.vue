@@ -36,6 +36,11 @@
                                 </a>
                             </li>
                             <li class="nav-item">
+                                <a @click="smoothScroll('faq')" class="nav-link">
+                                    <span>Dúvidas</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a @click="smoothScroll('leads')" class="nav-link">
                                     <span>Contato</span>
                                 </a>
@@ -71,9 +76,8 @@
                         </span>
                     </p>
                     <div class="footer-bottom-links">
-                        <a href="#" class="bottom-link">Termos</a>
-                        <a href="#" class="bottom-link">Privacidade</a>
-                        <a href="#" class="bottom-link">Cookies</a>
+                        <router-link to="/termos-uso" class="bottom-link">Termos de Uso</router-link>
+                        <router-link to="/politica-privacidade" class="bottom-link">Política de Privacidade</router-link>
                     </div>
                 </div>
             </div>

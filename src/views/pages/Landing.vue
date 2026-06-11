@@ -2,11 +2,13 @@
 import FeaturesWidget from '@/components/landing/FeaturesWidget.vue';
 import FooterWidget from '@/components/landing/FooterWidget.vue';
 import HeroWidget from '@/components/landing/HeroWidget.vue';
-import HighlightsWidget from '@/components/landing/HighlightsWidget.vue';
+import ShowcaseWidget from '@/components/landing/ShowcaseWidget.vue';
+import ComoFuncionaWidget from '@/components/landing/ComoFuncionaWidget.vue';
+import FaqWidget from '@/components/landing/FaqWidget.vue';
+import CtaFinalWidget from '@/components/landing/CtaFinalWidget.vue';
 import PricingWidget from '@/components/landing/PricingWidget.vue';
 import TopbarWidget from '@/components/landing/TopbarWidget.vue';
 import LeadsWidget from '@/components/landing/LeadsWidget.vue';
-import TestimonialsWidget from '@/components/landing/TestimonialsWidget.vue';
 import ChatAtendimento from '@/components/ChatAtendimento.vue';
 import { getN8nChatWebhookUrl } from '@/config/environment.js';
 import { registrarLandingViewUmaVez } from '@/services/marketingLogService.js';
@@ -51,10 +53,17 @@ onMounted(() => {
                 </div>
             </section>
 
-            <!-- Highlights Section -->
-            <section id="highlights" class="py-16 lg:py-24 bg-surface-50 dark:bg-surface-800" aria-label="Destaques da plataforma">
-                <div class="container-fluid mx-auto px-4">
-                    <HighlightsWidget />
+            <!-- Showcase Section (telas reais do sistema) -->
+            <section id="highlights" class="py-16 lg:py-24" aria-label="Telas do sistema">
+                <div class="container mx-auto px-4">
+                    <ShowcaseWidget />
+                </div>
+            </section>
+
+            <!-- Como Funciona Section -->
+            <section id="como-funciona" class="py-16 lg:py-24 bg-surface-50 dark:bg-surface-800" aria-label="Como funciona">
+                <div class="container mx-auto px-4">
+                    <ComoFuncionaWidget />
                 </div>
             </section>
 
@@ -65,14 +74,21 @@ onMounted(() => {
                 </div>
             </section>
 
-            <!-- Testimonials Section -->
-            <section id="testimonials" class="bg-surface-50 dark:bg-surface-800" aria-label="Depoimentos de clientes">
-                <TestimonialsWidget />
+            <!-- FAQ Section -->
+            <section id="faq" class="py-16 lg:py-24 bg-surface-50 dark:bg-surface-800" aria-label="Perguntas frequentes">
+                <div class="container mx-auto px-4">
+                    <FaqWidget />
+                </div>
             </section>
 
             <!-- Leads Section -->
             <section id="leads" class="py-16 lg:py-24" aria-label="Formulário de contato">
                 <LeadsWidget />
+            </section>
+
+            <!-- CTA Final Section -->
+            <section id="cta-final" class="pb-16 lg:pb-24 px-4" aria-label="Comece agora">
+                <CtaFinalWidget />
             </section>
         </main>
 

@@ -6,9 +6,9 @@ import 'swiper/css/pagination';
 
 const features = [
     {
-        title: 'Fácil de Usar',
-        description: 'Interface intuitiva e moderna para gerenciar seus pacientes sem complicações.',
-        icon: 'pi pi-lightbulb',
+        title: 'Prontuário por voz com I.A',
+        description: 'Grave um áudio com o resumo da sessão e a inteligência artificial transcreve direto para o prontuário. Disponível no plano Pro.',
+        icon: 'pi pi-microphone',
         colorClass: 'feature-icon--yellow'
     },
     {
@@ -24,9 +24,9 @@ const features = [
         colorClass: 'feature-icon--indigo'
     },
     {
-        title: 'Acesso Multiplataforma',
-        description: 'Acesse de qualquer dispositivo, a qualquer hora. Desktop, tablet e mobile.',
-        icon: 'pi pi-mobile',
+        title: 'Modelos de documentos prontos',
+        description: 'Declaração de comparecimento, contrato terapêutico, encaminhamento e outros modelos prontos para baixar e usar.',
+        icon: 'pi pi-file-word',
         colorClass: 'feature-icon--slate'
     },
     {

@@ -47,9 +47,9 @@ const scrollToPricing = () => {
                 <div class="text-center lg:text-left space-y-8 order-2 lg:order-1">
                     <div class="space-y-4">
                         <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-surface-900 dark:text-surface-0 leading-tight">
-                            <span class="block font-light text-surface-600 dark:text-surface-300">Sistema de</span>
+                            <span class="block font-light text-surface-600 dark:text-surface-300">Seu consultório organizado</span>
                             <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                                Prontuários Psicológicos
+                                em um só lugar
                             </span>
                         </h1>
                         <p class="text-lg md:text-xl lg:text-2xl text-surface-700 dark:text-surface-200 leading-relaxed max-w-2xl mx-auto lg:mx-0">
@@ -58,20 +58,25 @@ const scrollToPricing = () => {
                     </div>
                     
                     <!-- CTA Buttons -->
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                        <Button 
-                            label="Teste Grátis" 
-                            rounded 
-                            class="!text-lg !px-8 !py-3 bg-gradient-to-r from-blue-600 to-purple-600 border-0 hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
-                            @click="irParaCadastro"
-                        />
-                        <Button 
-                            label="Nossos Planos" 
-                            text 
-                            rounded 
-                            class="!text-lg !px-8 !py-3 text-surface-700 dark:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800"
-                            @click="scrollToPricing"
-                        />
+                    <div class="space-y-3">
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                            <Button 
+                                label="Testar grátis por 7 dias" 
+                                rounded 
+                                class="!text-lg !px-8 !py-3 bg-gradient-to-r from-blue-600 to-purple-600 border-0 hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+                                @click="irParaCadastro"
+                            />
+                            <Button 
+                                label="Nossos Planos" 
+                                text 
+                                rounded 
+                                class="!text-lg !px-8 !py-3 text-surface-700 dark:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800"
+                                @click="scrollToPricing"
+                            />
+                        </div>
+                        <p class="text-sm text-surface-500 dark:text-surface-400 text-center lg:text-left">
+                            Cancele durante o teste e não pague nada.
+                        </p>
                     </div>
                     
                     <!-- Trust Indicators -->
@@ -82,7 +87,7 @@ const scrollToPricing = () => {
                         </div>
                         <div class="flex items-center gap-2">
                             <i class="pi pi-check-circle text-blue-500 text-xl"></i>
-                            <span class="text-sm text-surface-600 dark:text-surface-300">Dados por conta</span>
+                            <span class="text-sm text-surface-600 dark:text-surface-300">Cancele quando quiser</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <i class="pi pi-clock text-orange-500 text-xl"></i>

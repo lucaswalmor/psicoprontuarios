@@ -80,8 +80,12 @@
                     <Divider class="divider" />
 
                     <ul class="features-list">
+                        <li class="feature-item feature-item-highlight">
+                            <i class="pi pi-check-circle text-purple-500"></i>
+                            <span><strong>Tudo do plano Simples</strong>, e mais:</span>
+                        </li>
                         <li v-for="(texto, idx) in featuresPro" :key="'p-' + idx" class="feature-item">
-                            <i class="pi pi-check text-green-500"></i>
+                            <i class="pi pi-sparkles text-purple-500"></i>
                             <span>{{ texto }}</span>
                         </li>
                     </ul>
@@ -99,10 +103,10 @@
 
         <div class="text-center mt-12">
             <p class="text-surface-600 dark:text-surface-300 mb-2">
-                Cancele quando quiser, conforme as regras do seu contrato de uso.
+                Sem fidelidade e sem multa: cancele ou pause quando quiser, direto no painel.
             </p>
             <p class="text-sm text-surface-500 dark:text-surface-400">
-                Valor referente ao plano atual do catálogo — confira sempre os valores na tela de assinatura ao finalizar o cadastro.
+                Cancele durante os 7 dias de teste e não pague nada.
             </p>
         </div>
     </div>
@@ -139,18 +143,13 @@ export default {
                 'Indicadores de evolução (humor, GAD-7, PHQ-9)'
             ],
             featuresPro: [
-                'Dashboard Geral',
-                'Dashboard Financeiro',
-                'Prontuários com histórico e PDF',
-                'Agendamento de Sessões',
-                'Controle Financeiro',
-                'Anamnese e Anexos',
-                'Indicadores de evolução (humor, GAD-7, PHQ-9)',
-                'Site Exclusivo para você',
+                'Prontuário por voz: grave o resumo da sessão e a I.A transcreve',
                 'Melhoria de texto com I.A no prontuário',
-                'Gerar relatório profissional com I.A nos prontuários',
-                'Notificações de aniversários e datas comemorativas por WhatsApp',
-                'WhatsApp: notificações de consulta e lembretes',
+                'Relatório profissional com I.A (exporta em Word)',
+                'Site próprio para divulgar seu trabalho (seunome.psicoprontuarios.com.br)',
+                'WhatsApp: lembretes de consulta automáticos para pacientes',
+                'WhatsApp: sua agenda do dia enviada para você',
+                'Mensagens de aniversário e datas comemorativas automáticas'
             ]
         };
     }
@@ -242,6 +241,10 @@ export default {
 
 .feature-item i {
     @apply text-lg;
+}
+
+.feature-item-highlight {
+    @apply pb-2 border-b border-surface-200 dark:border-surface-700;
 }
 
 @media (max-width: 768px) {
