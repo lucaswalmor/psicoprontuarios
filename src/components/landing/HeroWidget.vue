@@ -46,16 +46,13 @@ const scrollToPricing = () => {
                 <!-- Text Content - Segundo em mobile, primeiro em desktop -->
                 <div class="hero-layout__content text-center lg:text-left space-y-8">
                     <div class="space-y-4">
-                        <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-4xl xl:text-5xl font-bold text-surface-900 dark:text-surface-0 leading-tight">
-                            <span class="block bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                                <span class="block">Sistema para Psicólogos:</span>
-                                <span class="block">Prontuário Eletrônico, Agenda e Financeiro</span>
-                            </span>
-
-                            <span class="block mt-2 text-2xl sm:text-3xl md:text-4xl lg:text-3xl xl:text-4xl font-light text-surface-600 dark:text-surface-300">
-                                Seu consultório organizado em um só lugar
-                            </span>
+                        <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-4xl xl:text-5xl font-bold leading-tight bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            <span class="block">Sistema para Psicólogos</span>
+                            <span class="block">Prontuário Eletrônico, Agenda e Financeiro</span>
                         </h1>
+                        <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-3xl xl:text-4xl font-light text-surface-600 dark:text-surface-300 leading-tight">
+                            Seu consultório organizado em um só lugar
+                        </h2>
                         <p class="text-lg md:text-xl lg:text-2xl text-surface-700 dark:text-surface-200 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                             Menos planilha e mais clínica: prontuário, agenda, financeiro e rotinas no WhatsApp para você focar no atendimento.
                         </p>
