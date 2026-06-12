@@ -125,6 +125,18 @@
             @update:visible="dialogAlterarStatus = false"
             @status-alterado="onStatusAlterado"
         />
+
+        <ConfirmPopup group="headless">
+            <template #container="{ message, acceptCallback, rejectCallback }">
+                <div class="rounded p-4">
+                    <span>{{ message.message }}</span>
+                    <div class="flex items-center gap-2 mt-4">
+                        <Button label="Não" variant="outlined" @click="rejectCallback" severity="secondary" size="small" text />
+                        <Button label="Sim" @click="acceptCallback" size="small" />
+                    </div>
+                </div>
+            </template>
+        </ConfirmPopup>
     </div>
 </template>
 

@@ -267,6 +267,7 @@ import Select from 'primevue/select';
 import Password from 'primevue/password';
 import Checkbox from 'primevue/checkbox';
 import IftaLabel from 'primevue/iftalabel';
+import { trackCompleteRegistration } from '@/utils/metaPixel';
 
 export default {
     name: 'CompletarCadastro',
@@ -491,8 +492,10 @@ export default {
                     ...this.form,
                     politica_privacidade: Boolean(this.form.politica_privacidade)
                 };
-                const response = await this.$authService.completarCadastro(formData);
-                
+                await this.$authService.completarCadastro(formData);
+
+                trackCompleteRegistration({ method: 'google' });
+
                 // Sucesso - redirecionar para dashboard
                 this.$toast.add({
                     severity: 'success',
