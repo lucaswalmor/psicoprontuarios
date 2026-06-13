@@ -434,7 +434,8 @@ export default {
                     politica_privacidade: Boolean(this.form.politica_privacidade),
                 };
 
-                registrarMarketingLog('cadastro_etapa_2_submit', {
+                registrarMarketingLog('cadastro_etapa_2', this.snapshotEtapaMarketing(2));
+                registrarMarketingLog('cadastro_etapa_3_submit', {
                     email: this.form.email
                 });
 
@@ -612,7 +613,8 @@ export default {
                     this.loading = false;
                 }
             } else if (step === 2) {
-                registrarMarketingLog('cadastro_etapa_2', this.snapshotEtapaMarketing(2));
+                // etapa 2 usa handleSubmit (type="submit"), não proximoEtapa;
+                // o log cadastro_etapa_2 é disparado dentro de handleSubmit
             }
 
             this.etapaAtual++;
