@@ -1,7 +1,7 @@
 <template>
     <div class="endereco-form">
-        <h3 class="text-xl font-semibold mb-4">Endereço de cobrança</h3>
-        <p class="text-sm text-surface-600 dark:text-surface-400 mb-4">
+        <h3 v-if="!hideTitle" class="text-xl font-semibold mb-4">Endereço de cobrança</h3>
+        <p v-if="!hideTitle" class="text-sm text-surface-600 dark:text-surface-400 mb-4">
             Informe seu CEP para preenchermos o endereço automaticamente.
         </p>
 
@@ -127,6 +127,10 @@ export default {
         initial: {
             type: Object,
             default: () => ({}),
+        },
+        hideTitle: {
+            type: Boolean,
+            default: false,
         },
     },
     data() {

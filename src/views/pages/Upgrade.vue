@@ -108,47 +108,199 @@
             </section>
 
             <!-- Step 2: Checkout -->
-            <section v-else class="upgrade-step checkout-step">
-                <button type="button" class="back-link" @click="previousStep" :disabled="loading">
-                    <i class="pi pi-arrow-left"></i>
-                    Voltar aos planos
-                </button>
+            <section v-else class="co-page">
+                <div class="co-layout">
+                    <!-- COLUNA ESQUERDA -->
+                    <div class="co-left">
+                        <button type="button" class="back-link" @click="previousStep" :disabled="loading">
+                            <i class="pi pi-arrow-left"></i>
+                            Voltar aos planos
+                        </button>
 
-                <div class="checkout-header">
-                    <span class="hero-badge">Finalizar assinatura</span>
-                    <h1 class="hero-title hero-title--sm">{{ tituloEtapaPagamento }}</h1>
-                    <p class="hero-subtitle">{{ descricaoEtapaPagamento }}</p>
-                </div>
+                        <div class="co-header">
+                            <h1 class="co-title">{{ tituloEtapaPagamento }}</h1>
+                            <p class="co-subtitle">{{ descricaoEtapaPagamento }}</p>
+                        </div>
 
-                <div v-if="selectedPlan" class="checkout-summary">
-                    <div class="summary-plan">
-                        <span class="summary-label">Plano selecionado</span>
-                        <strong>{{ selectedPlan.nome }}</strong>
+                        <!-- Seção 1: Endereço -->
+                        <div class="co-section">
+                            <div class="co-section-head">
+                                <span class="co-section-num">1</span>
+                                <h3 class="co-section-title">Endereço de cobrança</h3>
+                                <button
+                                    v-if="enderecoConfirmado"
+                                    type="button"
+                                    class="co-edit-btn"
+                                    @click="editarEndereco"
+                                >Editar</button>
+                            </div>
+
+                            <!-- Preview confirmado -->
+                            <div v-if="enderecoConfirmado" class="co-address-preview">
+                                <p>{{ enderecoLinha1 }}</p>
+                                <p>{{ enderecoLinha2 }}</p>
+                            </div>
+
+                            <!-- Formulário de endereço -->
+                            <div v-else class="co-section-body">
+                                <EnderecoCheckout
+                                    ref="enderecoRef"
+                                    :initial="enderecoInitial"
+                                    :hide-title="true"
+                                />
+                                <Button
+                                    type="button"
+                                    label="Confirmar endereço"
+                                    icon="pi pi-check"
+                                    class="co-confirm-section-btn"
+                                    @click="confirmarEndereco"
+                                />
+                            </div>
+                        </div>
+
+                        <!-- Seção 2: Cartão -->
+                        <div class="co-section" :class="{ 'co-section--locked': !enderecoConfirmado }">
+                            <div class="co-section-head">
+                                <span class="co-section-num">2</span>
+                                <h3 class="co-section-title">Informações do Cartão</h3>
+                            </div>
+                            <div v-if="enderecoConfirmado" class="co-section-body">
+                                <CartaoAsaas
+                                    ref="cartaoRef"
+                                    :hide-submit="true"
+                                    :loading="loading"
+                                    @submit="processarPagamento"
+                                />
+                            </div>
+                            <div v-else class="co-section-locked-msg">
+                                <i class="pi pi-lock"></i>
+                                <span>Confirme o endereço para preencher os dados do cartão</span>
+                            </div>
+                        </div>
+
+                        <!-- Botão confirmar assinatura -->
+                        <Button
+                            v-if="enderecoConfirmado"
+                            type="button"
+                            label="Confirmar assinatura"
+                            icon="pi pi-lock"
+                            :loading="loading"
+                            :disabled="loading"
+                            class="co-pay-btn w-full"
+                            @click="confirmarPagamento"
+                        />
+
+                        <p class="co-security-note">
+                            <i class="pi pi-shield"></i>
+                            Seus dados estão protegidos. O pagamento é processado de forma segura pela Asaas.
+                        </p>
+
+                        <div v-if="podeVoltarAoSistema" class="co-back-action">
+                            <Button
+                                :label="labelVoltarAoSistema"
+                                icon="pi pi-arrow-left"
+                                severity="secondary"
+                                text
+                                :disabled="loading"
+                                @click="voltarAoSistema"
+                            />
+                        </div>
                     </div>
-                    <div class="summary-price">{{ selectedPlan.preco }}</div>
+
+                    <!-- COLUNA DIREITA: Resumo do pedido -->
+                    <div class="co-right">
+                        <div class="co-summary">
+                            <h3 class="co-summary-title">Resumo do pedido</h3>
+
+                            <div v-if="selectedPlan" class="co-summary-plan">
+                                <span class="co-summary-plan-label">Plano selecionado</span>
+                                <div class="co-summary-plan-row">
+                                    <strong>{{ selectedPlan.nome }}</strong>
+                                    <span class="co-summary-plan-price">R$ {{ selectedPlan.precoInt }},{{ selectedPlan.precoDec }}/mês</span>
+                                </div>
+                                <p class="co-summary-plan-desc">{{ selectedPlan.resumo }}</p>
+                            </div>
+
+                            <div class="co-summary-totals">
+                                <div class="co-total-row">
+                                    <span>Subtotal mensal</span>
+                                    <span>R$ {{ selectedPlan?.precoInt }},{{ selectedPlan?.precoDec }}</span>
+                                </div>
+                                <div class="co-total-row co-total-row--discount">
+                                    <span>Desconto promocional</span>
+                                    <span>- R$ 0,00</span>
+                                </div>
+                                <div class="co-total-row co-total-row--total">
+                                    <strong>Total mensal</strong>
+                                    <strong class="co-total-price">R$ {{ selectedPlan?.precoInt }},{{ selectedPlan?.precoDec }}</strong>
+                                </div>
+                            </div>
+
+                            <div class="co-trust-items">
+                                <div class="co-trust-item">
+                                    <span class="co-trust-icon co-trust-icon--green">
+                                        <i class="pi pi-bolt"></i>
+                                    </span>
+                                    <div>
+                                        <strong>Ativação rápida</strong>
+                                        <p>Seu plano é ativado após a confirmação do pagamento.</p>
+                                    </div>
+                                </div>
+                                <div class="co-trust-item">
+                                    <span class="co-trust-icon co-trust-icon--red">
+                                        <i class="pi pi-times-circle"></i>
+                                    </span>
+                                    <div>
+                                        <strong>Sem fidelidade</strong>
+                                        <p>Cancele quando quiser, sem multas ou burocracia.</p>
+                                    </div>
+                                </div>
+                                <div class="co-trust-item">
+                                    <span class="co-trust-icon co-trust-icon--blue">
+                                        <i class="pi pi-comments"></i>
+                                    </span>
+                                    <div>
+                                        <strong>Suporte humanizado</strong>
+                                        <p>Atendimento sempre que você precisar.</p>
+                                    </div>
+                                </div>
+                                <div class="co-trust-item">
+                                    <span class="co-trust-icon co-trust-icon--orange">
+                                        <i class="pi pi-whatsapp"></i>
+                                    </span>
+                                    <div>
+                                        <strong>Precisa de ajuda?</strong>
+                                        <p>Fale com nosso time pelo WhatsApp ou chat online.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="checkout-card">
-                    <EnderecoCheckout
-                        ref="enderecoRef"
-                        :initial="enderecoInitial"
-                    />
-                    <CartaoAsaas
-                        :loading="loading"
-                        @submit="processarPagamento"
-                    />
-                </div>
-
-                <div class="checkout-actions">
-                    <Button
-                        v-if="podeVoltarAoSistema"
-                        :label="labelVoltarAoSistema"
-                        icon="pi pi-arrow-left"
-                        severity="secondary"
-                        outlined
-                        :disabled="loading"
-                        @click="voltarAoSistema"
-                    />
+                <!-- Barra de confiança inferior -->
+                <div class="co-bottom-bar">
+                    <div class="co-bottom-item">
+                        <i class="pi pi-lock"></i>
+                        <div>
+                            <strong>Ambiente 100% seguro</strong>
+                            <span>Seus dados protegidos com criptografia</span>
+                        </div>
+                    </div>
+                    <div class="co-bottom-item">
+                        <i class="pi pi-credit-card"></i>
+                        <div>
+                            <strong>Pagamento processado pela Asaas</strong>
+                            <span>Plataforma de pagamentos líder no Brasil</span>
+                        </div>
+                    </div>
+                    <div class="co-bottom-item">
+                        <i class="pi pi-shield"></i>
+                        <div>
+                            <strong>Conformidade LGPD</strong>
+                            <span>Cumprimos todas as normas de proteção</span>
+                        </div>
+                    </div>
                 </div>
             </section>
         </template>
@@ -228,11 +380,14 @@ export default {
         const erroPlanos = ref(null);
         const enderecoRef = ref(null);
         const enderecoInitial = ref({});
+        const cartaoRef = ref(null);
+        const enderecoConfirmado = ref(false);
+        const enderecoConfirmadoDados = ref(null);
 
         async function carregarEnderecoPerfil() {
             try {
                 const perfil = await userService.getProfile();
-                enderecoInitial.value = {
+                const addr = {
                     cep: perfil.cep || '',
                     rua: perfil.rua || '',
                     bairro: perfil.bairro || '',
@@ -241,6 +396,11 @@ export default {
                     numero: perfil.numero || '',
                     complemento: perfil.complemento || '',
                 };
+                enderecoInitial.value = addr;
+                if (addr.cep && addr.rua && addr.numero && addr.cidade && addr.estado && addr.bairro) {
+                    enderecoConfirmadoDados.value = { ...addr };
+                    enderecoConfirmado.value = true;
+                }
             } catch (e) {
                 console.warn('Não foi possível carregar endereço do perfil:', e);
             }
@@ -316,6 +476,32 @@ export default {
             return isAtivacaoInicial.value && !previewAtivo.value && planStore.precisaAtivarPlano;
         });
 
+        /** Assinatura paga/trial Asaas — distinto do preview gratuito ou plano_id default no cadastro. */
+        const temPlanoContratado = computed(() => {
+            if (planStore.usuarioVitalicio || localStorage.getItem('usuarioVitalicio') === 'true') {
+                return true;
+            }
+            const stat = planStore.statusAssinatura || localStorage.getItem('statusAssinatura') || '';
+            if (stat === 'sem_assinatura') {
+                return false;
+            }
+            if (planStore.assinatura?.plano_id) {
+                return true;
+            }
+            try {
+                const raw = localStorage.getItem('userAssinatura');
+                if (raw) {
+                    const assinatura = JSON.parse(raw);
+                    if (assinatura?.plano_id || assinatura?.status) {
+                        return true;
+                    }
+                }
+            } catch {
+                // ignora JSON inválido
+            }
+            return stat !== 'sem_assinatura';
+        });
+
         const podeVoltarAoSistema = computed(() => usuarioPodeSairDaUpgrade());
 
         const labelVoltarAoSistema = computed(() => {
@@ -346,9 +532,16 @@ export default {
         });
 
         const isPlanoAtual = (plan) => {
-            if (plan.nome === currentPlanName.value) return true;
+            if (!temPlanoContratado.value) {
+                return false;
+            }
+            if (plan.nome === currentPlanName.value) {
+                return true;
+            }
             const pidRaw = localStorage.getItem('planoId');
-            if (pidRaw == null || pidRaw === '') return false;
+            if (pidRaw == null || pidRaw === '') {
+                return false;
+            }
             const pid = parseInt(pidRaw, 10);
             return !Number.isNaN(pid) && Number(plan.id) === pid;
         };
@@ -367,40 +560,53 @@ export default {
             }
         };
 
-        const processarPagamento = async (payload) => {
+        const enderecoLinha1 = computed(() => {
+            const e = enderecoConfirmadoDados.value;
+            if (!e?.rua) return '';
+            let linha = e.rua;
+            if (e.numero) linha += `, ${e.numero}`;
+            if (e.complemento) linha += ` — ${e.complemento}`;
+            return linha;
+        });
+
+        const enderecoLinha2 = computed(() => {
+            const e = enderecoConfirmadoDados.value;
+            if (!e?.cidade) return '';
+            const partes = [];
+            if (e.bairro) partes.push(e.bairro);
+            partes.push(e.cidade + (e.estado ? `/${e.estado}` : ''));
+            if (e.cep) partes.push(`CEP: ${e.cep}`);
+            return partes.join(' — ');
+        });
+
+        function confirmarEndereco() {
+            if (!enderecoRef.value?.validar()) return;
+            enderecoConfirmadoDados.value = enderecoRef.value.getDados();
+            enderecoConfirmado.value = true;
+        }
+
+        function editarEndereco() {
+            enderecoConfirmado.value = false;
+        }
+
+        const confirmarPagamento = async (cartaoOverride) => {
             if (!selectedPlan.value?.id) {
-                toast.add({
-                    severity: 'warn',
-                    summary: 'Plano',
-                    detail: 'Selecione um plano antes de pagar.',
-                    life: 4000
-                });
+                toast.add({ severity: 'warn', summary: 'Plano', detail: 'Selecione um plano antes de pagar.', life: 4000 });
                 return;
             }
-            if (!payload?.cartao) {
-                toast.add({ severity: 'warn', summary: 'Cartão', detail: 'Dados do cartão incompletos.', life: 4000 });
+            if (!enderecoConfirmado.value || !enderecoConfirmadoDados.value) {
+                toast.add({ severity: 'warn', summary: 'Endereço', detail: 'Confirme o endereço de cobrança antes de continuar.', life: 5000 });
                 return;
             }
-            if (!enderecoRef.value?.validar()) {
-                toast.add({
-                    severity: 'warn',
-                    summary: 'Endereço',
-                    detail: 'Informe e confirme seu endereço de cobrança.',
-                    life: 5000
-                });
-                return;
-            }
+            if (!cartaoRef.value) return;
+            const dadosCartao = cartaoOverride ? { cartao: cartaoOverride } : cartaoRef.value.getDadosCartao();
+            if (!dadosCartao) return;
             try {
-                await userService.salvarEndereco(enderecoRef.value.getDados());
-                await asaas.criarCheckout(selectedPlan.value.id, payload.cartao);
+                await userService.salvarEndereco(enderecoConfirmadoDados.value);
+                await asaas.criarCheckout(selectedPlan.value.id, dadosCartao.cartao);
                 planoContratado.value = selectedPlan.value.nome;
                 pagamentoSucesso.value = true;
-                toast.add({
-                    severity: 'success',
-                    summary: 'Assinatura',
-                    detail: 'Plano ativado com sucesso.',
-                    life: 5000
-                });
+                toast.add({ severity: 'success', summary: 'Assinatura', detail: 'Plano ativado com sucesso.', life: 5000 });
             } catch (e) {
                 const body = e?.response?.data;
                 let msg = body?.message || e?.message || 'Não foi possível processar o pagamento.';
@@ -408,12 +614,13 @@ export default {
                     const first = Object.values(body.errors).flat()[0];
                     if (first) msg = first;
                 }
-                toast.add({
-                    severity: 'error',
-                    summary: 'Pagamento',
-                    detail: String(msg),
-                    life: 8000
-                });
+                toast.add({ severity: 'error', summary: 'Pagamento', detail: String(msg), life: 8000 });
+            }
+        };
+
+        const processarPagamento = async (payload) => {
+            if (payload?.cartao) {
+                await confirmarPagamento(payload.cartao);
             }
         };
 
@@ -453,6 +660,7 @@ export default {
             isAtivacaoInicial,
             previewAtivo,
             previewExpirado,
+            temPlanoContratado,
             podeVoltarAoSistema,
             labelVoltarAoSistema,
             tituloEtapaPagamento,
@@ -462,10 +670,17 @@ export default {
             erroPlanos,
             enderecoRef,
             enderecoInitial,
+            cartaoRef,
+            enderecoConfirmado,
+            enderecoLinha1,
+            enderecoLinha2,
             isPlanoAtual,
             selectPlan,
             previousStep,
             processarPagamento,
+            confirmarEndereco,
+            editarEndereco,
+            confirmarPagamento,
             irParaDashboard,
             voltarAoSistema,
             loading: asaas.loading
@@ -476,7 +691,7 @@ export default {
 
 <style scoped>
 .upgrade-page {
-    max-width: 960px;
+    max-width: 1060px;
     margin: 0 auto;
     padding: 2rem 1.25rem 3rem;
 }
@@ -694,6 +909,356 @@ export default {
     margin: 0 auto;
 }
 
+/* ========== CHECKOUT REDESIGN ========== */
+
+.co-page {
+    width: 100%;
+}
+
+.co-layout {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 1.75rem;
+    align-items: start;
+}
+
+.co-left {
+    min-width: 0;
+}
+
+.co-header {
+    margin-bottom: 1.75rem;
+}
+
+.co-title {
+    margin: 0 0 0.4rem;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.co-subtitle {
+    margin: 0;
+    font-size: 0.92rem;
+    color: var(--text-color-secondary);
+}
+
+.co-section {
+    margin-bottom: 0.85rem;
+    border-radius: 1rem;
+    background: var(--surface-card);
+    border: 1px solid var(--surface-border);
+    overflow: hidden;
+    transition: opacity 0.2s;
+}
+
+.co-section--locked {
+    opacity: 0.55;
+}
+
+.co-section-head {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 1rem 1.4rem;
+}
+
+.co-section-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 50%;
+    background: #2563eb;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.co-section--locked .co-section-num {
+    background: var(--surface-400, #94a3b8);
+}
+
+.co-section-title {
+    flex: 1;
+    margin: 0;
+    font-size: 0.97rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.co-edit-btn {
+    padding: 0.28rem 0.85rem;
+    border: 1px solid var(--surface-border);
+    border-radius: 0.5rem;
+    background: var(--surface-card);
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-color-secondary);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.co-edit-btn:hover {
+    background: var(--surface-100);
+    color: var(--text-color);
+}
+
+.co-section-body {
+    padding: 0 1.4rem 1.4rem;
+    border-top: 1px solid var(--surface-border);
+}
+
+.co-address-preview {
+    padding: 0.75rem 1.4rem 1.2rem;
+    border-top: 1px solid var(--surface-border);
+}
+
+.co-address-preview p {
+    margin: 0.3rem 0 0;
+    font-size: 0.9rem;
+    color: var(--text-color-secondary);
+}
+
+.co-section-locked-msg {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.4rem 1rem;
+    font-size: 0.86rem;
+    color: var(--text-color-secondary);
+    border-top: 1px solid var(--surface-border);
+}
+
+.co-confirm-section-btn {
+    margin-top: 1rem;
+}
+
+.co-pay-btn {
+    font-size: 1.05rem !important;
+    padding: 0.85rem 1.5rem !important;
+    border-radius: 0.65rem !important;
+    margin-top: 1.1rem;
+}
+
+.co-security-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    margin: 0.85rem 0 0;
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+    text-align: center;
+}
+
+.co-security-note i {
+    color: #22c55e;
+}
+
+.co-back-action {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.75rem;
+}
+
+/* --- Sidebar direita --- */
+
+.co-right {
+    position: sticky;
+    top: 1.5rem;
+}
+
+.co-summary {
+    border-radius: 1rem;
+    background: var(--surface-card);
+    border: 1px solid var(--surface-border);
+    padding: 1.4rem;
+}
+
+.co-summary-title {
+    margin: 0 0 1.1rem;
+    font-size: 0.97rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.co-summary-plan {
+    padding: 0.9rem 1rem;
+    border-radius: 0.75rem;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    margin-bottom: 1.1rem;
+}
+
+.co-summary-plan-label {
+    display: block;
+    font-size: 0.72rem;
+    color: #3b82f6;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.5rem;
+}
+
+.co-summary-plan-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.co-summary-plan-row strong {
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
+
+.co-summary-plan-price {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #2563eb;
+    white-space: nowrap;
+}
+
+.co-summary-plan-desc {
+    margin: 0.45rem 0 0;
+    font-size: 0.78rem;
+    color: var(--text-color-secondary);
+    line-height: 1.45;
+}
+
+.co-summary-totals {
+    border-top: 1px solid var(--surface-border);
+    padding-top: 0.9rem;
+    margin-bottom: 1.1rem;
+}
+
+.co-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.3rem 0;
+    font-size: 0.86rem;
+    color: var(--text-color-secondary);
+}
+
+.co-total-row--discount span:last-child {
+    color: #16a34a;
+}
+
+.co-total-row--total {
+    border-top: 1px solid var(--surface-border);
+    margin-top: 0.4rem;
+    padding-top: 0.65rem;
+    font-size: 0.96rem;
+    color: var(--text-color);
+}
+
+.co-total-price {
+    color: #2563eb !important;
+}
+
+.co-trust-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    border-top: 1px solid var(--surface-border);
+    padding-top: 1.1rem;
+}
+
+.co-trust-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+}
+
+.co-trust-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+    font-size: 0.95rem;
+}
+
+.co-trust-icon--green { background: #dcfce7; color: #16a34a; }
+.co-trust-icon--red   { background: #fee2e2; color: #dc2626; }
+.co-trust-icon--blue  { background: #eff6ff; color: #2563eb; }
+.co-trust-icon--orange{ background: #fff7ed; color: #ea580c; }
+
+.co-trust-item strong {
+    display: block;
+    font-size: 0.83rem;
+    color: var(--text-color);
+    margin-bottom: 0.1rem;
+}
+
+.co-trust-item p {
+    margin: 0;
+    font-size: 0.76rem;
+    color: var(--text-color-secondary);
+    line-height: 1.4;
+}
+
+/* Barra inferior */
+
+.co-bottom-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
+    padding: 1.1rem 1.5rem;
+    border-radius: 1rem;
+    background: var(--surface-100);
+    border: 1px solid var(--surface-border);
+}
+
+.co-bottom-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    text-align: left;
+}
+
+.co-bottom-item i {
+    font-size: 1.3rem;
+    color: #2563eb;
+    flex-shrink: 0;
+}
+
+.co-bottom-item strong {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-color);
+}
+
+.co-bottom-item span {
+    font-size: 0.73rem;
+    color: var(--text-color-secondary);
+}
+
+@media (max-width: 900px) {
+    .co-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .co-right {
+        position: static;
+        order: -1;
+    }
+
+    .co-bottom-bar {
+        grid-template-columns: 1fr;
+    }
+}
+
 .back-link {
     display: inline-flex;
     align-items: center;
@@ -717,48 +1282,27 @@ export default {
 }
 
 .checkout-header {
-    text-align: center;
-    margin-bottom: 1.5rem;
+    display: none;
 }
 
 .checkout-summary {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1.25rem;
-    padding: 1rem 1.15rem;
-    border-radius: 0.85rem;
-    background: var(--surface-100);
-    border: 1px solid var(--surface-border);
+    display: none;
 }
 
 .summary-label {
-    display: block;
-    font-size: 0.78rem;
-    color: var(--text-color-secondary);
-    margin-bottom: 0.15rem;
+    display: none;
 }
 
 .summary-price {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #2563eb;
-    white-space: nowrap;
+    display: none;
 }
 
 .checkout-card {
-    padding: 1.5rem;
-    border-radius: 1rem;
-    background: var(--surface-card);
-    border: 1px solid var(--surface-border);
-    box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+    display: none;
 }
 
 .checkout-actions {
-    display: flex;
-    justify-content: center;
-    margin-top: 1.25rem;
+    display: none;
 }
 
 @media (max-width: 768px) {

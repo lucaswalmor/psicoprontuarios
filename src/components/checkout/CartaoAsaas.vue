@@ -1,6 +1,6 @@
 <template>
     <div class="card-form">
-        <h3 class="text-xl font-semibold mb-4">Informações do Cartão</h3>
+        <h3 v-if="!hideSubmit" class="text-xl font-semibold mb-4">Informações do Cartão</h3>
         
         <form @submit.prevent="handleSubmit">
             <!-- Nome no Cartão -->
@@ -109,22 +109,24 @@
             </div>
 
             <!-- Botão de Pagamento -->
-            <Button
-                type="submit"
-                label="Confirmar Pagamento"
-                icon="pi pi-lock"
-                :loading="loading"
-                :disabled="loading"
-                class="w-full p-button-primary p-button-lg"
-            />
+            <template v-if="!hideSubmit">
+                <Button
+                    type="submit"
+                    label="Confirmar Pagamento"
+                    icon="pi pi-lock"
+                    :loading="loading"
+                    :disabled="loading"
+                    class="w-full p-button-primary p-button-lg"
+                />
 
-            <!-- Mensagem de Segurança -->
-            <div class="security-notice mt-4 p-3 bg-blue-50 border-round">
-                <i class="pi pi-shield text-blue-600 mr-2"></i>
-                <span class="text-sm text-blue-600">
-                    Seus dados estão protegidos. O pagamento é processado de forma segura pela Asaas.
-                </span>
-            </div>
+                <!-- Mensagem de Segurança -->
+                <div class="security-notice mt-4 p-3 bg-blue-50 border-round">
+                    <i class="pi pi-shield text-blue-600 mr-2"></i>
+                    <span class="text-sm text-blue-600">
+                        Seus dados estão protegidos. O pagamento é processado de forma segura pela Asaas.
+                    </span>
+                </div>
+            </template>
         </form>
     </div>
 </template>
@@ -135,6 +137,10 @@ export default {
     emits: ['submit', 'cancel'],
     props: {
         loading: {
+            type: Boolean,
+            default: false
+        },
+        hideSubmit: {
             type: Boolean,
             default: false
         }
@@ -246,6 +252,23 @@ export default {
                     phone: this.limparTelefone(this.dadosUsuario.phone)
                 }
             });
+        },
+
+        getDadosCartao() {
+            if (!this.validar()) return null;
+            return {
+                cartao: {
+                    holder_name: this.dadosCartao.holder_name,
+                    number: this.limparNumeroCartao(this.dadosCartao.number),
+                    expiry_month: this.dadosCartao.expiry_month,
+                    expiry_year: this.dadosCartao.expiry_year,
+                    ccv: this.dadosCartao.ccv
+                },
+                usuario: {
+                    cpf: this.limparCPF(this.dadosUsuario.cpf),
+                    phone: this.limparTelefone(this.dadosUsuario.phone)
+                }
+            };
         }
     }
 };
