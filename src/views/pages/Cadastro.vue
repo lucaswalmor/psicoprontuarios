@@ -329,7 +329,7 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
-import { registrarMarketingLog } from '@/services/marketingLogService.js';
+import { registrarMarketingLog, capturarUtms } from '@/services/marketingLogService.js';
 import { trackCadastroEtapa, trackCompleteRegistration } from '@/utils/metaPixel';
 import { validarNomeCompleto } from '@/utils/nomeCompleto';
 
@@ -382,7 +382,7 @@ export default {
         };
     },
     mounted() {
-        registrarMarketingLog('cadastro_view');
+        registrarMarketingLog('cadastro_view', { utms: capturarUtms() });
         trackCadastroEtapa(1, CADASTRO_ETAPA_NOMES[1]);
         const plano = this.$route?.query?.plano;
         if (plano === 'pro' || plano === 'simples') {
