@@ -21,7 +21,7 @@ O "Meu Site" é a landing page pública e personalizada do psicólogo, disponív
 
 **Plano necessário:** recurso disponível apenas para assinantes do plano **Pro** ou **Vitalício**. Usuários do plano Simples veem a tela de upgrade ao acessar `/meu-site` (mesmo padrão visual da etiqueta **PRO** no menu).
 
-Ao se cadastrar na plataforma como psicólogo, o sistema cria automaticamente uma página inicial com dados pré-preenchidos a partir do cadastro (nome, e-mail, telefone, CRP e endereço). O psicólogo Pro/Vitalício pode personalizar tudo depois.
+Ao se cadastrar na plataforma como psicólogo, o sistema cria automaticamente uma página inicial com dados pré-preenchidos a partir do cadastro (nome, e-mail, telefone e CRP). O psicólogo Pro/Vitalício pode personalizar tudo depois.
 
 
 2. Como acessar
@@ -55,7 +55,7 @@ Tipo de atendimento: Define se o psicólogo atende Online, Presencial, ou Online
 Como salvar
 Preencha ou edite os campos desejados e clique no botão "Salvar" no canto superior direito da aba.
 
-Observação: Se os campos estiverem vazios, o sistema usa automaticamente os dados do cadastro do psicólogo como fallback (telefone, e-mail, endereço e CRP do cadastro original).
+Observação: Se os campos estiverem vazios, o sistema usa automaticamente os dados do cadastro do psicólogo como fallback (telefone, e-mail e CRP do cadastro original). O endereço do consultório deve ser preenchido manualmente nesta aba, pois não é coletado durante o cadastro inicial.
 
 
 5. Aba: Aparência
@@ -151,7 +151,7 @@ P: O que é o "Meu Site" no PsicoProntuários?
 R: É a landing page pública do psicólogo, uma página na internet onde qualquer pessoa pode ver suas informações profissionais, especialidades, horários e formas de contato.
 
 P: Preciso criar o site do zero?
-R: Não. Ao se cadastrar como psicólogo na plataforma, o sistema cria automaticamente uma página inicial com seus dados de cadastro. Você só precisa personalizar o que quiser.
+R: Não. Ao se cadastrar como psicólogo na plataforma, o sistema cria automaticamente uma página inicial com seus dados de cadastro (nome, e-mail, telefone e CRP). Você só precisa personalizar o que quiser.
 
 P: Qual é o endereço da minha landing page?
 R: O endereço usa um subdomínio (slug) gerado a partir do seu nome. Exemplo: `ana-lima.psicoprontuarios.com.br`. Você vê o slug na aba **Geral** e pode abrir a página pelo botão **Ver meu site**.

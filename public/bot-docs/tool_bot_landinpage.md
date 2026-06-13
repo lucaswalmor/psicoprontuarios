@@ -105,7 +105,16 @@ Não. O foco é gestão da rotina clínica do profissional. O Meu Site (Pro) é 
 Use este chat ou envie seus dados no formulário da landing para retorno comercial.
 
 ### Como contratar?
-Inicie o cadastro em "Começar teste grátis" na landing e siga o fluxo de assinatura.
+Clique em "Começar teste grátis" na landing e siga o fluxo:
+1. **Etapa 1 — Login:** informe e-mail, senha e aceite os termos de uso. Também é possível continuar com o Google.
+2. **Etapa 2 — Dados pessoais:** preencha nome completo, telefone, CPF e CRP.
+3. **Escolha do plano:** após o cadastro, selecione o plano Simples ou Pro em `/upgrade`.
+4. **Pagamento:** na tela de assinatura, informe o endereço de cobrança e os dados do cartão para ativar o plano.
+
+O endereço é solicitado apenas na hora do pagamento, não no cadastro inicial.
+
+### Quanto tempo leva para criar a conta?
+O cadastro inicial (etapas 1 e 2) leva menos de 2 minutos. Após o cadastro, você já pode explorar o sistema por 7 dias de forma gratuita antes de assinar um plano.
 
 ### O sistema segue LGPD?
 O produto foi estruturado com foco em sigilo profissional e boas práticas alinhadas à LGPD.
