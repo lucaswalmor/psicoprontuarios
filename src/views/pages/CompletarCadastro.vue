@@ -355,10 +355,23 @@ export default {
     },
     methods: {
         rotaAposCadastroOk(usuario) {
-            if (usuario && !usuario.usuario_vitalicio && usuario.status_assinatura === 'sem_assinatura') {
+            if (usuario && !usuario.usuario_vitalicio && this.precisaContratarPlano(usuario)) {
                 return '/upgrade';
             }
             return '/dashboard';
+        },
+
+        precisaContratarPlano(usuario) {
+            if (!usuario || usuario.usuario_vitalicio) {
+                return false;
+            }
+            if (usuario.preview_ativo === true) {
+                return false;
+            }
+            if (usuario.precisa_ativar_plano === true) {
+                return true;
+            }
+            return usuario.status_assinatura === 'sem_assinatura';
         },
         validateForm() {
             this.errors = {};

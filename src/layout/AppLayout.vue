@@ -8,6 +8,7 @@ import PlanLoading from '@/components/PlanLoading.vue';
 import ChatAtendimento from '@/components/ChatAtendimento.vue';
 import { getN8nChatWebhookUrl } from '@/config/environment';
 import DialogNps from '@/components/dialogs/DialogNps.vue';
+import PreviewActivationBanner from '@/components/preview/PreviewActivationBanner.vue';
 
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 
@@ -139,7 +140,7 @@ function handleNpsSuccess() {
         <app-sidebar v-if="showSidebar"></app-sidebar>
         <div class="layout-main-container">
             <div class="container-fluid">
-            <!-- <div class="layout-main"> -->
+                <PreviewActivationBanner />
                 <Breadcrumb />
                 <router-view></router-view>
             </div>

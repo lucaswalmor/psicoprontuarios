@@ -26,15 +26,32 @@ function isInactive() {
     return localStorage.getItem('userAtivo') === 'false';
 }
 
-/** Conta ativa mas ainda sem assinatura: só upgrade (layout próprio) e completar cadastro. */
-function precisaContratarPlano() {
+/** Conta ativa mas ainda sem assinatura: preview liberado ou bloqueio em /upgrade. */
+export function usuarioPrecisaContratarPlano() {
     if (isInactive()) {
         return false;
     }
     if (localStorage.getItem('usuarioVitalicio') === 'true') {
         return false;
     }
+    if (localStorage.getItem('previewAtivo') === 'true') {
+        return false;
+    }
+    if (localStorage.getItem('precisaAtivarPlano') === 'true') {
+        return true;
+    }
     return localStorage.getItem('statusAssinatura') === 'sem_assinatura';
+}
+
+/** Usuário pode sair de /upgrade e voltar ao app (ex.: assinante fazendo upgrade voluntário). */
+export function usuarioPodeSairDaUpgrade() {
+    if (!localStorage.getItem('token')) {
+        return false;
+    }
+    if (isInactive()) {
+        return false;
+    }
+    return !usuarioPrecisaContratarPlano();
 }
 
 const ROTAS_COM_ASSINATURA_OBRIGATORIA = new Set(['/upgrade', '/completar-cadastro']);
@@ -58,7 +75,7 @@ export function setupAuthInactiveGuard(router) {
             return next({ path: '/pagamento', replace: true });
         }
 
-        if (precisaContratarPlano()) {
+        if (usuarioPrecisaContratarPlano()) {
             if (ROTAS_COM_ASSINATURA_OBRIGATORIA.has(to.path)) {
                 return next();
             }

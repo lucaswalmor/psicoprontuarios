@@ -563,6 +563,10 @@ export default {
     mounted() {
         registrarMarketingLog('cadastro_view');
         trackCadastroEtapa(1, CADASTRO_ETAPA_NOMES[1]);
+        const plano = this.$route?.query?.plano;
+        if (plano === 'pro' || plano === 'simples') {
+            localStorage.setItem('planoPreferidoSlug', plano);
+        }
     },
     methods: {
         validateForm() {
@@ -665,6 +669,12 @@ export default {
         precisaContratarPlano(usuario) {
             if (!usuario || usuario.usuario_vitalicio) {
                 return false;
+            }
+            if (usuario.preview_ativo === true) {
+                return false;
+            }
+            if (usuario.precisa_ativar_plano === true) {
+                return true;
             }
             return usuario.status_assinatura === 'sem_assinatura';
         },

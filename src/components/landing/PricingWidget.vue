@@ -128,7 +128,8 @@ export default {
         irParaCadastro(placement) {
             trackStartTrialClick(placement);
             registrarMarketingLog('teste_gratis_click', { placement });
-            this.$router.push('/cadastro');
+            const plano = placement === 'pricing_pro' ? 'pro' : 'simples';
+            this.$router.push({ path: '/cadastro', query: { plano } });
         }
     },
     data() {

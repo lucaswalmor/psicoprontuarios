@@ -1,123 +1,153 @@
 <template>
-    <div class="container p-4 mb-4">
-        <div class="upgrade-layout-grid">
-            <!-- Card Esquerda -->
-            <div class="left-card">
-                <div class="card-content-left">
-                    <!-- Header -->
-                    <div class="plan-info-left">
-                        <h1>Upgrade de Plano</h1>
-                        <div class="current-plan-badge-left" :class="currentPlanClass">
-                            <i class="pi pi-crown"></i>
-                            <span>Você está no plano {{ currentPlanName }}</span>
-                        </div>
-                    </div>
+    <div class="upgrade-page">
+        <SucessoPagamento
+            v-if="pagamentoSucesso"
+            :plano-nome="planoContratado"
+            @continuar="irParaDashboard"
+        />
 
-                    <!-- Mensagem de Trial (apenas no step 2) -->
-                    <div class="trial-notice-left">
-                        <i class="pi pi-gift"></i>
-                        <div class="trial-content-left">
-                            <h4>🎉 7 dias gratuitos para teste!</h4>
-                            <p>Você terá acesso completo ao plano por 7 dias sem cobrança. Após esse período, a cobrança será automática. Pode cancelar a qualquer momento dentro dos 7 dias.</p>
-                        </div>
+        <template v-else>
+            <!-- Step 1: Planos -->
+            <section v-if="currentStep === 1" class="upgrade-step">
+                <div
+                    v-if="previewExpirado"
+                    class="status-banner status-banner--warning"
+                >
+                    <i class="pi pi-exclamation-circle"></i>
+                    <div>
+                        <strong>Período de exploração encerrado</strong>
+                        <p>Escolha um plano e confirme seu cartão para continuar usando o PsicoProntuários.</p>
                     </div>
+                </div>
 
-                    <!-- Resumo do Plano (apenas no step 2) -->
-                    <div v-if="currentStep === 2 && selectedPlan && !pagamentoSucesso" class="plan-summary-left">
-                        <div class="summary-item-left">
-                            <span class="label">Plano Atual:</span>
-                            <span class="value">{{ currentPlanName }}</span>
-                        </div>
-                        <div class="summary-item-left">
-                            <span class="label">Novo Plano:</span>
-                            <span class="value">{{ selectedPlan?.nome }}</span>
+                <div
+                    v-else-if="!isAtivacaoInicial"
+                    class="status-banner status-banner--info"
+                >
+                    <i class="pi pi-arrow-up-right"></i>
+                    <div>
+                        <strong>Upgrade de plano</strong>
+                        <p>Você está no plano {{ currentPlanName }}. A mudança vale a partir da próxima fatura.</p>
+                    </div>
+                </div>
+
+                <div class="hero">
+                    <span class="hero-badge">Escolha seu plano</span>
+                    <h1 class="hero-title">Escolha o plano ideal para o seu consultório</h1>
+                    <p class="hero-subtitle">
+                        Planos completos para organizar atendimentos, prontuários e finanças e levar sua prática para o próximo nível.
+                    </p>
+
+                    <div class="billing-row">
+                        <div class="billing-toggle">
+                            <span class="billing-option billing-option--active">Mensal</span>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Card Direita (maior) -->
-            <div class="right-card">
-                <div class="card-content-right">
-                    <!-- Mensagem de sucesso após pagamento -->
-                    <div v-if="pagamentoSucesso" class="sucesso-container">
-                        <SucessoPagamento 
-                            :plano-nome="planoContratado"
-                            @continuar="irParaDashboard"
-                        />
+                <div v-if="loadingPlanos" class="plans-loading">
+                    <i class="pi pi-spin pi-spinner"></i>
+                    <p>Carregando planos…</p>
+                </div>
+
+                <Message v-else-if="erroPlanos" severity="error" :closable="false" class="plans-error">
+                    {{ erroPlanos }}
+                </Message>
+
+                <div v-else class="plans-grid">
+                    <PlanoCard
+                        v-for="plan in availablePlans"
+                        :key="plan.id"
+                        :plan="plan"
+                        :is-current="isPlanoAtual(plan)"
+                        @select="selectPlan"
+                    />
+                </div>
+
+                <div v-if="podeVoltarAoSistema" class="explore-action">
+                    <Button
+                        :label="labelVoltarAoSistema"
+                        icon="pi pi-arrow-left"
+                        severity="secondary"
+                        outlined
+                        @click="voltarAoSistema"
+                    />
+                </div>
+
+                <div class="trust-bar">
+                    <div class="trust-item">
+                        <span class="trust-icon"><i class="pi pi-shield"></i></span>
+                        <div>
+                            <strong>Pagamento 100% seguro</strong>
+                            <p>Seus dados protegidos com criptografia.</p>
+                        </div>
                     </div>
-
-                    <!-- Conteúdo principal (oculto quando pagamentoSucesso) -->
-                    <div v-else>
-                        <!-- Stepper de progresso -->
-                        <UpgradeStepper 
-                            :current-step="currentStep" 
-                            :steps="steps"
-                            :selected-plan="selectedPlan"
-                            @step-change="handleStepChange"
-                        />
-
-                        <!-- Step 1: Escolha do plano -->
-                        <div v-if="currentStep === 1" class="step-content">
-                            <h2>Escolha seu novo plano</h2>
-                            <p class="step-description">
-                                Selecione o plano que melhor atende às suas necessidades
-                            </p>
-                            
-                            <div v-if="loadingPlanos" class="plans-loading text-center py-5">
-                                <i class="pi pi-spin pi-spinner text-4xl text-primary"></i>
-                                <p class="mt-3 mb-0 text-color-secondary">Carregando planos…</p>
-                            </div>
-                            <Message v-else-if="erroPlanos" severity="error" :closable="false" class="mb-3">
-                                {{ erroPlanos }}
-                            </Message>
-                            <div v-else class="plans-grid">
-                                <PlanoCard
-                                    v-for="plan in availablePlans"
-                                    :key="plan.id"
-                                    :plan="plan"
-                                    :is-selected="selectedPlan?.id === plan.id"
-                                    :is-current="isPlanoAtual(plan)"
-                                    @select="selectPlan"
-                                />
-                            </div>
+                    <div class="trust-item">
+                        <span class="trust-icon"><i class="pi pi-times-circle"></i></span>
+                        <div>
+                            <strong>Cancele quando quiser</strong>
+                            <p>Sem taxas, sem burocracia.</p>
                         </div>
-
-                        <!-- Step 2: Pagamento -->
-                        <div v-if="currentStep === 2" class="step-content">
-                            <h2>Finalizar Pagamento</h2>
-                            <p class="step-description">
-                                Complete o pagamento para ativar seu novo plano
-                            </p>
-
-                            <div class="payment-form-container">
-                                <div class="payment-form-card">
-                                    <CartaoAsaas
-                                        :loading="loading"
-                                        @submit="processarPagamento"
-                                    />
-                                </div>
-                            </div>
-
-                            <div class="step-actions">
-                                <Button 
-                                    label="Voltar" 
-                                    @click="previousStep"
-                                    class="p-button-secondary"
-                                    :disabled="loading"
-                                />
-                            </div>
-                        </div>
-
-                        <!-- FAQ Section -->
-                        <div class="faq-section">
-                            <h3>Perguntas Frequentes</h3>
-                            <FaqModal />
+                    </div>
+                    <div class="trust-item">
+                        <span class="trust-icon"><i class="pi pi-comments"></i></span>
+                        <div>
+                            <strong>Suporte humanizado</strong>
+                            <p>Estamos aqui para te ajudar.</p>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+
+                <p class="support-line">
+                    Dúvidas?
+                    <a href="mailto:suporte@psicoprontuarios.com" class="support-link">
+                        Fale com nosso suporte
+                        <i class="pi pi-whatsapp"></i>
+                    </a>
+                </p>
+            </section>
+
+            <!-- Step 2: Checkout -->
+            <section v-else class="upgrade-step checkout-step">
+                <button type="button" class="back-link" @click="previousStep" :disabled="loading">
+                    <i class="pi pi-arrow-left"></i>
+                    Voltar aos planos
+                </button>
+
+                <div class="checkout-header">
+                    <span class="hero-badge">Finalizar assinatura</span>
+                    <h1 class="hero-title hero-title--sm">{{ tituloEtapaPagamento }}</h1>
+                    <p class="hero-subtitle">{{ descricaoEtapaPagamento }}</p>
+                </div>
+
+                <div v-if="selectedPlan" class="checkout-summary">
+                    <div class="summary-plan">
+                        <span class="summary-label">Plano selecionado</span>
+                        <strong>{{ selectedPlan.nome }}</strong>
+                    </div>
+                    <div class="summary-price">{{ selectedPlan.preco }}</div>
+                </div>
+
+                <div class="checkout-card">
+                    <CartaoAsaas
+                        :loading="loading"
+                        @submit="processarPagamento"
+                    />
+                </div>
+
+                <div class="checkout-actions">
+                    <Button
+                        v-if="podeVoltarAoSistema"
+                        :label="labelVoltarAoSistema"
+                        icon="pi pi-arrow-left"
+                        severity="secondary"
+                        outlined
+                        :disabled="loading"
+                        @click="voltarAoSistema"
+                    />
+                </div>
+            </section>
+        </template>
     </div>
 </template>
 
@@ -127,20 +157,51 @@ import { useRouter } from 'vue-router';
 import { usePlanStore } from '@/store/plan';
 import { useAsaas } from '@/composables/useAsaas';
 import { useToast } from 'primevue/usetoast';
+import Button from 'primevue/button';
 import Message from 'primevue/message';
 import planService, { parseDescricaoPlano } from '@/services/planService';
-import UpgradeStepper from '@/components/upgrade/UpgradeStepper.vue';
 import PlanoCard from '@/components/upgrade/PlanoCard.vue';
-import FaqModal from '@/components/upgrade/FaqModal.vue';
 import CartaoAsaas from '@/components/checkout/CartaoAsaas.vue';
 import SucessoPagamento from '@/components/checkout/SucessoPagamento.vue';
+import { usuarioPodeSairDaUpgrade } from '@/router/authInactiveGuard';
+
+const FEATURES_BY_SLUG = {
+    simples: [
+        'Dashboard Geral',
+        'Dashboard Financeiro',
+        'Prontuários com histórico e PDF',
+        'Agendamento de Sessões',
+        'Controle Financeiro',
+        'Anamnese e Anexos',
+        'Indicadores de evolução (humor, GAD-7, PHQ-9)',
+        'Suporte por e-mail'
+    ],
+    pro: [
+        'Tudo do plano Simples',
+        'Site Exclusivo para você',
+        'Melhoria de texto com IA no prontuário',
+        'Gerar relatório profissional com IA nos prontuários',
+        'Notificações de aniversários e datas comemorativas por WhatsApp',
+        'WhatsApp: notificações de consulta e lembretes',
+        'Suporte prioritário por WhatsApp'
+    ]
+};
+
+const RESUMO_BY_SLUG = {
+    simples: 'Tudo o essencial para organizar seus atendimentos.',
+    pro: 'Mais recursos e automações para otimizar sua rotina.'
+};
+
+function parsePrecoParts(precoNum) {
+    const [inteiro, decimos] = precoNum.toFixed(2).split('.');
+    return { precoInt: inteiro, precoDec: decimos };
+}
 
 export default {
     name: 'Upgrade',
     components: {
-        UpgradeStepper,
+        Button,
         PlanoCard,
-        FaqModal,
         CartaoAsaas,
         SucessoPagamento,
         Message
@@ -150,7 +211,7 @@ export default {
         const planStore = usePlanStore();
         const toast = useToast();
         const asaas = useAsaas();
-        
+
         const currentStep = ref(1);
         const selectedPlan = ref(null);
         const pagamentoSucesso = ref(false);
@@ -159,12 +220,7 @@ export default {
         const loadingPlanos = ref(false);
         const erroPlanos = ref(null);
 
-        const steps = [
-            { id: 1, title: 'Escolha do Plano' },
-            { id: 2, title: 'Pagamento' }
-        ];
-
-        function mapearPlanoApi(p) {
+        function mapearPlanoApi(p, omitirTrialNosRecursos = false) {
             const precoNum = Number(p.preco);
             const precoOk = Number.isFinite(precoNum);
             const slug = String(p.slug || '').toLowerCase();
@@ -175,24 +231,29 @@ export default {
                 : 'Consulte valores';
 
             const { resumo, itens } = parseDescricaoPlano(p.descricao);
-            const features = [];
-            if (p.trial_dias > 0) {
-                features.push(`${p.trial_dias} dia${p.trial_dias > 1 ? 's' : ''} de trial gratuito`);
+            let features = FEATURES_BY_SLUG[slug] ? [...FEATURES_BY_SLUG[slug]] : [];
+
+            if (!features.length) {
+                if (p.trial_dias > 0 && !omitirTrialNosRecursos) {
+                    features.push(`${p.trial_dias} dia${p.trial_dias > 1 ? 's' : ''} de trial gratuito`);
+                }
+                features.push(...itens);
             }
-            features.push(...itens);
+
             if (!features.length) {
                 features.push('Acesso às funcionalidades do sistema');
             }
+
+            const resumoFinal = RESUMO_BY_SLUG[slug] || resumo || String(p.descricao || '').trim() || '';
 
             return {
                 id: p.id,
                 nome: p.nome,
                 slug,
                 preco: precoStr,
-                /** Texto curto abaixo do preço (cabeçalho do card) */
-                resumo: resumo || String(p.descricao || '').trim() || '',
-                /** Compat: mesma coisa que o resumo quando o formato novo está em uso */
-                descricao: resumo || '',
+                ...(precoOk ? parsePrecoParts(precoNum) : { precoInt: '—', precoDec: '00' }),
+                resumo: resumoFinal,
+                descricao: resumoFinal,
                 features,
                 popular: slug === 'pro'
             };
@@ -204,7 +265,7 @@ export default {
             try {
                 const raw = await planService.listarPlanosPublicos();
                 const arr = Array.isArray(raw) ? raw : [];
-                planosList.value = arr.map((p) => mapearPlanoApi(p));
+                planosList.value = arr.map((p) => mapearPlanoApi(p, isAtivacaoInicial.value));
             } catch (e) {
                 console.error('Erro ao carregar planos:', e);
                 erroPlanos.value = 'Não foi possível carregar os planos. Tente atualizar a página.';
@@ -216,9 +277,34 @@ export default {
 
         const currentPlanName = computed(() => planStore.planoNome || 'Livre');
 
-        const currentPlanClass = computed(() => {
-            const plan = currentPlanName.value.toLowerCase().replace(/\s+/g, '-');
-            return `plan-${plan}`;
+        const isNovoUsuario = computed(() => {
+            const stat = planStore.statusAssinatura || localStorage.getItem('statusAssinatura') || '';
+            return stat === 'sem_assinatura';
+        });
+
+        const isAtivacaoInicial = computed(() => isNovoUsuario.value);
+
+        const previewAtivo = computed(() => planStore.previewAtivo === true);
+
+        const previewExpirado = computed(() => {
+            return isAtivacaoInicial.value && !previewAtivo.value && planStore.precisaAtivarPlano;
+        });
+
+        const podeVoltarAoSistema = computed(() => usuarioPodeSairDaUpgrade());
+
+        const labelVoltarAoSistema = computed(() => {
+            return previewAtivo.value ? 'Continuar explorando' : 'Voltar ao sistema';
+        });
+
+        const tituloEtapaPagamento = computed(() => {
+            return isAtivacaoInicial.value ? 'Confirmar assinatura' : 'Finalizar pagamento';
+        });
+
+        const descricaoEtapaPagamento = computed(() => {
+            if (isAtivacaoInicial.value) {
+                return 'Informe os dados do cartão para ativar sua assinatura. Nenhuma cobrança será feita hoje.';
+            }
+            return 'Complete o pagamento para ativar seu novo plano.';
         });
 
         const availablePlans = computed(() => {
@@ -241,18 +327,10 @@ export default {
             return !Number.isNaN(pid) && Number(plan.id) === pid;
         };
 
-        // Methods
         const selectPlan = (plan) => {
             selectedPlan.value = plan;
-            // Ir automaticamente para a próxima etapa ao selecionar um plano
             if (currentStep.value === 1) {
-                nextStep();
-            }
-        };
-
-        const nextStep = () => {
-            if (currentStep.value < steps.length) {
-                currentStep.value++;
+                currentStep.value = 2;
             }
         };
 
@@ -260,10 +338,6 @@ export default {
             if (currentStep.value > 1) {
                 currentStep.value--;
             }
-        };
-
-        const handleStepChange = (step) => {
-            currentStep.value = step;
         };
 
         const processarPagamento = async (payload) => {
@@ -306,17 +380,28 @@ export default {
             }
         };
 
-        // Método para ir ao dashboard após sucesso
         const irParaDashboard = () => {
             router.push('/dashboard');
         };
 
-        // Lifecycle
+        const voltarAoSistema = () => {
+            router.push('/dashboard');
+        };
+
         onMounted(async () => {
             await carregarPlanos();
             const nome = currentPlanName.value.toLowerCase();
             if (nome === 'profissional' || nome === 'vitalício' || nome === 'vitalicio') {
                 router.push('/dashboard');
+                return;
+            }
+
+            const slugPreferido = localStorage.getItem('planoPreferidoSlug');
+            if (slugPreferido && isNovoUsuario.value) {
+                const plano = planosList.value.find((p) => p.slug === slugPreferido);
+                if (plano) {
+                    selectedPlan.value = plano;
+                }
             }
         });
 
@@ -325,19 +410,23 @@ export default {
             selectedPlan,
             pagamentoSucesso,
             planoContratado,
-            steps,
             currentPlanName,
-            currentPlanClass,
+            isAtivacaoInicial,
+            previewAtivo,
+            previewExpirado,
+            podeVoltarAoSistema,
+            labelVoltarAoSistema,
+            tituloEtapaPagamento,
+            descricaoEtapaPagamento,
             availablePlans,
             loadingPlanos,
             erroPlanos,
             isPlanoAtual,
             selectPlan,
-            nextStep,
             previousStep,
-            handleStepChange,
             processarPagamento,
             irParaDashboard,
+            voltarAoSistema,
             loading: asaas.loading
         };
     }
@@ -345,328 +434,309 @@ export default {
 </script>
 
 <style scoped>
-
-
-.upgrade-layout-grid {
-    display: grid;
-    grid-template-columns: 350px 1fr;
-    gap: 1.5rem;
+.upgrade-page {
+    max-width: 960px;
     margin: 0 auto;
+    padding: 2rem 1.25rem 3rem;
 }
 
-/* Card Esquerda */
-.left-card {
-    background: var(--surface-card);
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border: 1px solid var(--surface-border);
-    height: fit-content;
-    position: sticky;
-    top: 1.5rem;
-}
-
-.card-content-left {
-    padding: 2rem;
-}
-
-.plan-info-left {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.plan-info-left h1 {
-    margin: 0 0 1rem 0;
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--text-color);
-}
-
-.current-plan-badge-left {
-    display: inline-flex;
+.upgrade-step {
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-600));
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: 50px;
-    font-weight: 600;
-    font-size: 0.9rem;
 }
 
-.current-plan-badge-left i {
-    color: #ffd700;
-}
-
-.trial-notice-left {
-    background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
-    border: 2px solid #4caf50;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
+.status-banner {
     display: flex;
     align-items: flex-start;
-    gap: 1rem;
-    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.1);
-}
-
-.trial-notice-left i {
-    color: #4caf50;
-    font-size: 1.5rem;
-    margin-top: 0.25rem;
-    flex-shrink: 0;
-}
-
-.trial-content-left h4 {
-    margin: 0 0 0.5rem 0;
-    color: #2e7d32;
-    font-size: 1rem;
-    font-weight: 700;
-}
-
-.trial-content-left p {
-    margin: 0;
-    color: #388e3c;
-    font-size: 0.875rem;
+    gap: 0.85rem;
+    width: 100%;
+    max-width: 720px;
+    margin-bottom: 1.75rem;
+    padding: 1rem 1.15rem;
+    border-radius: 0.85rem;
+    font-size: 0.9rem;
     line-height: 1.5;
 }
 
-.plan-summary-left {
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 2px solid var(--surface-border);
+.status-banner i {
+    font-size: 1.25rem;
+    margin-top: 0.1rem;
+    flex-shrink: 0;
 }
 
-.summary-item-left {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid var(--surface-border);
+.status-banner p {
+    margin: 0.25rem 0 0;
+    opacity: 0.9;
 }
 
-.summary-item-left:last-child {
-    border-bottom: none;
+.status-banner--warning {
+    background: #fff8e1;
+    border: 1px solid #ffb74d;
+    color: #e65100;
 }
 
-.summary-item-left .label {
+.status-banner--info {
+    background: #eff6ff;
+    border: 1px solid #93c5fd;
+    color: #1d4ed8;
+}
+
+.hero {
+    text-align: center;
+    max-width: 680px;
+    margin-bottom: 2.25rem;
+}
+
+.hero-badge {
+    display: inline-block;
+    margin-bottom: 1rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 0.82rem;
     font-weight: 600;
-    color: var(--text-color);
-    font-size: 0.9rem;
 }
 
-.summary-item-left .value {
-    color: var(--primary-color);
+.hero-title {
+    margin: 0 0 0.85rem;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: clamp(1.75rem, 4vw, 2.35rem);
     font-weight: 700;
-    font-size: 0.95rem;
+    line-height: 1.2;
+    color: var(--text-color);
 }
 
-/* Card Direita */
-.right-card {
-    background: var(--surface-card);
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.hero-title--sm {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
+.hero-subtitle {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-color-secondary);
+}
+
+.billing-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.billing-toggle {
+    display: inline-flex;
+    padding: 0.25rem;
+    border-radius: 999px;
+    background: var(--surface-100);
     border: 1px solid var(--surface-border);
 }
 
-.card-content-right {
-    padding: 2rem;
-}
-
-.sucesso-container {
-    padding: 2rem 0;
-}
-
-.upgrade-content {
-    margin: 2rem 0;
-}
-
-.step-content {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.step-content h2 {
-    text-align: center;
-    margin-bottom: 0.5rem;
-    margin-top: 1rem;
-    color: var(--text-color);
-}
-
-.step-description {
-    text-align: center;
+.billing-option {
+    padding: 0.45rem 1.25rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
     color: var(--text-color-secondary);
-    margin-bottom: 1rem;
+}
+
+.billing-option--active {
+    background: #2563eb;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+.plans-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 3rem 0;
+    color: var(--text-color-secondary);
+}
+
+.plans-loading i {
+    font-size: 2rem;
+    color: var(--primary-color);
+}
+
+.plans-error {
+    width: 100%;
+    max-width: 560px;
 }
 
 .plans-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-bottom: 2rem;
-    margin-top: 1rem;
-    position: relative;
-}
-
-.step-actions {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 2rem;
-}
-
-.confirmation-card {
-    background: var(--surface-card);
-    border-radius: 12px;
-    padding: 2rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
-}
-
-.plan-summary h3 {
-    margin-bottom: 1.5rem;
-    color: var(--text-color);
-}
-
-.summary-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid var(--surface-border);
-}
-
-.summary-item:last-child {
-    border-bottom: none;
-}
-
-.summary-item .label {
-    font-weight: 600;
-    color: var(--text-color);
-}
-
-.summary-item .value {
-    color: var(--text-color-secondary);
-}
-
-.summary-item .value.price {
-    color: var(--primary-color);
-    font-weight: 700;
-    font-size: 1.2rem;
-}
-
-.plan-features {
-    margin-top: 2rem;
-}
-
-.plan-features h4 {
-    margin-bottom: 1rem;
-    color: var(--text-color);
-}
-
-.plan-features ul {
-    list-style: none;
-    padding: 0;
-}
-
-.plan-features li {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 0;
-    color: var(--text-color-secondary);
-}
-
-.plan-features li i {
-    color: var(--primary-color);
-}
-
-.payment-form-container {
-    display: flex;
-    justify-content: center;
-    margin: 2rem 0;
-}
-
-.payment-form-card {
-    background: var(--surface-card);
-    border-radius: 12px;
-    padding: 2rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border: 1px solid var(--surface-border);
-    max-width: 600px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
     width: 100%;
+    max-width: 880px;
+    margin-bottom: 2rem;
 }
 
-.payment-section {
-    max-width: 600px;
+.explore-action {
+    margin-bottom: 1.5rem;
+}
+
+.trust-bar {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    width: 100%;
+    max-width: 880px;
+    padding: 1.25rem 1.5rem;
+    border-radius: 1rem;
+    background: var(--surface-100);
+    border: 1px solid var(--surface-border);
+}
+
+.trust-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.trust-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.65rem;
+    background: var(--surface-card);
+    color: #2563eb;
+    flex-shrink: 0;
+}
+
+.trust-item strong {
+    display: block;
+    font-size: 0.88rem;
+    margin-bottom: 0.15rem;
+    color: var(--text-color);
+}
+
+.trust-item p {
+    margin: 0;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    color: var(--text-color-secondary);
+}
+
+.support-line {
+    margin: 1.5rem 0 0;
+    font-size: 0.92rem;
+    color: var(--text-color-secondary);
+}
+
+.support-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-left: 0.35rem;
+    color: #2563eb;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.support-link:hover {
+    text-decoration: underline;
+}
+
+.support-link i {
+    color: #22c55e;
+}
+
+.checkout-step {
+    align-items: stretch;
+    max-width: 560px;
     margin: 0 auto;
 }
 
-.faq-section {
-    margin-top: 4rem;
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 1.5rem;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--text-color-secondary);
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.back-link:hover:not(:disabled) {
+    color: var(--primary-color);
+}
+
+.back-link:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.checkout-header {
     text-align: center;
+    margin-bottom: 1.5rem;
 }
 
-.faq-section h3 {
-    margin-bottom: 1rem;
-    color: var(--text-color);
+.checkout-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    padding: 1rem 1.15rem;
+    border-radius: 0.85rem;
+    background: var(--surface-100);
+    border: 1px solid var(--surface-border);
 }
 
+.summary-label {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--text-color-secondary);
+    margin-bottom: 0.15rem;
+}
 
-/* Responsive */
-@media (max-width: 1024px) {
-    .upgrade-layout-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .left-card {
-        position: relative;
-        top: 0;
-    }
+.summary-price {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2563eb;
+    white-space: nowrap;
+}
+
+.checkout-card {
+    padding: 1.5rem;
+    border-radius: 1rem;
+    background: var(--surface-card);
+    border: 1px solid var(--surface-border);
+    box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+}
+
+.checkout-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.25rem;
 }
 
 @media (max-width: 768px) {
-    .upgrade-page-container {
-        padding: 1rem;
+    .upgrade-page {
+        padding: 1.25rem 1rem 2rem;
     }
-    
-    .card-content-left,
-    .card-content-right {
-        padding: 1.5rem;
-    }
-    
-    .plan-info-left h1 {
-        font-size: 1.5rem;
-    }
-    
+
     .plans-grid {
         grid-template-columns: 1fr;
     }
-    
-    .payment-form-container {
-        margin: 1.5rem 0;
+
+    .trust-bar {
+        grid-template-columns: 1fr;
+        padding: 1rem;
     }
-    
-    .payment-form-card {
-        padding: 1.5rem;
-    }
-    
-    .step-actions {
+
+    .checkout-summary {
         flex-direction: column;
-        align-items: center;
-    }
-    
-    .trial-notice-left {
-        flex-direction: column;
-        text-align: center;
-        gap: 0.75rem;
-    }
-    
-    .trial-notice-left i {
-        margin-top: 0;
-    }
-    
-    .plan-price-large {
-        font-size: 2rem;
+        align-items: flex-start;
     }
 }
-</style> 
+</style>

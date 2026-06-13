@@ -14,7 +14,13 @@ function readMetaFromLocalStorage() {
         planoId: parseInt(localStorage.getItem('planoId') || '0', 10) || 0,
         planoNome: localStorage.getItem('planoNome') || '—',
         statusAssinatura: localStorage.getItem('statusAssinatura') || 'sem_assinatura',
-        usuarioVitalicio: localStorage.getItem('usuarioVitalicio') === 'true'
+        usuarioVitalicio: localStorage.getItem('usuarioVitalicio') === 'true',
+        previewAtivo: localStorage.getItem('previewAtivo') === 'true',
+        previewExpiraEm: localStorage.getItem('previewExpiraEm') || null,
+        precisaAtivarPlano: localStorage.getItem('precisaAtivarPlano') === 'true',
+        mostrarPromptAtivacao: localStorage.getItem('mostrarPromptAtivacao') === 'true',
+        previewMaxPacientes: parseInt(localStorage.getItem('previewMaxPacientes') || '2', 10) || 2,
+        previewPacientesUsados: parseInt(localStorage.getItem('previewPacientesUsados') || '0', 10) || 0,
     };
 }
 
@@ -34,12 +40,16 @@ export const usePlanStore = defineStore('plan', {
         isVitalicio: (state) => state.usuarioVitalicio === true,
         isGratuito: () => false,
         temAssinaturaAtiva: (state) => state.statusAssinatura !== 'sem_assinatura',
+        emPreview: (state) => state.previewAtivo === true,
         planInfo: (state) => ({
             id: state.planoId,
             nome: state.planoNome
         }),
         podeEditarDados: () => true,
-        canAddPaciente: () => true,
+        canAddPaciente: (state) => {
+            if (!state.previewAtivo) return true;
+            return state.previewPacientesUsados < state.previewMaxPacientes;
+        },
         canAddAnexo: () => true,
         pacientesCount: (state) => state.stats?.pacientes_count || 0,
         limitePacientes: () => -1,
@@ -58,6 +68,12 @@ export const usePlanStore = defineStore('plan', {
             this.planoNome = m.planoNome;
             this.statusAssinatura = m.statusAssinatura;
             this.usuarioVitalicio = m.usuarioVitalicio;
+            this.previewAtivo = m.previewAtivo;
+            this.previewExpiraEm = m.previewExpiraEm;
+            this.precisaAtivarPlano = m.precisaAtivarPlano;
+            this.mostrarPromptAtivacao = m.mostrarPromptAtivacao;
+            this.previewMaxPacientes = m.previewMaxPacientes;
+            this.previewPacientesUsados = m.previewPacientesUsados;
         },
         setAssinatura(assinatura) {
             this.assinatura = assinatura;

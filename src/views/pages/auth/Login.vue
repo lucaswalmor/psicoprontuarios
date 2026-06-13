@@ -192,6 +192,12 @@ export default {
             if (!usuario || usuario.usuario_vitalicio) {
                 return false;
             }
+            if (usuario.preview_ativo === true) {
+                return false;
+            }
+            if (usuario.precisa_ativar_plano === true) {
+                return true;
+            }
             return usuario.status_assinatura === 'sem_assinatura';
         },
 

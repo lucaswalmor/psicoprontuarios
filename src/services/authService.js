@@ -14,6 +14,42 @@ function sincronizarAssinaturaNoPlanStore() {
     }
 }
 
+function sincronizarPreviewNoLocalStorage(usuario) {
+    if (!usuario || typeof usuario !== 'object') return;
+
+    const setBool = (key, value) => {
+        if (value === undefined) return;
+        localStorage.setItem(key, value ? 'true' : 'false');
+    };
+
+    setBool('previewAtivo', usuario.preview_ativo);
+    setBool('precisaAtivarPlano', usuario.precisa_ativar_plano);
+    setBool('mostrarPromptAtivacao', usuario.mostrar_prompt_ativacao);
+
+    if (usuario.preview_expira_em !== undefined) {
+        if (usuario.preview_expira_em) {
+            localStorage.setItem('previewExpiraEm', String(usuario.preview_expira_em));
+        } else {
+            localStorage.removeItem('previewExpiraEm');
+        }
+    }
+    if (usuario.preview_max_pacientes !== undefined) {
+        localStorage.setItem('previewMaxPacientes', String(usuario.preview_max_pacientes));
+    }
+    if (usuario.preview_pacientes_usados !== undefined) {
+        localStorage.setItem('previewPacientesUsados', String(usuario.preview_pacientes_usados));
+    }
+}
+
+function limparPreviewDoLocalStorage() {
+    localStorage.removeItem('previewAtivo');
+    localStorage.removeItem('previewExpiraEm');
+    localStorage.removeItem('precisaAtivarPlano');
+    localStorage.removeItem('mostrarPromptAtivacao');
+    localStorage.removeItem('previewMaxPacientes');
+    localStorage.removeItem('previewPacientesUsados');
+}
+
 function sincronizarToursFinalizados(toursFinalizados) {
     if (!Array.isArray(toursFinalizados)) return;
 
@@ -106,6 +142,7 @@ class AuthService {
         if (usuario.tem_assinatura_ativa !== undefined) {
             localStorage.setItem('temAssinaturaAtiva', String(usuario.tem_assinatura_ativa));
         }
+        sincronizarPreviewNoLocalStorage(usuario);
         sincronizarToursFinalizados(usuario.tours_finalizados);
     }
 
@@ -143,6 +180,7 @@ class AuthService {
                 localStorage.removeItem('userAssinatura');
             }
             sincronizarAssinaturaNoPlanStore();
+            sincronizarPreviewNoLocalStorage(u);
             const prev = JSON.parse(sessionStorage.getItem('usuario') || '{}');
             sessionStorage.setItem('usuario', JSON.stringify({ ...prev, ...u }));
             sincronizarToursFinalizados(u.tours_finalizados);
@@ -211,6 +249,7 @@ class AuthService {
         localStorage.removeItem('temAssinaturaAtiva');
         localStorage.removeItem('userAtivo');
         localStorage.removeItem('motivoBloqueio');
+        limparPreviewDoLocalStorage();
         limparToursFinalizadosLocais();
         sessionStorage.removeItem('usuario');
         sessionStorage.removeItem('sessionTime');

@@ -114,6 +114,20 @@ api.interceptors.response.use(
                 window.location.href = '/login';
             }
         }
+
+        const errorCode = error.response?.data?.code;
+        if (error.response?.status === 403 && (errorCode === 'preview_expirado' || error.response?.data?.precisa_ativar_plano)) {
+            localStorage.setItem('previewAtivo', 'false');
+            localStorage.setItem('precisaAtivarPlano', 'true');
+            if (window.location.pathname !== '/upgrade') {
+                window.location.href = '/upgrade';
+            }
+        }
+
+        if (error.response?.status === 422 && errorCode === 'preview_limite_pacientes') {
+            localStorage.setItem('mostrarPromptAtivacao', 'true');
+        }
+
         return Promise.reject(error);
     }
 );
