@@ -41,18 +41,20 @@
                         </div>
                     </div>
                     <!-- Botão Google -->
-                    <GoogleSignInButton 
-                        button-text="Cadastrar com Google"
-                        @success="handleGoogleSignUp"
-                        @error="handleGoogleError"
-                    />
+                    <template v-if="!contaCriada && etapaAtual === 1">
+                        <GoogleSignInButton 
+                            button-text="Cadastrar com Google"
+                            @success="handleGoogleSignUp"
+                            @error="handleGoogleError"
+                        />
 
-                    <!-- Divisor -->
-                    <div class="flex items-center my-2">
-                        <div class="flex-1 border-t border-gray-300"></div>
-                        <span class="px-3 text-600 text-sm">ou</span>
-                        <div class="flex-1 border-t border-gray-300"></div>
-                    </div>
+                        <!-- Divisor -->
+                        <div class="flex items-center my-2">
+                            <div class="flex-1 border-t border-gray-300"></div>
+                            <span class="px-3 text-600 text-sm">ou</span>
+                            <div class="flex-1 border-t border-gray-300"></div>
+                        </div>
+                    </template>
 
                     <!-- Indicador de Progresso -->
                     <div class="mb-8">
@@ -62,21 +64,14 @@
                                      :class="etapaAtual >= 1 ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-600'">
                                     1
                                 </div>
-                                <span class="text-sm text-600">Dados Pessoais</span>
+                                <span class="text-sm text-600">Login</span>
                             </div>
                             <div class="flex items-center space-x-2">
                                 <div style="width: 30px; height: 30px;" class="rounded-full flex items-center justify-center text-sm font-semibold"
                                      :class="etapaAtual >= 2 ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-600'">
                                     2
                                 </div>
-                                <span class="text-sm text-600">Endereço</span>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <div style="width: 30px; height: 30px;" class="rounded-full flex items-center justify-center text-sm font-semibold"
-                                     :class="etapaAtual >= 3 ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-600'">
-                                    3
-                                </div>
-                                <span class="text-sm text-600">Login</span>
+                                <span class="text-sm text-600">Dados Pessoais</span>
                             </div>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-2">
@@ -88,44 +83,28 @@
                     <!-- Formulário por Etapas -->
                     <form @submit.prevent="handleSubmit">
                         
-                        <!-- Etapa 1: Dados Pessoais -->
-                        <div v-show="etapaAtual === 1" class="space-y-6">
+                        <!-- Etapa 2: Dados Pessoais -->
+                        <div v-show="etapaAtual === 2" class="space-y-6">
                             <div class="text-center mb-6">
                                 <h2 class="text-xl font-semibold text-gray-900 mb-2">Dados Pessoais</h2>
                                 <p class="text-600">Informações básicas sobre você</p>
                             </div>
                             
-                            <!-- Nome -->
+                        <!-- Nome completo -->
                             <div class="row mb-3">
                                 <div class="col-md-12">
                                     <IftaLabel>
                                         <InputText 
-                                            id="nome" 
-                                            v-model="form.nome" 
+                                            id="nomeCompleto" 
+                                            v-model="form.nomeCompleto" 
                                             class="w-100 h-12 text-lg" 
-                                            :class="{ 'p-invalid': errors.nome }"
-                                            @input="clearError('nome')"
+                                            :class="{ 'p-invalid': errors.nome_completo }"
+                                            @input="clearError('nome_completo')"
                                         />
-                                        <label for="nome">Nome</label>
+                                        <label for="nomeCompleto">Nome completo</label>
                                     </IftaLabel>
-                                    <small v-if="errors.nome" class="text-red-500 text-sm mt-1 block">{{ errors.nome }}</small>
-                                </div>
-                            </div>
-
-                            <!-- Sobrenome -->
-                            <div class="row mb-3">
-                                <div class="col-md-12">
-                                    <IftaLabel>
-                                        <InputText 
-                                            id="sobrenome" 
-                                            v-model="form.sobrenome" 
-                                            class="w-100 h-12 text-lg" 
-                                            :class="{ 'p-invalid': errors.sobrenome }"
-                                            @input="clearError('sobrenome')"
-                                        />
-                                        <label for="sobrenome">Sobrenome</label>
-                                    </IftaLabel>
-                                    <small v-if="errors.sobrenome" class="text-red-500 text-sm mt-1 block">{{ errors.sobrenome }}</small>
+                                    <small v-if="errors.nome_completo" class="text-red-500 text-sm mt-1 block">{{ formatarErro(errors.nome_completo) }}</small>
+                                    <small v-else class="text-gray-500 text-sm mt-1 block">Ex.: Lucas Silva</small>
                                 </div>
                             </div>
 
@@ -143,7 +122,7 @@
                                     />
                                     <label for="telefone">Telefone</label>
                                     </IftaLabel>
-                                    <small v-if="errors.telefone" class="text-red-500 text-sm mt-1 block">{{ errors.telefone }}</small>
+                                    <small v-if="errors.telefone" class="text-red-500 text-sm mt-1 block">{{ formatarErro(errors.telefone) }}</small>
                                 </div>
                             </div>
 
@@ -161,7 +140,7 @@
                                     />
                                     <label for="cpf">CPF</label>
                                     </IftaLabel>
-                                    <small v-if="errors.cpf" class="text-red-500 text-sm mt-1 block">{{ errors.cpf }}</small>
+                                    <small v-if="errors.cpf" class="text-red-500 text-sm mt-1 block">{{ formatarErro(errors.cpf) }}</small>
                                 </div>
                             </div>
 
@@ -179,163 +158,13 @@
                                         />
                                         <label for="crp">CRP</label>
                                     </IftaLabel>
-                                    <small v-if="errors.crp" class="text-red-500 text-sm mt-1 block">{{ errors.crp }}</small>
+                                    <small v-if="errors.crp" class="text-red-500 text-sm mt-1 block">{{ formatarErro(errors.crp) }}</small>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Etapa 2: Endereço -->
-                        <div v-show="etapaAtual === 2" class="space-y-6">
-                            <div class="text-center mb-6">
-                                <h2 class="text-xl font-semibold text-gray-900 mb-2">Endereço</h2>
-                                <p class="text-600">Localização do seu consultório</p>
-                            </div>
-                            
-                            <!-- CEP -->
-                            <div class="row mb-3">
-                                <div class="col-md-12">
-                                    <IftaLabel>
-                                        <InputMask 
-                                            id="cep" 
-                                            v-model="form.cep" 
-                                            mask="99999-999"
-                                            class="w-100 h-12 text-lg"
-                                            :class="{ 'p-invalid': errors.cep }"
-                                            @blur="buscarCep"
-                                            @update:modelValue="clearError('cep')"
-                                            :loading="loadingCep"
-                                        />
-                                        <label for="cep">CEP</label>
-                                    </IftaLabel>
-                                    <small v-if="errors.cep" class="text-red-500 text-sm mt-1 block">{{ errors.cep }}</small>
-                                    <small v-if="loadingCep" class="text-blue-500 text-sm mt-1 block">
-                                        <i class="pi pi-spin pi-spinner mr-1"></i>
-                                        Buscando endereço...
-                                    </small>
-                                </div>
-                            </div>
-
-                            <!-- Estado -->
-                            <div class="row mb-3">
-                                <div class="col-md-12">
-                                    <IftaLabel>
-                                        <InputText 
-                                            id="estado" 
-                                            v-model="form.estado" 
-                                            class="w-100 h-12 text-lg"
-                                            :class="{ 'p-invalid': errors.estado, 'bg-green-50': form.estado && !errors.estado }"
-                                            @input="clearError('estado')"
-                                        />
-                                        <label for="estado">Estado</label>
-                                    </IftaLabel>
-                                    <small v-if="errors.estado" class="text-red-500 text-sm mt-1 block">{{ errors.estado }}</small>
-                                    <small v-if="form.estado && !errors.estado" class="text-green-600 text-sm mt-1 block">
-                                        <i class="pi pi-check-circle mr-1"></i>
-                                        Preenchido automaticamente
-                                    </small>
-                                </div>
-                            </div>
-
-                            <!-- Cidade -->
-                            <div class="row mb-3">
-                                <div class="col-md-12">
-                                    <IftaLabel>
-                                        <InputText 
-                                            id="cidade" 
-                                            v-model="form.cidade" 
-                                            class="w-100 h-12 text-lg"
-                                            :class="{ 'p-invalid': errors.cidade, 'bg-green-50': form.cidade && !errors.cidade }"
-                                            @input="clearError('cidade')"
-                                        />
-                                        <label for="cidade">Cidade</label>
-                                    </IftaLabel>
-                                    <small v-if="errors.cidade" class="text-red-500 text-sm mt-1 block">{{ errors.cidade }}</small>
-                                    <small v-if="form.cidade && !errors.cidade" class="text-green-600 text-sm mt-1 block">
-                                        <i class="pi pi-check-circle mr-1"></i>
-                                        Preenchido automaticamente
-                                    </small>
-                                </div>
-                            </div>
-
-                            <!-- Bairro -->
-                            <div class="row mb-3">
-                                <div class="col-md-12">
-                                    <IftaLabel>
-                                        <InputText 
-                                            id="bairro" 
-                                            v-model="form.bairro" 
-                                            class="w-100 h-12 text-lg"
-                                            :class="{ 'p-invalid': errors.bairro, 'bg-green-50': form.bairro && !errors.bairro }"
-                                            @input="clearError('bairro')"
-                                        />
-                                        <label for="bairro">Bairro</label>
-                                    </IftaLabel>
-                                    <small v-if="errors.bairro" class="text-red-500 text-sm mt-1 block">{{ errors.bairro }}</small>
-                                    <small v-if="form.bairro && !errors.bairro" class="text-green-600 text-sm mt-1 block">
-                                        <i class="pi pi-check-circle mr-1"></i>
-                                        Preenchido automaticamente
-                                    </small>
-                                </div>
-                            </div>
-
-                            <!-- Rua -->
-                            <div class="row mb-3">
-                                <div class="col-md-12">
-                                    <IftaLabel>
-                                        <InputText 
-                                            id="rua" 
-                                            v-model="form.rua" 
-                                            class="w-100 h-12 text-lg"
-                                            :class="{ 'p-invalid': errors.rua, 'bg-green-50': form.rua && !errors.rua }"
-                                            @input="clearError('rua')"
-                                        />
-                                        <label for="rua">Rua</label>
-                                    </IftaLabel>
-                                    <small v-if="errors.rua" class="text-red-500 text-sm mt-1 block">{{ errors.rua }}</small>
-                                    <small v-if="form.rua && !errors.rua" class="text-green-600 text-sm mt-1 block">
-                                        <i class="pi pi-check-circle mr-1"></i>
-                                        Preenchido automaticamente
-                                    </small>
-                                </div>
-                            </div>
-
-                            <!-- Número -->
-                            <div class="row mb-3">
-                                <div class="col-md-12">
-                                    <IftaLabel>
-                                        <InputText 
-                                            id="numero" 
-                                            v-model="form.numero" 
-                                            class="w-100 h-12 text-lg"
-                                            :class="{ 'p-invalid': errors.numero }"
-                                            @input="clearError('numero')"
-                                        />
-                                        <label for="numero">Número *</label>
-                                    </IftaLabel>
-                                    <small v-if="errors.numero" class="text-red-500 text-sm mt-1 block">{{ errors.numero }}</small>
-                                </div>
-                            </div>
-
-                            <!-- Complemento -->
-                            <div class="row mb-3">
-                                <div class="col-md-12">
-                                    <IftaLabel>
-                                        <InputText 
-                                            id="complemento" 
-                                            v-model="form.complemento" 
-                                            class="w-100 h-12 text-lg"
-                                            :class="{ 'p-invalid': errors.complemento }"
-                                            @input="clearError('complemento')"
-                                        />
-                                        <label for="complemento">Complemento</label>
-                                    </IftaLabel>
-                                    <small v-if="errors.complemento" class="text-red-500 text-sm mt-1 block">{{ errors.complemento }}</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Etapa 3: Dados de Login -->
-                        <div v-show="etapaAtual === 3" class="space-y-6">
+                        <!-- Etapa 1: Dados de Login -->
+                        <div v-show="etapaAtual === 1" class="space-y-6">
                             <div class="text-center mb-6">
                                 <h2 class="text-xl font-semibold text-gray-900 mb-2">Dados de Login</h2>
                                 <p class="text-600">Email e senha para acessar sua conta</p>
@@ -354,7 +183,7 @@
                                         />
                                         <label for="email">Email</label>
                                     </IftaLabel>
-                                    <small v-if="errors.email" class="text-red-500 text-sm mt-1 block">{{ errors.email }}</small>
+                                    <small v-if="errors.email" class="text-red-500 text-sm mt-1 block">{{ formatarErro(errors.email) }}</small>
                                 </div>
                             </div>
 
@@ -373,7 +202,7 @@
                                         />
                                         <label for="password">Senha</label>
                                     </IftaLabel>
-                                    <small v-if="errors.password" class="text-red-500 text-sm mt-1 block">{{ errors.password }}</small>
+                                    <small v-if="errors.password" class="text-red-500 text-sm mt-1 block">{{ formatarErro(errors.password) }}</small>
                                 </div>
                             </div>
 
@@ -392,13 +221,13 @@
                                         />
                                         <label for="password_confirmation">Confirmar Senha</label>
                                     </IftaLabel>
-                                    <small v-if="errors.password_confirmation" class="text-red-500 text-sm mt-1 block">{{ errors.password_confirmation }}</small>
+                                    <small v-if="errors.password_confirmation" class="text-red-500 text-sm mt-1 block">{{ formatarErro(errors.password_confirmation) }}</small>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Termos e Condições (só na última etapa) -->
-                        <div v-show="etapaAtual === 3" class="flex items-start space-x-3 mt-6">
+                        <!-- Termos e Condições (etapa 1) -->
+                        <div v-show="etapaAtual === 1" class="flex items-start space-x-3 mt-6">
                             <Checkbox 
                                 id="politica_privacidade" 
                                 v-model="form.politica_privacidade"
@@ -416,7 +245,7 @@
                                 </router-link>
                             </label>
                         </div>
-                        <small v-if="errors.politica_privacidade" class="text-red-500 text-sm block">{{ errors.politica_privacidade }}</small>
+                        <small v-if="errors.politica_privacidade" class="text-red-500 text-sm block">{{ formatarErro(errors.politica_privacidade) }}</small>
 
                         <!-- Botões de Navegação -->
                         <div class="flex justify-between mt-8">
@@ -435,14 +264,15 @@
                                 v-if="etapaAtual < totalEtapas"
                                 type="button"
                                 @click="proximoEtapa"
-                                label="Próximo" 
+                                :loading="loading && etapaAtual === 1"
+                                :label="etapaAtual === 1 ? 'Criar conta e continuar' : 'Próximo'" 
                                 class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold border-0 rounded-lg" 
                             />
                             <Button 
                                 v-else
                                 type="submit" 
                                 :loading="loading" 
-                                label="Criar Minha Conta" 
+                                label="Finalizar cadastro" 
                                 class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold border-0 rounded-lg" 
                             />
                         </div>
@@ -486,7 +316,6 @@
 
 <script>
 import logo from '@/assets/img/logo.webp';
-import userService from '@/services/userService';
 import ChatAtendimento from '@/components/ChatAtendimento.vue';
 import { getN8nChatWebhookUrl } from '@/config/environment.js';
 import GoogleSignInButton from '@/components/GoogleSignInButton.vue';
@@ -502,11 +331,11 @@ import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import { registrarMarketingLog } from '@/services/marketingLogService.js';
 import { trackCadastroEtapa, trackCompleteRegistration } from '@/utils/metaPixel';
+import { validarNomeCompleto } from '@/utils/nomeCompleto';
 
 const CADASTRO_ETAPA_NOMES = {
-    1: 'dados_pessoais',
-    2: 'endereco',
-    3: 'login'
+    1: 'login',
+    2: 'dados_pessoais',
 };
 
 export default {
@@ -529,27 +358,19 @@ export default {
         return {
             logo,
             loading: false,
-            loadingCep: false,
             error: '',
             n8nChatWebhookUrl: getN8nChatWebhookUrl(),
             showSuccessDialog: false,
             showExistingUserDialog: false,
             countdown: 3,
+            contaCriada: false,
             etapaAtual: 1,
-            totalEtapas: 3,
+            totalEtapas: 2,
             form: {
-                nome: '',
-                sobrenome: '',
+                nomeCompleto: '',
                 telefone: '',
                 cpf: '',
                 crp: '',
-                cep: '',
-                cidade: '',
-                estado: '',
-                rua: '',
-                bairro: '',
-                numero: '',
-                complemento: '',
                 email: '',
                 password: '',
                 password_confirmation: '',
@@ -569,6 +390,22 @@ export default {
         }
     },
     methods: {
+        formatarErro(erro) {
+            return Array.isArray(erro) ? erro[0] : erro;
+        },
+
+        aplicarErrosBackend(erros) {
+            if (!erros || typeof erros !== 'object') {
+                this.errors = {};
+                return;
+            }
+            const normalizados = {};
+            Object.keys(erros).forEach((campo) => {
+                normalizados[campo] = this.formatarErro(erros[campo]);
+            });
+            this.errors = normalizados;
+        },
+
         validateForm() {
             // Usar a validação por etapas para validar tudo
             return this.validarEtapaAtual();
@@ -580,47 +417,55 @@ export default {
         },
 
         async handleSubmit() {
-            // Reset de mensagens
             this.error = '';
 
-            // Validação do formulário
-            if (!this.validateForm()) {
+            if (!this.validarEtapaAtual()) {
                 return;
             }
 
             this.loading = true;
 
             try {
-                const formData = this.prepareFormData();
-                registrarMarketingLog('cadastro_etapa_3_submit', {
+                const formData = {
+                    nome_completo: this.form.nomeCompleto,
+                    cpf: this.form.cpf,
+                    crp: this.form.crp,
+                    telefone: this.form.telefone,
+                    politica_privacidade: Boolean(this.form.politica_privacidade),
+                };
+
+                registrarMarketingLog('cadastro_etapa_2_submit', {
                     email: this.form.email
                 });
 
-                await userService.cadastrar(formData);
+                await this.$authService.completarCadastro(formData);
 
                 trackCompleteRegistration({ method: 'email' });
 
-                // Limpar formulário após sucesso
-                this.clearForm();
-
-                // Mostrar dialog de sucesso
-                this.showSuccessDialog = true;
-                this.startCountdown();
+                const userData = await this.$authService.validarToken();
+                const destino = userData.usuario
+                    ? this.rotaAposCadastroOk(userData.usuario)
+                    : '/dashboard';
+                this.$router.push(destino);
 
             } catch (err) {
                 if (err.response?.data?.errors) {
-                    // Erros de validação do backend
-                    this.errors = err.response.data.errors;
+                    this.aplicarErrosBackend(err.response.data.errors);
                 } else if (err.response?.data?.error) {
-                    // Erro geral do backend
                     this.error = err.response.data.error;
                 } else {
-                    // Erro de conexão
                     this.error = 'Erro de conexão. Verifique sua internet e tente novamente.';
                 }
             } finally {
                 this.loading = false;
             }
+        },
+
+        rotaAposCadastroOk(usuario) {
+            if (usuario && !usuario.usuario_vitalicio && this.precisaContratarPlano(usuario)) {
+                return '/upgrade';
+            }
+            return '/dashboard';
         },
 
         startCountdown() {
@@ -734,16 +579,42 @@ export default {
             this.error = 'Erro ao conectar com Google. Tente novamente.';
         },
 
-        proximoEtapa() {
+        async proximoEtapa() {
             if (!this.validarEtapaAtual()) {
                 return;
             }
+
             const step = this.etapaAtual;
+
             if (step === 1) {
-                registrarMarketingLog('cadastro_etapa_1', this.snapshotEtapaMarketing(1));
+                this.loading = true;
+                this.error = '';
+                try {
+                    await this.$authService.cadastroInicial({
+                        email: this.form.email,
+                        password: this.form.password,
+                        password_confirmation: this.form.password_confirmation,
+                        politica_privacidade: Boolean(this.form.politica_privacidade),
+                        tipo_usuario: this.form.tipo_usuario,
+                    });
+                    this.contaCriada = true;
+                    registrarMarketingLog('cadastro_etapa_1', this.snapshotEtapaMarketing(1));
+                } catch (err) {
+                    if (err.response?.data?.errors) {
+                        this.aplicarErrosBackend(err.response.data.errors);
+                    } else if (err.response?.data?.error) {
+                        this.error = err.response.data.error;
+                    } else {
+                        this.error = 'Erro de conexão. Verifique sua internet e tente novamente.';
+                    }
+                    return;
+                } finally {
+                    this.loading = false;
+                }
             } else if (step === 2) {
                 registrarMarketingLog('cadastro_etapa_2', this.snapshotEtapaMarketing(2));
             }
+
             this.etapaAtual++;
             const nome = CADASTRO_ETAPA_NOMES[this.etapaAtual];
             if (nome) {
@@ -755,26 +626,6 @@ export default {
         snapshotEtapaMarketing(etapa) {
             const f = this.form;
             if (etapa === 1) {
-                return {
-                    nome: f.nome,
-                    sobrenome: f.sobrenome,
-                    telefone: f.telefone,
-                    cpf: f.cpf,
-                    crp: f.crp
-                };
-            }
-            if (etapa === 2) {
-                return {
-                    cep: f.cep,
-                    cidade: f.cidade,
-                    estado: f.estado,
-                    rua: f.rua,
-                    bairro: f.bairro,
-                    numero: f.numero,
-                    complemento: f.complemento
-                };
-            }
-            if (etapa === 3) {
                 const pwd = f.password;
                 return {
                     email: f.email,
@@ -782,12 +633,24 @@ export default {
                     senha_definida: Boolean(pwd && String(pwd).length > 0)
                 };
             }
+            if (etapa === 2) {
+                return {
+                    nome_completo: f.nomeCompleto,
+                    telefone: f.telefone,
+                    cpf: f.cpf,
+                    crp: f.crp
+                };
+            }
             return {};
         },
 
         voltarEtapa() {
             if (this.etapaAtual > 1) {
-                this.etapaAtual--;
+                const novaEtapa = this.etapaAtual - 1;
+                if (this.contaCriada && novaEtapa < 2) {
+                    return;
+                }
+                this.etapaAtual = novaEtapa;
             }
         },
 
@@ -812,53 +675,7 @@ export default {
         validarEtapaAtual() {
             this.errors = {};
 
-            // Sempre validar dados pessoais
-            if (!this.form.nome.trim()) {
-                this.errors.nome = 'Nome é obrigatório';
-            }
-            if (!this.form.sobrenome.trim()) {
-                this.errors.sobrenome = 'Sobrenome é obrigatório';
-            }
-            if (!this.form.telefone.trim()) {
-                this.errors.telefone = 'Telefone é obrigatório';
-            }
-            if (!this.form.cpf.trim()) {
-                this.errors.cpf = 'CPF é obrigatório';
-            } else if (this.validarNumeroSequencial(this.form.cpf)) {
-                this.errors.cpf = 'CPF não pode conter números sequenciais ou repetitivos';
-            }
-            if (!this.form.crp.trim()) {
-                this.errors.crp = 'CRP é obrigatório';
-            } else if (this.validarNumeroSequencial(this.form.crp)) {
-                this.errors.crp = 'CRP não pode conter números sequenciais ou repetitivos';
-            }
-
-            // Validar endereço se estiver na etapa 2 ou 3
-            if (this.etapaAtual >= 2) {
-                if (!this.form.cep.trim()) {
-                    this.errors.cep = 'CEP é obrigatório';
-                } else if (this.validarNumeroSequencial(this.form.cep)) {
-                    this.errors.cep = 'CEP não pode conter números sequenciais ou repetitivos';
-                }
-                if (!this.form.cidade.trim()) {
-                    this.errors.cidade = 'Cidade é obrigatória';
-                }
-                if (!this.form.estado.trim()) {
-                    this.errors.estado = 'Estado é obrigatório';
-                }
-                if (!this.form.rua.trim()) {
-                    this.errors.rua = 'Rua é obrigatória';
-                }
-                if (!this.form.bairro.trim()) {
-                    this.errors.bairro = 'Bairro é obrigatório';
-                }
-                if (!this.form.numero.trim()) {
-                    this.errors.numero = 'Número é obrigatório';
-                }
-            }
-
-            // Validar dados de login se estiver na etapa 3
-            if (this.etapaAtual >= 3) {
+            if (this.etapaAtual === 1) {
                 if (!this.form.email.trim()) {
                     this.errors.email = 'Email é obrigatório';
                 } else if (!this.isValidEmail(this.form.email)) {
@@ -879,69 +696,28 @@ export default {
                 }
             }
 
+            if (this.etapaAtual === 2) {
+                const nomeValidacao = validarNomeCompleto(this.form.nomeCompleto);
+                if (!nomeValidacao.valido) {
+                    this.errors.nome_completo = nomeValidacao.mensagem;
+                }
+                if (!this.form.telefone.trim()) {
+                    this.errors.telefone = 'Telefone é obrigatório';
+                }
+                if (!this.form.cpf.trim()) {
+                    this.errors.cpf = 'CPF é obrigatório';
+                } else if (this.validarNumeroSequencial(this.form.cpf)) {
+                    this.errors.cpf = 'CPF não pode conter números sequenciais ou repetitivos';
+                }
+                if (!this.form.crp.trim()) {
+                    this.errors.crp = 'CRP é obrigatório';
+                } else if (this.validarNumeroSequencial(this.form.crp)) {
+                    this.errors.crp = 'CRP não pode conter números sequenciais ou repetitivos';
+                }
+            }
+
             return Object.keys(this.errors).length === 0;
         },
-
-        async buscarCep() {
-            // Remover caracteres não numéricos do CEP
-            const cep = this.form.cep.replace(/\D/g, '');
-            
-            // Verificar se o CEP tem 8 dígitos
-            if (cep.length !== 8) {
-                return;
-            }
-
-            this.loadingCep = true;
-            this.error = '';
-
-            try {
-                const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-                const data = await response.json();
-
-                if (data.erro) {
-                    this.error = 'CEP não encontrado. Verifique o número digitado.';
-                    this.$toast.add({
-                        severity: 'error',
-                        summary: 'CEP não encontrado',
-                        detail: 'Verifique o número digitado e tente novamente.',
-                        life: 3000
-                    });
-                    return;
-                }
-
-                // Preencher automaticamente os campos de endereço
-                this.form.cidade = data.localidade || '';
-                this.form.estado = data.uf || '';
-                this.form.rua = data.logradouro || '';
-                this.form.bairro = data.bairro || '';
-
-                // Limpar erros dos campos preenchidos automaticamente
-                if (this.errors.cidade) delete this.errors.cidade;
-                if (this.errors.estado) delete this.errors.estado;
-                if (this.errors.rua) delete this.errors.rua;
-                if (this.errors.bairro) delete this.errors.bairro;
-
-                // Mostrar mensagem de sucesso
-                this.$toast.add({
-                    severity: 'success',
-                    summary: 'Endereço encontrado!',
-                    detail: 'Os campos de endereço foram preenchidos automaticamente.',
-                    life: 3000
-                });
-
-            } catch (err) {
-                console.error('Erro ao buscar CEP:', err);
-                this.error = 'Erro ao buscar endereço. Tente novamente.';
-                this.$toast.add({
-                    severity: 'error',
-                    summary: 'Erro na busca',
-                    detail: 'Não foi possível buscar o endereço. Tente novamente.',
-                    life: 3000
-                });
-            } finally {
-                this.loadingCep = false;
-            }
-        }
 
     }
 };

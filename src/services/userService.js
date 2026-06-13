@@ -11,6 +11,11 @@ class UserService {
         }
     }
 
+    async cadastroInicial(userData) {
+        const response = await api.post('/cadastro/inicial', userData);
+        return response.data;
+    }
+
     // Fazer login
     async login(credentials) {
         try {
@@ -49,6 +54,11 @@ class UserService {
         } catch (error) {
             throw error;
         }
+    }
+
+    async salvarEndereco(endereco) {
+        const response = await api.put('/user/endereco', endereco);
+        return response.data;
     }
 
     // Alterar senha

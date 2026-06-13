@@ -18,6 +18,23 @@
                 <!-- Formulário -->
                 <div class="bg-surface-50 dark:bg-surface-800 rounded-lg p-6 shadow-sm">
                     <form @submit.prevent="handleSubmit" class="space-y-6">
+                        <!-- Nome completo -->
+                        <div v-if="mostrarCampoNomeCompleto" class="row mb-3">
+                            <div class="col-md-12">
+                                <IftaLabel>
+                                    <InputText 
+                                        id="nomeCompleto" 
+                                        v-model="form.nomeCompleto" 
+                                        class="w-100 h-12 text-lg" 
+                                        :class="{ 'p-invalid': errors.nome_completo }" 
+                                    />
+                                    <label for="nomeCompleto">Nome completo</label>
+                                </IftaLabel>
+                                <small v-if="errors.nome_completo" class="text-red-500 text-sm mt-1 block">{{ formatarErro(errors.nome_completo) }}</small>
+                                <small v-else class="text-gray-500 text-sm mt-1 block">Ex.: Lucas Silva</small>
+                            </div>
+                        </div>
+
                         <!-- CPF -->
                         <div class="row mb-3">
                             <div class="col-md-12">
@@ -31,7 +48,7 @@
                                     />
                                     <label for="cpf">CPF</label>
                                 </IftaLabel>
-                                <small v-if="errors.cpf" class="text-red-500 text-sm mt-1 block">{{ errors.cpf[0] }}</small>
+                                <small v-if="errors.cpf" class="text-red-500 text-sm mt-1 block">{{ formatarErro(errors.cpf) }}</small>
                             </div>
                         </div>
 
@@ -48,7 +65,7 @@
                                     />
                                     <label for="crp">CRP</label>
                                 </IftaLabel>
-                                <small v-if="errors.crp" class="text-red-500 text-sm mt-1 block">{{ errors.crp[0] }}</small>
+                                <small v-if="errors.crp" class="text-red-500 text-sm mt-1 block">{{ formatarErro(errors.crp) }}</small>
                             </div>
                         </div>
 
@@ -65,116 +82,12 @@
                                     />
                                     <label for="telefone">Telefone</label>
                                 </IftaLabel>
-                                <small v-if="errors.telefone" class="text-red-500 text-sm mt-1 block">{{ errors.telefone[0] }}</small>
+                                <small v-if="errors.telefone" class="text-red-500 text-sm mt-1 block">{{ formatarErro(errors.telefone) }}</small>
                             </div>
                         </div>
 
-                        <!-- CEP -->
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <IftaLabel>
-                                    <InputMask 
-                                        id="cep" 
-                                        v-model="form.cep" 
-                                        mask="99999-999"
-                                        class="w-100 h-12 text-lg" 
-                                        :class="{ 'p-invalid': errors.cep }" 
-                                        @blur="buscarCep"
-                                    />
-                                    <label for="cep">CEP</label>
-                                </IftaLabel>
-                                <small v-if="errors.cep" class="text-red-500 text-sm mt-1 block">{{ errors.cep[0] }}</small>
-                                <small v-if="loadingCep" class="text-blue-500 text-sm mt-1 block">
-                                    <i class="pi pi-spin pi-spinner mr-1"></i>
-                                    Buscando endereço...
-                                </small>
-                            </div>
-                        </div>
-
-                        <!-- Cidade -->
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <IftaLabel>
-                                    <InputText 
-                                        id="cidade" 
-                                        v-model="form.cidade" 
-                                        class="w-100 h-12 text-lg" 
-                                        :class="{ 'p-invalid': errors.cidade, '': form.cidade && !errors.cidade }" 
-                                    />
-                                    <label for="cidade">Cidade</label>
-                                </IftaLabel>
-                                <small v-if="errors.cidade" class="text-red-500 text-sm mt-1 block">{{ errors.cidade[0] }}</small>
-                                <small v-if="form.cidade && !errors.cidade" class="text-green-600 text-sm mt-1 block">
-                                    <i class="pi pi-check-circle mr-1"></i>
-                                    Preenchido automaticamente
-                                </small>
-                            </div>
-                        </div>
-
-                        <!-- Estado -->
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <IftaLabel>
-                                    <Select 
-                                        id="estado" 
-                                        v-model="form.estado" 
-                                        :options="estados" 
-                                        optionLabel="nome" 
-                                        optionValue="sigla"
-                                        class="w-100 h-12 text-lg" 
-                                        :class="{ 'p-invalid': errors.estado, '': form.estado && !errors.estado }" 
-                                    />
-                                    <label for="estado">Estado</label>
-                                </IftaLabel>
-                                <small v-if="errors.estado" class="text-red-500 text-sm mt-1 block">{{ errors.estado[0] }}</small>
-                                <small v-if="form.estado && !errors.estado" class="text-green-600 text-sm mt-1 block">
-                                    <i class="pi pi-check-circle mr-1"></i>
-                                    Preenchido automaticamente
-                                </small>
-                            </div>
-                        </div>
-
-                        <!-- Rua -->
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <IftaLabel>
-                                    <InputText 
-                                        id="rua" 
-                                        v-model="form.rua" 
-                                        class="w-100 h-12 text-lg" 
-                                        :class="{ 'p-invalid': errors.rua, '': form.rua && !errors.rua }" 
-                                    />
-                                    <label for="rua">Rua</label>
-                                </IftaLabel>
-                                <small v-if="errors.rua" class="text-red-500 text-sm mt-1 block">{{ errors.rua[0] }}</small>
-                                <small v-if="form.rua && !errors.rua" class="text-green-600 text-sm mt-1 block">
-                                    <i class="pi pi-check-circle mr-1"></i>
-                                    Preenchido automaticamente
-                                </small>
-                            </div>
-                        </div>
-
-                        <!-- Bairro -->
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <IftaLabel>
-                                    <InputText 
-                                        id="bairro" 
-                                        v-model="form.bairro" 
-                                        class="w-100 h-12 text-lg" 
-                                        :class="{ 'p-invalid': errors.bairro, '': form.bairro && !errors.bairro }" 
-                                    />
-                                    <label for="bairro">Bairro</label>
-                                </IftaLabel>
-                                <small v-if="errors.bairro" class="text-red-500 text-sm mt-1 block">{{ errors.bairro[0] }}</small>
-                                <small v-if="form.bairro && !errors.bairro" class="text-green-600 text-sm mt-1 block">
-                                    <i class="pi pi-check-circle mr-1"></i>
-                                    Preenchido automaticamente
-                                </small>
-                            </div>
-                        </div>
-
-                        <!-- Senha -->
+                        <!-- Senha (apenas usuários Google) -->
+                        <template v-if="precisaSenha">
                         <div class="row mb-3">
                             <div class="col-md-12">
                                 <IftaLabel>
@@ -189,7 +102,7 @@
                                     />
                                     <label for="password">Senha</label>
                                 </IftaLabel>
-                                <small v-if="errors.password" class="text-red-500 text-sm mt-1 block">{{ errors.password[0] }}</small>
+                                <small v-if="errors.password" class="text-red-500 text-sm mt-1 block">{{ formatarErro(errors.password) }}</small>
                             </div>
                         </div>
 
@@ -208,9 +121,10 @@
                                     />
                                     <label for="password_confirmation">Confirmar Senha</label>
                                 </IftaLabel>
-                                <small v-if="errors.password_confirmation" class="text-red-500 text-sm mt-1 block">{{ errors.password_confirmation[0] }}</small>
+                                <small v-if="errors.password_confirmation" class="text-red-500 text-sm mt-1 block">{{ formatarErro(errors.password_confirmation) }}</small>
                             </div>
                         </div>
+                        </template>
 
                         <!-- Termos e Condições -->
                         <div class="flex items-start space-x-3 mt-6">
@@ -231,7 +145,7 @@
                                 </router-link>
                             </label>
                         </div>
-                        <small v-if="errors.politica_privacidade" class="text-red-500 text-sm block">{{ errors.politica_privacidade[0] }}</small>
+                        <small v-if="errors.politica_privacidade" class="text-red-500 text-sm block">{{ formatarErro(errors.politica_privacidade) }}</small>
 
                         <!-- Botão de Envio -->
                         <Button 
@@ -263,11 +177,11 @@
 import InputText from 'primevue/inputtext';
 import InputMask from 'primevue/inputmask';
 import Button from 'primevue/button';
-import Select from 'primevue/select';
 import Password from 'primevue/password';
 import Checkbox from 'primevue/checkbox';
 import IftaLabel from 'primevue/iftalabel';
 import { trackCompleteRegistration } from '@/utils/metaPixel';
+import { validarNomeCompleto, montarNomeCompleto } from '@/utils/nomeCompleto';
 
 export default {
     name: 'CompletarCadastro',
@@ -275,7 +189,6 @@ export default {
         InputText,
         InputMask,
         Button,
-        Select,
         Password,
         Checkbox,
         IftaLabel
@@ -283,51 +196,18 @@ export default {
     data() {
         return {
             loading: false,
-            loadingCep: false,
             error: '',
+            precisaSenha: true,
             form: {
+                nomeCompleto: '',
                 cpf: '',
                 crp: '',
                 telefone: '',
-                cep: '',
-                cidade: '',
-                estado: '',
-                rua: '',
-                bairro: '',
                 password: '',
                 password_confirmation: '',
                 politica_privacidade: false
             },
             errors: {},
-            estados: [
-                { nome: 'Acre', sigla: 'AC' },
-                { nome: 'Alagoas', sigla: 'AL' },
-                { nome: 'Amapá', sigla: 'AP' },
-                { nome: 'Amazonas', sigla: 'AM' },
-                { nome: 'Bahia', sigla: 'BA' },
-                { nome: 'Ceará', sigla: 'CE' },
-                { nome: 'Distrito Federal', sigla: 'DF' },
-                { nome: 'Espírito Santo', sigla: 'ES' },
-                { nome: 'Goiás', sigla: 'GO' },
-                { nome: 'Maranhão', sigla: 'MA' },
-                { nome: 'Mato Grosso', sigla: 'MT' },
-                { nome: 'Mato Grosso do Sul', sigla: 'MS' },
-                { nome: 'Minas Gerais', sigla: 'MG' },
-                { nome: 'Pará', sigla: 'PA' },
-                { nome: 'Paraíba', sigla: 'PB' },
-                { nome: 'Paraná', sigla: 'PR' },
-                { nome: 'Pernambuco', sigla: 'PE' },
-                { nome: 'Piauí', sigla: 'PI' },
-                { nome: 'Rio de Janeiro', sigla: 'RJ' },
-                { nome: 'Rio Grande do Norte', sigla: 'RN' },
-                { nome: 'Rio Grande do Sul', sigla: 'RS' },
-                { nome: 'Rondônia', sigla: 'RO' },
-                { nome: 'Roraima', sigla: 'RR' },
-                { nome: 'Santa Catarina', sigla: 'SC' },
-                { nome: 'São Paulo', sigla: 'SP' },
-                { nome: 'Sergipe', sigla: 'SE' },
-                { nome: 'Tocantins', sigla: 'TO' }
-            ]
         };
     },
     async mounted() {
@@ -347,13 +227,44 @@ export default {
             // Se o usuário já tem cadastro completo, ir para upgrade (sem plano) ou dashboard
             if (userData.usuario && userData.usuario.cadastro_completo) {
                 this.$router.push(this.rotaAposCadastroOk(userData.usuario));
+                return;
+            }
+            if (userData.usuario) {
+                const u = userData.usuario;
+                this.precisaSenha = !!u.precisa_senha;
+                this.form.nomeCompleto = montarNomeCompleto(u.nome, u.sobrenome);
+                if (u.telefone) this.form.telefone = u.telefone;
             }
         } catch (error) {
             console.error('Erro ao validar token:', error);
             this.$router.push('/login');
         }
     },
+    computed: {
+        mostrarCampoNomeCompleto() {
+            if (!this.form.nomeCompleto?.trim()) {
+                return true;
+            }
+            return !validarNomeCompleto(this.form.nomeCompleto).valido;
+        },
+    },
     methods: {
+        formatarErro(erro) {
+            return Array.isArray(erro) ? erro[0] : erro;
+        },
+
+        aplicarErrosBackend(erros) {
+            if (!erros || typeof erros !== 'object') {
+                this.errors = {};
+                return;
+            }
+            const normalizados = {};
+            Object.keys(erros).forEach((campo) => {
+                normalizados[campo] = this.formatarErro(erros[campo]);
+            });
+            this.errors = normalizados;
+        },
+
         rotaAposCadastroOk(usuario) {
             if (usuario && !usuario.usuario_vitalicio && this.precisaContratarPlano(usuario)) {
                 return '/upgrade';
@@ -376,6 +287,13 @@ export default {
         validateForm() {
             this.errors = {};
 
+            if (this.mostrarCampoNomeCompleto || this.form.nomeCompleto?.trim()) {
+                const nomeValidacao = validarNomeCompleto(this.form.nomeCompleto);
+                if (!nomeValidacao.valido) {
+                    this.errors.nome_completo = nomeValidacao.mensagem;
+                }
+            }
+
             if (!this.form.cpf.trim()) {
                 this.errors.cpf = 'CPF é obrigatório';
             }
@@ -388,36 +306,18 @@ export default {
                 this.errors.telefone = 'Telefone é obrigatório';
             }
 
-            if (!this.form.cep.trim()) {
-                this.errors.cep = 'CEP é obrigatório';
-            }
+            if (this.precisaSenha) {
+                if (!this.form.password) {
+                    this.errors.password = 'Senha é obrigatória';
+                } else if (this.form.password.length < 6) {
+                    this.errors.password = 'Senha deve ter pelo menos 6 caracteres';
+                }
 
-            if (!this.form.cidade.trim()) {
-                this.errors.cidade = 'Cidade é obrigatória';
-            }
-
-            if (!this.form.estado) {
-                this.errors.estado = 'Estado é obrigatório';
-            }
-
-            if (!this.form.rua.trim()) {
-                this.errors.rua = 'Rua é obrigatória';
-            }
-
-            if (!this.form.bairro.trim()) {
-                this.errors.bairro = 'Bairro é obrigatório';
-            }
-
-            if (!this.form.password) {
-                this.errors.password = 'Senha é obrigatória';
-            } else if (this.form.password.length < 6) {
-                this.errors.password = 'Senha deve ter pelo menos 6 caracteres';
-            }
-
-            if (!this.form.password_confirmation) {
-                this.errors.password_confirmation = 'Confirmação de senha é obrigatória';
-            } else if (this.form.password !== this.form.password_confirmation) {
-                this.errors.password_confirmation = 'As senhas não coincidem';
+                if (!this.form.password_confirmation) {
+                    this.errors.password_confirmation = 'Confirmação de senha é obrigatória';
+                } else if (this.form.password !== this.form.password_confirmation) {
+                    this.errors.password_confirmation = 'As senhas não coincidem';
+                }
             }
 
             if (!this.form.politica_privacidade) {
@@ -425,67 +325,6 @@ export default {
             }
 
             return Object.keys(this.errors).length === 0;
-        },
-
-        async buscarCep() {
-            // Remover caracteres não numéricos do CEP
-            const cep = this.form.cep.replace(/\D/g, '');
-            
-            // Verificar se o CEP tem 8 dígitos
-            if (cep.length !== 8) {
-                return;
-            }
-
-            this.loadingCep = true;
-            this.error = '';
-
-            try {
-                const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-                const data = await response.json();
-
-                if (data.erro) {
-                    this.error = 'CEP não encontrado. Verifique o número digitado.';
-                    this.$toast.add({
-                        severity: 'error',
-                        summary: 'CEP não encontrado',
-                        detail: 'Verifique o número digitado e tente novamente.',
-                        life: 3000
-                    });
-                    return;
-                }
-
-                // Preencher automaticamente os campos de endereço
-                this.form.cidade = data.localidade || '';
-                this.form.estado = data.uf || '';
-                this.form.rua = data.logradouro || '';
-                this.form.bairro = data.bairro || '';
-
-                // Limpar erros dos campos preenchidos automaticamente
-                if (this.errors.cidade) delete this.errors.cidade;
-                if (this.errors.estado) delete this.errors.estado;
-                if (this.errors.rua) delete this.errors.rua;
-                if (this.errors.bairro) delete this.errors.bairro;
-
-                // Mostrar mensagem de sucesso
-                this.$toast.add({
-                    severity: 'success',
-                    summary: 'Endereço encontrado!',
-                    detail: 'Os campos de endereço foram preenchidos automaticamente.',
-                    life: 3000
-                });
-
-            } catch (err) {
-                console.error('Erro ao buscar CEP:', err);
-                this.error = 'Erro ao buscar endereço. Tente novamente.';
-                this.$toast.add({
-                    severity: 'error',
-                    summary: 'Erro na busca',
-                    detail: 'Não foi possível buscar o endereço. Tente novamente.',
-                    life: 3000
-                });
-            } finally {
-                this.loadingCep = false;
-            }
         },
 
         async handleSubmit() {
@@ -503,11 +342,17 @@ export default {
                 // Garantir que politica_privacidade seja boolean
                 const formData = {
                     ...this.form,
+                    nome_completo: this.form.nomeCompleto,
                     politica_privacidade: Boolean(this.form.politica_privacidade)
                 };
+                delete formData.nomeCompleto;
+                if (!this.precisaSenha) {
+                    delete formData.password;
+                    delete formData.password_confirmation;
+                }
                 await this.$authService.completarCadastro(formData);
 
-                trackCompleteRegistration({ method: 'google' });
+                trackCompleteRegistration({ method: this.precisaSenha ? 'google' : 'email' });
 
                 // Sucesso - redirecionar para dashboard
                 this.$toast.add({
@@ -531,8 +376,7 @@ export default {
 
             } catch (err) {
                 if (err.response?.data?.errors) {
-                    // Erros de validação do backend
-                    this.errors = err.response.data.errors;
+                    this.aplicarErrosBackend(err.response.data.errors);
                 } else if (err.response?.data?.error) {
                     // Erro geral do backend
                     this.error = err.response.data.error;

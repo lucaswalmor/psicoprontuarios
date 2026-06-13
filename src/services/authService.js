@@ -354,7 +354,21 @@ class AuthService {
 
     async completarCadastro(dados) {
         const response = await api.put('/user/completar-cadastro', dados);
+        try {
+            await this.validarToken();
+        } catch {
+            // sessão será atualizada no próximo request
+        }
         return response.data;
+    }
+
+    async cadastroInicial(dados) {
+        const response = await api.post('/cadastro/inicial', dados);
+        const body = response.data;
+        if (body.usuario?.token) {
+            this.persistirSessaoAtiva(body.usuario, {});
+        }
+        return body;
     }
 }
 

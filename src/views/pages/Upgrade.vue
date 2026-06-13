@@ -129,6 +129,10 @@
                 </div>
 
                 <div class="checkout-card">
+                    <EnderecoCheckout
+                        ref="enderecoRef"
+                        :initial="enderecoInitial"
+                    />
                     <CartaoAsaas
                         :loading="loading"
                         @submit="processarPagamento"
@@ -160,8 +164,10 @@ import { useToast } from 'primevue/usetoast';
 import Button from 'primevue/button';
 import Message from 'primevue/message';
 import planService, { parseDescricaoPlano } from '@/services/planService';
+import userService from '@/services/userService';
 import PlanoCard from '@/components/upgrade/PlanoCard.vue';
 import CartaoAsaas from '@/components/checkout/CartaoAsaas.vue';
+import EnderecoCheckout from '@/components/checkout/EnderecoCheckout.vue';
 import SucessoPagamento from '@/components/checkout/SucessoPagamento.vue';
 import { usuarioPodeSairDaUpgrade } from '@/router/authInactiveGuard';
 
@@ -203,6 +209,7 @@ export default {
         Button,
         PlanoCard,
         CartaoAsaas,
+        EnderecoCheckout,
         SucessoPagamento,
         Message
     },
@@ -219,6 +226,25 @@ export default {
         const planosList = ref([]);
         const loadingPlanos = ref(false);
         const erroPlanos = ref(null);
+        const enderecoRef = ref(null);
+        const enderecoInitial = ref({});
+
+        async function carregarEnderecoPerfil() {
+            try {
+                const perfil = await userService.getProfile();
+                enderecoInitial.value = {
+                    cep: perfil.cep || '',
+                    rua: perfil.rua || '',
+                    bairro: perfil.bairro || '',
+                    cidade: perfil.cidade || '',
+                    estado: perfil.estado || '',
+                    numero: perfil.numero || '',
+                    complemento: perfil.complemento || '',
+                };
+            } catch (e) {
+                console.warn('Não foi possível carregar endereço do perfil:', e);
+            }
+        }
 
         function mapearPlanoApi(p, omitirTrialNosRecursos = false) {
             const precoNum = Number(p.preco);
@@ -327,9 +353,10 @@ export default {
             return !Number.isNaN(pid) && Number(plan.id) === pid;
         };
 
-        const selectPlan = (plan) => {
+        const selectPlan = async (plan) => {
             selectedPlan.value = plan;
             if (currentStep.value === 1) {
+                await carregarEnderecoPerfil();
                 currentStep.value = 2;
             }
         };
@@ -354,7 +381,17 @@ export default {
                 toast.add({ severity: 'warn', summary: 'Cartão', detail: 'Dados do cartão incompletos.', life: 4000 });
                 return;
             }
+            if (!enderecoRef.value?.validar()) {
+                toast.add({
+                    severity: 'warn',
+                    summary: 'Endereço',
+                    detail: 'Informe e confirme seu endereço de cobrança.',
+                    life: 5000
+                });
+                return;
+            }
             try {
+                await userService.salvarEndereco(enderecoRef.value.getDados());
                 await asaas.criarCheckout(selectedPlan.value.id, payload.cartao);
                 planoContratado.value = selectedPlan.value.nome;
                 pagamentoSucesso.value = true;
@@ -401,6 +438,8 @@ export default {
                 const plano = planosList.value.find((p) => p.slug === slugPreferido);
                 if (plano) {
                     selectedPlan.value = plano;
+                    await carregarEnderecoPerfil();
+                    currentStep.value = 2;
                 }
             }
         });
@@ -421,6 +460,8 @@ export default {
             availablePlans,
             loadingPlanos,
             erroPlanos,
+            enderecoRef,
+            enderecoInitial,
             isPlanoAtual,
             selectPlan,
             previousStep,
