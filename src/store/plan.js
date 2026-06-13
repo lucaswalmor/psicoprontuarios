@@ -37,16 +37,24 @@ export const usePlanStore = defineStore('plan', {
     }),
 
     getters: {
-        isVitalicio: (state) => state.usuarioVitalicio === true,
+        isVitalicio: (state) => state.usuarioVitalicio === true || state.statusAssinatura === 'vitalicio',
         isGratuito: () => false,
         temAssinaturaAtiva: (state) => state.statusAssinatura !== 'sem_assinatura',
-        emPreview: (state) => state.previewAtivo === true,
+        emPreview: (state) => {
+            if (state.usuarioVitalicio || state.statusAssinatura === 'vitalicio') return false;
+            return state.previewAtivo === true;
+        },
+        mostrarUiPreview: (state) => {
+            if (state.usuarioVitalicio || state.statusAssinatura === 'vitalicio') return false;
+            return state.previewAtivo === true;
+        },
         planInfo: (state) => ({
             id: state.planoId,
             nome: state.planoNome
         }),
         podeEditarDados: () => true,
         canAddPaciente: (state) => {
+            if (state.usuarioVitalicio || state.statusAssinatura === 'vitalicio') return true;
             if (!state.previewAtivo) return true;
             return state.previewPacientesUsados < state.previewMaxPacientes;
         },

@@ -17,6 +17,14 @@ function sincronizarAssinaturaNoPlanStore() {
 function sincronizarPreviewNoLocalStorage(usuario) {
     if (!usuario || typeof usuario !== 'object') return;
 
+    if (usuario.usuario_vitalicio === true || usuario.status_assinatura === 'vitalicio') {
+        limparPreviewDoLocalStorage();
+        localStorage.setItem('previewAtivo', 'false');
+        localStorage.setItem('precisaAtivarPlano', 'false');
+        localStorage.setItem('mostrarPromptAtivacao', 'false');
+        return;
+    }
+
     const setBool = (key, value) => {
         if (value === undefined) return;
         localStorage.setItem(key, value ? 'true' : 'false');

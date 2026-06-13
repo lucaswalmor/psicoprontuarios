@@ -7,7 +7,7 @@ import Button from 'primevue/button';
 const router = useRouter();
 const planStore = usePlanStore();
 
-const visible = computed(() => planStore.previewAtivo === true);
+const visible = computed(() => planStore.mostrarUiPreview === true);
 
 const diasRestantes = computed(() => {
     const raw = planStore.previewExpiraEm;

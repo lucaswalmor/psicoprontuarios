@@ -8,8 +8,7 @@ const router = useRouter();
 const planStore = usePlanStore();
 const dismissedSession = ref(sessionStorage.getItem('preview_banner_dismissed') === '1');
 
-const previewAtivo = computed(() => planStore.previewAtivo);
-const visible = computed(() => planStore.previewAtivo && !dismissedSession.value);
+const visible = computed(() => planStore.mostrarUiPreview && !dismissedSession.value);
 const diasRestantes = computed(() => {
     const raw = planStore.previewExpiraEm;
     if (!raw) return null;
