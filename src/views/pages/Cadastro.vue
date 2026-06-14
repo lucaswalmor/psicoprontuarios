@@ -435,9 +435,11 @@ export default {
                     politica_privacidade: Boolean(this.form.politica_privacidade),
                 };
 
-                registrarMarketingLog('cadastro_etapa_2', this.snapshotEtapaMarketing(2));
-                registrarMarketingLog('cadastro_etapa_3_submit', {
-                    email: this.form.email
+                await registrarMarketingLog('cadastro_etapa_2', this.snapshotEtapaMarketing(2));
+                await registrarMarketingLog('cadastro_etapa_3_submit', {
+                    email: this.form.email,
+                    nome_completo: this.form.nomeCompleto,
+                    telefone: this.form.telefone,
                 });
 
                 await this.$authService.completarCadastro(formData);
