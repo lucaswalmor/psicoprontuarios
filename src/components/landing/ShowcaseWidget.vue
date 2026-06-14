@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 
-import dashboardLight from '@/assets/prints_psicoprontuarios/light-web/Screenshot_1.png';
+import dashboardLight from '@/assets/prints_psicoprontuarios/light-web/dashboard-geral.png';
 import dashboardDark from '@/assets/prints_psicoprontuarios/dark-web/dashboard-geral.png';
 import agendaLight from '@/assets/prints_psicoprontuarios/light-web/agendamento.png';
 import agendaDark from '@/assets/prints_psicoprontuarios/dark-web/agendamentos.png';
