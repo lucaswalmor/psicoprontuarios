@@ -1,6 +1,6 @@
 <script setup>
 import { useRouter } from 'vue-router';
-import dashboardLight from '@/assets/prints_psicoprontuarios/light-web/Screenshot_1.png';
+import dashboardLight from '@/assets/prints_psicoprontuarios/light-web/dashboard-geral.png';
 import dashboardDark from '@/assets/prints_psicoprontuarios/dark-web/dashboard-geral.png';
 import { registrarMarketingLog } from '@/services/marketingLogService.js';
 import { trackStartTrialClick } from '@/utils/metaPixel';
