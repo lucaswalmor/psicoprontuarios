@@ -12,7 +12,7 @@ export const config = {
     // Configurações do Google OAuth e Analytics
     google: {
         clientId: '594742730494-gnt2br1prntohpppk7i96bcapjjdccrv.apps.googleusercontent.com',
-        gaMeasurementId: 'G-KWG0W4FHHQ',
+        gaMeasurementId: 'G-LPK81CWKFN',
     },
     
     // Outras configurações
