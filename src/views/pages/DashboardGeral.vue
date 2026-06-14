@@ -6,7 +6,7 @@
                 <div class="dash-clinic-shell card p-0 overflow-hidden">
                     <header class="dash-clinic-header px-3 py-3 md:px-4 md:py-4">
                         <p class="dash-clinic-eyebrow m-0 mb-1">Visão geral</p>
-                        <h1 class="dash-clinic-title m-0">Dashboard da clínica</h1>
+                        <h1 class="dash-clinic-title m-0">Dashboard</h1>
                     </header>
                     <div class="px-2 pb-3 md:px-3 md:pb-4">
                 <Tabs
