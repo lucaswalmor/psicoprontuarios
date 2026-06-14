@@ -5,7 +5,7 @@ import dashboardLight from '@/assets/prints_psicoprontuarios/light-web/Screensho
 import dashboardDark from '@/assets/prints_psicoprontuarios/dark-web/dashboard-geral.png';
 import agendaLight from '@/assets/prints_psicoprontuarios/light-web/agendamento.png';
 import agendaDark from '@/assets/prints_psicoprontuarios/dark-web/agendamentos.png';
-import fichaLight from '@/assets/prints_psicoprontuarios/light-tablet/ficha-pacientes.png';
+import fichaLight from '@/assets/prints_psicoprontuarios/light-web/ficha-paciente.png';
 import fichaDark from '@/assets/prints_psicoprontuarios/dark-web/pacientes-ficha.png';
 import financeiroLight from '@/assets/prints_psicoprontuarios/light-web/receitas.png';
 import financeiroDark from '@/assets/prints_psicoprontuarios/dark-web/receitas.png';

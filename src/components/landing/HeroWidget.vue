@@ -1,6 +1,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
-import banner from '@/assets/img/banner.webp';
+import dashboardLight from '@/assets/prints_psicoprontuarios/light-web/Screenshot_1.png';
+import dashboardDark from '@/assets/prints_psicoprontuarios/dark-web/dashboard-geral.png';
 import { registrarMarketingLog } from '@/services/marketingLogService.js';
 import { trackStartTrialClick } from '@/utils/metaPixel';
 
@@ -31,15 +32,32 @@ const scrollToPricing = () => {
         <!-- Content Container -->
         <div class="hero-container py-16 lg:py-24 relative z-10">
             <div class="hero-layout">
-                <!-- Hero Image - Primeiro em mobile, segundo em desktop -->
+                <!-- Hero Preview - Primeiro em mobile, segundo em desktop -->
                 <div class="hero-layout__media">
-                    <div class="relative">
+                    <div class="hero-preview relative w-full">
                         <div class="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-3xl blur-3xl"></div>
-                        <img 
-                            :src="banner" 
-                            alt="Sistema de Prontuários Psicológicos" 
-                            class="relative w-full max-w-lg lg:max-w-xl rounded-2xl shadow-2xl border border-surface-200 dark:border-surface-700"
-                        />
+                        <div class="browser-frame relative">
+                            <div class="browser-bar">
+                                <span class="browser-dot dot-red"></span>
+                                <span class="browser-dot dot-yellow"></span>
+                                <span class="browser-dot dot-green"></span>
+                                <span class="browser-url">psicoprontuarios.com.br</span>
+                            </div>
+                            <div class="browser-body">
+                                <img
+                                    :src="dashboardLight"
+                                    alt="Dashboard do PsicoProntuários — tema claro"
+                                    class="screen-img dark:hidden"
+                                    fetchpriority="high"
+                                />
+                                <img
+                                    :src="dashboardDark"
+                                    alt="Dashboard do PsicoProntuários — tema escuro"
+                                    class="screen-img hidden dark:block"
+                                    fetchpriority="high"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -125,43 +143,110 @@ const scrollToPricing = () => {
 }
 
 .hero-layout__media {
-    order: 1;
+    order: 2;
     min-width: 0;
+    width: 100%;
     display: flex;
     justify-content: center;
 }
 
 .hero-layout__content {
-    order: 2;
+    order: 1;
     min-width: 0;
+}
+
+.hero-preview {
+    min-width: 0;
+    width: 100%;
+}
+
+.browser-frame {
+    @apply overflow-hidden shadow-2xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900;
+    width: 100%;
+    border-radius: 12px;
+}
+
+.browser-bar {
+    @apply flex items-center gap-2 px-4 py-3 bg-surface-100 dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700;
+}
+
+.browser-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 9999px;
+}
+
+.dot-red { background: #f87171; }
+.dot-yellow { background: #fbbf24; }
+.dot-green { background: #34d399; }
+
+.browser-url {
+    @apply ml-3 px-4 py-1 rounded-full bg-surface-0 dark:bg-surface-900 text-xs text-surface-500 dark:text-surface-400;
+}
+
+.browser-body {
+    aspect-ratio: 1024 / 486;
+    background: var(--surface-100);
+}
+
+.screen-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 @media (min-width: 992px) {
     .hero-container {
         padding-inline: 2rem;
+        max-width: 1280px;
     }
 
     .hero-layout {
         display: grid;
-        grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-        gap: clamp(2rem, 3vw, 3.5rem);
+        grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+        gap: clamp(1.5rem, 2.5vw, 3rem);
         align-items: center;
     }
 
     .hero-layout__media {
-        order: 2;
-        justify-content: center;
+        justify-content: stretch;
+        overflow: visible;
     }
 
-    .hero-layout__content {
-        order: 1;
+    .hero-preview {
+        width: 100%;
+        overflow: visible;
+    }
+
+    .browser-frame {
+        border-radius: 1rem;
+        transform: scale(1.05);
+        transform-origin: center left;
+    }
+}
+
+@media (min-width: 1280px) {
+    .hero-container {
+        max-width: 1360px;
+    }
+
+    .hero-layout {
+        grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    }
+
+    .browser-frame {
+        transform: scale(1.08);
     }
 }
 
 @media (min-width: 1920px) {
     .hero-container {
-        max-width: 1280px;
+        max-width: 1440px;
         padding-inline: 3rem;
+    }
+
+    .browser-frame {
+        transform: scale(1.1);
     }
 }
 

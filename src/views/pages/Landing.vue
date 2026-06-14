@@ -43,7 +43,7 @@ onMounted(() => {
         <!-- Main Content -->
         <main class="container-fluid" role="main">
             <!-- Hero Section -->
-            <section id="hero" class="relative overflow-hidden" aria-label="Seção principal">
+            <section id="hero" class="relative overflow-x-clip lg:overflow-visible" aria-label="Seção principal">
                 <HeroWidget />
             </section>
 
