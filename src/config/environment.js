@@ -29,12 +29,20 @@ export const getApiUrl = () => {
         return import.meta.env.VITE_API_URL;
     }
     
-    // Detecta ambiente automaticamente
-    const isDevelopment = import.meta.env.DEV || 
-                         window.location.hostname === 'localhost' || 
-                         window.location.hostname === '127.0.0.1';
-    
-    return isDevelopment ? config.apiUrls.development : config.apiUrls.production;
+    // Detecta ambiente automaticamente (inclui IPs de rede local)
+    const host = window.location.hostname
+    const isDevelopment =
+        import.meta.env.DEV ||
+        host === 'localhost' ||
+        host === '127.0.0.1' ||
+        host.endsWith('.localhost') ||
+        /^192\.168\./.test(host) ||
+        /^10\./.test(host) ||
+        /^172\.(1[6-9]|2\d|3[01])\./.test(host)
+
+    return isDevelopment
+        ? config.apiUrls.development.replace('127.0.0.1', host)
+        : config.apiUrls.production;
 };
 
 /** Webhook N8N do chat flutuante (passado ao componente via prop no layout). */

@@ -596,12 +596,14 @@ export default {
                 this.loading = true;
                 this.error = '';
                 try {
+                    const utms = capturarUtms();
                     await this.$authService.cadastroInicial({
                         email: this.form.email,
                         password: this.form.password,
                         password_confirmation: this.form.password_confirmation,
                         politica_privacidade: Boolean(this.form.politica_privacidade),
                         tipo_usuario: this.form.tipo_usuario,
+                        utm_campaign: utms.utm_campaign || null,
                     });
                     this.contaCriada = true;
                     registrarMarketingLog('cadastro_etapa_1', this.snapshotEtapaMarketing(1));

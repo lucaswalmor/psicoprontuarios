@@ -111,6 +111,11 @@ function toggleMobileMenu() {
                         <span>Contato</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <router-link to="/seja-parceiro" class="nav-link parceiro-link" @click="isMobileMenuOpen = false">
+                        <span>Seja um Parceiro</span>
+                    </router-link>
+                </li>
             </ul>
 
             <!-- CTA Buttons -->
@@ -186,6 +191,10 @@ img {
 
 .login-btn {
     @apply text-surface-700 dark:text-surface-200 hover:text-primary;
+}
+
+.parceiro-link {
+    @apply text-primary font-semibold;
 }
 
 .signup-btn {

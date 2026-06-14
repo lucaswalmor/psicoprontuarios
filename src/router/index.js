@@ -46,6 +46,11 @@ const router = createRouter({
             ]
         },
         {
+            path: '/seja-parceiro',
+            name: 'seja-parceiro',
+            component: () => import('@/views/pages/SejaParceiro.vue')
+        },
+        {
             path: '/politica-privacidade',
             name: 'politica-privacidade',
             component: () => import('@/views/pages/PoliticaPrivacidade.vue')
