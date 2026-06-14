@@ -1,6 +1,6 @@
 <script setup>
 import { useRouter } from 'vue-router';
-import { registrarMarketingLog } from '@/services/marketingLogService.js';
+import { registrarMarketingLog, irParaCadastroComUtms } from '@/services/marketingLogService.js';
 import { trackStartTrialClick } from '@/utils/metaPixel';
 
 const router = useRouter();
@@ -8,7 +8,7 @@ const router = useRouter();
 function irParaCadastro() {
     trackStartTrialClick('cta_final');
     registrarMarketingLog('teste_gratis_click', { placement: 'cta_final' });
-    router.push('/cadastro');
+    irParaCadastroComUtms(router);
 }
 </script>
 

@@ -9,9 +9,10 @@ export const config = {
         production: 'https://lucas-psicoprontuarios.irkqjy.easypanel.host/api/',
     },
     
-    // Configurações do Google OAuth
+    // Configurações do Google OAuth e Analytics
     google: {
-        clientId: '594742730494-gnt2br1prntohpppk7i96bcapjjdccrv.apps.googleusercontent.com'
+        clientId: '594742730494-gnt2br1prntohpppk7i96bcapjjdccrv.apps.googleusercontent.com',
+        gaMeasurementId: 'G-KWG0W4FHHQ',
     },
     
     // Outras configurações
@@ -43,6 +44,13 @@ const DEFAULT_N8N_CHAT_WEBHOOK_URL =
 export const getN8nChatWebhookUrl = () => {
     const fromEnv = (import.meta.env.VITE_N8N_CHAT_WEBHOOK_URL || '').trim();
     return fromEnv || DEFAULT_N8N_CHAT_WEBHOOK_URL;
+};
+
+/** ID de medição GA4 (G-XXXXXXXXXX). Vazio = Analytics desligado. */
+export const getGaMeasurementId = () => {
+    const fromEnv = (import.meta.env.VITE_GA_MEASUREMENT_ID || '').trim();
+    if (fromEnv) return fromEnv;
+    return (config.google.gaMeasurementId || '').trim();
 };
 
 export default config;

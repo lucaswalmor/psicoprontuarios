@@ -2,7 +2,7 @@
 import { useRouter } from 'vue-router';
 import dashboardLight from '@/assets/prints_psicoprontuarios/light-web/dashboard-geral.png';
 import dashboardDark from '@/assets/prints_psicoprontuarios/dark-web/dashboard-geral.png';
-import { registrarMarketingLog } from '@/services/marketingLogService.js';
+import { registrarMarketingLog, irParaCadastroComUtms } from '@/services/marketingLogService.js';
 import { trackStartTrialClick } from '@/utils/metaPixel';
 
 const router = useRouter();
@@ -10,7 +10,7 @@ const router = useRouter();
 const irParaCadastro = () => {
     trackStartTrialClick('hero');
     registrarMarketingLog('teste_gratis_click', { placement: 'hero' });
-    router.push('/cadastro');
+    irParaCadastroComUtms(router);
 };
 
 const scrollToPricing = () => {

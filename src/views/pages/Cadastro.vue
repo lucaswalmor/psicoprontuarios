@@ -331,6 +331,7 @@ import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import { registrarMarketingLog, capturarUtms } from '@/services/marketingLogService.js';
 import { trackCadastroEtapa, trackCompleteRegistration } from '@/utils/metaPixel';
+import { trackGaSignUp } from '@/utils/googleAnalytics';
 import { validarNomeCompleto } from '@/utils/nomeCompleto';
 
 const CADASTRO_ETAPA_NOMES = {
@@ -442,6 +443,7 @@ export default {
                 await this.$authService.completarCadastro(formData);
 
                 trackCompleteRegistration({ method: 'email' });
+                trackGaSignUp({ method: 'email' });
 
                 const userData = await this.$authService.validarToken();
                 const destino = userData.usuario
@@ -554,6 +556,7 @@ export default {
                     this.$router.push('/completar-cadastro');
                 } else {
                     trackCompleteRegistration({ method: 'google' });
+                    trackGaSignUp({ method: 'google' });
                     this.showSuccessDialog = true;
                     this.startCountdown();
                 }

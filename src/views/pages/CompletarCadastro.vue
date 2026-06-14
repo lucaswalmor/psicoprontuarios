@@ -181,6 +181,7 @@ import Password from 'primevue/password';
 import Checkbox from 'primevue/checkbox';
 import IftaLabel from 'primevue/iftalabel';
 import { trackCompleteRegistration } from '@/utils/metaPixel';
+import { trackGaSignUp } from '@/utils/googleAnalytics';
 import { validarNomeCompleto, montarNomeCompleto } from '@/utils/nomeCompleto';
 
 export default {
@@ -353,6 +354,7 @@ export default {
                 await this.$authService.completarCadastro(formData);
 
                 trackCompleteRegistration({ method: this.precisaSenha ? 'google' : 'email' });
+                trackGaSignUp({ method: this.precisaSenha ? 'google' : 'email' });
 
                 // Sucesso - redirecionar para dashboard
                 this.$toast.add({

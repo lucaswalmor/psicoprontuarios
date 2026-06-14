@@ -2,6 +2,8 @@ import AppLayout from '@/layout/AppLayout.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import { setupAuthInactiveGuard } from './authInactiveGuard';
 import { trackPageView } from '@/utils/metaPixel';
+import { trackGaPageView } from '@/utils/googleAnalytics';
+import { capturarUtms } from '@/services/marketingLogService.js';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -383,8 +385,14 @@ const router = createRouter({
 
 setupAuthInactiveGuard(router);
 
-router.afterEach(() => {
+router.beforeEach((_to, _from, next) => {
+    capturarUtms();
+    next();
+});
+
+router.afterEach((to) => {
     trackPageView();
+    trackGaPageView(to);
 });
 
 // Recupera automaticamente de erro de chunk desatualizado após deploy.

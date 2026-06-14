@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import logo from '@/assets/img/logo.webp';
-import { registrarMarketingLog } from '@/services/marketingLogService.js';
+import { registrarMarketingLog, irParaCadastroComUtms } from '@/services/marketingLogService.js';
 import { trackStartTrialClick } from '@/utils/metaPixel';
 
 const router = useRouter();
@@ -12,7 +12,7 @@ function irParaCadastro(placement) {
     trackStartTrialClick(placement);
     registrarMarketingLog('teste_gratis_click', { placement });
     isMobileMenuOpen.value = false;
-    router.push('/cadastro');
+    irParaCadastroComUtms(router);
 }
 
 function smoothScroll(id) {

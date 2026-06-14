@@ -18,6 +18,8 @@ import money from 'v-money3';
 import { VOnboardingWrapper } from 'v-onboarding';
 import 'v-onboarding/dist/style.css';
 import { initMetaPixel } from '@/utils/metaPixel';
+import { initGoogleAnalytics } from '@/utils/googleAnalytics';
+import { capturarUtms } from '@/services/marketingLogService.js';
 
 // Carregar configurações iniciais do localStorage
 const loadInitialConfig = () => {
@@ -27,6 +29,7 @@ const loadInitialConfig = () => {
 
 // Carregar configurações antes de montar o app
 loadInitialConfig();
+capturarUtms();
 
 const app = createApp(App);
 
@@ -65,5 +68,6 @@ app.config.globalProperties.$mensagemPersonalizadaService = services.mensagemPer
         }
     }
     await initMetaPixel();
+    await initGoogleAnalytics();
     app.mount('#app');
 })();
