@@ -115,9 +115,19 @@ function inferirOrigemReferrer() {
     };
 }
 
+/** URL digitada, bookmark ou navegação sem referrer e sem UTMs na query. */
+function inferirAcessoDireto() {
+    return {
+        utm_source: 'direct',
+        utm_medium: 'direct',
+        utm_campaign: 'acesso_direto',
+        origem_tipo: 'acesso_direto',
+    };
+}
+
 /**
  * Captura parâmetros UTM + fbclid da URL, sessionStorage ou referrer (orgânico).
- * Prioridade: URL > sessionStorage > referrer (1x por sessão).
+ * Prioridade: URL > sessionStorage > referrer (1x por sessão) > acesso direto.
  *
  * @returns {{ utm_source?: string, utm_medium?: string, utm_campaign?: string, utm_content?: string, utm_term?: string, fbclid?: string, origem_tipo?: string, referrer_host?: string }}
  */
@@ -155,10 +165,14 @@ export function capturarUtms() {
                 return doReferrer;
             }
         }
+
+        const direct = inferirAcessoDireto();
+        salvarUtmsSession(direct);
+        return direct;
     } catch {
         /* ignore */
     }
-    return {};
+    return inferirAcessoDireto();
 }
 
 /**
